@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Hello World Demo">
+
+	<executable package_path="behavior_hello_world_demo.hello_world_demo_sm" class="HelloWorldDemoSM" />
+	<tagstring>sara</tagstring>
+	<author>Nicolas Nadeau</author>
+	<date>Sat May 20 2017</date>
+	<description>
+		Testing flexbe
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="sara move">
+
+	<executable package_path="behavior_sara_move.sara_move_sm" class="saramoveSM" />
+	<tagstring>sara</tagstring>
+	<author>Nicolas Nadeau</author>
+	<date>Sat May 20 2017</date>
+	<description>
+		testing move
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
