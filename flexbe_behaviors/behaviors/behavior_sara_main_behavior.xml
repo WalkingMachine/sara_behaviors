@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Sara_main_behavior">
+
+	<executable package_path="behavior_sara_main_behavior.sara_main_behavior_sm" class="Sara_main_behaviorSM" />
+	<tagstring>Main</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Sun May 21 2017</date>
+	<description>
+		Main behavior or Sara the robot
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+	<params>
+
+		<param type="text" name="EStopTopic" default=""/EStop"" label="EStopTopic" hint="Sets the EStopTopic" />
+
+	</params>
+
+
+</behavior>
