@@ -18,6 +18,8 @@
 
 		<param type="text" name="EStopTopic" default=""/EStop"" label="EStopTopic" hint="Sets the EStopTopic" />
 
+		<param type="text" name="ActionTopic" default=""action_topic"" label="ActionTopic" hint="Sets the ActionTopic" />
+
 	</params>
 
 

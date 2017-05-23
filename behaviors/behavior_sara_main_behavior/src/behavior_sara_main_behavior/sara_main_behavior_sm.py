@@ -9,6 +9,9 @@
 import roslib; roslib.load_manifest('behavior_sara_main_behavior')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.log_state import LogState
+from sara_flexbe_states.speech_to_text import SpeechToText
+from flexbe_states.log_key_state import LogKeyState
+from flexbe_states.decision_state import DecisionState
 from flexbe_states.wait_state import WaitState
 from flexbe_states.subscriber_state import SubscriberState
 from flexbe_states.check_condition_state import CheckConditionState
@@ -35,6 +38,7 @@ class Sara_main_behaviorSM(Behavior):
 
         # parameters of this behavior
         self.add_parameter('EStopTopic', '"/EStop"')
+        self.add_parameter('ActionTopic', '"action_topic"')
 
         # references to used behaviors
 
@@ -54,6 +58,7 @@ class Sara_main_behaviorSM(Behavior):
         # x:900 y:215
         _state_machine = OperatableStateMachine(outcomes=['Shutdown'])
         _state_machine.userdata.EStopStatus = False
+        _state_machine.userdata.Command = "no nothing"
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -104,10 +109,35 @@ class Sara_main_behaviorSM(Behavior):
                                         remapping={'message': 'EStopMessage'})
 
 
-        # x:30 y:308, x:130 y:308
-        _sm_sara_move_to_1 = OperatableStateMachine(outcomes=['finished', 'failed'])
+        # x:556 y:399, x:627 y:351, x:697 y:292
+        _sm_sara_take_this_1 = OperatableStateMachine(outcomes=['Success', 'fail', 'critical fail'])
 
-        with _sm_sara_move_to_1:
+        with _sm_sara_take_this_1:
+            # x:125 y:30
+            OperatableStateMachine.add('wait',
+                                        WaitState(wait_time=5),
+                                        transitions={'done': 'ff'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:106 y:187
+            OperatableStateMachine.add('f',
+                                        DecisionState(outcomes=["1","2","3"], conditions=lambda x: x),
+                                        transitions={'1': 'Success', '2': 'fail', '3': 'critical fail'},
+                                        autonomy={'1': Autonomy.Off, '2': Autonomy.Off, '3': Autonomy.Off},
+                                        remapping={'input_value': 'message'})
+
+            # x:235 y:99
+            OperatableStateMachine.add('ff',
+                                        SubscriberState(topic="/r", blocking=True, clear=False),
+                                        transitions={'received': 'f', 'unavailable': 'Success'},
+                                        autonomy={'received': Autonomy.Off, 'unavailable': Autonomy.Off},
+                                        remapping={'message': 'message'})
+
+
+        # x:30 y:308, x:230 y:322, x:230 y:322
+        _sm_sara_go_here_2 = OperatableStateMachine(outcomes=['finished', 'critical fail', 'fail'])
+
+        with _sm_sara_go_here_2:
             # x:77 y:140
             OperatableStateMachine.add('log',
                                         LogState(text="Move to", severity=Logger.REPORT_HINT),
@@ -115,10 +145,60 @@ class Sara_main_behaviorSM(Behavior):
                                         autonomy={'done': Autonomy.Off})
 
 
-        # x:990 y:195
-        _sm_estop_2 = OperatableStateMachine(outcomes=['Fail'])
+        # x:407 y:328
+        _sm_sara_sorry_3 = OperatableStateMachine(outcomes=['finished'])
 
-        with _sm_estop_2:
+        with _sm_sara_sorry_3:
+            # x:201 y:153
+            OperatableStateMachine.add('log',
+                                        LogState(text="Sorry, I failed  :(", severity=Logger.REPORT_HINT),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off})
+
+
+        # x:426 y:328
+        _sm_sara_succes_4 = OperatableStateMachine(outcomes=['finished'])
+
+        with _sm_sara_succes_4:
+            # x:148 y:154
+            OperatableStateMachine.add('log',
+                                        LogState(text="success", severity=Logger.REPORT_HINT),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off})
+
+
+        # x:298 y:252
+        _sm_call_for_orders_5 = OperatableStateMachine(outcomes=['finished'])
+
+        with _sm_call_for_orders_5:
+            # x:104 y:131
+            OperatableStateMachine.add('log',
+                                        LogState(text="call for order", severity=Logger.REPORT_HINT),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off})
+
+
+        # x:616 y:135
+        _sm_sara_move_head_6 = OperatableStateMachine(outcomes=['error'])
+
+        with _sm_sara_move_head_6:
+            # x:145 y:117
+            OperatableStateMachine.add('log',
+                                        LogState(text="move head", severity=Logger.REPORT_HINT),
+                                        transitions={'done': 'wait'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:328 y:116
+            OperatableStateMachine.add('wait',
+                                        WaitState(wait_time=1000000),
+                                        transitions={'done': 'error'},
+                                        autonomy={'done': Autonomy.Low})
+
+
+        # x:990 y:195
+        _sm_estop_7 = OperatableStateMachine(outcomes=['Fail'])
+
+        with _sm_estop_7:
             # x:112 y:183
             OperatableStateMachine.add('sub',
                                         SubscriberState(topic=self.EStopTopic, blocking=True, clear=True),
@@ -160,9 +240,9 @@ class Sara_main_behaviorSM(Behavior):
 
 
         # x:852 y:132
-        _sm_shutdown_conditions_checker_3 = OperatableStateMachine(outcomes=['shutdown'])
+        _sm_shutdown_conditions_checker_8 = OperatableStateMachine(outcomes=['shutdown'])
 
-        with _sm_shutdown_conditions_checker_3:
+        with _sm_shutdown_conditions_checker_8:
             # x:93 y:121
             OperatableStateMachine.add('sub',
                                         SubscriberState(topic="/shutdown", blocking=True, clear=True),
@@ -184,56 +264,96 @@ class Sara_main_behaviorSM(Behavior):
                                         autonomy={'done': Autonomy.Off})
 
 
-        # x:926 y:568
-        _sm_sara_action_executor_4 = OperatableStateMachine(outcomes=['critical fail'])
+        # x:1229 y:464
+        _sm_sara_action_executor_9 = OperatableStateMachine(outcomes=['critical fail'])
 
-        with _sm_sara_action_executor_4:
-            # x:39 y:151
+        with _sm_sara_action_executor_9:
+            # x:17 y:247
             OperatableStateMachine.add('log',
                                         LogState(text="Start action executor", severity=Logger.REPORT_HINT),
-                                        transitions={'done': 'Sara move to'},
+                                        transitions={'done': 'Call for orders'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:507 y:146
-            OperatableStateMachine.add('wait',
-                                        WaitState(wait_time=50),
-                                        transitions={'done': 'fail'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:805 y:501
-            OperatableStateMachine.add('fail',
+            # x:1176 y:389
+            OperatableStateMachine.add('Critical failure',
                                         LogState(text="Critical fail in action executer!", severity=Logger.REPORT_HINT),
                                         transitions={'done': 'critical fail'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:229 y:138
-            OperatableStateMachine.add('Sara move to',
-                                        _sm_sara_move_to_1,
-                                        transitions={'finished': 'wait', 'failed': 'critical fail'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+            # x:340 y:241
+            OperatableStateMachine.add('decision',
+                                        DecisionState(outcomes=["nothing", "go", "take"], conditions=lambda x: x),
+                                        transitions={'nothing': 'sub', 'go': 'Sara go here', 'take': 'Sara take this'},
+                                        autonomy={'nothing': Autonomy.Off, 'go': Autonomy.Off, 'take': Autonomy.Off},
+                                        remapping={'input_value': 'message'})
+
+            # x:14 y:570
+            OperatableStateMachine.add('Call for orders',
+                                        _sm_call_for_orders_5,
+                                        transitions={'finished': 'sub'},
+                                        autonomy={'finished': Autonomy.Inherit})
+
+            # x:1070 y:490
+            OperatableStateMachine.add('Sara succes',
+                                        _sm_sara_succes_4,
+                                        transitions={'finished': 'Call for orders'},
+                                        autonomy={'finished': Autonomy.Inherit})
+
+            # x:1022 y:570
+            OperatableStateMachine.add('Sara sorry',
+                                        _sm_sara_sorry_3,
+                                        transitions={'finished': 'Call for orders'},
+                                        autonomy={'finished': Autonomy.Inherit})
+
+            # x:579 y:19
+            OperatableStateMachine.add('Sara go here',
+                                        _sm_sara_go_here_2,
+                                        transitions={'finished': 'Sara succes', 'critical fail': 'Critical failure', 'fail': 'Sara sorry'},
+                                        autonomy={'finished': Autonomy.Inherit, 'critical fail': Autonomy.Inherit, 'fail': Autonomy.Inherit})
+
+            # x:580 y:119
+            OperatableStateMachine.add('Sara take this',
+                                        _sm_sara_take_this_1,
+                                        transitions={'Success': 'Sara succes', 'fail': 'Sara sorry', 'critical fail': 'Critical failure'},
+                                        autonomy={'Success': Autonomy.Inherit, 'fail': Autonomy.Inherit, 'critical fail': Autonomy.Inherit})
+
+            # x:125 y:294
+            OperatableStateMachine.add('sub',
+                                        SubscriberState(topic=self.ActionTopic, blocking=True, clear=False),
+                                        transitions={'received': 'decision', 'unavailable': 'critical fail'},
+                                        autonomy={'received': Autonomy.Off, 'unavailable': Autonomy.Off},
+                                        remapping={'message': 'message'})
 
 
-        # x:646 y:55
-        _sm_sara_brain_5 = OperatableStateMachine(outcomes=['error'])
+        # x:468 y:131
+        _sm_sara_brain_10 = OperatableStateMachine(outcomes=['error'])
 
-        with _sm_sara_brain_5:
+        with _sm_sara_brain_10:
             # x:136 y:49
             OperatableStateMachine.add('log',
                                         LogState(text="Start brain", severity=Logger.REPORT_HINT),
-                                        transitions={'done': 'dumb wait until dead brain'},
+                                        transitions={'done': 'get command'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:390 y:50
-            OperatableStateMachine.add('dumb wait until dead brain',
-                                        WaitState(wait_time=1000000),
-                                        transitions={'done': 'error'},
-                                        autonomy={'done': Autonomy.Off})
+            # x:274 y:53
+            OperatableStateMachine.add('get command',
+                                        SpeechToText(),
+                                        transitions={'done': 'log2', 'failed': 'error'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Low},
+                                        remapping={'words': 'Command'})
+
+            # x:469 y:31
+            OperatableStateMachine.add('log2',
+                                        LogKeyState(text=lambda x: x, severity=Logger.REPORT_HINT),
+                                        transitions={'done': 'get command'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'data': 'Command'})
 
 
         # x:30 y:322
-        _sm_sara_shutdown_6 = OperatableStateMachine(outcomes=['finished'])
+        _sm_sara_shutdown_11 = OperatableStateMachine(outcomes=['finished'])
 
-        with _sm_sara_shutdown_6:
+        with _sm_sara_shutdown_11:
             # x:57 y:86
             OperatableStateMachine.add('log',
                                         LogState(text="shutdown", severity=Logger.REPORT_HINT),
@@ -242,9 +362,9 @@ class Sara_main_behaviorSM(Behavior):
 
 
         # x:30 y:322, x:130 y:322
-        _sm_sara_init_7 = OperatableStateMachine(outcomes=['finished', 'failed'])
+        _sm_sara_init_12 = OperatableStateMachine(outcomes=['finished', 'failed'])
 
-        with _sm_sara_init_7:
+        with _sm_sara_init_12:
             # x:56 y:144
             OperatableStateMachine.add('log',
                                         LogState(text="initialisation", severity=Logger.REPORT_HINT),
@@ -252,43 +372,50 @@ class Sara_main_behaviorSM(Behavior):
                                         autonomy={'done': Autonomy.Off})
 
 
-        # x:965 y:435, x:380 y:496, x:268 y:350, x:245 y:569, x:1090 y:556
-        _sm_sara_parallel_runtime_8 = ConcurrencyContainer(outcomes=['Shutdown'], conditions=[
+        # x:350 y:430, x:374 y:518, x:239 y:353, x:275 y:580, x:1050 y:76, x:1202 y:605
+        _sm_sara_parallel_runtime_13 = ConcurrencyContainer(outcomes=['Shutdown'], conditions=[
                                         ('Shutdown', [('Sara action executor', 'critical fail')]),
                                         ('Shutdown', [('Shutdown conditions checker', 'shutdown')]),
                                         ('Shutdown', [('Sara brain', 'error')]),
-                                        ('Shutdown', [('EStop', 'Fail')])
+                                        ('Shutdown', [('EStop', 'Fail')]),
+                                        ('Shutdown', [('Sara move head', 'error')])
                                         ])
 
-        with _sm_sara_parallel_runtime_8:
-            # x:49 y:338
+        with _sm_sara_parallel_runtime_13:
+            # x:52 y:341
             OperatableStateMachine.add('Sara brain',
-                                        _sm_sara_brain_5,
+                                        _sm_sara_brain_10,
                                         transitions={'error': 'Shutdown'},
                                         autonomy={'error': Autonomy.Inherit})
 
             # x:52 y:416
             OperatableStateMachine.add('Sara action executor',
-                                        _sm_sara_action_executor_4,
+                                        _sm_sara_action_executor_9,
                                         transitions={'critical fail': 'Shutdown'},
                                         autonomy={'critical fail': Autonomy.Inherit})
 
             # x:50 y:487
             OperatableStateMachine.add('Shutdown conditions checker',
-                                        _sm_shutdown_conditions_checker_3,
+                                        _sm_shutdown_conditions_checker_8,
                                         transitions={'shutdown': 'Shutdown'},
                                         autonomy={'shutdown': Autonomy.Inherit})
 
             # x:52 y:561
             OperatableStateMachine.add('EStop',
-                                        _sm_estop_2,
+                                        _sm_estop_7,
                                         transitions={'Fail': 'Shutdown'},
                                         autonomy={'Fail': Autonomy.Inherit})
+
+            # x:802 y:69
+            OperatableStateMachine.add('Sara move head',
+                                        _sm_sara_move_head_6,
+                                        transitions={'error': 'Shutdown'},
+                                        autonomy={'error': Autonomy.Inherit})
 
 
 
         with _state_machine:
-            # x:63 y:223
+            # x:60 y:213
             OperatableStateMachine.add('log',
                                         LogState(text="Start Sara", severity=Logger.REPORT_HINT),
                                         transitions={'done': 'Sara init'},
@@ -296,19 +423,19 @@ class Sara_main_behaviorSM(Behavior):
 
             # x:397 y:99
             OperatableStateMachine.add('Sara parallel Runtime',
-                                        _sm_sara_parallel_runtime_8,
+                                        _sm_sara_parallel_runtime_13,
                                         transitions={'Shutdown': 'Sara shutdown'},
                                         autonomy={'Shutdown': Autonomy.Inherit})
 
             # x:225 y:210
             OperatableStateMachine.add('Sara init',
-                                        _sm_sara_init_7,
+                                        _sm_sara_init_12,
                                         transitions={'finished': 'Sara parallel Runtime', 'failed': 'Shutdown'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
             # x:668 y:99
             OperatableStateMachine.add('Sara shutdown',
-                                        _sm_sara_shutdown_6,
+                                        _sm_sara_shutdown_11,
                                         transitions={'finished': 'Shutdown'},
                                         autonomy={'finished': Autonomy.Inherit})
 
