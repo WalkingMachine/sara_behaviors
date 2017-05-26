@@ -2,7 +2,6 @@
 
 import rospy
 from flexbe_core import EventState, Logger
-from collections import deque
 
 '''
 Created on 25.05.2017
@@ -33,5 +32,10 @@ class FIFO_Get(EventState):
         return "done"
 
     def on_enter(self, userdata):
-        userdata.Out = userdata.FIFO.popleft();
-
+        i = 1;
+        Count = userdata.FIFO.count(userdata.FIFO);
+        while i < Count:
+            userdata.FIFO[i-1] = userdata.FIFO[i];
+            i = i+1;
+        userdata.FIFO.pop();
+        userdata.Out = userdata.FIFO[0];
