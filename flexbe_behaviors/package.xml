@@ -15,5 +15,6 @@
   <run_depend>behavior_example_behavior</run_depend>
   <run_depend>behavior_hello_world_demo</run_depend>
   <run_depend>behavior_sara_move</run_depend>
+  <run_depend>behavior_sara_main_behavior</run_depend>
 
 </package>
