@@ -47,7 +47,7 @@ class SaraactionexecutorSM(Behavior):
 
     def create(self):
         # x:835 y:96, x:834 y:255
-        _state_machine = OperatableStateMachine(outcomes=['CriticalFail', 'Shutdown'])
+        _state_machine = OperatableStateMachine(outcomes=['CriticalFail', 'Shutdown'], input_keys=['HighFIFO', 'MedFIFO', 'LowFIFO'])
         _state_machine.userdata.HighFIFO = [""]
         _state_machine.userdata.MedFIFO = [""]
         _state_machine.userdata.LowFIFO = ["shutdown"]
@@ -87,15 +87,15 @@ class SaraactionexecutorSM(Behavior):
             # x:298 y:262
             OperatableStateMachine.add('Get MedAction',
                                         FIFO_Get(),
-                                        transitions={'done': 'Action'},
-                                        autonomy={'done': Autonomy.Off},
+                                        transitions={'done': 'Action', 'empty': 'Get LowAction'},
+                                        autonomy={'done': Autonomy.Off, 'empty': Autonomy.Off},
                                         remapping={'FIFO': 'MedFIFO', 'Out': 'Action'})
 
             # x:301 y:377
             OperatableStateMachine.add('Get LowAction',
                                         FIFO_Get(),
-                                        transitions={'done': 'Action'},
-                                        autonomy={'done': Autonomy.Off},
+                                        transitions={'done': 'Action', 'empty': 'wait for 0.1 s'},
+                                        autonomy={'done': Autonomy.Off, 'empty': Autonomy.Off},
                                         remapping={'FIFO': 'LowFIFO', 'Out': 'Action'})
 
             # x:584 y:146
@@ -108,8 +108,8 @@ class SaraactionexecutorSM(Behavior):
             # x:292 y:157
             OperatableStateMachine.add('Get HighAction',
                                         FIFO_Get(),
-                                        transitions={'done': 'Action'},
-                                        autonomy={'done': Autonomy.Off},
+                                        transitions={'done': 'Action', 'empty': 'Get MedAction'},
+                                        autonomy={'done': Autonomy.Off, 'empty': Autonomy.Off},
                                         remapping={'FIFO': 'HighFIFO', 'Out': 'Action'})
 
 
