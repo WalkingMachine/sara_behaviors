@@ -18,13 +18,14 @@
 	<!-- Available Parameters -->
 	<params>
 
+
 		<param type="text" name="ShutdownTopic" default="/shutdown" label="ShutdownTopic" hint="Sets the ShutdownTopic" />
 
 		<param type="text" name="EStopTopic" default="/e_stop" label="EStopTopic" hint="Sets the EStopTopic" />
 
 		<param type="text" name="ActionTopic" default="sara_action" label="ActionTopic" hint="Sets the ActionTopic" />
 
-	</params>
+  </params>
 
 
 </behavior>

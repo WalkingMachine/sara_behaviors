@@ -16,6 +16,7 @@
   <run_depend>behavior_hello_world_demo</run_depend>
   <run_depend>behavior_sara_move</run_depend>
   <run_depend>behavior_sara_main_behavior</run_depend>
+  <run_depend>behavior_move_arm</run_depend>
   <run_depend>behavior_testbooltopic</run_depend>
   <run_depend>behavior_test</run_depend>
   <run_depend>behavior_subbooltopic</run_depend>
