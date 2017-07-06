@@ -17,5 +17,11 @@
   <run_depend>behavior_sara_move</run_depend>
   <run_depend>behavior_sara_main_behavior</run_depend>
   <run_depend>behavior_move_arm</run_depend>
+  <run_depend>behavior_testbooltopic</run_depend>
+  <run_depend>behavior_test</run_depend>
+  <run_depend>behavior_subbooltopic</run_depend>
+  <run_depend>behavior_sara_action_executor</run_depend>
+  <run_depend>behavior_testing_fifo</run_depend>
+  <run_depend>behavior_sara_action_manager</run_depend>
 
 </package>

@@ -12,15 +12,20 @@
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Sara action executor" />
+	<contains name="TestBoolTopic" />
 
 	<!-- Available Parameters -->
 	<params>
 
-		<param type="text" name="EStopTopic" default="/EStop" label="EStopTopic" hint="Sets the EStopTopic" />
 
-		<param type="text" name="ActionTopic" default="action_topic" label="ActionTopic" hint="Sets the ActionTopic" />
+		<param type="text" name="ShutdownTopic" default="/shutdown" label="ShutdownTopic" hint="Sets the ShutdownTopic" />
 
-	</params>
+		<param type="text" name="EStopTopic" default="/e_stop" label="EStopTopic" hint="Sets the EStopTopic" />
+
+		<param type="text" name="ActionTopic" default="sara_action" label="ActionTopic" hint="Sets the ActionTopic" />
+
+  </params>
 
 
 </behavior>

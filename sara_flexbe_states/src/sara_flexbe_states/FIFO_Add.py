@@ -2,7 +2,6 @@
 
 import rospy
 from flexbe_core import EventState, Logger
-from collections import deque
 
 '''
 Created on 25.05.2017
