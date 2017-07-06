@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Sara action executor">
+
+	<executable package_path="behavior_sara_action_executor.sara_action_executor_sm" class="SaraactionexecutorSM" />
+	<tagstring>Action</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Thu May 25 2017</date>
+	<description>
+		Execute les actions listé par le command interpretor
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

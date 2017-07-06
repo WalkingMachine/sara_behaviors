@@ -2,7 +2,6 @@
 
 import rospy
 from flexbe_core import EventState, Logger
-from collections import deque
 
 '''
 Created on 25.05.2017
@@ -31,4 +30,4 @@ class FIFO_New(EventState):
         return "done"
 
     def on_enter(self, userdata):
-        userdata.FIFO = deque();
+        userdata.FIFO = list();
