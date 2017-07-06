@@ -2,6 +2,7 @@
 from __future__ import print_function
 from flexbe_core import EventState, Logger
 from geometry_msgs.msg import Pose
+from sara_moveit.srv import *
 import rospy
 
 
@@ -28,8 +29,8 @@ class MoveArm(EventState):
         Logger.loginfo('Rospy wait')
 
         try:
-            move_arm = rospy.ServiceProxy('move_arm', Pose)
-            if not move_arm(userdata.pose):
+            move_arm = rospy.ServiceProxy('move_arm', move)
+            if not move_arm(move_group="right_arm", pose=userdata.pose).success:
                 Logger.logwarn("ERROR while calling service")
                 return 'failed'
         except rospy.ServiceException as e:
