@@ -1,14 +1,14 @@
 <package>
-  <name>behavior_hello_world_demo</name>
+  <name>behavior_testmovearm</name>
   <version>1.0.0</version>
   <description>
-     Testing flexbe
+     test the ActionMoveArm behavior.
   </description>
-  <maintainer email="todo@todo.com">Nicolas Nadeau</maintainer>
+  <maintainer email="todo@todo.com">Philippe La Madeleine</maintainer>
   <license>BSD</license>
 
-  <url>http://ros.org/wiki/behavior_hello_world_demo</url>
-  <author>Nicolas Nadeau</author>
+  <url>http://ros.org/wiki/behavior_testmovearm</url>
+  <author>Philippe La Madeleine</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 

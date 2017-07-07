@@ -1,0 +1,20 @@
+<package>
+  <name>behavior_actionmovearm</name>
+  <version>1.0.0</version>
+  <description>
+     Send a pose to moveit to move the arm.
+  </description>
+  <maintainer email="todo@todo.com">Philippe La Madleine</maintainer>
+  <license>BSD</license>
+
+  <url>http://ros.org/wiki/behavior_actionmovearm</url>
+  <author>Philippe La Madleine</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>rospy</run_depend>
+  <run_depend>flexbe_core</run_depend>
+  <run_depend>flexbe_states</run_depend>
+  <run_depend>sara_flexbe_states</run_depend>
+
+</package>

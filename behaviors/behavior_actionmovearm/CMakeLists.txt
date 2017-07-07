@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(behavior_example_behavior)
+project(behavior_actionmovearm)
 
 find_package(catkin REQUIRED)
 

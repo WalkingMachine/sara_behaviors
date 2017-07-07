@@ -30,7 +30,7 @@ class MoveArm(EventState):
 
         try:
             move_arm = rospy.ServiceProxy('move_arm', move)
-            if not move_arm(move_group="right_arm", pose=userdata.pose).success:
+            if not move_arm(move_group="RightArm", pose=userdata.pose).success:
                 Logger.logwarn("ERROR while calling service")
                 return 'failed'
         except rospy.ServiceException as e:
