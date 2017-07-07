@@ -24,7 +24,7 @@ class MoveArm(EventState):
         # This method is called periodically while the state is active.
         # Main purpose is to check state conditions and trigger a corresponding outcome.
         # If no outcome is returned, the state will stay active.
-        Logger.loginfo('Enter Execute')
+        Logger.loginfo('Waiting for move_arm')
         rospy.wait_for_service('move_arm')
         Logger.loginfo('Rospy wait')
 

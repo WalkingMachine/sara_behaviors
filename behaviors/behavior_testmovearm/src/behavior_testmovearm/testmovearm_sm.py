@@ -61,33 +61,33 @@ class TestMoveArmSM(Behavior):
         with _state_machine:
             # x:22 y:466
             OperatableStateMachine.add('generate pose',
-                                        GenPose(),
+                                        GenPose(x=1, y=1, z=1, roll=0, pitch=0, yaw=0),
                                         transitions={'done': 'new action form', 'failed': 'failed'},
                                         autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose'})
 
-            # x:193 y:467
+            # x:193 y:521
             OperatableStateMachine.add('new action form',
                                         FIFO_New(),
                                         transitions={'done': 'add action name'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'FIFO': 'ActionForm'})
 
-            # x:352 y:464
+            # x:375 y:547
             OperatableStateMachine.add('add action name',
                                         FIFO_Add(),
                                         transitions={'done': 'add pose'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'Entry': 'actionName', 'FIFO': 'ActionForm'})
 
-            # x:524 y:471
+            # x:515 y:444
             OperatableStateMachine.add('add pose',
                                         FIFO_Add(),
                                         transitions={'done': 'ActionMoveArm'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'Entry': 'pose', 'FIFO': 'ActionForm'})
 
-            # x:647 y:460
+            # x:570 y:353
             OperatableStateMachine.add('ActionMoveArm',
                                         self.use_behavior(ActionMoveArmSM, 'ActionMoveArm'),
                                         transitions={'finished': 'finished', 'failed': 'failed'},
