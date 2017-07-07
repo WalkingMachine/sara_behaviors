@@ -56,7 +56,7 @@ class move_armSM(Behavior):
 		with _state_machine:
 			# x:142 y:54
 			OperatableStateMachine.add('GenPose',
-										GenPose(),
+										GenPose(x=1, y=1, z=1, roll=1, pitch=1, yaw=1),
 										transitions={'done': 'arm', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'pose'})
