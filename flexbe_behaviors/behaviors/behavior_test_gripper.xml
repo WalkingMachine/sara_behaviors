@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Test_gripper">
+
+	<executable package_path="behavior_test_gripper.test_gripper_sm" class="Test_gripperSM" />
+	<tagstring>Test</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Sun Jul 09 2017</date>
+	<description>
+		test the gripper
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
