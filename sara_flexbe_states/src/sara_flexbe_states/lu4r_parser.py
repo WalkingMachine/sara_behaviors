@@ -114,7 +114,6 @@ class LU4R_Parser(EventState):
                     'Follow',
                     '.*[Cc]otheme.*',
                     '.*([Tt]heme).*',
-                    '.*([Gg]oal).*',
                     '.*([Aa]rea).*'
                     '.*([Pp]ath)|([Rr]oad).*'])
             if ActionForm == None:
@@ -155,7 +154,7 @@ class LU4R_Parser(EventState):
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Pick',
                     '.*[Mm]anipulation.*',
-                    '.*([Ee]tity).*',
+                    '.*([Ee]ntity).*',
                     '.*([Aa]rea).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
