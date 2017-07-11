@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="ActionWrapper_MoveBase">
+
+	<executable package_path="behavior_actionwrapper_movebase.actionwrapper_movebase_sm" class="ActionWrapper_MoveBaseSM" />
+	<tagstring>ActionWrapper</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Tue Jul 11 2017</date>
+	<description>
+		action wrapper pour move_base
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
