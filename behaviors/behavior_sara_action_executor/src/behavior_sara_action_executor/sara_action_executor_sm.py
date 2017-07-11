@@ -57,7 +57,7 @@ class SaraactionexecutorSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-        # x:822 y:170, x:822 y:384, x:520 y:361
+        # x:857 y:155, x:863 y:450, x:869 y:295
         _sm_action_0 = OperatableStateMachine(outcomes=['Shutdown', 'CriticalFail', 'done'], input_keys=['Action'])
 
         with _sm_action_0:
@@ -70,9 +70,9 @@ class SaraactionexecutorSM(Behavior):
 
             # x:30 y:252
             OperatableStateMachine.add('ActionIdentification',
-                                        DecisionState(outcomes=["bringing", "cotheme", "motion", "attaching", "inspecting", "closure", "locating", "placing", "being in a category", "change operational state", "giving", "manipulation", "perception", "releasing", "taking", "arriving", "being located", "change direction"], conditions=lambda x: x),
-                                        transitions={'bringing': 'done', 'cotheme': 'done', 'motion': 'done', 'attaching': 'done', 'inspecting': 'done', 'closure': 'done', 'locating': 'done', 'placing': 'done', 'beinginacategory': 'done', 'changeoperationalstate': 'done', 'giving': 'done', 'manipulation': 'done', 'perception': 'done', 'releasing': 'done', 'taking': 'done', 'arriving': 'done', 'beinglocated': 'done', 'changedirection': 'done'},
-                                        autonomy={'bringing': Autonomy.Off, 'cotheme': Autonomy.Off, 'motion': Autonomy.Off, 'attaching': Autonomy.Off, 'inspecting': Autonomy.Off, 'closure': Autonomy.Off, 'locating': Autonomy.Off, 'placing': Autonomy.Off, 'beinginacategory': Autonomy.Off, 'changeoperationalstate': Autonomy.Off, 'giving': Autonomy.Off, 'manipulation': Autonomy.Off, 'perception': Autonomy.Off, 'releasing': Autonomy.Off, 'taking': Autonomy.Off, 'arriving': Autonomy.Off, 'beinglocated': Autonomy.Off, 'changedirection': Autonomy.Off},
+                                        DecisionState(outcomes=['Bring', 'Follow', 'MoveBase', 'Attach', 'LookAt', 'Find', 'Place', 'Give', 'Pick', 'Turn'], conditions=lambda x: x[0]),
+                                        transitions={'Bring': 'done', 'Follow': 'done', 'MoveBase': 'done', 'Attach': 'done', 'LookAt': 'done', 'Find': 'done', 'Place': 'done', 'Give': 'done', 'Pick': 'done', 'Turn': 'done'},
+                                        autonomy={'Bring': Autonomy.Off, 'Follow': Autonomy.Off, 'MoveBase': Autonomy.Off, 'Attach': Autonomy.Off, 'LookAt': Autonomy.Off, 'Find': Autonomy.Off, 'Place': Autonomy.Off, 'Give': Autonomy.Off, 'Pick': Autonomy.Off, 'Turn': Autonomy.Off},
                                         remapping={'input_value': 'Action'})
 
 
@@ -105,7 +105,7 @@ class SaraactionexecutorSM(Behavior):
                                         autonomy={'Shutdown': Autonomy.Inherit, 'CriticalFail': Autonomy.Inherit, 'done': Autonomy.Inherit},
                                         remapping={'Action': 'Action'})
 
-            # x:292 y:157
+            # x:294 y:154
             OperatableStateMachine.add('Get HighAction',
                                         FIFO_Get(),
                                         transitions={'done': 'Action', 'empty': 'Get MedAction'},

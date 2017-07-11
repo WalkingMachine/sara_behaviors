@@ -47,7 +47,7 @@ class Test_LU4RSM(Behavior):
     def create(self):
         # x:30 y:322, x:130 y:322
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
-        _state_machine.userdata.sentence = "go to the soda"
+        _state_machine.userdata.sentence = "take the apple"
         _state_machine.userdata.HighFIFO = []
         _state_machine.userdata.MedFIFO = []
         _state_machine.userdata.LowFIFO = []

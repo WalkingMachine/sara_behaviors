@@ -47,7 +47,7 @@ class sara_command_managerSM(Behavior):
     def create(self):
         # x:705 y:127, x:609 y:334
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['HighFIFO', 'MedFIFO', 'LowFIFO', 'DoNow'])
-        _state_machine.userdata.input_value = "go to the bar"
+        _state_machine.userdata.input_value = ""
         _state_machine.userdata.HighFIFO = []
         _state_machine.userdata.MedFIFO = []
         _state_machine.userdata.LowFIFO = []

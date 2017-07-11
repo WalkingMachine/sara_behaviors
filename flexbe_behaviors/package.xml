@@ -29,5 +29,16 @@
   <run_depend>behavior_test_gripper</run_depend>
   <run_depend>behavior_test_lu4r</run_depend>
   <run_depend>behavior_sara_command_manager</run_depend>
+  <run_depend>behavior_actionwrapper_movebase</run_depend>
+  <run_depend>behavior_actionwrapper_movearm</run_depend>
+  <run_depend>behavior_actionwrapper_pick</run_depend>
+  <run_depend>behavior_actionwrapper_bring</run_depend>
+  <run_depend>behavior_actionwrapper_follow</run_depend>
+  <run_depend>behavior_actionwrapper_attach</run_depend>
+  <run_depend>behavior_actionwrapper_lookat</run_depend>
+  <run_depend>behavior_actionwrapper_find</run_depend>
+  <run_depend>behavior_actionwrapper_place</run_depend>
+  <run_depend>behavior_actionwrapper_give</run_depend>
+  <run_depend>behavior_actionwrapper_turn</run_depend>
 
 </package>

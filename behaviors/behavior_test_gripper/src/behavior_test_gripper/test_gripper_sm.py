@@ -45,7 +45,7 @@ class Test_gripperSM(Behavior):
     def create(self):
         # x:30 y:322, x:130 y:322
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
-        _state_machine.userdata.width = 100
+        _state_machine.userdata.width = 67
         _state_machine.userdata.effort = 100
 
         # Additional creation code can be added inside the following tags
