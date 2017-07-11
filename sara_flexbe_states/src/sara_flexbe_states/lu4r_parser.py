@@ -99,12 +99,69 @@ class LU4R_Parser(EventState):
         for opitem in lu4r.opList:
             priority = 2
             Logger.loginfo("Action: "+opitem.action)
-            ActionForm = self.ActionFormBuilder( opitem, [
-                'MoveBase',
-                '.*[Mm]otion.*',
-                '.*([Tt]heme)|([Aa]rea)|([Gg]oal).*',
-                '.*([Dd]irection).*',
-                '.*([Dd]istance).*'])
+            ActionForm = None
+
+
+            if ActionForm == None:
+                ActionForm = self.ActionFormBuilder(opitem, [
+                    'Bring',
+                    '.*[Bb]ring.*',
+                    '.*([Tt]heme).*',
+                    '.*([Aa]rea)|([Ss]ource).*',
+                    '.*([Bb]eneficiary).*'])
+            if ActionForm == None:
+                ActionForm = self.ActionFormBuilder(opitem, [
+                    'Follow',
+                    '.*[Cc]otheme.*',
+                    '.*([Tt]heme).*',
+                    '.*([Gg]oal).*',
+                    '.*([Aa]rea).*'
+                    '.*([Pp]ath)|([Rr]oad).*'])
+            if ActionForm == None:
+                ActionForm = self.ActionFormBuilder( opitem, [
+                    'MoveBase',
+                    '.*[Mm]otion.*',
+                    '.*([Tt]heme)|([Aa]rea)|([Gg]oal).*',
+                    '.*([Dd]irection).*',
+                    '.*([Dd]istance).*'])
+            if ActionForm == None:
+                ActionForm = self.ActionFormBuilder(opitem, [
+                    'Attach',
+                    '.*[Aa]ttaching.*',
+                    '.*([Ii]tem).*',
+                    '.*([Gg]oal)|([Cc]onnector).*'])
+            if ActionForm == None:
+                ActionForm = self.ActionFormBuilder(opitem, [
+                    'LookAt',
+                    '[Ii]specting'
+                    '.*[Gg]round.*'])
+            if ActionForm == None:
+                ActionForm = self.ActionFormBuilder(opitem, [
+                    'Find',
+                    '.*[Ll]ocating.*',
+                    '.*[Ss]ought_entity.*',
+                    '.*([Gg]round)|([[Ll]ocation]).*'])
+            if ActionForm == None:
+                ActionForm = self.ActionFormBuilder(opitem, [
+                    'Place',
+                    '.*[Pp]lacing.*',
+                    '.*[Gg]oal.*'])
+            if ActionForm == None:
+                ActionForm = self.ActionFormBuilder(opitem, [
+                    'Give',
+                    '.*[Gg]iving.*',
+                    '.*[Rr]ecipient.*'])
+            if ActionForm == None:
+                ActionForm = self.ActionFormBuilder(opitem, [
+                    'Pick',
+                    '.*[Mm]anipulation.*',
+                    '.*([Ee]tity).*',
+                    '.*([Aa]rea).*'])
+            if ActionForm == None:
+                ActionForm = self.ActionFormBuilder(opitem, [
+                    'LookAt',
+                    '[Pp]erception'
+                    '.*[Dd]irection.*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Pick',
@@ -113,11 +170,9 @@ class LU4R_Parser(EventState):
                     '.*([Aa]rea).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
-                    'Bring',
-                    '.*[Bb]ring.*',
-                    '.*([Tt]heme).*',
-                    '.*([Aa]rea)|([Ss]ource).*',
-                    '.*([Bb]eneficiary).*'])
+                    'Turn',
+                    '.*[Cc]ange [Dd]irection.*',
+                    '.*([Dd]irection).*'])
 
 
 
