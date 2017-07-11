@@ -175,7 +175,6 @@ class LU4R_Parser(EventState):
                     '.*([Dd]irection).*'])
 
 
-
             if ActionForm != None:
                 if priority == 1:
                     userdata.LowFIFO.append(ActionForm)
