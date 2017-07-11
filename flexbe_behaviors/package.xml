@@ -27,5 +27,6 @@
   <run_depend>behavior_test_move_arm</run_depend>
   <run_depend>behavior_testmovearm</run_depend>
   <run_depend>behavior_test_gripper</run_depend>
+  <run_depend>behavior_test_lu4r</run_depend>
 
 </package>
