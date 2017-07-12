@@ -118,7 +118,7 @@ class LU4R_Parser(EventState):
                     '.*([Pp]ath)|([Rr]oad).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder( opitem, [
-                    'MoveBase',
+                    'Move',
                     '.*[Mm]otion.*',
                     '.*([Tt]heme)|([Aa]rea)|([Gg]oal).*',
                     '.*([Dd]irection).*',

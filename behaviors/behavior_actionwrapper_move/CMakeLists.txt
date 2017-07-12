@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(behavior_actionwrapper_movebase)
+project(behavior_actionwrapper_move)
 
 find_package(catkin REQUIRED)
 

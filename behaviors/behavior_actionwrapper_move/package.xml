@@ -1,5 +1,5 @@
 <package>
-  <name>behavior_actionwrapper_movebase</name>
+  <name>behavior_actionwrapper_move</name>
   <version>1.0.0</version>
   <description>
      action wrapper pour move_base
@@ -7,7 +7,7 @@
   <maintainer email="todo@todo.com">Philippe La Madeleine</maintainer>
   <license>BSD</license>
 
-  <url>http://ros.org/wiki/behavior_actionwrapper_movebase</url>
+  <url>http://ros.org/wiki/behavior_actionwrapper_move</url>
   <author>Philippe La Madeleine</author>
 
   <buildtool_depend>catkin</buildtool_depend>

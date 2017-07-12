@@ -16,6 +16,7 @@ from flexbe_states.wait_state import WaitState
 from flexbe_states.check_condition_state import CheckConditionState
 from flexbe_states.calculation_state import CalculationState
 from flexbe_states.subscriber_state import SubscriberState
+from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.FIFO_New import FIFO_New
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -215,6 +216,12 @@ class Sara_main_behaviorSM(Behavior):
             # x:57 y:86
             OperatableStateMachine.add('log',
                                         LogState(text="shutdown", severity=Logger.REPORT_HINT),
+                                        transitions={'done': 'say'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:122 y:228
+            OperatableStateMachine.add('say',
+                                        SaraSay(sentence="I'm goint to shutdown for safetiy reasons", emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
 
@@ -226,6 +233,12 @@ class Sara_main_behaviorSM(Behavior):
             # x:56 y:144
             OperatableStateMachine.add('log',
                                         LogState(text="initialisation", severity=Logger.REPORT_HINT),
+                                        transitions={'done': 'say good morning'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:51 y:300
+            OperatableStateMachine.add('say good morning',
+                                        SaraSay(sentence="Good morning. My name is Sara", emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
 
@@ -291,7 +304,7 @@ class Sara_main_behaviorSM(Behavior):
             # x:225 y:210
             OperatableStateMachine.add('Sara init',
                                         _sm_sara_init_7,
-                                        transitions={'finished': 'Create HighFIFO', 'failed': 'Shutdown'},
+                                        transitions={'finished': 'Create HighFIFO', 'failed': 'Sara shutdown'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
             # x:638 y:451

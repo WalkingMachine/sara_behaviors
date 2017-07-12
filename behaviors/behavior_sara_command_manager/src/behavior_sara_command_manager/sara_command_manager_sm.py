@@ -8,9 +8,11 @@
 
 import roslib; roslib.load_manifest('behavior_sara_command_manager')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.lu4r_parser import LU4R_Parser
+from flexbe_states.subscriber_state import SubscriberState
 from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.lu4r_parser import LU4R_Parser
+from flexbe_states.calculation_state import CalculationState
+from flexbe_states.check_condition_state import CheckConditionState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -47,11 +49,11 @@ class sara_command_managerSM(Behavior):
     def create(self):
         # x:705 y:127, x:609 y:334
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['HighFIFO', 'MedFIFO', 'LowFIFO', 'DoNow'])
-        _state_machine.userdata.input_value = ""
         _state_machine.userdata.HighFIFO = []
         _state_machine.userdata.MedFIFO = []
         _state_machine.userdata.LowFIFO = []
         _state_machine.userdata.DoNow = []
+        _state_machine.userdata.Default_message = ""
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -60,12 +62,18 @@ class sara_command_managerSM(Behavior):
 
 
         with _state_machine:
-            # x:73 y:78
-            OperatableStateMachine.add('get text',
-                                        CalculationState(calculation=lambda x: x),
-                                        transitions={'done': 'parse text'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'input_value': 'input_value', 'output_value': 'sentence'})
+            # x:44 y:112
+            OperatableStateMachine.add('sub',
+                                        SubscriberState(topic="/sara_command", blocking=False, clear=False),
+                                        transitions={'received': 'sss', 'unavailable': 'finished'},
+                                        autonomy={'received': Autonomy.Off, 'unavailable': Autonomy.Off},
+                                        remapping={'message': 'message'})
+
+            # x:404 y:211
+            OperatableStateMachine.add('sorry',
+                                        SaraSay(sentence="Sorry, I did not understand. Could you repeat please?", emotion=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off})
 
             # x:378 y:40
             OperatableStateMachine.add('parse text',
@@ -74,11 +82,19 @@ class sara_command_managerSM(Behavior):
                                         autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
                                         remapping={'sentence': 'sentence', 'HighFIFO': 'HighFIFO', 'MedFIFO': 'MedFIFO', 'LowFIFO': 'LowFIFO', 'DoNow': 'DoNow'})
 
-            # x:404 y:211
-            OperatableStateMachine.add('sorry',
-                                        SaraSay(sentence="Sorry, I did not understand.", emotion=1),
-                                        transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.Off})
+            # x:216 y:41
+            OperatableStateMachine.add('GET TEXT',
+                                        CalculationState(calculation=lambda x: x.data),
+                                        transitions={'done': 'parse text'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'input_value': 'message', 'output_value': 'sentence'})
+
+            # x:103 y:185
+            OperatableStateMachine.add('sss',
+                                        CheckConditionState(predicate=lambda x: x != None),
+                                        transitions={'true': 'GET TEXT', 'false': 'finished'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'message'})
 
 
         return _state_machine

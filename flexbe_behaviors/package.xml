@@ -29,7 +29,7 @@
   <run_depend>behavior_test_gripper</run_depend>
   <run_depend>behavior_test_lu4r</run_depend>
   <run_depend>behavior_sara_command_manager</run_depend>
-  <run_depend>behavior_actionwrapper_movebase</run_depend>
+  <run_depend>behavior_actionwrapper_move</run_depend>
   <run_depend>behavior_actionwrapper_movearm</run_depend>
   <run_depend>behavior_actionwrapper_pick</run_depend>
   <run_depend>behavior_actionwrapper_bring</run_depend>
