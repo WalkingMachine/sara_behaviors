@@ -114,7 +114,7 @@ class LU4R_Parser(EventState):
                     'Follow',
                     '.*[Cc]otheme.*',
                     '.*([Tt]heme).*',
-                    '.*([Aa]rea).*'
+                    '.*([Aa]rea).*',
                     '.*([Pp]ath)|([Rr]oad).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder( opitem, [
@@ -132,13 +132,13 @@ class LU4R_Parser(EventState):
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'LookAt',
-                    '[Ii]specting'
-                    '.*[Gg]round.*'])
+                    '.*[Ii]specting.*',
+                    '.*([Gg]round)|([Pp]henomenon).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Find',
                     '.*[Ll]ocating.*',
-                    '.*[Ss]ought_entity.*',
+                    '.*([Ss]ought_entity)|([Pp]henomenon).*',
                     '.*([Gg]round)|([[Ll]ocation]).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
@@ -159,8 +159,8 @@ class LU4R_Parser(EventState):
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'LookAt',
-                    '[Pp]erception'
-                    '.*[Dd]irection.*'])
+                    '.*([Pp]erception)|([Ll]ook).*',
+                    '.*([Dd]irection)|([Pp]henomenon).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Pick',

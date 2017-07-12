@@ -8,7 +8,7 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_turn')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.wait_state import WaitState
+from sara_flexbe_states.sara_say_key import SaraSayKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -48,7 +48,7 @@ class ActionWrapper_TurnSM(Behavior):
     def create(self):
         # x:30 y:322, x:130 y:322
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
-        _state_machine.userdata.Action = []
+        _state_machine.userdata.Action = ["Turn","Right"]
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -57,11 +57,12 @@ class ActionWrapper_TurnSM(Behavior):
 
 
         with _state_machine:
-            # x:38 y:115
-            OperatableStateMachine.add('www',
-                                        WaitState(wait_time=1),
+            # x:61 y:158
+            OperatableStateMachine.add('say1',
+                                        SaraSayKey(Format=lambda x: "I gonna turn "+x[1], emotion=1),
                                         transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.Off})
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'sentence': 'Action'})
 
 
         return _state_machine

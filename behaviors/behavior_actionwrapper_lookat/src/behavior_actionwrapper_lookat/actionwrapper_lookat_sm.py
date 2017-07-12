@@ -8,7 +8,9 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_lookat')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.wait_state import WaitState
+from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.sara_say_key import SaraSayKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -48,7 +50,7 @@ class ActionWrapper_LookAtSM(Behavior):
     def create(self):
         # x:30 y:322, x:130 y:322
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
-        _state_machine.userdata.Action = []
+        _state_machine.userdata.Action = ["LookAt", "you"]
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -57,11 +59,25 @@ class ActionWrapper_LookAtSM(Behavior):
 
 
         with _state_machine:
-            # x:38 y:115
-            OperatableStateMachine.add('www',
-                                        WaitState(wait_time=1),
+            # x:69 y:83
+            OperatableStateMachine.add('cond',
+                                        CheckConditionState(predicate=lambda x: x[1] != ''),
+                                        transitions={'true': 'say2', 'false': 'say'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'Action'})
+
+            # x:56 y:206
+            OperatableStateMachine.add('say',
+                                        SaraSay(sentence="You didn't told me where to look at.", emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
+
+            # x:169 y:190
+            OperatableStateMachine.add('say2',
+                                        SaraSayKey(Format=lambda x: "I'm looking at "+x[1], emotion=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'sentence': 'Action'})
 
 
         return _state_machine

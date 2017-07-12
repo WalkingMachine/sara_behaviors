@@ -8,7 +8,9 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_attach')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.wait_state import WaitState
+from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.sara_say_key import SaraSayKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -41,14 +43,14 @@ class ActionWrapper_AttachSM(Behavior):
         # Behavior comments:
 
         # O 288 67 
-        # Attach|n1- object|n2- where to put it
+        # Attach|n1- object|n2- where to attach it
 
 
 
     def create(self):
-        # x:30 y:322, x:130 y:322
+        # x:131 y:510, x:277 y:512
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
-        _state_machine.userdata.Action = []
+        _state_machine.userdata.Action = ["Atach",'tail','dunky']
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -57,11 +59,38 @@ class ActionWrapper_AttachSM(Behavior):
 
 
         with _state_machine:
-            # x:38 y:115
-            OperatableStateMachine.add('www',
-                                        WaitState(wait_time=1),
+            # x:183 y:137
+            OperatableStateMachine.add('cond',
+                                        CheckConditionState(predicate=lambda x: x[1] != ''),
+                                        transitions={'true': 'cond2', 'false': 'say1'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'Action'})
+
+            # x:141 y:307
+            OperatableStateMachine.add('say1',
+                                        SaraSay(sentence="You didn't told me what to attach", emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
+
+            # x:327 y:227
+            OperatableStateMachine.add('cond2',
+                                        CheckConditionState(predicate=lambda x: x[2] != ''),
+                                        transitions={'true': 'say3', 'false': 'say2'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'Action'})
+
+            # x:297 y:343
+            OperatableStateMachine.add('say2',
+                                        SaraSay(sentence="You didn't told me where to attach it", emotion=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:439 y:387
+            OperatableStateMachine.add('say3',
+                                        SaraSayKey(Format=lambda x: "I'm going to attach that "+x[1]+" to that "+x[2], emotion=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'sentence': 'Action'})
 
 
         return _state_machine

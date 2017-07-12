@@ -8,7 +8,9 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_find')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.wait_state import WaitState
+from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.sara_say_key import SaraSayKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -46,9 +48,9 @@ class ActionWrapper_FindSM(Behavior):
 
 
     def create(self):
-        # x:30 y:322, x:130 y:322
+        # x:254 y:491, x:110 y:483
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
-        _state_machine.userdata.Action = []
+        _state_machine.userdata.Action = ["Find","power","universe"]
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -57,11 +59,39 @@ class ActionWrapper_FindSM(Behavior):
 
 
         with _state_machine:
-            # x:38 y:115
-            OperatableStateMachine.add('www',
-                                        WaitState(wait_time=1),
+            # x:150 y:132
+            OperatableStateMachine.add('cond',
+                                        CheckConditionState(predicate=lambda x: x[1] != ''),
+                                        transitions={'true': 'cond2', 'false': 'say1'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'Action'})
+
+            # x:80 y:243
+            OperatableStateMachine.add('say1',
+                                        SaraSay(sentence="You didn't told me what to find.", emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
+
+            # x:283 y:224
+            OperatableStateMachine.add('cond2',
+                                        CheckConditionState(predicate=lambda x: x[2] != ''),
+                                        transitions={'true': 'say3', 'false': 'say2'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'Action'})
+
+            # x:282 y:331
+            OperatableStateMachine.add('say2',
+                                        SaraSayKey(Format=lambda x: "I'm now looking for the "+x[1], emotion=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'sentence': 'Action'})
+
+            # x:398 y:375
+            OperatableStateMachine.add('say3',
+                                        SaraSayKey(Format=lambda x: "I'm now looking for the "+x[1]+" in the "+x[2], emotion=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'sentence': 'Action'})
 
 
         return _state_machine

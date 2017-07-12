@@ -47,7 +47,7 @@ class sara_command_managerSM(Behavior):
 
 
     def create(self):
-        # x:705 y:127, x:609 y:334
+        # x:857 y:132, x:609 y:334
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['HighFIFO', 'MedFIFO', 'LowFIFO', 'DoNow'])
         _state_machine.userdata.HighFIFO = []
         _state_machine.userdata.MedFIFO = []
@@ -78,7 +78,7 @@ class sara_command_managerSM(Behavior):
             # x:378 y:40
             OperatableStateMachine.add('parse text',
                                         LU4R_Parser(),
-                                        transitions={'done': 'finished', 'fail': 'sorry'},
+                                        transitions={'done': 'understood', 'fail': 'sorry'},
                                         autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
                                         remapping={'sentence': 'sentence', 'HighFIFO': 'HighFIFO', 'MedFIFO': 'MedFIFO', 'LowFIFO': 'LowFIFO', 'DoNow': 'DoNow'})
 
@@ -95,6 +95,12 @@ class sara_command_managerSM(Behavior):
                                         transitions={'true': 'GET TEXT', 'false': 'finished'},
                                         autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
                                         remapping={'input_value': 'message'})
+
+            # x:579 y:41
+            OperatableStateMachine.add('understood',
+                                        SaraSay(sentence="Understood", emotion=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off})
 
 
         return _state_machine

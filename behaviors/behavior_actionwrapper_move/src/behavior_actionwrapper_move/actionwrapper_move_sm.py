@@ -8,9 +8,9 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_move')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.sara_say_key import SaraSayKey
+from sara_flexbe_states.sara_say import SaraSay
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -50,7 +50,7 @@ class ActionWrapper_MoveSM(Behavior):
     def create(self):
         # x:822 y:356, x:859 y:573
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
-        _state_machine.userdata.Action = ['Move','kitchen','forward','1 meter']
+        _state_machine.userdata.Action = ['Move','','forward','1 meter']
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -59,32 +59,45 @@ class ActionWrapper_MoveSM(Behavior):
 
 
         with _state_machine:
-            # x:52 y:28
-            OperatableStateMachine.add('say okay',
-                                        SaraSay(sentence="Okay", emotion=1),
-                                        transitions={'done': 'check'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:111 y:242
-            OperatableStateMachine.add('say area',
-                                        SaraSayKey(Format=lambda x: "I'm going to the "+x[1], emotion=1),
-                                        transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'sentence': 'Action'})
-
             # x:33 y:116
             OperatableStateMachine.add('check',
                                         CheckConditionState(predicate=lambda x: x[1] != ''),
-                                        transitions={'true': 'say area', 'false': 'say vector'},
+                                        transitions={'true': 'say area', 'false': 'cond1'},
                                         autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
                                         remapping={'input_value': 'Action'})
 
-            # x:100 y:479
+            # x:249 y:459
             OperatableStateMachine.add('say vector',
-                                        SaraSayKey(Format=lambda x: "I'm going to move "+x[2]+x[3], emotion=1),
+                                        SaraSayKey(Format=lambda x: "I'm now going to move "+x[2]+x[3], emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'sentence': 'Action'})
+
+            # x:111 y:242
+            OperatableStateMachine.add('say area',
+                                        SaraSayKey(Format=lambda x: "I'm now going to the "+x[1], emotion=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'sentence': 'Action'})
+
+            # x:49 y:386
+            OperatableStateMachine.add('cond1',
+                                        CheckConditionState(predicate=lambda x: x[2] != ''),
+                                        transitions={'true': 'say vector', 'false': 'say no info'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'Action'})
+
+            # x:91 y:526
+            OperatableStateMachine.add('say no info',
+                                        SaraSay(sentence="You didn't told me where to go", emotion=1),
+                                        transitions={'done': 'say3'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:308 y:525
+            OperatableStateMachine.add('say3',
+                                        SaraSay(sentence="I'm lost now because of you", emotion=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off})
 
 
         return _state_machine
