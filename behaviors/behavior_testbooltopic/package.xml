@@ -4,7 +4,7 @@
   <description>
      Test a Boolean topic.
   </description>
-  <maintainer email="todo@todo.com">Philippe La Madeleine</maintainer>
+  <maintainer email="philippe117@live.fr">Philippe La Madeleine</maintainer>
   <license>BSD</license>
 
   <url>http://ros.org/wiki/behavior_testbooltopic</url>
