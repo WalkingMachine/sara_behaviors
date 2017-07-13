@@ -2,6 +2,7 @@
 from __future__ import print_function
 from flexbe_core import EventState, Logger
 from geometry_msgs.msg import Pose
+from sara_moveit.srv import *
 import rospy
 
 
@@ -9,7 +10,7 @@ class MoveArm(EventState):
     '''
     MoveArm receive a ROS pose as input and launch a ROS service with the same pose
 
-    ># pose     Pose2D      Target waypoint for navigation.
+    ># pose     Pose      Target waypoint for navigation.
 
     <= done     Finish job.
     <= failed   Job as failed.
@@ -23,13 +24,16 @@ class MoveArm(EventState):
         # This method is called periodically while the state is active.
         # Main purpose is to check state conditions and trigger a corresponding outcome.
         # If no outcome is returned, the state will stay active.
-        Logger.loginfo('Enter Execute')
+        Logger.loginfo('Waiting for move_arm')
         rospy.wait_for_service('move_arm')
         Logger.loginfo('Rospy wait')
 
         try:
-            move_arm = rospy.ServiceProxy('move_arm', Pose)
-            if not move_arm(userdata.pose):
+            move_arm = rospy.ServiceProxy('move_arm', move)
+            resp = move_arm(move_group="RightArm", pose=userdata.pose)
+            Logger.loginfo('service called')
+
+            if not resp.success:
                 Logger.logwarn("ERROR while calling service")
                 return 'failed'
         except rospy.ServiceException as e:
