@@ -1,7 +1,7 @@
 # sara_behaviors
 This repo contains all sara-specific states and behaviors.
 
-# Steps tu run
+# Steps to run
 ## LU4R Semantic recognition
 To allow semantic recognition, run the [lu4r semantic analyser](https://drive.google.com/file/d/0BwncD7Fw45HYd3JfZEIyQ0FSMU0/view)
 with this command:
