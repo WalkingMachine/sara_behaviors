@@ -11,6 +11,7 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_say_key import SaraSayKey
+from flexbe_states.wait_state import WaitState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -48,7 +49,7 @@ class ActionWrapper_PlaceSM(Behavior):
 
 
     def create(self):
-        # x:30 y:322, x:130 y:322
+        # x:808 y:274, x:728 y:377
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
         _state_machine.userdata.Action = ["Place", "table"]
 
@@ -57,27 +58,44 @@ class ActionWrapper_PlaceSM(Behavior):
         
         # [/MANUAL_CREATE]
 
+        # x:30 y:322, x:130 y:322
+        _sm_place_object_0 = OperatableStateMachine(outcomes=['finished', 'failed'])
+
+        with _sm_place_object_0:
+            # x:52 y:108
+            OperatableStateMachine.add('wait',
+                                        WaitState(wait_time=2),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off})
+
+
 
         with _state_machine:
-            # x:120 y:105
+            # x:37 y:67
             OperatableStateMachine.add('cond',
                                         CheckConditionState(predicate=lambda x: x[1] != ''),
-                                        transitions={'true': 'say1', 'false': 'say2'},
+                                        transitions={'true': 'say place object', 'false': 'say no place given'},
                                         autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
                                         remapping={'input_value': 'Action'})
 
-            # x:236 y:217
-            OperatableStateMachine.add('say2',
+            # x:31 y:544
+            OperatableStateMachine.add('say no place given',
                                         SaraSay(sentence="I'm now going to place it right there", emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:64 y:215
-            OperatableStateMachine.add('say1',
+            # x:83 y:225
+            OperatableStateMachine.add('say place object',
                                         SaraSayKey(Format=lambda x: "I'm now going to place it on that "+x[1], emotion=1),
-                                        transitions={'done': 'finished'},
+                                        transitions={'done': 'Place object'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'sentence': 'Action'})
+
+            # x:326 y:227
+            OperatableStateMachine.add('Place object',
+                                        _sm_place_object_0,
+                                        transitions={'finished': 'finished', 'failed': 'failed'},
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 
         return _state_machine

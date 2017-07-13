@@ -8,7 +8,9 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_follow')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.wait_state import WaitState
+from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.sara_say_key import SaraSayKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -40,13 +42,13 @@ class ActionWrapper_FollowSM(Behavior):
 
         # Behavior comments:
 
-        # O 288 67 
+        # O 295 30 
         # Follow|n1- person|n2- area where the person is|n3- path (unused)
 
 
 
     def create(self):
-        # x:30 y:322, x:130 y:322
+        # x:855 y:294, x:851 y:405
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
         _state_machine.userdata.Action = []
 
@@ -57,11 +59,39 @@ class ActionWrapper_FollowSM(Behavior):
 
 
         with _state_machine:
-            # x:38 y:115
-            OperatableStateMachine.add('www',
-                                        WaitState(wait_time=1),
+            # x:42 y:117
+            OperatableStateMachine.add('cond',
+                                        CheckConditionState(predicate=lambda x: x[1] != ''),
+                                        transitions={'true': 'cond2', 'false': 'say follow you'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'Action'})
+
+            # x:244 y:118
+            OperatableStateMachine.add('say follow you',
+                                        SaraSay(sentence="I'm following you", emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
+
+            # x:202 y:503
+            OperatableStateMachine.add('say follow person in area',
+                                        SaraSayKey(Format=lambda x: "I'm going to follow "+ x[1], emotion=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'sentence': 'Action'})
+
+            # x:228 y:298
+            OperatableStateMachine.add('say follow person',
+                                        SaraSayKey(Format=lambda x: "I'm going to follow "+x, emotion=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'sentence': 'Action'})
+
+            # x:36 y:263
+            OperatableStateMachine.add('cond2',
+                                        CheckConditionState(predicate=lambda x: x[2] != ''),
+                                        transitions={'true': 'say follow person in area', 'false': 'say follow person'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'Action'})
 
 
         return _state_machine

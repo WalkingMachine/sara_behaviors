@@ -8,7 +8,9 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_give')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.wait_state import WaitState
+from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.sara_say_key import SaraSayKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -46,7 +48,7 @@ class ActionWrapper_GiveSM(Behavior):
 
 
     def create(self):
-        # x:30 y:322, x:130 y:322
+        # x:892 y:284, x:885 y:449
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
         _state_machine.userdata.Action = []
 
@@ -57,11 +59,25 @@ class ActionWrapper_GiveSM(Behavior):
 
 
         with _state_machine:
-            # x:38 y:115
-            OperatableStateMachine.add('www',
-                                        WaitState(wait_time=1),
+            # x:30 y:40
+            OperatableStateMachine.add('cond',
+                                        CheckConditionState(predicate=lambda x: x[1] != ''),
+                                        transitions={'true': 'say giving to person', 'false': 'say giving'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'Action'})
+
+            # x:232 y:184
+            OperatableStateMachine.add('say giving',
+                                        SaraSay(sentence="I'm giving it to you", emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
+
+            # x:196 y:284
+            OperatableStateMachine.add('say giving to person',
+                                        SaraSayKey(Format=lambda x: "I'm giving it to "+x[1], emotion=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'sentence': 'Action'})
 
 
         return _state_machine

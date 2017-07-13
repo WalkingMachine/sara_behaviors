@@ -8,8 +8,8 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_pick')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.sara_say_key import SaraSayKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -47,7 +47,7 @@ class ActionWrapper_PickSM(Behavior):
 
 
     def create(self):
-        # x:30 y:322, x:130 y:322
+        # x:652 y:286, x:750 y:245
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
         _state_machine.userdata.Action = ["Pick","elephant","room"]
 
@@ -58,26 +58,26 @@ class ActionWrapper_PickSM(Behavior):
 
 
         with _state_machine:
-            # x:112 y:64
-            OperatableStateMachine.add('say1',
-                                        SaraSayKey(Format=lambda x: "I'm going to pick that "+x[1], emotion=1),
-                                        transitions={'done': 'cond'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'sentence': 'Action'})
+            # x:24 y:53
+            OperatableStateMachine.add('cond',
+                                        CheckConditionState(predicate=lambda x: x[2] != None),
+                                        transitions={'true': 'say Pick object', 'false': 'say no object given'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'Action'})
 
-            # x:131 y:200
-            OperatableStateMachine.add('say2',
+            # x:18 y:420
+            OperatableStateMachine.add('say Pick object',
                                         SaraSayKey(Format=lambda x: " in the "+x[2], emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'sentence': 'Action'})
 
-            # x:297 y:282
-            OperatableStateMachine.add('cond',
-                                        CheckConditionState(predicate=lambda x: x[2] != None),
-                                        transitions={'true': 'say2', 'false': 'finished'},
-                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-                                        remapping={'input_value': 'Action'})
+            # x:69 y:187
+            OperatableStateMachine.add('say no object given',
+                                        SaraSayKey(Format=lambda x: "I'm going to pick that "+x[1], emotion=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'sentence': 'Action'})
 
 
         return _state_machine

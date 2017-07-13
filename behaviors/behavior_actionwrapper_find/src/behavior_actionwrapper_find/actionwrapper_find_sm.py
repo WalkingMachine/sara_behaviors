@@ -42,13 +42,13 @@ class ActionWrapper_FindSM(Behavior):
 
         # Behavior comments:
 
-        # O 288 67 
+        # O 308 15 
         # Find|n1- what to find|n2- where to look for
 
 
 
     def create(self):
-        # x:254 y:491, x:110 y:483
+        # x:846 y:287, x:842 y:366
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
         _state_machine.userdata.Action = ["Find","power","universe"]
 
@@ -59,35 +59,35 @@ class ActionWrapper_FindSM(Behavior):
 
 
         with _state_machine:
-            # x:150 y:132
+            # x:26 y:75
             OperatableStateMachine.add('cond',
                                         CheckConditionState(predicate=lambda x: x[1] != ''),
-                                        transitions={'true': 'cond2', 'false': 'say1'},
+                                        transitions={'true': 'cond2', 'false': 'say no object given'},
                                         autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
                                         remapping={'input_value': 'Action'})
 
-            # x:80 y:243
-            OperatableStateMachine.add('say1',
+            # x:243 y:76
+            OperatableStateMachine.add('say no object given',
                                         SaraSay(sentence="You didn't told me what to find.", emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:283 y:224
+            # x:33 y:289
             OperatableStateMachine.add('cond2',
                                         CheckConditionState(predicate=lambda x: x[2] != ''),
-                                        transitions={'true': 'say3', 'false': 'say2'},
+                                        transitions={'true': 'say find object in area', 'false': 'say find object'},
                                         autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
                                         remapping={'input_value': 'Action'})
 
-            # x:282 y:331
-            OperatableStateMachine.add('say2',
+            # x:241 y:290
+            OperatableStateMachine.add('say find object',
                                         SaraSayKey(Format=lambda x: "I'm now looking for the "+x[1], emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'sentence': 'Action'})
 
-            # x:398 y:375
-            OperatableStateMachine.add('say3',
+            # x:223 y:532
+            OperatableStateMachine.add('say find object in area',
                                         SaraSayKey(Format=lambda x: "I'm now looking for the "+x[1]+" in the "+x[2], emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off},

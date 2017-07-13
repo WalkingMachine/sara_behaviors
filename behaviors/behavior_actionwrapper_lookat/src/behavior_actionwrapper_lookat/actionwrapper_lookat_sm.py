@@ -48,7 +48,7 @@ class ActionWrapper_LookAtSM(Behavior):
 
 
     def create(self):
-        # x:30 y:322, x:130 y:322
+        # x:882 y:279, x:877 y:395
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
         _state_machine.userdata.Action = ["LookAt", "you"]
 
@@ -59,21 +59,21 @@ class ActionWrapper_LookAtSM(Behavior):
 
 
         with _state_machine:
-            # x:69 y:83
+            # x:41 y:55
             OperatableStateMachine.add('cond',
                                         CheckConditionState(predicate=lambda x: x[1] != ''),
-                                        transitions={'true': 'say2', 'false': 'say'},
+                                        transitions={'true': 'say look at thing', 'false': 'say look at you'},
                                         autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
                                         remapping={'input_value': 'Action'})
 
-            # x:56 y:206
-            OperatableStateMachine.add('say',
-                                        SaraSay(sentence="You didn't told me where to look at.", emotion=1),
+            # x:48 y:416
+            OperatableStateMachine.add('say look at you',
+                                        SaraSay(sentence="I'm looking at you", emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:169 y:190
-            OperatableStateMachine.add('say2',
+            # x:105 y:192
+            OperatableStateMachine.add('say look at thing',
                                         SaraSayKey(Format=lambda x: "I'm looking at "+x[1], emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off},

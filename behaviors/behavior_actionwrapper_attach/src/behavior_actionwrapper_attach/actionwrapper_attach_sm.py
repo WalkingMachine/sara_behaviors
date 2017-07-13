@@ -11,6 +11,7 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_say_key import SaraSayKey
+from flexbe_states.wait_state import WaitState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -42,13 +43,13 @@ class ActionWrapper_AttachSM(Behavior):
 
         # Behavior comments:
 
-        # O 288 67 
+        # O 556 21 
         # Attach|n1- object|n2- where to attach it
 
 
 
     def create(self):
-        # x:131 y:510, x:277 y:512
+        # x:905 y:379, x:639 y:385
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
         _state_machine.userdata.Action = ["Atach",'tail','dunky']
 
@@ -57,40 +58,57 @@ class ActionWrapper_AttachSM(Behavior):
         
         # [/MANUAL_CREATE]
 
+        # x:30 y:322, x:130 y:322
+        _sm_attach_0 = OperatableStateMachine(outcomes=['finished', 'failed'])
+
+        with _sm_attach_0:
+            # x:52 y:131
+            OperatableStateMachine.add('wait',
+                                        WaitState(wait_time=2),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off})
+
+
 
         with _state_machine:
-            # x:183 y:137
+            # x:51 y:46
             OperatableStateMachine.add('cond',
                                         CheckConditionState(predicate=lambda x: x[1] != ''),
-                                        transitions={'true': 'cond2', 'false': 'say1'},
+                                        transitions={'true': 'cond2', 'false': 'say no goal given'},
                                         autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
                                         remapping={'input_value': 'Action'})
 
-            # x:141 y:307
-            OperatableStateMachine.add('say1',
+            # x:245 y:84
+            OperatableStateMachine.add('say no goal given',
                                         SaraSay(sentence="You didn't told me what to attach", emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:327 y:227
+            # x:44 y:305
             OperatableStateMachine.add('cond2',
                                         CheckConditionState(predicate=lambda x: x[2] != ''),
-                                        transitions={'true': 'say3', 'false': 'say2'},
+                                        transitions={'true': 'say attach to thing', 'false': 'say no connector given'},
                                         autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
                                         remapping={'input_value': 'Action'})
 
-            # x:297 y:343
-            OperatableStateMachine.add('say2',
+            # x:48 y:528
+            OperatableStateMachine.add('say no connector given',
                                         SaraSay(sentence="You didn't told me where to attach it", emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:439 y:387
-            OperatableStateMachine.add('say3',
+            # x:247 y:309
+            OperatableStateMachine.add('say attach to thing',
                                         SaraSayKey(Format=lambda x: "I'm going to attach that "+x[1]+" to that "+x[2], emotion=1),
-                                        transitions={'done': 'finished'},
+                                        transitions={'done': 'Attach'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'sentence': 'Action'})
+
+            # x:462 y:297
+            OperatableStateMachine.add('Attach',
+                                        _sm_attach_0,
+                                        transitions={'finished': 'finished', 'failed': 'failed'},
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 
         return _state_machine

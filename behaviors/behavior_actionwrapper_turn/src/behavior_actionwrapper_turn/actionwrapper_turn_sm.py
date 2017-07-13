@@ -9,6 +9,8 @@
 import roslib; roslib.load_manifest('behavior_actionwrapper_turn')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.sara_say_key import SaraSayKey
+from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.sara_say import SaraSay
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -46,7 +48,7 @@ class ActionWrapper_TurnSM(Behavior):
 
 
     def create(self):
-        # x:30 y:322, x:130 y:322
+        # x:892 y:301, x:888 y:436
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
         _state_machine.userdata.Action = ["Turn","Right"]
 
@@ -57,8 +59,21 @@ class ActionWrapper_TurnSM(Behavior):
 
 
         with _state_machine:
-            # x:61 y:158
-            OperatableStateMachine.add('say1',
+            # x:42 y:47
+            OperatableStateMachine.add('cond',
+                                        CheckConditionState(predicate=lambda x: x[1] != ''),
+                                        transitions={'true': 'say turn', 'false': 'say no direction given'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'Action'})
+
+            # x:59 y:355
+            OperatableStateMachine.add('say no direction given',
+                                        SaraSay(sentence="You didn't told me witch direction to turn", emotion=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:112 y:159
+            OperatableStateMachine.add('say turn',
                                         SaraSayKey(Format=lambda x: "I gonna turn "+x[1], emotion=1),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off},
