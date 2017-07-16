@@ -7,7 +7,7 @@ from flexbe_core import EventState, Logger
 
 class Wonderland_Request(EventState):
 	'''
-	MoveArm receive a ROS pose as input and launch a ROS service with the same pose
+	Send requests to Wonderland server
 	
 	># url      string  url to call
 	<= response string  Finish job.
@@ -26,8 +26,9 @@ class Wonderland_Request(EventState):
 		# This method is called periodically while the state is active.
 		# Main purpose is to check state conditions and trigger a corresponding outcome.
 		# If no outcome is returned, the state will stay active.
+		url = "http://192.168.0.46:8000/api/" + userdata.url
 		try:
-			response = requests.get(userdata.url, headers=self._header)
+			response = requests.get(url, headers=self._header)
 		except requests.exceptions.RequestException as e:
 			print e
 			return 'error'
