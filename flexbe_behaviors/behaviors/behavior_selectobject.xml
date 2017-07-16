@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="SelectObject">
+
+	<executable package_path="behavior_selectobject.selectobject_sm" class="SelectObjectSM" />
+	<tagstring>ObjectRecognition;ORK;Vision</tagstring>
+	<author>Samuel Otis</author>
+	<date>Sat Jul 08 2017</date>
+	<description>
+		This behavior runs ork for recognition and publishes the pose of a requested object
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
