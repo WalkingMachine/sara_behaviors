@@ -10,7 +10,7 @@ class MoveArm(EventState):
     '''
     MoveArm receive a ROS pose as input and launch a ROS service with the same pose
 
-    ># pose     Pose2D      Target waypoint for navigation.
+    ># pose     Pose      Target waypoint for navigation.
 
     <= done     Finish job.
     <= failed   Job as failed.
@@ -30,7 +30,10 @@ class MoveArm(EventState):
 
         try:
             move_arm = rospy.ServiceProxy('move_arm', move)
-            if not move_arm(move_group="RightArm", pose=userdata.pose).success:
+            resp = move_arm(move_group="RightArm", pose=userdata.pose)
+            Logger.loginfo('service called')
+
+            if not resp.success:
                 Logger.logwarn("ERROR while calling service")
                 return 'failed'
         except rospy.ServiceException as e:

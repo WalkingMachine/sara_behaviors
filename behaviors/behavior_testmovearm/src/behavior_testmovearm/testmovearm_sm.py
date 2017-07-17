@@ -49,7 +49,7 @@ class TestMoveArmSM(Behavior):
 
 
     def create(self):
-        # x:872 y:482, x:348 y:332
+        # x:864 y:310, x:378 y:320
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
         _state_machine.userdata.actionName = "MoveArm"
 

@@ -4,7 +4,7 @@
   <description>
      flexbe_behaviors references all implemented behaviors.
   </description>
-  <maintainer email="todo@todo.com">TODO</maintainer>
+  <maintainer email="philippe117@live.fr">Philippe La Madeleine</maintainer>
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
@@ -27,5 +27,20 @@
   <run_depend>behavior_test_move_arm</run_depend>
   <run_depend>behavior_testmovearm</run_depend>
   <run_depend>behavior_selectobject</run_depend>
+  <run_depend>behavior_test_gripper</run_depend>
+  <run_depend>behavior_test_lu4r</run_depend>
+  <run_depend>behavior_sara_command_manager</run_depend>
+  <run_depend>behavior_actionwrapper_move</run_depend>
+  <run_depend>behavior_actionwrapper_movearm</run_depend>
+  <run_depend>behavior_actionwrapper_pick</run_depend>
+  <run_depend>behavior_actionwrapper_bring</run_depend>
+  <run_depend>behavior_actionwrapper_follow</run_depend>
+  <run_depend>behavior_actionwrapper_attach</run_depend>
+  <run_depend>behavior_actionwrapper_lookat</run_depend>
+  <run_depend>behavior_actionwrapper_find</run_depend>
+  <run_depend>behavior_actionwrapper_place</run_depend>
+  <run_depend>behavior_actionwrapper_give</run_depend>
+  <run_depend>behavior_actionwrapper_turn</run_depend>
+
 
 </package>

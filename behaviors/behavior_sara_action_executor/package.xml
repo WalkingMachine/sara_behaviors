@@ -2,9 +2,9 @@
   <name>behavior_sara_action_executor</name>
   <version>1.0.0</version>
   <description>
-     Execute les actions listé par le command interprettor
+     Execute les actions liste par le command interprettor
   </description>
-  <maintainer email="todo@todo.com">Philippe La Madeleine</maintainer>
+  <maintainer email="philippe117@live.fr">Philippe La Madeleine</maintainer>
   <license>BSD</license>
 
   <url>http://ros.org/wiki/behavior_sara_action_executor</url>

@@ -1,0 +1,23 @@
+<package>
+  <name>behavior_testbooltopic</name>
+  <version>1.0.0</version>
+  <description>
+     Test a Boolean topic.
+  </description>
+  <maintainer email="philippe117@live.fr">Philippe La Madeleine</maintainer>
+  <license>BSD</license>
+
+  <url>http://ros.org/wiki/behavior_testbooltopic</url>
+  <author>Philippe La Madeleine</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>rospy</run_depend>
+  <run_depend>flexbe_core</run_depend>
+  <run_depend>flexbe_states</run_depend>
+  <run_depend>sara_flexbe_states</run_depend>
+  <run_depend>flexbe_utility_states</run_depend>
+  <run_depend>flexbe_manipulation_states</run_depend>
+  <run_depend>flexbe_navigation_states</run_depend>
+
+</package>
