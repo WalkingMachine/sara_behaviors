@@ -2,9 +2,9 @@
 import rospy
 from std_msgs.msg import String
 from sensor_msgs.msg import PointCloud2, Image
-from geometry_msgs.msg import PoseWithCovarianceStamped
+from geometry_msgs.msg import PoseWithCovarianceStamped, Pose
 from object_recognition_msgs.msg import *
-from wm_object_selection.srv import *
+from wm_objects_selector.srv import *
 from object_recognition_msgs.msg import *
 from flexbe_core import EventState, Logger
 
@@ -25,9 +25,9 @@ class ObjectSelect(EventState):
 
     def __init__(self):
         # See example_state.py for basic explanations.
-        super(ObjectSelect, self).__init__(outcomes=['done', 'failed', 'looping'], input_keys=['objects_array',
-                                                                                    'object_name',
-                                                                                    'image'], output_keys=['pose'])
+        super(ObjectSelect, self).__init__(outcomes=['done', 'failed', 'looping'],
+                                           input_keys=['objects_array', 'object_name', 'image'],
+                                           output_keys=['pose', 'workspace'])
 
     def execute(self, userdata):
         # This method is called periodically while the state is active.
@@ -56,7 +56,10 @@ class ObjectSelect(EventState):
                 'Service found the requested object at\n\r ' +
                 str(slct_obj.selected_object_pose))
             pub_object_pose.publish(slct_obj.selected_object_pose)
+            userdata.pose = Pose()
             userdata.pose = slct_obj.selected_object_pose
+            userdata.workspace = str(slct_obj.workspace)
+            Logger.loginfo(str(slct_obj.selected_object_pose)+'\r\n'+str(slct_obj.workspace))
             return 'done'  # One of the outcomes declared above.
 
         except rospy.ServiceException as e:

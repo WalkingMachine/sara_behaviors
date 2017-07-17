@@ -46,7 +46,7 @@ class SelectObjectSM(Behavior):
 
 
     def create(self):
-        # x:487 y:174, x:485 y:224, x:480 y:304
+        # x:742 y:317, x:472 y:176, x:466 y:406
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'timeout'])
         _state_machine.userdata.Name = "Redbull"
 
@@ -56,7 +56,7 @@ class SelectObjectSM(Behavior):
         # [/MANUAL_CREATE]
 
         # x:476 y:158, x:666 y:50
-        _sm_group_0 = OperatableStateMachine(outcomes=['failed', 'done'], input_keys=['Name'], output_keys=['Pose'])
+        _sm_group_0 = OperatableStateMachine(outcomes=['failed', 'done'], input_keys=['Name'], output_keys=['Pose', 'workspace'])
 
         with _sm_group_0:
             # x:32 y:40
@@ -78,11 +78,11 @@ class SelectObjectSM(Behavior):
                                         ObjectSelect(),
                                         transitions={'done': 'done', 'failed': 'failed', 'looping': 'ObjectRecognize'},
                                         autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off, 'looping': Autonomy.Off},
-                                        remapping={'objects_array': 'Objects', 'object_name': 'Name', 'image': 'Image', 'pose': 'Pose'})
+                                        remapping={'objects_array': 'Objects', 'object_name': 'Name', 'image': 'Image', 'pose': 'Pose', 'workspace': 'workspace'})
 
 
         # x:25 y:353, x:12 y:448, x:230 y:382, x:7 y:487, x:7 y:528, x:530 y:342
-        _sm_group_2_1 = ConcurrencyContainer(outcomes=['done', 'failed', 'timeout'], input_keys=['Name', 'Image'], output_keys=['Pose'], conditions=[
+        _sm_group_2_1 = ConcurrencyContainer(outcomes=['done', 'failed', 'timeout'], input_keys=['Name', 'Image'], output_keys=['Pose', 'workspace'], conditions=[
                                         ('timeout', [('Timeout', 'done')]),
                                         ('failed', [('Group', 'failed')]),
                                         ('done', [('Group', 'done')])
@@ -94,7 +94,7 @@ class SelectObjectSM(Behavior):
                                         _sm_group_0,
                                         transitions={'failed': 'failed', 'done': 'done'},
                                         autonomy={'failed': Autonomy.Inherit, 'done': Autonomy.Inherit},
-                                        remapping={'Name': 'Name', 'Pose': 'Pose'})
+                                        remapping={'Name': 'Name', 'Pose': 'Pose', 'workspace': 'workspace'})
 
             # x:209 y:170
             OperatableStateMachine.add('Timeout',
@@ -123,7 +123,7 @@ class SelectObjectSM(Behavior):
                                         _sm_group_2_1,
                                         transitions={'done': 'finished', 'failed': 'failed', 'timeout': 'timeout'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'timeout': Autonomy.Inherit},
-                                        remapping={'Name': 'Name', 'Image': 'Image', 'Pose': 'Pose'})
+                                        remapping={'Name': 'Name', 'Image': 'Image', 'Pose': 'pose', 'workspace': 'workspace'})
 
 
         return _state_machine
