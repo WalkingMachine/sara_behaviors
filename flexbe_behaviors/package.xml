@@ -26,6 +26,7 @@
   <run_depend>behavior_actionmovearm</run_depend>
   <run_depend>behavior_test_move_arm</run_depend>
   <run_depend>behavior_testmovearm</run_depend>
+  <run_depend>behavior_selectobject</run_depend>
   <run_depend>behavior_test_gripper</run_depend>
   <run_depend>behavior_test_lu4r</run_depend>
   <run_depend>behavior_sara_command_manager</run_depend>
@@ -40,5 +41,6 @@
   <run_depend>behavior_actionwrapper_place</run_depend>
   <run_depend>behavior_actionwrapper_give</run_depend>
   <run_depend>behavior_actionwrapper_turn</run_depend>
+
 
 </package>
