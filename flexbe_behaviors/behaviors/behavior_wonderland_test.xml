@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Wonderland_Test">
+
+	<executable package_path="behavior_wonderland_test.wonderland_test_sm" class="Wonderland_TestSM" />
+	<tagstring>Wonderland_Test</tagstring>
+	<author>Wonderland_Test</author>
+	<date>Sun Jul 16 2017</date>
+	<description>
+		Wonderland_Test
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

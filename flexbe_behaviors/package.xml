@@ -42,5 +42,6 @@
   <run_depend>behavior_actionwrapper_turn</run_depend>
   <run_depend>behavior_stop</run_depend>
   <run_depend>behavior_actionwrapper_stop</run_depend>
+  <run_depend>behavior_wonderland_test</run_depend>
 
 </package>
