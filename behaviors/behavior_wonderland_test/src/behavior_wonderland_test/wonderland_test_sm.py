@@ -49,7 +49,7 @@ class Wonderland_TestSM(Behavior):
 	def create(self):
 		# x:1109 y:95, x:785 y:530
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['name'])
-		_state_machine.userdata.name = "Paul"
+		_state_machine.userdata.name = "Table"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -74,15 +74,15 @@ class Wonderland_TestSM(Behavior):
 			# x:421 y:36
 			OperatableStateMachine.add('Wonderland_Entity_Exist',
 										Wonderland_Entity_Exist(),
-										transitions={'ok': 'Wonderland_Read_Entity_Position', 'empty': 'Empty Log'},
-										autonomy={'ok': Autonomy.Off, 'empty': Autonomy.Off},
-										remapping={'json_text': 'json_text'})
+										transitions={'one': 'Wonderland_Read_Entity_Position', 'multiple': 'Wonderland_Read_Entity_Position', 'empty': 'Empty Log'},
+										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'empty': Autonomy.Off},
+										remapping={'json_text': 'json_text', 'number': 'number'})
 
 			# x:685 y:29
 			OperatableStateMachine.add('Wonderland_Read_Entity_Position',
 										Wonderland_Read_Entity_Position(),
-										transitions={'done': 'finished', 'zero': 'Log', 'error': 'failed'},
-										autonomy={'done': Autonomy.Off, 'zero': Autonomy.Off, 'error': Autonomy.Off},
+										transitions={'done': 'finished', 'empty': 'Log', 'error': 'failed'},
+										autonomy={'done': Autonomy.Off, 'empty': Autonomy.Off, 'error': Autonomy.Off},
 										remapping={'json_text': 'json_text', 'x_pos': 'x_pos', 'y_pos': 'y_pos', 'z_pos': 'z_pos'})
 
 			# x:958 y:245
