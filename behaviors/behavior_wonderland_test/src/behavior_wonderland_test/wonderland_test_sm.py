@@ -8,9 +8,10 @@
 
 import roslib; roslib.load_manifest('behavior_wonderland_test')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.Wonderland_Request import Wonderland_Request
+from behavior_wonderland_get_entity.wonderland_get_entity_sm import Wonderland_Get_EntitySM
 from flexbe_states.log_state import LogState
-from sara_flexbe_states.sara_say_key import SaraSayKey
+from sara_flexbe_states.Wonderland_Entity_Exist import Wonderland_Entity_Exist
+from sara_flexbe_states.Wonderland_Read_Entity_Position import Wonderland_Read_Entity_Position
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -18,12 +19,12 @@ from sara_flexbe_states.sara_say_key import SaraSayKey
 
 
 '''
-Created on Sun Jul 16 2017
-@author: Wonderland_Test
+Created on Mon Jul 17 2017
+@author: Lucas
 '''
 class Wonderland_TestSM(Behavior):
 	'''
-	Wonderland_Test
+	Test state for wonderland
 	'''
 
 
@@ -34,6 +35,7 @@ class Wonderland_TestSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
+		self.add_behavior(Wonderland_Get_EntitySM, 'Wonderland_Get_Entity')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -45,9 +47,9 @@ class Wonderland_TestSM(Behavior):
 
 
 	def create(self):
-		# x:30 y:365, x:130 y:365
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
-		_state_machine.userdata.url = "entity"
+		# x:1109 y:95, x:785 y:530
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['name'])
+		_state_machine.userdata.name = "Paul"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -56,25 +58,38 @@ class Wonderland_TestSM(Behavior):
 
 
 		with _state_machine:
-			# x:315 y:123
-			OperatableStateMachine.add('Wonderland_Request',
-										Wonderland_Request(),
-										transitions={'done': 'say', 'error': 'Log'},
-										autonomy={'done': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'url': 'url', 'response': 'response'})
+			# x:101 y:112
+			OperatableStateMachine.add('Wonderland_Get_Entity',
+										self.use_behavior(Wonderland_Get_EntitySM, 'Wonderland_Get_Entity'),
+										transitions={'done': 'Wonderland_Entity_Exist', 'failed': 'failed'},
+										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'name': 'name', 'entity': 'json_text'})
 
-			# x:568 y:255
-			OperatableStateMachine.add('Log',
-										LogState(text="Wonderland Request Failed.", severity=Logger.REPORT_HINT),
+			# x:561 y:236
+			OperatableStateMachine.add('Empty Log',
+										LogState(text="There is no entity !", severity=Logger.REPORT_HINT),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:25 y:192
-			OperatableStateMachine.add('say',
-										SaraSayKey(Format=lambda x: x, emotion=1),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'response'})
+			# x:421 y:36
+			OperatableStateMachine.add('Wonderland_Entity_Exist',
+										Wonderland_Entity_Exist(),
+										transitions={'ok': 'Wonderland_Read_Entity_Position', 'empty': 'Empty Log'},
+										autonomy={'ok': Autonomy.Off, 'empty': Autonomy.Off},
+										remapping={'json_text': 'json_text'})
+
+			# x:685 y:29
+			OperatableStateMachine.add('Wonderland_Read_Entity_Position',
+										Wonderland_Read_Entity_Position(),
+										transitions={'done': 'finished', 'zero': 'Log', 'error': 'failed'},
+										autonomy={'done': Autonomy.Off, 'zero': Autonomy.Off, 'error': Autonomy.Off},
+										remapping={'json_text': 'json_text', 'x_pos': 'x_pos', 'y_pos': 'y_pos', 'z_pos': 'z_pos'})
+
+			# x:958 y:245
+			OperatableStateMachine.add('Log',
+										LogState(text="Empty 2", severity=Logger.REPORT_HINT),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

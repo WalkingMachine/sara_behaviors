@@ -3,15 +3,16 @@
 <behavior name="Wonderland_Test">
 
 	<executable package_path="behavior_wonderland_test.wonderland_test_sm" class="Wonderland_TestSM" />
-	<tagstring>Wonderland_Test</tagstring>
-	<author>Wonderland_Test</author>
-	<date>Sun Jul 16 2017</date>
+	<tagstring>fsd</tagstring>
+	<author>Lucas</author>
+	<date>Mon Jul 17 2017</date>
 	<description>
-		Wonderland_Test
+		Test state for wonderland
 	</description>
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Wonderland_Get_Entity" />
 
 	<!-- Available Parameters -->
 

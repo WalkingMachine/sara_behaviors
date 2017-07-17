@@ -2,13 +2,13 @@
   <name>behavior_wonderland_test</name>
   <version>1.0.0</version>
   <description>
-     Wonderland_Test
+     Test state for wonderland
   </description>
-  <maintainer email="todo@todo.com">Wonderland_Test</maintainer>
+  <maintainer email="todo@todo.com">Lucas</maintainer>
   <license>BSD</license>
 
   <url>http://ros.org/wiki/behavior_wonderland_test</url>
-  <author>Wonderland_Test</author>
+  <author>Lucas</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
@@ -16,8 +16,8 @@
   <run_depend>flexbe_core</run_depend>
   <run_depend>flexbe_states</run_depend>
   <run_depend>sara_flexbe_states</run_depend>
-  <run_depend>flexbe_navigation_states</run_depend>
   <run_depend>flexbe_manipulation_states</run_depend>
+  <run_depend>flexbe_navigation_states</run_depend>
   <run_depend>flexbe_utility_states</run_depend>
 
 </package>
