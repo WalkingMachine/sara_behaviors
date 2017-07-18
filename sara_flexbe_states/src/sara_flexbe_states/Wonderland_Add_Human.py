@@ -50,19 +50,19 @@ class Wonderland_Add_Human(EventState):
 			print e
 			return 'error'
 		
-		#read response
+		# read response
 		data_response = json.loads(response.content)
 		
-		#have a response
-		if not data_response:
+		# have a response
+		if not data_response["entity"]:
 			return 'error'
 		
-		#have an id to read
-		if 'id' not in data_response:
+		# have an id to read
+		if 'id' not in data_response["entity"]:
 			# continue to Error
 			return 'error'
 		
-		#return the ID
-		userdata.id = data_response['id']
+		# return the ID
+		userdata.id = data_response["entity"]['id']
 		
 		return 'done'
