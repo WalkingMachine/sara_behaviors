@@ -10,7 +10,7 @@ class Wonderland_Request(EventState):
 	Send requests to Wonderland server
 	
 	># url      string  command to read
-	#< response string  Finish job.
+	#> response string  Finish job.
 	
 	<= done     data readed correctly
 	<= error    error while data is reading

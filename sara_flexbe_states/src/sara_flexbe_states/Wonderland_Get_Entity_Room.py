@@ -13,16 +13,16 @@ class Wonderland_Get_Entity_Room(EventState):
 	># json_text    string  command to read
 	># input_value      object	Input to the index function.
 
-	#< id           int     id of the room
-	#< name         string  name of the room
-	#< x1           int     position of the room
-	#< x2           int     position of the room
-	#< x3           int     position of the room
-	#< x4           int     position of the room
-	#< y1           int     position of the room
-	#< y2           int     position of the room
-	#< y3           int     position of the room
-	#< y4           int     position of the room
+	#> id           int     id of the room
+	#> name         string  name of the room
+	#> x1           int     position of the room
+	#> x2           int     position of the room
+	#> x3           int     position of the room
+	#> x4           int     position of the room
+	#> y1           int     position of the room
+	#> y2           int     position of the room
+	#> y3           int     position of the room
+	#> y4           int     position of the room
 
 	<= done         return when at least one entity exist
 	<= no_room        return when no entity have the selected name

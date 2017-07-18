@@ -10,12 +10,12 @@ class Wonderland_Read_Entity(EventState):
 	-- index_function   function	index of the
 	># input_value      object	Input to the index function.
 	># json_text        string  command to read
-	#< id               int     id on the BDD of the object
-	#< name             string  name of the object
-	#< time             string  time of the last update
-	#< x_pos            int     x position of the entity
-	#< y_pos            int     y position of the entity
-	#< z_pos            int     z position of the entity
+	#> id               int     id on the BDD of the object
+	#> name             string  name of the object
+	#> time             string  time of the last update
+	#> x_pos            int     x position of the entity
+	#> y_pos            int     y position of the entity
+	#> z_pos            int     z position of the entity
 	<= done             return when at least one entity exist
 	<= empty            return when no entity have the selected name
 	<= error            return when error reading data

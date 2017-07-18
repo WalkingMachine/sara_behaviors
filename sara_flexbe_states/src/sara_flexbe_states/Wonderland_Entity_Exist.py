@@ -10,7 +10,7 @@ class Wonderland_Entity_Exist(EventState):
 	Read the 3D position of an entity in a json string
 
 	># json_text    string  command to read
-	#< number       int     number of results
+	#> number       int     number of results
 	
 	<= ok           return when at least one entity exist
 	<= empty        return when no entity have the selected name
