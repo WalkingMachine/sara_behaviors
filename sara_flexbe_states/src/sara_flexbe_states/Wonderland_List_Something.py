@@ -5,23 +5,23 @@ from flexbe_core import EventState, Logger
 import json
 
 
-class Wonderland_Objects_In_A_Room(EventState):
+class Wonderland_List_Something(EventState):
 	'''
-	Return all objects in a room
+	Return all things IDs and Names
 	
 	># json_text        string  json to read
 	
-	#> names            int[]   array containing all names of objects in the room
-	#> ids              id[]    array containing all IDs of objects in the room
+	#> names            int[]   array containing all names
+	#> ids              id[]    array containing all IDs
 	
-	<= done             return when the room contain at least one object
-	<= empty            return when the room is empty
+	<= done             return when the list contain at least one object
+	<= empty            return when the list is empty
 	<= error            return when error reading data
 	'''
 	
 	def __init__(self):
 		# See example_state.py for basic explanations.
-		super(Wonderland_Objects_In_A_Room, self).__init__(outcomes=['done', 'empty', 'error'],
+		super(Wonderland_List_Something, self).__init__(outcomes=['done', 'empty', 'error'],
 		                                             input_keys=['json_text'],
 		                                             output_keys=['ids', 'names'])
 	
