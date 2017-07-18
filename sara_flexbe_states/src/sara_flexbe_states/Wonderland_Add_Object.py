@@ -12,7 +12,7 @@ class Wonderland_Add_Object(EventState):
 	For the room, enter only ID or Name, not both.
 	Return the ID of the added human.
 
-	># name             string  name of the human
+	># name             string  name of the object
 	># roomID           string  ID on the BDD or name of the room
 	># x_pos            int     Position on X
 	># y_pos            int     Position on Y
