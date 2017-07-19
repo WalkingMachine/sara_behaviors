@@ -108,7 +108,7 @@ class LU4R_Parser(EventState):
                     '.*[Bb]ring.*',
                     '.*([Tt]heme).*',
                     '.*([Aa]rea)|([Ss]ource).*',
-                    '.*([Bb]eneficiary).*'])
+                    '.*([Bb]eneficiary)|([Gg]oal).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Follow',

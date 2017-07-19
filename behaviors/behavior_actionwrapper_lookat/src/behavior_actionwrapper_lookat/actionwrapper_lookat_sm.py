@@ -22,68 +22,68 @@ Created on Tue Jul 11 2017
 @author: Philippe La Madeleine
 '''
 class ActionWrapper_LookAtSM(Behavior):
-    '''
-    action wrapper pour look_at
-    '''
+	'''
+	action wrapper pour look_at
+	'''
 
 
-    def __init__(self):
-        super(ActionWrapper_LookAtSM, self).__init__()
-        self.name = 'ActionWrapper_LookAt'
+	def __init__(self):
+		super(ActionWrapper_LookAtSM, self).__init__()
+		self.name = 'ActionWrapper_LookAt'
 
-        # parameters of this behavior
+		# parameters of this behavior
 
-        # references to used behaviors
+		# references to used behaviors
 
-        # Additional initialization code can be added inside the following tags
-        # [MANUAL_INIT]
+		# Additional initialization code can be added inside the following tags
+		# [MANUAL_INIT]
         
         # [/MANUAL_INIT]
 
-        # Behavior comments:
+		# Behavior comments:
 
-        # O 288 67 
-        # LookAt|n1- where to look at
+		# O 288 67 
+		# LookAt|n1- where to look at
 
 
 
-    def create(self):
-        # x:882 y:279, x:877 y:395
-        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
-        _state_machine.userdata.Action = ["LookAt", "you"]
+	def create(self):
+		# x:882 y:279, x:877 y:395
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
+		_state_machine.userdata.Action = ["LookAt", "you"]
 
-        # Additional creation code can be added inside the following tags
-        # [MANUAL_CREATE]
+		# Additional creation code can be added inside the following tags
+		# [MANUAL_CREATE]
         
         # [/MANUAL_CREATE]
 
 
-        with _state_machine:
-            # x:41 y:55
-            OperatableStateMachine.add('cond',
-                                        CheckConditionState(predicate=lambda x: x[1] != ''),
-                                        transitions={'true': 'say look at thing', 'false': 'say look at you'},
-                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-                                        remapping={'input_value': 'Action'})
+		with _state_machine:
+			# x:41 y:55
+			OperatableStateMachine.add('cond',
+										CheckConditionState(predicate=lambda x: x[1] != ''),
+										transitions={'true': 'say look at thing', 'false': 'say look at you'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'Action'})
 
-            # x:48 y:416
-            OperatableStateMachine.add('say look at you',
-                                        SaraSay(sentence="I'm looking at you", emotion=1),
-                                        transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.Off})
+			# x:48 y:416
+			OperatableStateMachine.add('say look at you',
+										SaraSay(sentence="I'm looking at you", emotion=1),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
 
-            # x:105 y:192
-            OperatableStateMachine.add('say look at thing',
-                                        SaraSayKey(Format=lambda x: "I'm looking at "+x[1], emotion=1),
-                                        transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'sentence': 'Action'})
-
-
-        return _state_machine
+			# x:105 y:192
+			OperatableStateMachine.add('say look at thing',
+										SaraSayKey(Format=lambda x: "I'm looking at "+x[1], emotion=1),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'Action'})
 
 
-    # Private functions can be added inside the following tags
-    # [MANUAL_FUNC]
+		return _state_machine
+
+
+	# Private functions can be added inside the following tags
+	# [MANUAL_FUNC]
     
     # [/MANUAL_FUNC]
