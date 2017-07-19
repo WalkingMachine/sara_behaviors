@@ -10,7 +10,7 @@ class Wonderland_Add_Object(EventState):
 	'''
 	Add an object to Wonderland.
 	For the room, enter an integer ID or a string Name.
-	Return the ID of the added/updated human.
+	Return the ID of the added/updated object.
 
 	#> id       int         enter the id for edit or Null for add
 	># name     string      name of the object
@@ -90,5 +90,4 @@ class Wonderland_Add_Object(EventState):
 		
 		# return the ID
 		userdata.id = data_response["entity"]['id']
-		print data_response["entity"]['id']
 		return 'done'
