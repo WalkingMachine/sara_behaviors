@@ -8,9 +8,8 @@ from flexbe_core import EventState, Logger
 
 class Wonderland_Add_Room(EventState):
 	'''
-	Add an object to Wonderland.
-	For the room, enter only ID or Name, not both.
-	Return the ID of the added human.
+	Add a room to Wonderland.
+	Return the ID of the added room.
 
 	#> name         string  name of the room
 	#> x1           int     position of the room
