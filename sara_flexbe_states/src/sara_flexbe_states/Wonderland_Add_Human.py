@@ -53,7 +53,7 @@ class Wonderland_Add_Human(EventState):
 				print e
 				return 'error'
 		else:
-			dataPost = {'id': userdata.id}
+			dataPost = {'idHuman': userdata.id}
 			
 			if userdata.name is not None:
 				dataPost.update({'name': userdata.name})
@@ -80,7 +80,7 @@ class Wonderland_Add_Human(EventState):
 			
 			# try the request
 			try:
-				response = requests.patch("http://192.168.0.46:8000/api/object/", headers=self._header, data=dataPost)
+				response = requests.patch("http://192.168.0.46:8000/api/human/", headers=self._header, data=dataPost)
 			except requests.exceptions.RequestException as e:
 				print e
 				return 'error'
