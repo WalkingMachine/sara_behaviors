@@ -13,13 +13,12 @@ class Wonderland_Read_Entity(EventState):
 	#> id               int     id on the BDD of the object
 	#> name             string  name of the object
 	#> time             string  time of the last update
-	#> x_pos            int     x position of the entity
-	#> y_pos            int     y position of the entity
-	#> z_pos            int     z position of the entity
+	#> x_pos            float   x position of the entity
+	#> y_pos            float   y position of the entity
+	#> z_pos            float   z position of the entity
 	<= done             return when at least one entity exist
 	<= empty            return when no entity have the selected name
 	<= error            return when error reading data
-
 	'''
 	
 	def __init__(self, index_function):

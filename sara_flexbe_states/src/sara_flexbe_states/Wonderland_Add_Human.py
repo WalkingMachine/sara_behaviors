@@ -15,9 +15,9 @@ class Wonderland_Add_Human(EventState):
 	#> id               int     enter the id for edit or Null for add
 	># name             string  name of the human
 	># roomID           string  ID on the BDD or name of the room
-	># x_pos            int     Position on X
-	># y_pos            int     Position on Y
-	># z_pos            int     Position on Z
+	># x_pos            float   Position on X
+	># y_pos            float   Position on Y
+	># z_pos            float   Position on Z
 	># gender           string  Gender of the person
 	># is_operator      boolean Say if it is the operator
 

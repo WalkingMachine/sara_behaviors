@@ -15,19 +15,18 @@ class Wonderland_Get_Entity_Room(EventState):
 
 	#> id           int     id of the room
 	#> name         string  name of the room
-	#> x1           int     position of the room
-	#> x2           int     position of the room
-	#> x3           int     position of the room
-	#> x4           int     position of the room
-	#> y1           int     position of the room
-	#> y2           int     position of the room
-	#> y3           int     position of the room
-	#> y4           int     position of the room
+	#> x1           float   position of the room
+	#> x2           float   position of the room
+	#> x3           float   position of the room
+	#> x4           float   position of the room
+	#> y1           float   position of the room
+	#> y2           float   position of the room
+	#> y3           float   position of the room
+	#> y4           float   position of the room
 
 	<= done         return when at least one entity exist
 	<= no_room        return when no entity have the selected name
 	<= error        return when error reading data
-
 	'''
 	
 	def __init__(self, index_function):

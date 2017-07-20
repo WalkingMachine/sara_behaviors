@@ -9,14 +9,14 @@ class Wonderland_List_Something(EventState):
 	'''
 	Return all things IDs and Names
 	
-	># json_text        string  json to read
+	># json_text    string  json to read
 	
-	#> names            int[]   array containing all names
-	#> ids              id[]    array containing all IDs
+	#> names        float[] array containing all names
+	#> ids          int[]   array containing all IDs
 	
-	<= done             return when the list contain at least one object
-	<= empty            return when the list is empty
-	<= error            return when error reading data
+	<= done         return when the list contain at least one object
+	<= empty        return when the list is empty
+	<= error        return when error reading data
 	'''
 	
 	def __init__(self):
