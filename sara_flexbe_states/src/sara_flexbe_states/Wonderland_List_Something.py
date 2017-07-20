@@ -22,8 +22,8 @@ class Wonderland_List_Something(EventState):
 	def __init__(self):
 		# See example_state.py for basic explanations.
 		super(Wonderland_List_Something, self).__init__(outcomes=['done', 'empty', 'error'],
-		                                             input_keys=['json_text'],
-		                                             output_keys=['ids', 'names'])
+														input_keys=['json_text'],
+														output_keys=['ids', 'names'])
 	
 	def execute(self, userdata):
 		# parse parameter json data
@@ -47,13 +47,11 @@ class Wonderland_List_Something(EventState):
 				return 'error'
 			
 			# write return datas
-			names += [data['name']]
-			ids += [data['id']]
+			names.append(data['name'])
+			ids.append(data['id'])
 		
-		userdata.names=names
-		userdata.ids=ids
-		print str(names)[1:-1]
-		print str(ids)[1:-1]
+		userdata.names = names
+		userdata.ids = ids
 		
 		# continue to Done
 		return 'done'

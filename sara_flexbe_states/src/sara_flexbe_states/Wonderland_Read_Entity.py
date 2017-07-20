@@ -22,23 +22,22 @@ class Wonderland_Read_Entity(EventState):
 	'''
 	
 	def __init__(self, index_function):
-		# See example_state.py for basic explanations.
-		super(Wonderland_Read_Entity, self).__init__(outcomes=['done', 'empty', 'error'], input_keys=['json_text', 'input_value'],
-			output_keys=['id', 'name', 'time', 'x_pos', 'y_pos', 'z_pos'])
-		
+		super(Wonderland_Read_Entity, self).__init__(outcomes=['done', 'empty', 'error'],
+													input_keys=['json_text', 'input_value'],
+													output_keys=['id', 'name', 'time', 'x_pos', 'y_pos', 'z_pos'])
 		self._index_function = index_function
 		self._index = 0
 	
 	def execute(self, userdata):
-		#parse parameter json data
+		# parse parameter json data
 		data = json.loads(userdata.json_text)
 		
-		#read if there is data
+		# read if there is data
 		if not data[self._index]:
-			#continue to Zero
+			# continue to Zero
 			return 'empty'
 		
-		#try to read data
+		# try to read data
 		if 'id' not in data[self._index]:
 			# continue to Error
 			return 'error'
@@ -60,29 +59,22 @@ class Wonderland_Read_Entity(EventState):
 			return 'error'
 		
 		if 'y' not in data[self._index]:
-			#continue to Error
+			# continue to Error
 			return 'error'
 		
 		if 'z' not in data[self._index]:
-			#continue to Error
+			# continue to Error
 			return 'error'
 		
-		#write return datas
+		# write return datas
 		userdata.id = data[self._index]['id']
 		userdata.name = data[self._index]['name']
 		userdata.time = data[self._index]['time']
 		userdata.x_pos = data[self._index]['x']
 		userdata.y_pos = data[self._index]['y']
 		userdata.z_pos = data[self._index]['z']
-		
-		print data[self._index]['id']
-		print data[self._index]['name']
-		print data[self._index]['time']
-		print data[self._index]['x']
-		print data[self._index]['y']
-		print data[self._index]['z']
-		
-		#continue to Done
+
+		# continue to Done
 		return 'done'
 	
 	def on_enter(self, userdata):

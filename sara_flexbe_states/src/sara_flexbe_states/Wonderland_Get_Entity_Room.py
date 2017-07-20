@@ -100,17 +100,6 @@ class Wonderland_Get_Entity_Room(EventState):
 		userdata.y3 = data[self._index]['room']['y3']
 		userdata.y4 = data[self._index]['room']['y4']
 		
-		print data[self._index]['room']['id']
-		print data[self._index]['room']['room_name']
-		print data[self._index]['room']['x1']
-		print data[self._index]['room']['x2']
-		print data[self._index]['room']['x3']
-		print data[self._index]['room']['x4']
-		print data[self._index]['room']['y1']
-		print data[self._index]['room']['y2']
-		print data[self._index]['room']['y3']
-		print data[self._index]['room']['y4']
-		
 		# continue to Done
 		return 'done'
 	
