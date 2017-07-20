@@ -44,15 +44,19 @@ class Wonderland_Get_Entity_Room(EventState):
 		# read if there is data
 		if not data[self._index]:
 			# continue to Zero
-			return 'no_room'
+			return 'error'
 		
+		# read if there is data
+		if not data[self._index]['room']:
+			# continue to Zero
+			return 'no_room'
 		
 		# try to read data
 		if 'id' not in data[self._index]['room']:
 			# continue to Error
 			return 'error'
 
-		if 'room_name' not in data[self._index]['room']:
+		if 'name' not in data[self._index]['room']:
 			# continue to Error
 			return 'error'
 
@@ -90,7 +94,7 @@ class Wonderland_Get_Entity_Room(EventState):
 			
 		# write return datas
 		userdata.id = data[self._index]['room']['id']
-		userdata.name = data[self._index]['room']['room_name']
+		userdata.name = data[self._index]['room']['name']
 		userdata.x1 = data[self._index]['room']['x1']
 		userdata.x2 = data[self._index]['room']['x2']
 		userdata.x3 = data[self._index]['room']['x3']
