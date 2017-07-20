@@ -85,10 +85,10 @@ class Wonderland_Add_Object(EventState):
 			return 'error'
 		
 		# have an id to read
-		if 'id' not in data_response["entity"]:
+		if 'id' not in data_response['entity']:
 			# continue to Error
 			return 'error'
 		
 		# return the ID
-		userdata.id = data_response["entity"]['id']
+		userdata.id = data_response['entity']['id']
 		return 'done'
