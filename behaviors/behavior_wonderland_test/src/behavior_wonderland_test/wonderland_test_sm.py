@@ -10,8 +10,6 @@ import roslib; roslib.load_manifest('behavior_wonderland_test')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from behavior_wonderland_get_entity.wonderland_get_entity_sm import Wonderland_Get_EntitySM
 from flexbe_states.log_state import LogState
-from sara_flexbe_states.Wonderland_Entity_Exist import Wonderland_Entity_Exist
-from sara_flexbe_states.Wonderland_Read_Entity_Position import Wonderland_Read_Entity_Position
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -47,9 +45,10 @@ class Wonderland_TestSM(Behavior):
 
 
 	def create(self):
-		# x:1109 y:95, x:785 y:530
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['name'])
+		# x:458 y:16, x:299 y:325
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['name', 'index'])
 		_state_machine.userdata.name = "Table"
+		_state_machine.userdata.index = 1
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -58,34 +57,20 @@ class Wonderland_TestSM(Behavior):
 
 
 		with _state_machine:
-			# x:101 y:112
+			# x:71 y:23
 			OperatableStateMachine.add('Wonderland_Get_Entity',
 										self.use_behavior(Wonderland_Get_EntitySM, 'Wonderland_Get_Entity'),
-										transitions={'done': 'Wonderland_Entity_Exist', 'failed': 'failed'},
+										transitions={'done': 'finished', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'name': 'name', 'entity': 'json_text'})
 
-			# x:561 y:236
+			# x:311 y:107
 			OperatableStateMachine.add('Empty Log',
 										LogState(text="There is no entity !", severity=Logger.REPORT_HINT),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:421 y:36
-			OperatableStateMachine.add('Wonderland_Entity_Exist',
-										Wonderland_Entity_Exist(),
-										transitions={'one': 'Wonderland_Read_Entity_Position', 'multiple': 'Wonderland_Read_Entity_Position', 'empty': 'Empty Log'},
-										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'empty': Autonomy.Off},
-										remapping={'json_text': 'json_text', 'number': 'number'})
-
-			# x:685 y:29
-			OperatableStateMachine.add('Wonderland_Read_Entity_Position',
-										Wonderland_Read_Entity_Position(),
-										transitions={'done': 'finished', 'empty': 'Log', 'error': 'failed'},
-										autonomy={'done': Autonomy.Off, 'empty': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'json_text': 'json_text', 'x_pos': 'x_pos', 'y_pos': 'y_pos', 'z_pos': 'z_pos'})
-
-			# x:958 y:245
+			# x:499 y:100
 			OperatableStateMachine.add('Log',
 										LogState(text="Empty 2", severity=Logger.REPORT_HINT),
 										transitions={'done': 'failed'},
