@@ -6,7 +6,7 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_wonderland_test')
+import roslib; roslib.load_manifest('behavior_wonderland_entity_in_room')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from behavior_wonderland_get_entity.wonderland_get_entity_sm import Wonderland_Get_EntitySM
 from flexbe_states.log_state import LogState
@@ -18,17 +18,17 @@ from flexbe_states.log_state import LogState
 
 '''
 Created on Mon Jul 17 2017
-@author: Lucas
+@author: Lucas Maurice
 '''
-class Wonderland_TestSM(Behavior):
+class Wonderland_Entity_In_RoomSM(Behavior):
 	'''
-	Test state for wonderland
+	List all entities in a specified room.
 	'''
 
 
 	def __init__(self):
-		super(Wonderland_TestSM, self).__init__()
-		self.name = 'Wonderland_Test'
+		super(Wonderland_Entity_In_RoomSM, self).__init__()
+		self.name = 'Wonderland_Entity_In_Room'
 
 		# parameters of this behavior
 
@@ -57,20 +57,20 @@ class Wonderland_TestSM(Behavior):
 
 
 		with _state_machine:
-			# x:71 y:23
+			# x:80 y:109
 			OperatableStateMachine.add('Wonderland_Get_Entity',
 										self.use_behavior(Wonderland_Get_EntitySM, 'Wonderland_Get_Entity'),
 										transitions={'done': 'finished', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'name': 'name', 'entity': 'json_text'})
 
-			# x:311 y:107
+			# x:426 y:208
 			OperatableStateMachine.add('Empty Log',
 										LogState(text="There is no entity !", severity=Logger.REPORT_HINT),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:499 y:100
+			# x:548 y:260
 			OperatableStateMachine.add('Log',
 										LogState(text="Empty 2", severity=Logger.REPORT_HINT),
 										transitions={'done': 'failed'},

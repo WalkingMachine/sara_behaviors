@@ -1,0 +1,6 @@
+<launch>
+  <machine name="wm-sara" address="192.168.0.117" env-loader="/home/walking/env.sh" user="walking"/>
+  <arg name="behavior_name" default="Test_SARA_SAY" />
+
+  <node machine="wm-sara" name="behavior_launcher" pkg="flexbe_widget" type="be_launcher" output="screen" args="-b '$(arg behavior_name)'" />
+</launch>
