@@ -12,9 +12,8 @@ class Wonderland_Request(EventState):
 	># url      string  command to read
 	#> response string  Finish job.
 	
-	<= done     data readed correctly
+	<= done     data read correctly
 	<= error    error while data is reading
-	
 	'''
 	
 	def __init__(self):

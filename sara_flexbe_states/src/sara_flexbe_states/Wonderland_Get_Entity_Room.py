@@ -15,19 +15,18 @@ class Wonderland_Get_Entity_Room(EventState):
 
 	#> id           int     id of the room
 	#> name         string  name of the room
-	#> x1           int     position of the room
-	#> x2           int     position of the room
-	#> x3           int     position of the room
-	#> x4           int     position of the room
-	#> y1           int     position of the room
-	#> y2           int     position of the room
-	#> y3           int     position of the room
-	#> y4           int     position of the room
+	#> x1           float   position of the room
+	#> x2           float   position of the room
+	#> x3           float   position of the room
+	#> x4           float   position of the room
+	#> y1           float   position of the room
+	#> y2           float   position of the room
+	#> y3           float   position of the room
+	#> y4           float   position of the room
 
 	<= done         return when at least one entity exist
 	<= no_room        return when no entity have the selected name
 	<= error        return when error reading data
-
 	'''
 	
 	def __init__(self, index_function):
@@ -45,15 +44,19 @@ class Wonderland_Get_Entity_Room(EventState):
 		# read if there is data
 		if not data[self._index]:
 			# continue to Zero
-			return 'no_room'
+			return 'error'
 		
+		# read if there is data
+		if not data[self._index]['room']:
+			# continue to Zero
+			return 'no_room'
 		
 		# try to read data
 		if 'id' not in data[self._index]['room']:
 			# continue to Error
 			return 'error'
 
-		if 'room_name' not in data[self._index]['room']:
+		if 'name' not in data[self._index]['room']:
 			# continue to Error
 			return 'error'
 
@@ -91,7 +94,7 @@ class Wonderland_Get_Entity_Room(EventState):
 			
 		# write return datas
 		userdata.id = data[self._index]['room']['id']
-		userdata.name = data[self._index]['room']['room_name']
+		userdata.name = data[self._index]['room']['name']
 		userdata.x1 = data[self._index]['room']['x1']
 		userdata.x2 = data[self._index]['room']['x2']
 		userdata.x3 = data[self._index]['room']['x3']
@@ -100,17 +103,6 @@ class Wonderland_Get_Entity_Room(EventState):
 		userdata.y2 = data[self._index]['room']['y2']
 		userdata.y3 = data[self._index]['room']['y3']
 		userdata.y4 = data[self._index]['room']['y4']
-		
-		print data[self._index]['room']['id']
-		print data[self._index]['room']['room_name']
-		print data[self._index]['room']['x1']
-		print data[self._index]['room']['x2']
-		print data[self._index]['room']['x3']
-		print data[self._index]['room']['x4']
-		print data[self._index]['room']['y1']
-		print data[self._index]['room']['y2']
-		print data[self._index]['room']['y3']
-		print data[self._index]['room']['y4']
 		
 		# continue to Done
 		return 'done'

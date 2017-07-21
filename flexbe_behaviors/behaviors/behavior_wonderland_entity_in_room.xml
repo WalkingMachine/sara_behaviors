@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Wonderland_Entity_In_Room">
+
+	<executable package_path="behavior_wonderland_entity_in_room.wonderland_entity_in_room_sm" class="Wonderland_Entity_In_RoomSM" />
+	<tagstring>Wonderland</tagstring>
+	<author>Lucas Maurice</author>
+	<date>Mon Jul 17 2017</date>
+	<description>
+		List all entities in a specified room.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

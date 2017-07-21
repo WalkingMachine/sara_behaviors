@@ -5,6 +5,7 @@ import json
 import requests
 from flexbe_core import EventState, Logger
 
+# TODO: RENAME STATE
 
 class Wonderland_Add_Object(EventState):
 	'''
@@ -15,9 +16,10 @@ class Wonderland_Add_Object(EventState):
 	#> id       int         enter the id for edit or Null for add
 	># name     string      name of the object
 	># room     string/int  ID on the BDD or name of the room
-	># x_pos    int         Position on X
-	># y_pos    int         Position on Y
-	># z_pos    int         Position on Z
+	># x_pos    float       Position on X
+	># y_pos    float       Position on Y
+	># z_pos    float       Position on Z
+	># z_pos    float       Position on Z
 
 	#> id       int         ID on the BDD of the object
 
@@ -84,10 +86,10 @@ class Wonderland_Add_Object(EventState):
 			return 'error'
 		
 		# have an id to read
-		if 'id' not in data_response["entity"]:
+		if 'id' not in data_response['entity']:
 			# continue to Error
 			return 'error'
 		
 		# return the ID
-		userdata.id = data_response["entity"]['id']
+		userdata.id = data_response['entity']['id']
 		return 'done'

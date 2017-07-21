@@ -47,6 +47,11 @@
   <run_depend>behavior_a_test_wonderland</run_depend>
   <run_depend>behavior_wonderland_test</run_depend>
   <run_depend>behavior_door_detector</run_depend>
-
+  <run_depend>behavior_wonderland_entity_in_room</run_depend>
+  <run_depend>behavior_wonderland_list_entities_in_room</run_depend>
+  <run_depend>behavior_wonderland_list_rooms</run_depend>
+  <run_depend>behavior_say_hello</run_depend>
+  <run_depend>behavior_wonderland_get_doors</run_depend>
+  <run_depend>behavior_wonderland_entity_in_room_name</run_depend>
 
 </package>
