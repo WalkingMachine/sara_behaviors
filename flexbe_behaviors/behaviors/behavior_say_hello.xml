@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Say_Hello">
+
+	<executable package_path="behavior_say_hello.say_hello_sm" class="Say_HelloSM" />
+	<tagstring>Sara Say</tagstring>
+	<author>Lucas Maurice</author>
+	<date>Wed Jul 19 2017</date>
+	<description>
+		Just say Hello
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

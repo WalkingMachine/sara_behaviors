@@ -12,14 +12,14 @@ class Wonderland_Add_Room(EventState):
 	Return the ID of the added room.
 
 	#> name         string  name of the room
-	#> x1           int     position of the room
-	#> x2           int     position of the room
-	#> x3           int     position of the room
-	#> x4           int     position of the room
-	#> y1           int     position of the room
-	#> y2           int     position of the room
-	#> y3           int     position of the room
-	#> y4           int     position of the room
+	#> x1           float   position of the room
+	#> x2           float   position of the room
+	#> x3           float   position of the room
+	#> x4           float   position of the room
+	#> y1           float   position of the room
+	#> y2           float   position of the room
+	#> y3           float   position of the room
+	#> y4           float   position of the room
 
 	#> id           int     ID on the BDD of the room
 

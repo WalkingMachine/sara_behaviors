@@ -9,21 +9,21 @@ class Wonderland_List_Something(EventState):
 	'''
 	Return all things IDs and Names
 	
-	># json_text        string  json to read
+	># json_text    string  json to read
 	
-	#> names            int[]   array containing all names
-	#> ids              id[]    array containing all IDs
+	#> names        float[] array containing all names
+	#> ids          int[]   array containing all IDs
 	
-	<= done             return when the list contain at least one object
-	<= empty            return when the list is empty
-	<= error            return when error reading data
+	<= done         return when the list contain at least one object
+	<= empty        return when the list is empty
+	<= error        return when error reading data
 	'''
 	
 	def __init__(self):
 		# See example_state.py for basic explanations.
 		super(Wonderland_List_Something, self).__init__(outcomes=['done', 'empty', 'error'],
-		                                             input_keys=['json_text'],
-		                                             output_keys=['ids', 'names'])
+														input_keys=['json_text'],
+														output_keys=['ids', 'names'])
 	
 	def execute(self, userdata):
 		# parse parameter json data
@@ -47,13 +47,11 @@ class Wonderland_List_Something(EventState):
 				return 'error'
 			
 			# write return datas
-			names += [data['name']]
-			ids += [data['id']]
+			names.append(data['name'])
+			ids.append(data['id'])
 		
-		userdata.names=names
-		userdata.ids=ids
-		print str(names)[1:-1]
-		print str(ids)[1:-1]
+		userdata.names = names
+		userdata.ids = ids
 		
 		# continue to Done
 		return 'done'

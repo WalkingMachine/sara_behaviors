@@ -15,9 +15,9 @@ class Wonderland_Add_Human(EventState):
 	#> id               int     enter the id for edit or Null for add
 	># name             string  name of the human
 	># roomID           string  ID on the BDD or name of the room
-	># x_pos            int     Position on X
-	># y_pos            int     Position on Y
-	># z_pos            int     Position on Z
+	># x_pos            float   Position on X
+	># y_pos            float   Position on Y
+	># z_pos            float   Position on Z
 	># gender           string  Gender of the person
 	># is_operator      boolean Say if it is the operator
 
@@ -53,7 +53,7 @@ class Wonderland_Add_Human(EventState):
 				print e
 				return 'error'
 		else:
-			dataPost = {'id': userdata.id}
+			dataPost = {'idHuman': userdata.id}
 			
 			if userdata.name is not None:
 				dataPost.update({'name': userdata.name})
@@ -80,7 +80,7 @@ class Wonderland_Add_Human(EventState):
 			
 			# try the request
 			try:
-				response = requests.patch("http://192.168.0.46:8000/api/object/", headers=self._header, data=dataPost)
+				response = requests.patch("http://192.168.0.46:8000/api/human/", headers=self._header, data=dataPost)
 			except requests.exceptions.RequestException as e:
 				print e
 				return 'error'
@@ -93,11 +93,11 @@ class Wonderland_Add_Human(EventState):
 			return 'error'
 		
 		# have an id to read
-		if 'id' not in data_response["entity"]:
+		if 'id' not in data_response['entity']:
 			# continue to Error
 			return 'error'
 		
 		# return the ID
-		userdata.id = data_response["entity"]['id']
+		userdata.id = data_response['entity']['id']
 		
 		return 'done'
