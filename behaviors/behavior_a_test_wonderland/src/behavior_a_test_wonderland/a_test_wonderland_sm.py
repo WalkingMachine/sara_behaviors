@@ -46,7 +46,7 @@ class A_TEST_WONDERLANDSM(Behavior):
 	def create(self):
 		# x:340 y:478, x:232 y:476, x:498 y:55
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'registered'], input_keys=['x1', 'x2', 'x3', 'x4', 'y1', 'y2', 'y3', 'y4'])
-		_state_machine.userdata.name = "Prout"
+		_state_machine.userdata.name = "Jean Eude"
 		_state_machine.userdata.x1 = 1
 		_state_machine.userdata.x2 = 2
 		_state_machine.userdata.x3 = 3
@@ -58,8 +58,8 @@ class A_TEST_WONDERLANDSM(Behavior):
 		_state_machine.userdata.x_pos = 100
 		_state_machine.userdata.y_pos = 200
 		_state_machine.userdata.z_pos = 300
-		_state_machine.userdata.roomID = None
-		_state_machine.userdata.id = 2
+		_state_machine.userdata.roomID = 2
+		_state_machine.userdata.id = 5
 		_state_machine.userdata.is_operator = None
 		_state_machine.userdata.gender = "M"
 
