@@ -46,6 +46,7 @@
   <run_depend>behavior_wonderland_get_entity</run_depend>
   <run_depend>behavior_a_test_wonderland</run_depend>
   <run_depend>behavior_wonderland_test</run_depend>
+  <run_depend>behavior_door_detector</run_depend>
 
 
 </package>
