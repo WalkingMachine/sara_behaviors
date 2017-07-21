@@ -3,7 +3,7 @@
 from __future__ import print_function
 from flexbe_core import EventState, Logger
 from geometry_msgs.msg import Pose
-from sara_moveit.srv import *
+from wm_moveit_server import *
 import rospy
 import roslib; roslib.load_manifest('lu4r_ros')
 import rospy
@@ -34,9 +34,12 @@ class LU4R_Parser(EventState):
     <= done     Finish job.
     '''
 
+
     def __init__(self):
         # See example_state.py for basic explanations.
         super(LU4R_Parser, self).__init__(outcomes=['done', 'fail'], input_keys=['sentence', 'HighFIFO','MedFIFO','LowFIFO','DoNow'])
+        self.Subject = ''
+        self.Person = ''
 
     def execute(self, userdata):
         # This method is called periodically while the state is active.
@@ -84,6 +87,7 @@ class LU4R_Parser(EventState):
             Logger.loginfo("fail")
             return 'fail'
 
+        lu4r.opList = self.ManageSubject( lu4r.opList );
 
         test = re.compile('.*[Ss]top.*')
         n = test.match(lu4r.opList[0].action)
@@ -100,6 +104,7 @@ class LU4R_Parser(EventState):
             priority = 2
             Logger.loginfo("Action: "+opitem.action)
             ActionForm = None
+
 
 
             if ActionForm == None:
@@ -216,3 +221,41 @@ class LU4R_Parser(EventState):
                         PreActionForm[i-1] = arg.content
                     i = i + 1
         return PreActionForm
+
+    def ManageSubject(self, opitems):
+        for opitem in opitems:
+            for arg in opitem.args:
+                test = re.compile('.*([Tt]heme)|([Gg]oal)|([Ss]ought_entity)|([Pp]henomenon).*')
+                n = test.match(arg.type)
+                if n:
+                    test = re.compile('.*([Tt]his)|([Tt]hat)|([Ii]t).*')
+                    n = test.match(arg.content)
+                    if n:
+                        arg.content = self.Subject
+                    else:
+                        self.Subject = arg.content
+
+                test = re.compile('.*([Bb]eneficiary).*')
+                n = test.match(arg.type)
+                if n:
+                    test = re.compile('.*([Hh]im)|([Hh]er).*')
+                    n = test.match(arg.content)
+                    if n:
+                        arg.content = self.Person
+                    else:
+                        self.Person = arg.content
+                    test = re.compile('.*([Mm]e)|([Mm]yself).*')
+                    n = test.match(arg.content)
+                    if n:
+                        arg.content = 'you'
+                        continue
+
+                    test = re.compile('.*([Yy]ou)|([Ss]ara)|([Yy]ourself).*')
+                    n = test.match(arg.content)
+                    if n:
+                        arg.content = 'myself'
+                        continue
+
+
+
+        return opitems
