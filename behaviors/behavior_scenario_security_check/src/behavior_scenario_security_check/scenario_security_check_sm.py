@@ -12,6 +12,7 @@ from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.door_detector import DoorDetector
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_move_base import SaraMoveBase
+from behavior_wonderland_get_waypoint.wonderland_get_waypoint_sm import Wonderland_Get_WaypointSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -24,11 +25,7 @@ Created on Tue Jul 25 2017
 '''
 class Scenario_Security_checkSM(Behavior):
     '''
-    englobe le scénario du test de sécurité.
-- On attend l'ouverture d'une porte
-- avance jusqu’à un waypoint spécifique
-- attend quelques secondes
-- vas au waypoint de sortie
+    englobe le scenario du test de securite.
     '''
 
 
@@ -37,8 +34,10 @@ class Scenario_Security_checkSM(Behavior):
         self.name = 'Scenario_Security_check'
 
         # parameters of this behavior
+        self.add_parameter('waypoint_name', '')
 
         # references to used behaviors
+        self.add_behavior(Wonderland_Get_WaypointSM, 'Wonderland_Get_Waypoint')
 
         # Additional initialization code can be added inside the following tags
         # [MANUAL_INIT]
@@ -47,22 +46,20 @@ class Scenario_Security_checkSM(Behavior):
 
         # Behavior comments:
 
-        # O 297 41 
-        # - On attend l'ouverture d'une porte|n- avance jusqu’à un waypoint spécifique|n- attend quelques secondes|n- vas au waypoint de sortie
-
 
 
     def create(self):
         # x:864 y:228, x:848 y:452
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
         _state_machine.userdata.waypoint = []
+        _state_machine.userdata.waypoint_name = ""
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
         
         # [/MANUAL_CREATE]
 
-        # x:30 y:308
+        # x:889 y:108
         _sm_door_management_0 = OperatableStateMachine(outcomes=['done'])
 
         with _sm_door_management_0:
@@ -78,7 +75,7 @@ class Scenario_Security_checkSM(Behavior):
                                         transitions={'done': 'detect door again'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:588 y:209
+            # x:621 y:187
             OperatableStateMachine.add('say thank you',
                                         SaraSay(sentence="Thank you!", emotion=1),
                                         transitions={'done': 'done'},
@@ -102,13 +99,13 @@ class Scenario_Security_checkSM(Behavior):
             # x:65 y:54
             OperatableStateMachine.add('wait',
                                         WaitState(wait_time=1),
-                                        transitions={'done': 'Door management'},
+                                        transitions={'done': 'Wonderland_Get_Waypoint'},
                                         autonomy={'done': Autonomy.Off})
 
             # x:46 y:192
             OperatableStateMachine.add('Door management',
                                         _sm_door_management_0,
-                                        transitions={'done': 'move the robot'},
+                                        transitions={'done': 'Wonderland_Get_Waypoint'},
                                         autonomy={'done': Autonomy.Inherit})
 
             # x:648 y:207
@@ -116,7 +113,7 @@ class Scenario_Security_checkSM(Behavior):
                                         SaraMoveBase(),
                                         transitions={'arrived': 'finished', 'failed': 'error'},
                                         autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
-                                        remapping={'waypoint': 'waypoint'})
+                                        remapping={'pose': 'waypoint'})
 
             # x:300 y:431
             OperatableStateMachine.add('Sorry no waypoint',
@@ -129,6 +126,13 @@ class Scenario_Security_checkSM(Behavior):
                                         SaraSay(sentence="Sorry, I seem to have trouble with my navigation system", emotion=1),
                                         transitions={'done': 'failed'},
                                         autonomy={'done': Autonomy.Off})
+
+            # x:338 y:192
+            OperatableStateMachine.add('Wonderland_Get_Waypoint',
+                                        self.use_behavior(Wonderland_Get_WaypointSM, 'Wonderland_Get_Waypoint'),
+                                        transitions={'finished': 'move the robot', 'failed': 'Sorry no waypoint'},
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'name': 'waypoint_name', 'waypoint': 'waypoint'})
 
 
         return _state_machine

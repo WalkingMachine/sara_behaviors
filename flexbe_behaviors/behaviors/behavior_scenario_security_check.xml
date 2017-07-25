@@ -7,16 +7,19 @@
 	<author>Philippe La Madeleine</author>
 	<date>Tue Jul 25 2017</date>
 	<description>
-		englobe le scénario du test de sécurité.
-- On attend l'ouverture d'une porte
-- avance jusqu’à un waypoint spécifique
-- attend quelques secondes
-- vas au waypoint de sortie
+		englobe le scenario du test de securite.
 	</description>
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Wonderland_Get_Waypoint" />
 
 	<!-- Available Parameters -->
+	<params>
+
+		<param type="text" name="waypoint_name" default="" label="waypoint_name" hint="Sets the waypoint_name" />
+
+	</params>
+
 
 </behavior>
