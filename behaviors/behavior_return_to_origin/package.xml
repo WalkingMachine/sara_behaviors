@@ -4,7 +4,7 @@
   <description>
      Make SARA move back to an old origin
   </description>
-  <maintainer email="todo@todo.com">Nicolas Nadeau</maintainer>
+  <maintainer email="niconadeau0@gmail.com">Nicolas Nadeau</maintainer>
   <license>BSD</license>
 
   <url>http://ros.org/wiki/behavior_return_to_origin</url>
