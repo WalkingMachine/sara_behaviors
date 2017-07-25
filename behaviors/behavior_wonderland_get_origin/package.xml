@@ -4,7 +4,7 @@
   <description>
      Get the Origin waypoint
   </description>
-  <maintainer email="todo@todo.com">Nicolas Nadeau</maintainer>
+  <maintainer email="niconadeau0@gmail.com">Nicolas Nadeau</maintainer>
   <license>BSD</license>
 
   <url>http://ros.org/wiki/behavior_wonderland_get_origin</url>
