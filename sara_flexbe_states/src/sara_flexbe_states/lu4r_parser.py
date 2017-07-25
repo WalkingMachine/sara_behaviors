@@ -2,8 +2,6 @@
 # encoding=utf8
 from __future__ import print_function
 from flexbe_core import EventState, Logger
-from geometry_msgs.msg import Pose
-from wm_moveit_server import *
 import rospy
 import roslib; roslib.load_manifest('lu4r_ros')
 import rospy
@@ -25,13 +23,17 @@ HEADERS = {'content-type': 'application/json'}
 
 class LU4R_Parser(EventState):
     '''
-    MoveArm receive a ROS pose as input and launch a ROS service with the same pose
+    Use lu4r to parse a sentence and return the detected actions into lists by pryorities
 
     ># sentence     string      sentence to parse
     
-    <# actions     lu4r      list of actions
-
-    <= done     Finish job.
+    <# HighFIFO     string[]      list of actions
+    <# MedFIFO      ActionForm[]      list of actions
+    <# LowFIFO      ActionForm[]      list of actions
+    <# DoNow        ActionForm[]      list of actions
+    
+    <= done     Finished job.
+    <= fail     unable to parse.
     '''
 
 
