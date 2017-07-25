@@ -37,7 +37,7 @@ class Scenario_Security_checkSM(Behavior):
         self.add_parameter('waypoint_name', '')
 
         # references to used behaviors
-        self.add_behavior(Wonderland_Get_WaypointSM, 'Wonderland_Get_Waypoint')
+        self.add_behavior(Wonderland_Get_WaypointSM, 'go to waypoint/Wonderland_Get_Waypoint')
 
         # Additional initialization code can be added inside the following tags
         # [MANUAL_INIT]
@@ -59,10 +59,41 @@ class Scenario_Security_checkSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-        # x:889 y:108
-        _sm_door_management_0 = OperatableStateMachine(outcomes=['done'])
+        # x:30 y:322, x:130 y:322
+        _sm_go_to_waypoint_0 = OperatableStateMachine(outcomes=['arrived', 'done'], input_keys=['waypoint_name'])
 
-        with _sm_door_management_0:
+        with _sm_go_to_waypoint_0:
+            # x:68 y:40
+            OperatableStateMachine.add('Wonderland_Get_Waypoint',
+                                        self.use_behavior(Wonderland_Get_WaypointSM, 'go to waypoint/Wonderland_Get_Waypoint'),
+                                        transitions={'finished': 'move the robot', 'failed': 'Sorry no waypoint'},
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'name': 'waypoint_name', 'waypoint': 'waypoint'})
+
+            # x:30 y:279
+            OperatableStateMachine.add('Sorry no waypoint',
+                                        SaraSay(sentence="Sorry, I don't know where to go.", emotion=1),
+                                        transitions={'done': 'done'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:394 y:196
+            OperatableStateMachine.add('error',
+                                        SaraSay(sentence="Sorry, I seem to have trouble with my navigation system", emotion=1),
+                                        transitions={'done': 'done'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:378 y:55
+            OperatableStateMachine.add('move the robot',
+                                        SaraMoveBase(),
+                                        transitions={'arrived': 'arrived', 'failed': 'error'},
+                                        autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'pose': 'waypoint'})
+
+
+        # x:889 y:108
+        _sm_door_management_1 = OperatableStateMachine(outcomes=['done'])
+
+        with _sm_door_management_1:
             # x:30 y:40
             OperatableStateMachine.add('detect door',
                                         DoorDetector(timeout=5),
@@ -99,40 +130,21 @@ class Scenario_Security_checkSM(Behavior):
             # x:65 y:54
             OperatableStateMachine.add('wait',
                                         WaitState(wait_time=1),
-                                        transitions={'done': 'Wonderland_Get_Waypoint'},
+                                        transitions={'done': 'go to waypoint'},
                                         autonomy={'done': Autonomy.Off})
 
             # x:46 y:192
             OperatableStateMachine.add('Door management',
-                                        _sm_door_management_0,
-                                        transitions={'done': 'Wonderland_Get_Waypoint'},
+                                        _sm_door_management_1,
+                                        transitions={'done': 'go to waypoint'},
                                         autonomy={'done': Autonomy.Inherit})
 
-            # x:648 y:207
-            OperatableStateMachine.add('move the robot',
-                                        SaraMoveBase(),
-                                        transitions={'arrived': 'finished', 'failed': 'error'},
-                                        autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
-                                        remapping={'pose': 'waypoint'})
-
-            # x:300 y:431
-            OperatableStateMachine.add('Sorry no waypoint',
-                                        SaraSay(sentence="Sorry, I don't know where to go.", emotion=1),
-                                        transitions={'done': 'failed'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:664 y:348
-            OperatableStateMachine.add('error',
-                                        SaraSay(sentence="Sorry, I seem to have trouble with my navigation system", emotion=1),
-                                        transitions={'done': 'failed'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:338 y:192
-            OperatableStateMachine.add('Wonderland_Get_Waypoint',
-                                        self.use_behavior(Wonderland_Get_WaypointSM, 'Wonderland_Get_Waypoint'),
-                                        transitions={'finished': 'move the robot', 'failed': 'Sorry no waypoint'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'name': 'waypoint_name', 'waypoint': 'waypoint'})
+            # x:291 y:191
+            OperatableStateMachine.add('go to waypoint',
+                                        _sm_go_to_waypoint_0,
+                                        transitions={'arrived': 'finished', 'done': 'failed'},
+                                        autonomy={'arrived': Autonomy.Inherit, 'done': Autonomy.Inherit},
+                                        remapping={'waypoint_name': 'waypoint_name'})
 
 
         return _state_machine
