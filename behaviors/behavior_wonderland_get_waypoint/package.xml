@@ -1,0 +1,23 @@
+<package>
+  <name>behavior_wonderland_get_waypoint</name>
+  <version>1.0.0</version>
+  <description>
+     Get all the list waypoint
+  </description>
+  <maintainer email="todo@todo.com">Nicolas Nadeau</maintainer>
+  <license>BSD</license>
+
+  <url>http://ros.org/wiki/behavior_wonderland_get_waypoint</url>
+  <author>Nicolas Nadeau</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>rospy</run_depend>
+  <run_depend>flexbe_core</run_depend>
+  <run_depend>sara_flexbe_states</run_depend>
+  <run_depend>flexbe_states</run_depend>
+  <run_depend>flexbe_utility_states</run_depend>
+  <run_depend>flexbe_navigation_states</run_depend>
+  <run_depend>flexbe_manipulation_states</run_depend>
+
+</package>

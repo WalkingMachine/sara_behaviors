@@ -23,7 +23,7 @@ class Wonderland_Request(EventState):
 	
 	def execute(self, userdata):
 		# Generate URL to contact
-		url = "http://192.168.0.46:8000/api/" + userdata.url
+		url = "http://127.0.0.1:8000/api/" + userdata.url
 		
 		# try the request
 		try:

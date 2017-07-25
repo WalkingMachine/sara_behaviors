@@ -2,6 +2,9 @@
 # encoding=utf8
 
 from flexbe_core import EventState, Logger
+from geometry_msgs.msg import Pose, Point, Quaternion
+from tf import transformations
+
 import json
 
 
@@ -18,86 +21,81 @@ class Wonderland_Get_Waypoint(EventState):
 	#> pos_x        float   position of the waypoint
 	#> pos_y        float   position of the waypoint
 	#> theta        float   angle of the waypoint
+	#> pose         Pose2D   The pose of the waypoint
 
 	<= done         return when at least one entity exist
 	<= no_waypoint        return when no entity have the selected name
 	<= error        return when error reading data
 	'''
 	
-	def __init__(self):
+	def __init__(self, index_function):
 		# See example_state.py for basic explanations.
 		super(Wonderland_Get_Waypoint, self).__init__(outcomes=['done', 'no_waypoint', 'error'],
 											input_keys=['json_text', 'input_value'],
-											output_keys=['id', 'name', 'pos_x', 'pos_y', 'theta'])
-	
+											output_keys=['id', 'name', 'x', 'y', 'theta', 'pose'])
+
+		self._index_function = index_function
+		self._index = 0
+
 	def execute(self, userdata):
 		# parse parameter json data
 		data = json.loads(userdata.json_text)
-		
+
 		# read if there is data
-		if not data:
+		if data is None:
 			# continue to Zero
-			return 'no_waypoint'
-		
+			print("Data is None")
+			return 'error'
+
+		# read if there is data
+		if len(list(data)) == 0:
+			# continue to Zero
+			print("No waypoint was found")
+			return 'error'
+
 		# try to read data
-		if 'id' not in data[self._id]['room']:
+		if 'id' not in data:
 			# continue to Error
+			print("No ID")
 			return 'error'
-		
-		if 'room_name' not in data[self._id]['room']:
+
+		if 'name' not in data:
 			# continue to Error
+			print("No NAME")
 			return 'error'
-		
-		if 'x1' not in data[self._id]['room']:
+
+		if 'x' not in data:
 			# continue to Error
+			print("No X")
 			return 'error'
-		
-		if 'x2' not in data[self._id]['room']:
+
+		if 'y' not in data:
 			# continue to Error
+			print("No Y")
 			return 'error'
-		
-		if 'x3' not in data[self._id]['room']:
+
+		if 'theta' not in data:
 			# continue to Error
+			print("No THETA")
 			return 'error'
-		
-		if 'x4' not in data[self._id]['room']:
-			# continue to Error
-			return 'error'
-		
-		if 'y1' not in data[self._id]['room']:
-			# continue to Error
-			return 'error'
-		
-		if 'y2' not in data[self._id]['room']:
-			# continue to Error
-			return 'error'
-		
-		if 'y3' not in data[self._id]['room']:
-			# continue to Error
-			return 'error'
-		
-		if 'y4' not in data[self._id]['room']:
-			# continue to Error
-			return 'error'
-		
+
 		# write return datas
-		userdata.id = data[self._id]['room']['id']
-		userdata.name = data[self._id]['room']['room_name']
-		userdata.x1 = data[self._id]['room']['x1']
-		userdata.x2 = data[self._id]['room']['x2']
-		userdata.x3 = data[self._id]['room']['x3']
-		userdata.x4 = data[self._id]['room']['x4']
-		userdata.y1 = data[self._id]['room']['y1']
-		userdata.y2 = data[self._id]['room']['y2']
-		userdata.y3 = data[self._id]['room']['y3']
-		userdata.y4 = data[self._id]['room']['y4']
-		
+		userdata.id = data['id']
+		userdata.name = data['name']
+		userdata.x = data['x']
+		userdata.y = data['y']
+		userdata.theta = data['theta']
+
+		pt = Point(data['x'], data['y'], 0)
+		qt = transformations.quaternion_from_euler(0, 0, data['theta'])
+		userdata.pose = Pose(position=pt, orientation=Quaternion(*qt))
+
 		# continue to Done
 		return 'done'
 	
 	def on_enter(self, userdata):
-		if self._id_function is not None:
+		if self._index_function is not None:
 			try:
-				self._id = self._id_function(userdata.input_value)
+				self._index = self._index_function(userdata.input_value)
 			except Exception as e:
 				Logger.logwarn('Failed to execute index function!\n%s' % str(e))

@@ -20,7 +20,7 @@ class SaraMoveBase(EventState):
     """
     Navigates a robot to a desired position and orientation using move_base.
 
-    ># waypoint     Pose2D      Target waypoint for navigation.
+    ># pose     Pose2D      Target waypoint for navigation.
 
     <= arrived                  Navigation to target pose succeeded.
     <= failed                   Navigation to target pose failed.
@@ -29,8 +29,8 @@ class SaraMoveBase(EventState):
     def __init__(self):
         """Constructor"""
 
-        super(SaraMoveBase, self).__init__(outcomes = ['arrived', 'failed'],
-                                            input_keys = ['waypoint'])
+        super(SaraMoveBase, self).__init__( outcomes=['arrived', 'failed'],
+                                            input_keys=['pose'])
 
         self._action_topic = "/move_base"
 
@@ -69,9 +69,10 @@ class SaraMoveBase(EventState):
 
         # Create and populate action goal
 
-        pt = Point(x=userdata.waypoint.x, y=userdata.waypoint.y)
-        qt = transformations.quaternion_from_euler(0, 0, userdata.waypoint.theta)
-        self._pose = Pose(position=pt, orientation=Quaternion(*qt))
+        # pt = Point(x=userdata.waypoint.x, y=userdata.waypoint.y)
+        # qt = transformations.quaternion_from_euler(0, 0, userdata.waypoint.theta)
+        # self._pose = Pose(position=pt, orientation=Quaternion(*qt))
+        self._pose = userdata.pose
         self.setGoal(self._pose)
 
     def on_exit(self, userdata):
@@ -85,7 +86,6 @@ class SaraMoveBase(EventState):
 
     def on_resume(self, userdata):
         self.setGoal(self._pose)
-
 
     def setGoal(self, pose):
         goal = MoveBaseGoal()
