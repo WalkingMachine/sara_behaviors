@@ -23,10 +23,10 @@ class ContinueButton(EventState):
         self.state = False
 
 
-    def on_enter(self):
+    def on_enter(self, userdata):
         Logger.loginfo('Entering continue button state')
 
-    def execute(self):
+    def execute(self, userdata):
 
         self.state = rospy.wait_for_message('/ui/continue', Bool, timeout=None)
 
