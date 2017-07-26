@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Scenario_Security_check">
+
+	<executable package_path="behavior_scenario_security_check.scenario_security_check_sm" class="Scenario_Security_checkSM" />
+	<tagstring>Scenario</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Tue Jul 25 2017</date>
+	<description>
+		englobe le scenario du test de securite.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
