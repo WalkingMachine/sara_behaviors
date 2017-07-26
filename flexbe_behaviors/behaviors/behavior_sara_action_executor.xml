@@ -22,6 +22,8 @@
 	<contains name="ActionWrapper_Give" />
 	<contains name="ActionWrapper_Pick" />
 	<contains name="ActionWrapper_Turn" />
+	<contains name="ActionWrapper_WaitForDoor" />
+	<contains name="Test_continue" />
 
 	<!-- Available Parameters -->
 

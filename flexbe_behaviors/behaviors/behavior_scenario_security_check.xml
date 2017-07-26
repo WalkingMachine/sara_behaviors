@@ -12,7 +12,6 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Wonderland_Get_Waypoint" />
 
 	<!-- Available Parameters -->
 

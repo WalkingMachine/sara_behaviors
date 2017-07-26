@@ -16,6 +16,7 @@ from flexbe_states.check_condition_state import CheckConditionState
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.FIFO_New import FIFO_New
+from behavior_scenario_security_check.scenario_security_check_sm import Scenario_Security_checkSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -44,6 +45,7 @@ class Sara_main_behaviorSM(Behavior):
         # references to used behaviors
         self.add_behavior(sara_command_managerSM, 'Sara parallel Runtime/Sara brain/sara_command_manager')
         self.add_behavior(SaraactionexecutorSM, 'Sara parallel Runtime/Sara action executor/Sara action executor')
+        self.add_behavior(Scenario_Security_checkSM, 'Scenario_Security_check')
 
         # Additional initialization code can be added inside the following tags
         # [MANUAL_INIT]
@@ -58,7 +60,7 @@ class Sara_main_behaviorSM(Behavior):
 
 
     def create(self):
-        # x:900 y:215
+        # x:914 y:505
         _state_machine = OperatableStateMachine(outcomes=['Shutdown'])
         _state_machine.userdata.Command = "no nothing"
 
@@ -210,7 +212,7 @@ class Sara_main_behaviorSM(Behavior):
                                         autonomy={'done': Autonomy.Off})
 
 
-        # x:334 y:507, x:284 y:361, x:1191 y:535, x:294 y:269, x:1050 y:76
+        # x:291 y:514, x:284 y:353, x:276 y:271, x:286 y:427, x:1050 y:76
         _sm_sara_parallel_runtime_7 = ConcurrencyContainer(outcomes=['Shutdown'], input_keys=['HighFIFO', 'MedFIFO', 'LowFIFO', 'DoNow'], conditions=[
                                         ('Shutdown', [('Estop', 'shutdown')]),
                                         ('Shutdown', [('Sara brain', 'error')]),
@@ -219,7 +221,7 @@ class Sara_main_behaviorSM(Behavior):
                                         ])
 
         with _sm_sara_parallel_runtime_7:
-            # x:59 y:335
+            # x:57 y:333
             OperatableStateMachine.add('Sara brain',
                                         _sm_sara_brain_4,
                                         transitions={'error': 'Shutdown'},
@@ -248,58 +250,65 @@ class Sara_main_behaviorSM(Behavior):
 
 
         with _state_machine:
-            # x:60 y:213
+            # x:67 y:94
             OperatableStateMachine.add('log',
                                         LogState(text="Start Sara", severity=Logger.REPORT_HINT),
                                         transitions={'done': 'Sara init'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:402 y:499
+            # x:452 y:493
             OperatableStateMachine.add('Sara parallel Runtime',
                                         _sm_sara_parallel_runtime_7,
                                         transitions={'Shutdown': 'Sara shutdown'},
                                         autonomy={'Shutdown': Autonomy.Inherit},
                                         remapping={'HighFIFO': 'HighFIFO', 'MedFIFO': 'MedFIFO', 'LowFIFO': 'LowFIFO', 'DoNow': 'DoNow'})
 
-            # x:225 y:210
+            # x:231 y:99
             OperatableStateMachine.add('Sara init',
                                         _sm_sara_init_6,
                                         transitions={'finished': 'Create HighFIFO', 'failed': 'Sara shutdown'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-            # x:638 y:451
+            # x:701 y:485
             OperatableStateMachine.add('Sara shutdown',
                                         _sm_sara_shutdown_5,
                                         transitions={'finished': 'Shutdown'},
                                         autonomy={'finished': Autonomy.Inherit})
 
-            # x:227 y:326
+            # x:236 y:191
             OperatableStateMachine.add('Create HighFIFO',
                                         FIFO_New(),
                                         transitions={'done': 'Create MedFIFO'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'FIFO': 'HighFIFO'})
 
-            # x:226 y:392
+            # x:233 y:265
             OperatableStateMachine.add('Create MedFIFO',
                                         FIFO_New(),
                                         transitions={'done': 'Create LowFIFO'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'FIFO': 'MedFIFO'})
 
-            # x:226 y:459
+            # x:233 y:340
             OperatableStateMachine.add('Create LowFIFO',
                                         FIFO_New(),
                                         transitions={'done': 'Create DoNow'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'FIFO': 'LowFIFO'})
 
-            # x:228 y:515
+            # x:237 y:411
             OperatableStateMachine.add('Create DoNow',
                                         FIFO_New(),
-                                        transitions={'done': 'Sara parallel Runtime'},
+                                        transitions={'done': 'Scenario_Security_check'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'FIFO': 'DoNow'})
+
+            # x:207 y:490
+            OperatableStateMachine.add('Scenario_Security_check',
+                                        self.use_behavior(Scenario_Security_checkSM, 'Scenario_Security_check'),
+                                        transitions={'finished': 'Sara parallel Runtime'},
+                                        autonomy={'finished': Autonomy.Inherit},
+                                        remapping={'MedFIFO': 'MedFIFO'})
 
 
         return _state_machine

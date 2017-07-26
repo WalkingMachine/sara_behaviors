@@ -22,6 +22,8 @@ from behavior_actionwrapper_place.actionwrapper_place_sm import ActionWrapper_Pl
 from behavior_actionwrapper_give.actionwrapper_give_sm import ActionWrapper_GiveSM
 from behavior_actionwrapper_pick.actionwrapper_pick_sm import ActionWrapper_PickSM
 from behavior_actionwrapper_turn.actionwrapper_turn_sm import ActionWrapper_TurnSM
+from behavior_actionwrapper_waitfordoor.actionwrapper_waitfordoor_sm import ActionWrapper_WaitForDoorSM
+from behavior_test_continue.test_continue_sm import Test_continueSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -55,6 +57,8 @@ class SaraactionexecutorSM(Behavior):
         self.add_behavior(ActionWrapper_GiveSM, 'Action/ActionWrapper_Give')
         self.add_behavior(ActionWrapper_PickSM, 'Action/ActionWrapper_Pick')
         self.add_behavior(ActionWrapper_TurnSM, 'Action/ActionWrapper_Turn')
+        self.add_behavior(ActionWrapper_WaitForDoorSM, 'Action/ActionWrapper_WaitForDoor')
+        self.add_behavior(Test_continueSM, 'Action/Test_continue')
 
         # Additional initialization code can be added inside the following tags
         # [MANUAL_INIT]
@@ -90,9 +94,9 @@ class SaraactionexecutorSM(Behavior):
 
             # x:8 y:264
             OperatableStateMachine.add('ActionIdentification',
-                                        DecisionState(outcomes=['Bring', 'Follow', 'Move', 'Attach', 'LookAt', 'Find', 'Place', 'Give', 'Pick', 'Turn'], conditions=lambda x: x[0]),
-                                        transitions={'Bring': 'ActionWrapper_Bring', 'Follow': 'ActionWrapper_Follow', 'Move': 'ActionWrapper_Move', 'Attach': 'ActionWrapper_Attach', 'LookAt': 'ActionWrapper_LookAt', 'Find': 'ActionWrapper_Find', 'Place': 'ActionWrapper_Place', 'Give': 'ActionWrapper_Give', 'Pick': 'ActionWrapper_Pick', 'Turn': 'ActionWrapper_Turn'},
-                                        autonomy={'Bring': Autonomy.Off, 'Follow': Autonomy.Off, 'Move': Autonomy.Off, 'Attach': Autonomy.Off, 'LookAt': Autonomy.Off, 'Find': Autonomy.Off, 'Place': Autonomy.Off, 'Give': Autonomy.Off, 'Pick': Autonomy.Off, 'Turn': Autonomy.Off},
+                                        DecisionState(outcomes=['Bring', 'Follow', 'Move', 'Attach', 'LookAt', 'Find', 'Place', 'Give', 'Pick', 'Turn','WaitForDoor', 'WaitForContinue'], conditions=lambda x: x[0]),
+                                        transitions={'Bring': 'ActionWrapper_Bring', 'Follow': 'ActionWrapper_Follow', 'Move': 'ActionWrapper_Move', 'Attach': 'ActionWrapper_Attach', 'LookAt': 'ActionWrapper_LookAt', 'Find': 'ActionWrapper_Find', 'Place': 'ActionWrapper_Place', 'Give': 'ActionWrapper_Give', 'Pick': 'ActionWrapper_Pick', 'Turn': 'ActionWrapper_Turn', 'WaitForDoor': 'ActionWrapper_WaitForDoor', 'WaitForContinue': 'Test_continue'},
+                                        autonomy={'Bring': Autonomy.Off, 'Follow': Autonomy.Off, 'Move': Autonomy.Off, 'Attach': Autonomy.Off, 'LookAt': Autonomy.Off, 'Find': Autonomy.Off, 'Place': Autonomy.Off, 'Give': Autonomy.Off, 'Pick': Autonomy.Off, 'Turn': Autonomy.Off, 'WaitForDoor': Autonomy.Off, 'WaitForContinue': Autonomy.Off},
                                         remapping={'input_value': 'Action'})
 
             # x:334 y:0
@@ -164,6 +168,18 @@ class SaraactionexecutorSM(Behavior):
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'Action': 'Action'})
+
+            # x:299 y:355
+            OperatableStateMachine.add('ActionWrapper_WaitForDoor',
+                                        self.use_behavior(ActionWrapper_WaitForDoorSM, 'Action/ActionWrapper_WaitForDoor'),
+                                        transitions={'finished': 'done', 'failed': 'CriticalFail'},
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+
+            # x:497 y:381
+            OperatableStateMachine.add('Test_continue',
+                                        self.use_behavior(Test_continueSM, 'Action/Test_continue'),
+                                        transitions={'finished': 'done', 'failed': 'CriticalFail'},
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 
 
