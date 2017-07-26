@@ -67,5 +67,6 @@
   <run_depend>behavior_get_waypoint_pose</run_depend>
 
   <run_depend>behavior_wonderland_goto_exit</run_depend>
+  <run_depend>behavior_new_qualif</run_depend>
 
 </package>

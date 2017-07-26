@@ -5,7 +5,7 @@ from geometry_msgs.msg import PoseWithCovariance
 import rospy
 
 
-class GenPose(EventState):
+class AmclInit(EventState):
     '''
     MoveArm receive a ROS pose as input and launch a ROS service with the same pose
     (x,y,z)
@@ -17,7 +17,7 @@ class GenPose(EventState):
 
     def __init__(self, x, y, z, ox, oy, oz, ow):
         # See example_state.py for basic explanations.
-        super(GenPose, self).__init__(outcomes=['done', 'failed'], output_keys=['pose'])
+        super(AmclInit, self).__init__(outcomes=['done', 'failed'], output_keys=['pose'])
 
         self._x = 0
         if x is not None: self._x = x
