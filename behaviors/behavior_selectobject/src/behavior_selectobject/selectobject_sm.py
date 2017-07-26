@@ -123,7 +123,7 @@ class SelectObjectSM(Behavior):
                                         _sm_group_2_1,
                                         transitions={'done': 'finished', 'failed': 'failed', 'timeout': 'timeout'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'timeout': Autonomy.Inherit},
-                                        remapping={'Name': 'Name', 'Image': 'Image', 'Pose': 'pose', 'workspace': 'workspace'})
+                                        remapping={'Name': 'Name', 'Image': 'Image', 'Pose': 'Pose', 'workspace': 'workspace'})
 
 
         return _state_machine
