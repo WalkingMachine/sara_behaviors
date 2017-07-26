@@ -15,11 +15,5 @@
 	<contains name="Wonderland_Get_Waypoint" />
 
 	<!-- Available Parameters -->
-	<params>
-
-		<param type="text" name="waypoint_name" default="" label="waypoint_name" hint="Sets the waypoint_name" />
-
-	</params>
-
 
 </behavior>
