@@ -79,10 +79,6 @@ class Wonderland_Get_Doors(EventState):
 				userdata.entrance_rooms_id = temp_id
 				userdata.entrance_rooms_names = temp_name
 
-				# userdata.entrance_x = data['x']
-				# userdata.entrance_y = data['y']
-				# userdata.entrance_theta = data['theta']
-
 				pt = Point(data['x'], data['y'], 0)
 				qt = transformations.quaternion_from_euler(0, 0, data['theta'])
 				userdata.entrance_pose = Pose(position=pt, orientation=Quaternion(*qt))
@@ -90,10 +86,6 @@ class Wonderland_Get_Doors(EventState):
 				userdata.exit_id = data['id']
 				userdata.exit_rooms_id = temp_id
 				userdata.exit_rooms_names = temp_name
-
-				# userdata.exit_x = data['x']
-				# userdata.exit_y = data['y']
-				# userdata.exit_theta = data['theta']
 
 				pt = Point(data['x'], data['y'], 0)
 				qt = transformations.quaternion_from_euler(0, 0, data['theta'])
