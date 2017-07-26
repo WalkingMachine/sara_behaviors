@@ -43,11 +43,19 @@ class Wonderland_Get_WaypointSM(Behavior):
 
 
 
+<<<<<<< HEAD
     def create(self):
         # x:531 y:406, x:770 y:386
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['name'], output_keys=['waypoint'])
         _state_machine.userdata.name = "origin"
         _state_machine.userdata.waypoint = ""
+=======
+	def create(self):
+		# x:531 y:406, x:770 y:386
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['json_text'])
+		_state_machine.userdata.name = "origin"
+		_state_machine.userdata.json_text = ""
+>>>>>>> 782f152590d733656d229996dfdf882a862d6ac8
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -63,12 +71,21 @@ class Wonderland_Get_WaypointSM(Behavior):
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'input_value': 'name', 'output_value': 'url'})
 
+<<<<<<< HEAD
             # x:608 y:168
             OperatableStateMachine.add('Wonderland_Request',
                                         Wonderland_Request(),
                                         transitions={'done': 'finished', 'error': 'failed'},
                                         autonomy={'done': Autonomy.Off, 'error': Autonomy.Off},
                                         remapping={'url': 'url', 'response': 'waypoint'})
+=======
+			# x:608 y:168
+			OperatableStateMachine.add('Wonderland_Request',
+										Wonderland_Request(),
+										transitions={'done': 'finished', 'error': 'failed'},
+										autonomy={'done': Autonomy.Off, 'error': Autonomy.Off},
+										remapping={'url': 'url', 'response': 'json_text'})
+>>>>>>> 782f152590d733656d229996dfdf882a862d6ac8
 
 
         return _state_machine

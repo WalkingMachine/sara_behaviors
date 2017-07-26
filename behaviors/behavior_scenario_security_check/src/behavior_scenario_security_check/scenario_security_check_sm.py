@@ -49,7 +49,7 @@ class Scenario_Security_checkSM(Behavior):
 
 
     def create(self):
-        # x:790 y:491, x:429 y:316
+        # x:696 y:158, x:425 y:318
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
         _state_machine.userdata.waypoint = []
         _state_machine.userdata.waypoint_name = ""
@@ -60,10 +60,21 @@ class Scenario_Security_checkSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-        # x:889 y:108
-        _sm_door_management_0 = OperatableStateMachine(outcomes=['done'])
+        # x:30 y:322, x:130 y:322
+        _sm_go_out_0 = OperatableStateMachine(outcomes=['finished', 'failed'])
 
-        with _sm_door_management_0:
+        with _sm_go_out_0:
+            # x:67 y:174
+            OperatableStateMachine.add('wait',
+                                        WaitState(wait_time=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off})
+
+
+        # x:889 y:108
+        _sm_door_management_1 = OperatableStateMachine(outcomes=['done'])
+
+        with _sm_door_management_1:
             # x:30 y:40
             OperatableStateMachine.add('detect door',
                                         DoorDetector(timeout=5),
@@ -96,9 +107,9 @@ class Scenario_Security_checkSM(Behavior):
 
 
         # x:30 y:308, x:130 y:308
-        _sm_go_to_exit_1 = OperatableStateMachine(outcomes=['finished', 'failed'])
+        _sm_go_to_exit_2 = OperatableStateMachine(outcomes=['finished', 'failed'])
 
-        with _sm_go_to_exit_1:
+        with _sm_go_to_exit_2:
             # x:54 y:153
             OperatableStateMachine.add('wait',
                                         WaitState(wait_time=1),
@@ -107,9 +118,9 @@ class Scenario_Security_checkSM(Behavior):
 
 
         # x:846 y:86, x:830 y:283
-        _sm_go_to_test_waypoint_2 = OperatableStateMachine(outcomes=['arrived', 'failed'], input_keys=['waypoint_name'])
+        _sm_go_to_test_waypoint_3 = OperatableStateMachine(outcomes=['arrived', 'failed'], input_keys=['waypoint_name'])
 
-        with _sm_go_to_test_waypoint_2:
+        with _sm_go_to_test_waypoint_3:
             # x:141 y:49
             OperatableStateMachine.add('Wonderland_Get_Waypoint',
                                         self.use_behavior(Wonderland_Get_WaypointSM, 'go to test waypoint/Wonderland_Get_Waypoint'),
@@ -141,7 +152,7 @@ class Scenario_Security_checkSM(Behavior):
         with _state_machine:
             # x:75 y:302
             OperatableStateMachine.add('go to test waypoint',
-                                        _sm_go_to_test_waypoint_2,
+                                        _sm_go_to_test_waypoint_3,
                                         transitions={'arrived': 'wait for continue button', 'failed': 'failed'},
                                         autonomy={'arrived': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'waypoint_name': 'waypoint_name'})
@@ -154,15 +165,27 @@ class Scenario_Security_checkSM(Behavior):
 
             # x:393 y:473
             OperatableStateMachine.add('go to exit',
-                                        _sm_go_to_exit_1,
-                                        transitions={'finished': 'finished', 'failed': 'failed'},
+                                        _sm_go_to_exit_2,
+                                        transitions={'finished': 'look for door', 'failed': 'failed'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
             # x:75 y:130
             OperatableStateMachine.add('Door management',
-                                        _sm_door_management_0,
+                                        _sm_door_management_1,
                                         transitions={'done': 'go to test waypoint'},
                                         autonomy={'done': Autonomy.Inherit})
+
+            # x:665 y:483
+            OperatableStateMachine.add('look for door',
+                                        DoorDetector(timeout=1),
+                                        transitions={'done': 'go out', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
+
+            # x:650 y:304
+            OperatableStateMachine.add('go out',
+                                        _sm_go_out_0,
+                                        transitions={'finished': 'finished', 'failed': 'failed'},
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 
         return _state_machine
