@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Go_To_From_Waypoint_ID">
+
+	<executable package_path="behavior_go_to_from_waypoint_id.go_to_from_waypoint_id_sm" class="Go_To_From_Waypoint_IDSM" />
+	<tagstring>waypoint ID Go</tagstring>
+	<author>Redouane Laref</author>
+	<date>Wed Jul 26 2017</date>
+	<description>
+		Going to a positionf by  waypoint from it's ID.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Wonderland_get_waypoint_from_id" />
+
+	<!-- Available Parameters -->
+
+</behavior>

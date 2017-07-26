@@ -6,7 +6,7 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_wonderland_get_waypoint')
+import roslib; roslib.load_manifest('behavior_wonderland_waypoint_id')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.Wonderland_Request import Wonderland_Request
@@ -17,18 +17,18 @@ from sara_flexbe_states.Wonderland_Request import Wonderland_Request
 
 
 '''
-Created on Fri Jul 21 2017
-@author: Nicolas Nadeau
+Created on Wed Jul 26 2017
+@author: Redouane Laref
 '''
-class Wonderland_Get_WaypointSM(Behavior):
+class wonderland_waypoint_idSM(Behavior):
 	'''
-	Get all the list waypoint
+	wonderland move base waypoint to pose
 	'''
 
 
 	def __init__(self):
-		super(Wonderland_Get_WaypointSM, self).__init__()
-		self.name = 'Wonderland_Get_Waypoint'
+		super(wonderland_waypoint_idSM, self).__init__()
+		self.name = 'wonderland_waypoint_id'
 
 		# parameters of this behavior
 
@@ -44,10 +44,9 @@ class Wonderland_Get_WaypointSM(Behavior):
 
 
 	def create(self):
-		# x:531 y:406, x:770 y:386
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['json_text'])
-		_state_machine.userdata.name = "origin"
-		_state_machine.userdata.json_text = ""
+		# x:278 y:355, x:568 y:340
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['waypoint_id'])
+		_state_machine.userdata.waypoint_id = ""
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -56,19 +55,19 @@ class Wonderland_Get_WaypointSM(Behavior):
 
 
 		with _state_machine:
-			# x:327 y:130
-			OperatableStateMachine.add('calc',
-										CalculationState(calculation=lambda x: "waypoint?name="+x),
-										transitions={'done': 'Wonderland_Request'},
+			# x:179 y:112
+			OperatableStateMachine.add('calcu',
+										CalculationState(calculation=lambda x: "waypoint?id="+x),
+										transitions={'done': 'Request to wonderland'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'name', 'output_value': 'url'})
+										remapping={'input_value': 'waypoint_id', 'output_value': 'url'})
 
-			# x:608 y:168
-			OperatableStateMachine.add('Wonderland_Request',
+			# x:387 y:133
+			OperatableStateMachine.add('Request to wonderland',
 										Wonderland_Request(),
 										transitions={'done': 'finished', 'error': 'failed'},
 										autonomy={'done': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'url': 'url', 'response': 'json_text'})
+										remapping={'url': 'url', 'response': 'waypoint_id'})
 
 
 		return _state_machine

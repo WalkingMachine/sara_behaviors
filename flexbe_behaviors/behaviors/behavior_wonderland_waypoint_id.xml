@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="wonderland_waypoint_id">
+
+	<executable package_path="behavior_wonderland_waypoint_id.wonderland_waypoint_id_sm" class="wonderland_waypoint_idSM" />
+	<tagstring>move base waypoint id</tagstring>
+	<author>Redouane Laref</author>
+	<date>Wed Jul 26 2017</date>
+	<description>
+		wonderland move base waypoint to pose
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

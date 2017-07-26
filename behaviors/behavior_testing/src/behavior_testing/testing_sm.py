@@ -6,10 +6,9 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_wonderland_get_waypoint')
+import roslib; roslib.load_manifest('behavior_testing')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.Wonderland_Request import Wonderland_Request
+from sara_flexbe_states.int_topic_publisher import PublishInt
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -17,18 +16,18 @@ from sara_flexbe_states.Wonderland_Request import Wonderland_Request
 
 
 '''
-Created on Fri Jul 21 2017
-@author: Nicolas Nadeau
+Created on Thu Jul 20 2017
+@author: Redouane Laref
 '''
-class Wonderland_Get_WaypointSM(Behavior):
+class testingSM(Behavior):
 	'''
-	Get all the list waypoint
+	This is a test behavior
 	'''
 
 
 	def __init__(self):
-		super(Wonderland_Get_WaypointSM, self).__init__()
-		self.name = 'Wonderland_Get_Waypoint'
+		super(testingSM, self).__init__()
+		self.name = 'testing'
 
 		# parameters of this behavior
 
@@ -44,10 +43,10 @@ class Wonderland_Get_WaypointSM(Behavior):
 
 
 	def create(self):
-		# x:531 y:406, x:770 y:386
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['json_text'])
-		_state_machine.userdata.name = "origin"
-		_state_machine.userdata.json_text = ""
+		# x:351 y:413
+		_state_machine = OperatableStateMachine(outcomes=['done'], input_keys=['data', 'topic'])
+		_state_machine.userdata.data = "2"
+		_state_machine.userdata.topic = "essai"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -56,19 +55,12 @@ class Wonderland_Get_WaypointSM(Behavior):
 
 
 		with _state_machine:
-			# x:327 y:130
-			OperatableStateMachine.add('calc',
-										CalculationState(calculation=lambda x: "waypoint?name="+x),
-										transitions={'done': 'Wonderland_Request'},
+			# x:292 y:105
+			OperatableStateMachine.add('publieur',
+										PublishInt(),
+										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'name', 'output_value': 'url'})
-
-			# x:608 y:168
-			OperatableStateMachine.add('Wonderland_Request',
-										Wonderland_Request(),
-										transitions={'done': 'finished', 'error': 'failed'},
-										autonomy={'done': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'url': 'url', 'response': 'json_text'})
+										remapping={'topic': 'topic', 'data': 'data'})
 
 
 		return _state_machine

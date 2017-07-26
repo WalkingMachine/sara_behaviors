@@ -12,6 +12,8 @@
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Wonderland_Get_Entity" />
+	<contains name="Get_waypoint_pose" />
 
 	<!-- Available Parameters -->
 
