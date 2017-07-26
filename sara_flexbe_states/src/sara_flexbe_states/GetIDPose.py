@@ -11,7 +11,7 @@ from agile_grasp.msg import Grasps
 from spencer_tracking_msgs.msg import *
 
 
-class GetPersonID(EventState):
+class GetIDPose(EventState):
     '''
     GraspObject finds requested object and returns its position in the space
 
@@ -24,33 +24,34 @@ class GetPersonID(EventState):
 
     def __init__(self):
         # See example_state.py for basic explanations.
-        super(GetPersonID, self).__init__(outcomes=['done', 'failed'],
-                                          output_keys=['person_id'])
+        super(GetIDPose, self).__init__(outcomes=['done', 'lost', 'failed'],
+                                          input_keys=['person_id', 'last_pose'],
+                                        output_keys=['person_pose'])
 
     def execute(self, userdata):
         # This method is called periodically while the state is active.
         # Main purpose is to check state conditions and trigger a corresponding outcome.
         # If no outcome is returned, the state will stay active.
         closest_pose = PoseWithCovariance()
-        Logger.loginfo('Starting SPENCER people tracker')
-        os.system('roslaunch spencer_people_tracking_launch tracking_single_rgbd_sensor.launch height_above_ground:=1.6')
+        Logger.loginfo('Getting person\'s pose from its ID')
         tracked_persons = rospy.wait_for_message('/spencer/perception/tracked_persons', TrackedPersons, 30)
 
         try:
             Logger.loginfo('Got list of tracked persons')
             for person in tracked_persons:
-                x_pos = person.pose.pose.position.x
-                y_pos = person.pose.pose.position.y
-                distance = math.sqrt(x_pos**2 + y_pos**2)
-                if distance <= 2.0:
-                    person2track = person.track_id
-                    Logger.loginfo("Closest person to track retrieved")
-                    userdata.person_id = person2track
+                if person.track_id == userdata.person_id and person.is_matched:
+                    pose2track = person.track_id
+                    Logger.loginfo('Pose of ID to track retrieved')
+                    userdata.person_pose = pose2track
                     return 'done'
+                elif person.track_id == userdata.person_id:
+                    pose2track = person.track_id
+                    userdata.person_pose = pose2track
+                    Logger.loginfo("Did not find any person close to robot, estimating possible pose")
+                    return 'lost'
                 else:
-                    Logger.loginfo("Did not find any person close to robot")
                     return 'failed'
-            # person2track = tracked_persons[0].track_id    --use if closest person calculation fails
+            # person2track = tracked_persons[0].track_id
 
         except rospy.ROSException, e:
             Logger.loginfo("Did not find any person close to robot")
