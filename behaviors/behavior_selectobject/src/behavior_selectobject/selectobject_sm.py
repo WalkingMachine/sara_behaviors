@@ -124,7 +124,7 @@ class SelectObjectSM(Behavior):
                                         _sm_group_2_1,
                                         transitions={'done': 'GetGrasp', 'failed': 'failed', 'timeout': 'timeout'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'timeout': Autonomy.Inherit},
-                                        remapping={'Name': 'Name', 'Image': 'Image', 'Pose': 'pose', 'workspace': 'workspace'})
+                                        remapping={'Name': 'Name', 'Image': 'Image', 'Pose': 'Pose', 'workspace': 'workspace'})
 
             # x:544 y:301
             OperatableStateMachine.add('GetGrasp',
