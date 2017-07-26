@@ -48,7 +48,7 @@ class NewqualifSM(Behavior):
 
 
     def create(self):
-        # x:741 y:458, x:288 y:578
+        # x:733 y:513, x:337 y:267
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 
         # Additional creation code can be added inside the following tags
@@ -58,61 +58,61 @@ class NewqualifSM(Behavior):
 
 
         with _state_machine:
-            # x:65 y:79
+            # x:43 y:79
             OperatableStateMachine.add('init',
                                         AmclInit(x=0.494079113007, y=0.182213068008, z=0, ox=0, oy=0, oz=-0.00849557845025, ow=0.999963911922),
                                         transitions={'done': 'Door Detector', 'failed': 'failed'},
                                         autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose'})
 
-            # x:221 y:68
+            # x:24 y:168
             OperatableStateMachine.add('Door Detector',
                                         self.use_behavior(DoorDetectorSM, 'Door Detector'),
                                         transitions={'finished': 'gen', 'failed': 'Door Detector'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-            # x:230 y:200
+            # x:43 y:274
             OperatableStateMachine.add('gen',
                                         GenPose2(x=1.69569063187, y=0.229661718011, z=0, ox=0, oy=0, oz=-0.0101022152482, ow=0.999948971322),
                                         transitions={'done': 'move', 'failed': 'failed'},
                                         autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose'})
 
-            # x:381 y:205
+            # x:37 y:350
             OperatableStateMachine.add('move',
                                         SaraMoveBase(),
                                         transitions={'arrived': 'continue', 'failed': 'failed'},
                                         autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose'})
 
-            # x:531 y:205
+            # x:26 y:435
             OperatableStateMachine.add('continue',
                                         ContinueButton(),
                                         transitions={'Continue': 'gen2'},
                                         autonomy={'Continue': Autonomy.Off})
 
-            # x:263 y:289
+            # x:35 y:512
             OperatableStateMachine.add('gen2',
                                         GenPose2(x=6.04513931274, y=3.34974265099, z=0, ox=0, oy=0, oz=0.413818975028, ow=0.910359190598),
                                         transitions={'done': 'move2', 'failed': 'failed'},
                                         autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose'})
 
-            # x:403 y:288
+            # x:215 y:514
             OperatableStateMachine.add('move2',
                                         SaraMoveBase(),
                                         transitions={'arrived': 'gen3', 'failed': 'failed'},
                                         autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose'})
 
-            # x:344 y:395
+            # x:388 y:514
             OperatableStateMachine.add('gen3',
                                         GenPose2(x=11.4574050903, y=2.73497796059, z=0, ox=0, oy=0, oz=-0.284027256457, ow=0.958816206366),
                                         transitions={'done': 'move3', 'failed': 'failed'},
                                         autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose'})
 
-            # x:481 y:396
+            # x:527 y:514
             OperatableStateMachine.add('move3',
                                         SaraMoveBase(),
                                         transitions={'arrived': 'finished', 'failed': 'failed'},
