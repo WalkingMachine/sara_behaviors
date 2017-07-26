@@ -16,7 +16,6 @@ from flexbe_states.check_condition_state import CheckConditionState
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.FIFO_New import FIFO_New
-from behavior_scenario_security_check.scenario_security_check_sm import Scenario_Security_checkSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -45,7 +44,6 @@ class Sara_main_behaviorSM(Behavior):
         # references to used behaviors
         self.add_behavior(sara_command_managerSM, 'Sara parallel Runtime/Sara brain/sara_command_manager')
         self.add_behavior(SaraactionexecutorSM, 'Sara parallel Runtime/Sara action executor/Sara action executor')
-        self.add_behavior(Scenario_Security_checkSM, 'Scenario_Security_check')
 
         # Additional initialization code can be added inside the following tags
         # [MANUAL_INIT]
@@ -299,16 +297,9 @@ class Sara_main_behaviorSM(Behavior):
             # x:237 y:411
             OperatableStateMachine.add('Create DoNow',
                                         FIFO_New(),
-                                        transitions={'done': 'Scenario_Security_check'},
+                                        transitions={'done': 'Sara parallel Runtime'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'FIFO': 'DoNow'})
-
-            # x:207 y:490
-            OperatableStateMachine.add('Scenario_Security_check',
-                                        self.use_behavior(Scenario_Security_checkSM, 'Scenario_Security_check'),
-                                        transitions={'finished': 'Sara parallel Runtime'},
-                                        autonomy={'finished': Autonomy.Inherit},
-                                        remapping={'MedFIFO': 'MedFIFO'})
 
 
         return _state_machine
