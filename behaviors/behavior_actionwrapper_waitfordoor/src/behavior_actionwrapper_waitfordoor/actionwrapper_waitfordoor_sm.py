@@ -8,7 +8,7 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_waitfordoor')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.wait_state import WaitState
+from sara_flexbe_states.door_detector import DoorDetector
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -53,11 +53,11 @@ class ActionWrapper_WaitForDoorSM(Behavior):
 
 
         with _state_machine:
-            # x:30 y:40
-            OperatableStateMachine.add('TimeOut',
-                                        WaitState(wait_time=lambda x:x[1]),
-                                        transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.Off})
+            # x:137 y:150
+            OperatableStateMachine.add('DoorDetector',
+                                        DoorDetector(timeout=10),
+                                        transitions={'done': 'finished', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
 
         return _state_machine
