@@ -7,11 +7,21 @@
 	<author>Philippe La Madeleine</author>
 	<date>Thu May 25 2017</date>
 	<description>
-		Execute les actions listé par le command interpretor
+		Execute les actions liste par le command interpretor
 	</description>
 
 
 	<!-- Contained Behaviors -->
+	<contains name="ActionWrapper_Bring" />
+	<contains name="ActionWrapper_Follow" />
+	<contains name="ActionWrapper_Move" />
+	<contains name="ActionWrapper_Attach" />
+	<contains name="ActionWrapper_LookAt" />
+	<contains name="ActionWrapper_Find" />
+	<contains name="ActionWrapper_Place" />
+	<contains name="ActionWrapper_Give" />
+	<contains name="ActionWrapper_Pick" />
+	<contains name="ActionWrapper_Turn" />
 
 	<!-- Available Parameters -->
 

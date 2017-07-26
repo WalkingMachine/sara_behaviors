@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="ActionWrapper_Turn">
+
+	<executable package_path="behavior_actionwrapper_turn.actionwrapper_turn_sm" class="ActionWrapper_TurnSM" />
+	<tagstring>ActionWrapper</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Tue Jul 11 2017</date>
+	<description>
+		action wrapper pour turn
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

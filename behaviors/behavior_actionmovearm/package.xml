@@ -4,7 +4,7 @@
   <description>
      Send a pose to moveit to move the arm.
   </description>
-  <maintainer email="todo@todo.com">Philippe La Madleine</maintainer>
+  <maintainer email="philippe117@live.fr">Philippe La Madleine</maintainer>
   <license>BSD</license>
 
   <url>http://ros.org/wiki/behavior_actionmovearm</url>

@@ -12,12 +12,11 @@
 
 
 	<!-- Contained Behaviors -->
+	<contains name="sara_command_manager" />
 	<contains name="Sara action executor" />
-	<contains name="TestBoolTopic" />
 
 	<!-- Available Parameters -->
 	<params>
-
 
 		<param type="text" name="ShutdownTopic" default="/shutdown" label="ShutdownTopic" hint="Sets the ShutdownTopic" />
 
@@ -25,7 +24,7 @@
 
 		<param type="text" name="ActionTopic" default="sara_action" label="ActionTopic" hint="Sets the ActionTopic" />
 
-  </params>
+	</params>
 
 
 </behavior>

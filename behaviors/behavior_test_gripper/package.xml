@@ -1,0 +1,20 @@
+<package>
+  <name>behavior_test_gripper</name>
+  <version>1.0.0</version>
+  <description>
+     test the gripper
+  </description>
+  <maintainer email="philippe117@live.fr">Philippe La Madeleine</maintainer>
+  <license>BSD</license>
+
+  <url>http://ros.org/wiki/behavior_test_gripper</url>
+  <author>Philippe La Madeleine</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>rospy</run_depend>
+  <run_depend>flexbe_core</run_depend>
+  <run_depend>flexbe_states</run_depend>
+  <run_depend>sara_flexbe_states</run_depend>
+
+</package>

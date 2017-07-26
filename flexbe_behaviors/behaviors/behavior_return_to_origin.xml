@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Return_to_Origin">
+
+	<executable package_path="behavior_return_to_origin.return_to_origin_sm" class="Return_to_OriginSM" />
+	<tagstring>Wonderland</tagstring>
+	<author>Nicolas Nadeau</author>
+	<date>Mon Jul 17 2017</date>
+	<description>
+		Make SARA move back to an old origin
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Wonderland_Get_Origin" />
+
+	<!-- Available Parameters -->
+
+</behavior>

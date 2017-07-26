@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Action_SetExpression">
+
+	<executable package_path="behavior_action_setexpression.action_setexpression_sm" class="Action_SetExpressionSM" />
+	<tagstring>face; led; emotion; action</tagstring>
+	<author>Redouane Laref</author>
+	<date>Wed Jul 19 2017</date>
+	<description>
+		State qui change la couleur des expressions de SARA.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

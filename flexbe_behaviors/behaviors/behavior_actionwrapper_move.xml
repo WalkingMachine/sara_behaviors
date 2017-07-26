@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="ActionWrapper_Move">
+
+	<executable package_path="behavior_actionwrapper_move.actionwrapper_move_sm" class="ActionWrapper_MoveSM" />
+	<tagstring>ActionWrapper</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Tue Jul 11 2017</date>
+	<description>
+		action wrapper pour move_base
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Wonderland_Get_Entity" />
+	<contains name="Get_waypoint_pose" />
+
+	<!-- Available Parameters -->
+
+</behavior>

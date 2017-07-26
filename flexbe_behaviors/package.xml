@@ -4,7 +4,7 @@
   <description>
      flexbe_behaviors references all implemented behaviors.
   </description>
-  <maintainer email="todo@todo.com">TODO</maintainer>
+  <maintainer email="philippe117@live.fr">Philippe La Madeleine</maintainer>
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
@@ -27,6 +27,47 @@
   <run_depend>behavior_test_move_arm</run_depend>
   <run_depend>behavior_testmovearm</run_depend>
   <run_depend>behavior_selectobject</run_depend>
+<<<<<<< HEAD
   <run_depend>behavior_actionwrapper_waitfordoor</run_depend>
+=======
+  <run_depend>behavior_test_gripper</run_depend>
+  <run_depend>behavior_test_lu4r</run_depend>
+  <run_depend>behavior_sara_command_manager</run_depend>
+  <run_depend>behavior_actionwrapper_move</run_depend>
+  <run_depend>behavior_actionwrapper_movearm</run_depend>
+  <run_depend>behavior_actionwrapper_pick</run_depend>
+  <run_depend>behavior_actionwrapper_bring</run_depend>
+  <run_depend>behavior_actionwrapper_follow</run_depend>
+  <run_depend>behavior_actionwrapper_attach</run_depend>
+  <run_depend>behavior_actionwrapper_lookat</run_depend>
+  <run_depend>behavior_actionwrapper_find</run_depend>
+  <run_depend>behavior_actionwrapper_place</run_depend>
+  <run_depend>behavior_actionwrapper_give</run_depend>
+  <run_depend>behavior_actionwrapper_turn</run_depend>
+  <run_depend>behavior_stop</run_depend>
+  <run_depend>behavior_actionwrapper_stop</run_depend>
+  <run_depend>behavior_wonderland_get_entity</run_depend>
+  <run_depend>behavior_a_test_wonderland</run_depend>
+  <run_depend>behavior_wonderland_test</run_depend>
+  <run_depend>behavior_door_detector</run_depend>
+  <run_depend>behavior_wonderland_entity_in_room</run_depend>
+  <run_depend>behavior_wonderland_list_entities_in_room</run_depend>
+  <run_depend>behavior_wonderland_list_rooms</run_depend>
+  <run_depend>behavior_say_hello</run_depend>
+  <run_depend>behavior_wonderland_get_doors</run_depend>
+  <run_depend>behavior_wonderland_entity_in_room_name</run_depend>
+  <run_depend>behavior_wonderland_get_waypoint</run_depend>
+  <run_depend>behavior_wonderland_test2</run_depend>
+  <run_depend>behavior_wonderland_get_origin</run_depend>
+  <run_depend>behavior_return_to_origin</run_depend>
+
+  <run_depend>behavior_entity_pose_creator</run_depend>
+  <run_depend>behavior_wonderland_waypoint_id</run_depend>
+  <run_depend>behavior_wonderland_get_waypoint_from_id</run_depend>
+  <run_depend>behavior_get_waypoint_pose</run_depend>
+
+  <run_depend>behavior_wonderland_goto_exit</run_depend>
+
+>>>>>>> 168b8277b51616404bc394d2f29aeff437e47692
 
 </package>
