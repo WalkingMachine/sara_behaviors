@@ -12,6 +12,7 @@ from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.recognize_objects import ObjectsRecognize
 from flexbe_states.subscriber_state import SubscriberState
 from sara_flexbe_states.select_object import ObjectSelect
+from sara_flexbe_states.grasp_object import GraspObject
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -48,7 +49,7 @@ class SelectObjectSM(Behavior):
     def create(self):
         # x:742 y:317, x:472 y:176, x:466 y:406
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'timeout'])
-        _state_machine.userdata.Name = "Redbull"
+        _state_machine.userdata.Name = "curry"
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -121,9 +122,16 @@ class SelectObjectSM(Behavior):
             # x:277 y:303
             OperatableStateMachine.add('Group_2',
                                         _sm_group_2_1,
-                                        transitions={'done': 'finished', 'failed': 'failed', 'timeout': 'timeout'},
+                                        transitions={'done': 'GetGrasp', 'failed': 'failed', 'timeout': 'timeout'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'timeout': Autonomy.Inherit},
                                         remapping={'Name': 'Name', 'Image': 'Image', 'Pose': 'pose', 'workspace': 'workspace'})
+
+            # x:544 y:301
+            OperatableStateMachine.add('GetGrasp',
+                                        GraspObject(),
+                                        transitions={'done': 'finished', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'workspace': 'workspace', 'grasps': 'grasps'})
 
 
         return _state_machine

@@ -33,13 +33,17 @@ class GraspObject(EventState):
 
 
         # Run agile grasper and get message
-        Logger.loginfo('Computing grasps on workspace '+userdata.workspace)
-        os.system('roslaunch agile_grasp single_camera_grasps.launch workspace:='+'\''+userdata.workspace+'\'')
+        Logger.loginfo('rosparam set /workspace '
+                  + '\"[' + userdata.workspace + ']\"')
+        os.system('rosparam set /workspace '
+                  + '\"[' + userdata.workspace + ']\"')
+        Logger.loginfo('roslaunch agile_grasp single_camera_grasps.launch')
+        os.system('roslaunch agile_grasp single_camera_grasps.launch')
 
         grasps_msg = rospy.wait_for_message("/find_grasps/grasps", Grasps,
                                            5)  # for kinect2 : '/kinect2/qhd/image_color_rect' for xtion : '/camera/rgb/image_rect_color'
         try:
-            print grasps_msg
+            Logger.loginfo(str(grasps_msg))
             userdata.grasps = grasps_msg
             Logger.loginfo("Grasps received")
             return 'done'  # One of the outcomes declared above.
