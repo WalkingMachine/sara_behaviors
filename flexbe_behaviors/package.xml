@@ -57,10 +57,13 @@
   <run_depend>behavior_wonderland_test2</run_depend>
   <run_depend>behavior_wonderland_get_origin</run_depend>
   <run_depend>behavior_return_to_origin</run_depend>
+
   <run_depend>behavior_entity_pose_creator</run_depend>
   <run_depend>behavior_wonderland_waypoint_id</run_depend>
   <run_depend>behavior_wonderland_get_waypoint_from_id</run_depend>
-  <run_depend>behavior_go_to_from_waypoint_id</run_depend>
   <run_depend>behavior_get_waypoint_pose</run_depend>
+
+  <run_depend>behavior_wonderland_goto_exit</run_depend>
+
 
 </package>

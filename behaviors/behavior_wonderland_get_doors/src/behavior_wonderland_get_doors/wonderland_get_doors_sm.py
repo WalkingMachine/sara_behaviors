@@ -45,17 +45,13 @@ class Wonderland_Get_DoorsSM(Behavior):
 
 	def create(self):
 		# x:747 y:521, x:517 y:516
-		_state_machine = OperatableStateMachine(outcomes=['done', 'failed'], output_keys=['exit_y', 'entrance_id', 'entrance_x', 'entrance_y', 'entrance_theta', 'entrance_rooms_id', 'entrance_rooms_names', 'exit_id', 'exit_x', 'exit_theta', 'exit_rooms_id', 'exit_rooms_names'])
+		_state_machine = OperatableStateMachine(outcomes=['done', 'failed'], output_keys=['exit_pose', 'entrance_id', 'entrance_pose', 'entrance_rooms_id', 'entrance_rooms_names', 'exit_id', 'exit_rooms_id', 'exit_rooms_names'])
 		_state_machine.userdata.entrance_id = None
-		_state_machine.userdata.entrance_x = None
-		_state_machine.userdata.entrance_y = None
-		_state_machine.userdata.entrance_theta = None
+		_state_machine.userdata.entrance_pose = None
 		_state_machine.userdata.entrance_rooms_id = None
 		_state_machine.userdata.entrance_rooms_names = None
 		_state_machine.userdata.exit_id = None
-		_state_machine.userdata.exit_y = None
-		_state_machine.userdata.exit_x = None
-		_state_machine.userdata.exit_theta = None
+		_state_machine.userdata.exit_pose = None
 		_state_machine.userdata.exit_rooms_id = None
 		_state_machine.userdata.exit_rooms_names = None
 		_state_machine.userdata.url = "door"
@@ -79,7 +75,7 @@ class Wonderland_Get_DoorsSM(Behavior):
 										Wonderland_Get_Doors(),
 										transitions={'done': 'done', 'error': 'failed'},
 										autonomy={'done': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'json_text': 'entity', 'entrance_id': 'entrance_id', 'entrance_x': 'entrance_x', 'entrance_y': 'entrance_y', 'entrance_theta': 'entrance_theta', 'entrance_rooms_id': 'entrance_rooms_id', 'entrance_rooms_names': 'entrance_rooms_names', 'exit_id': 'exit_id', 'exit_x': 'exit_x', 'exit_y': 'exit_y', 'exit_theta': 'exit_theta', 'exit_rooms_id': 'exit_rooms_id', 'exit_rooms_names': 'exit_rooms_names'})
+										remapping={'json_text': 'entity', 'entrance_id': 'entrance_id', 'entrance_pose': 'entrance_pose', 'entrance_rooms_id': 'entrance_rooms_id', 'entrance_rooms_names': 'entrance_rooms_names', 'exit_id': 'exit_id', 'exit_pose': 'exit_pose', 'exit_rooms_id': 'exit_rooms_id', 'exit_rooms_names': 'exit_rooms_names'})
 
 
 		return _state_machine
