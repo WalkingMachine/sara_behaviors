@@ -2,6 +2,9 @@
 # encoding=utf8
 
 from flexbe_core import EventState, Logger
+from geometry_msgs.msg import Pose, Point, Quaternion
+from tf import transformations
+
 import json
 
 
@@ -33,10 +36,8 @@ class Wonderland_Get_Doors(EventState):
 	def __init__(self):
 		# See example_state.py for basic explanations.
 		super(Wonderland_Get_Doors, self).__init__(outcomes=['done', 'error'], input_keys=['json_text'],
-													output_keys=['entrance_id', 'entrance_x', 'entrance_y',
-																'entrance_theta', 'entrance_rooms_id',
-																'entrance_rooms_names','exit_id', 'exit_x', 'exit_y',
-																'exit_theta', 'exit_rooms_id', 'exit_rooms_names'])
+													output_keys=['entrance_id', 'entrance_pose', 'entrance_rooms_id',
+																'entrance_rooms_names','exit_id', 'exit_pose', 'exit_rooms_id', 'exit_rooms_names'])
 
 	def execute(self, userdata):
 		# parse parameter json data
@@ -75,18 +76,28 @@ class Wonderland_Get_Doors(EventState):
 				
 			if data['isExit']:
 				userdata.entrance_id = data['id']
-				userdata.entrance_x = data['x']
-				userdata.entrance_y = data['y']
-				userdata.entrance_theta = data['theta']
 				userdata.entrance_rooms_id = temp_id
 				userdata.entrance_rooms_names = temp_name
+
+				# userdata.entrance_x = data['x']
+				# userdata.entrance_y = data['y']
+				# userdata.entrance_theta = data['theta']
+
+				pt = Point(data['x'], data['y'], 0)
+				qt = transformations.quaternion_from_euler(0, 0, data['theta'])
+				userdata.entrance_pose = Pose(position=pt, orientation=Quaternion(*qt))
 			else:
 				userdata.exit_id = data['id']
-				userdata.exit_x = data['x']
-				userdata.exit_y = data['y']
-				userdata.exit_theta = data['theta']
 				userdata.exit_rooms_id = temp_id
 				userdata.exit_rooms_names = temp_name
+
+				# userdata.exit_x = data['x']
+				# userdata.exit_y = data['y']
+				# userdata.exit_theta = data['theta']
+
+				pt = Point(data['x'], data['y'], 0)
+				qt = transformations.quaternion_from_euler(0, 0, data['theta'])
+				userdata.exit_pose = Pose(position=pt, orientation=Quaternion(*qt))
 
 		# continue to Done
 		return 'done'
