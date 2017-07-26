@@ -19,7 +19,8 @@ class Wonderland_Entity_Exist(EventState):
 	
 	def __init__(self):
 		# See example_state.py for basic explanations.
-		super(Wonderland_Entity_Exist, self).__init__(outcomes=['one', 'multiple', 'empty'], input_keys=['json_text'], output_keys=['number'])
+		super(Wonderland_Entity_Exist, self).__init__(outcomes=['one', 'multiple', 'empty'], input_keys=['json_text'],
+		                                              output_keys=['number'])
 	
 	def execute(self, userdata):
 		# parse parameter json data

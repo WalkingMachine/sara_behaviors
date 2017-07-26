@@ -24,7 +24,7 @@ class Wonderland_Read_Entity(EventState):
 	def __init__(self, index_function):
 		super(Wonderland_Read_Entity, self).__init__(outcomes=['done', 'empty', 'error'],
 													input_keys=['json_text', 'input_value'],
-													output_keys=['id', 'name', 'time', 'x_pos', 'y_pos', 'z_pos'])
+													output_keys=['id', 'name', 'time', 'x_pos', 'y_pos', 'z_pos', 'waypoint_id'])
 		self._index_function = index_function
 		self._index = 0
 	
@@ -65,7 +65,8 @@ class Wonderland_Read_Entity(EventState):
 		if 'z' not in data[self._index]:
 			# continue to Error
 			return 'error'
-		
+
+
 		# write return datas
 		userdata.id = data[self._index]['id']
 		userdata.name = data[self._index]['name']
@@ -73,6 +74,10 @@ class Wonderland_Read_Entity(EventState):
 		userdata.x_pos = data[self._index]['x']
 		userdata.y_pos = data[self._index]['y']
 		userdata.z_pos = data[self._index]['z']
+
+		if 'waypoint' in data[self._index]:
+			if 'id' in data[self._index]['waypoint']:
+				userdata.waypoint_id = data[self._index]['waypoint']['id']
 
 		# continue to Done
 		return 'done'
