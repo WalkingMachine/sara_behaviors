@@ -52,6 +52,7 @@ class Scenario_Help_me_carrySM(Behavior):
     def create(self):
         # x:733 y:345, x:291 y:142
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
+        _state_machine.userdata.car = false
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -71,7 +72,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
 
         # x:30 y:322
-        _sm_listen_1 = OperatableStateMachine(outcomes=['fail'])
+        _sm_listen_1 = OperatableStateMachine(outcomes=['fail'], input_keys=['car'])
 
         with _sm_listen_1:
             # x:74 y:70
@@ -82,31 +83,31 @@ class Scenario_Help_me_carrySM(Behavior):
                                         remapping={'message': 'message'})
 
 
-        # x:408 y:318
-        _sm_follow_2 = OperatableStateMachine(outcomes=['failed'], input_keys=['person_id'])
+        # x:367 y:239
+        _sm_follow_2 = OperatableStateMachine(outcomes=['failed'], input_keys=['person_id', 'car'])
 
         with _sm_follow_2:
-            # x:120 y:41
+            # x:49 y:53
             OperatableStateMachine.add('Get operator pose',
                                         _sm_get_operator_pose_0,
                                         transitions={'failed': 'failed', 'lost': 'for', 'done': 'move'},
                                         autonomy={'failed': Autonomy.Inherit, 'lost': Autonomy.Inherit, 'done': Autonomy.Inherit},
                                         remapping={'person_id': 'person_id', 'pose': 'pose'})
 
-            # x:585 y:48
+            # x:792 y:41
             OperatableStateMachine.add('move',
                                         SaraMoveBase(),
                                         transitions={'arrived': 'say stop', 'failed': 'failed'},
                                         autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose'})
 
-            # x:392 y:91
+            # x:349 y:55
             OperatableStateMachine.add('say stop',
                                         SaraSay(sentence="Wait for me. I've lost you. Stay still until I find you again.", emotion=1),
                                         transitions={'done': 'Get operator pose'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:392 y:194
+            # x:352 y:145
             OperatableStateMachine.add('for',
                                         ForState(repeat=3),
                                         transitions={'do': 'say stop', 'end': 'failed'},
@@ -115,7 +116,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
 
         # x:313 y:60, x:320 y:223, x:230 y:308, x:330 y:322
-        _sm_follow_operator_3 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['person_id'], conditions=[
+        _sm_follow_operator_3 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['person_id', 'car'], conditions=[
                                         ('finished', [('follow', 'failed')]),
                                         ('failed', [('listen', 'fail')])
                                         ])
@@ -126,13 +127,14 @@ class Scenario_Help_me_carrySM(Behavior):
                                         _sm_follow_2,
                                         transitions={'failed': 'finished'},
                                         autonomy={'failed': Autonomy.Inherit},
-                                        remapping={'person_id': 'person_id'})
+                                        remapping={'person_id': 'person_id', 'car': 'car'})
 
             # x:87 y:211
             OperatableStateMachine.add('listen',
                                         _sm_listen_1,
                                         transitions={'fail': 'failed'},
-                                        autonomy={'fail': Autonomy.Inherit})
+                                        autonomy={'fail': Autonomy.Inherit},
+                                        remapping={'car': 'car'})
 
 
         # x:30 y:308, x:130 y:308
@@ -223,12 +225,12 @@ class Scenario_Help_me_carrySM(Behavior):
                                         transitions={'done': 'Follow operator'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:483 y:332
+            # x:480 y:332
             OperatableStateMachine.add('Follow operator',
                                         _sm_follow_operator_3,
                                         transitions={'finished': 'finished', 'failed': 'operator lost'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'person_id': 'person_id'})
+                                        remapping={'person_id': 'person_id', 'car': 'car'})
 
             # x:496 y:136
             OperatableStateMachine.add('operator lost',
