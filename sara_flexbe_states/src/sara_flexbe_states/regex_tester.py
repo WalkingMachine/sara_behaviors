@@ -6,19 +6,20 @@ import re
 
 class RegexTester(EventState):
     """
-    test a regular expressuion
+    test a regular expression
 
     -- regex     string      regular expression
+    
 
 
-    <= true
-    <= false 
+    <= true   true
+    <= false   false
     """
 
     def __init__(self, regex):
         """Constructor"""
 
-        super(RegexTester, self).__init__(outcomes = ['true','false'], inputdata = ['text'])
+        super(RegexTester, self).__init__(outcomes = ['true','false'], input_keys = ['text'], output_keys = ['result'])
         self.test = re.compile(regex)
 
     def execute(self, userdata):

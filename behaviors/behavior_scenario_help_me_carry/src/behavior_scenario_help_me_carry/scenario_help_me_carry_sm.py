@@ -17,7 +17,10 @@ from sara_flexbe_states.GetIDPose import GetIDPose
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_states.compare_poses import ComparePoses
+from flexbe_states.check_condition_state import CheckConditionState
 from flexbe_states.subscriber_state import SubscriberState
+from sara_flexbe_states.regex_tester import RegexTester
+from flexbe_states.calculation_state import CalculationState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -73,20 +76,34 @@ class Scenario_Help_me_carrySM(Behavior):
                                         remapping={'person_id': 'person_id', 'person_pose': 'pose'})
 
 
-        # x:30 y:322
+        # x:646 y:266
         _sm_listen_1 = OperatableStateMachine(outcomes=['fail'], input_keys=['car'])
 
         with _sm_listen_1:
-            # x:74 y:70
+            # x:152 y:129
             OperatableStateMachine.add('listen for order',
-                                        SubscriberState(topic="", blocking=True, clear=False),
-                                        transitions={'received': 'listen for order', 'unavailable': 'listen for order'},
+                                        SubscriberState(topic="/speach", blocking=True, clear=True),
+                                        transitions={'received': 'calc', 'unavailable': 'listen for order'},
                                         autonomy={'received': Autonomy.Off, 'unavailable': Autonomy.Off},
                                         remapping={'message': 'message'})
 
+            # x:589 y:95
+            OperatableStateMachine.add('test',
+                                        RegexTester(regex=".*[Ss]top.*"),
+                                        transitions={'true': 'listen for order', 'false': 'listen for order'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'text': 'text', 'result': 'car'})
 
-        # x:367 y:239
-        _sm_follow_2 = OperatableStateMachine(outcomes=['failed'], input_keys=['person_id', 'car'])
+            # x:381 y:216
+            OperatableStateMachine.add('calc',
+                                        CalculationState(calculation=lambda x: x.data),
+                                        transitions={'done': 'test'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'input_value': 'message', 'output_value': 'text'})
+
+
+        # x:384 y:427, x:823 y:153
+        _sm_follow_2 = OperatableStateMachine(outcomes=['failed', 'finished'], input_keys=['person_id', 'car'])
 
         with _sm_follow_2:
             # x:49 y:53
@@ -99,50 +116,58 @@ class Scenario_Help_me_carrySM(Behavior):
             # x:792 y:41
             OperatableStateMachine.add('move',
                                         SaraMoveBase(),
-                                        transitions={'arrived': 'say stop', 'failed': 'failed'},
+                                        transitions={'arrived': 'cond', 'failed': 'failed'},
                                         autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose'})
 
-            # x:411 y:80
+            # x:387 y:129
             OperatableStateMachine.add('say stop',
                                         SaraSay(sentence="Wait for me. I've lost you. Stay still until I find you again.", emotion=1),
                                         transitions={'done': 'Get operator pose'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:383 y:165
+            # x:380 y:239
             OperatableStateMachine.add('for',
                                         ForState(repeat=3),
                                         transitions={'do': 'say stop', 'end': 'failed'},
                                         autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
                                         remapping={'index': 'index'})
 
-            # x:173 y:339
+            # x:163 y:518
             OperatableStateMachine.add('get robot pose',
                                         Get_Robot_Pose(blocking=True, clear=False),
                                         transitions={'done': 'compare poses', 'failed': 'failed'},
                                         autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose_robot'})
 
-            # x:481 y:341
+            # x:487 y:517
             OperatableStateMachine.add('compare poses',
                                         ComparePoses(),
                                         transitions={'done': 'move'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'pose_robot': 'pose_robot', 'pose_other': 'pose', 'pose': 'pose'})
 
+            # x:370 y:31
+            OperatableStateMachine.add('cond',
+                                        CheckConditionState(predicate=lambda x: x),
+                                        transitions={'true': 'finished', 'false': 'Get operator pose'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'car'})
 
-        # x:313 y:60, x:320 y:223, x:230 y:308, x:330 y:322
+
+        # x:313 y:60, x:320 y:223, x:230 y:308, x:299 y:117, x:430 y:322
         _sm_follow_operator_3 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['person_id', 'car'], conditions=[
-                                        ('finished', [('follow', 'failed')]),
-                                        ('failed', [('listen', 'fail')])
+                                        ('failed', [('follow', 'failed')]),
+                                        ('failed', [('listen', 'fail')]),
+                                        ('finished', [('follow', 'finished')])
                                         ])
 
         with _sm_follow_operator_3:
             # x:87 y:42
             OperatableStateMachine.add('follow',
                                         _sm_follow_2,
-                                        transitions={'failed': 'finished'},
-                                        autonomy={'failed': Autonomy.Inherit},
+                                        transitions={'failed': 'failed', 'finished': 'finished'},
+                                        autonomy={'failed': Autonomy.Inherit, 'finished': Autonomy.Inherit},
                                         remapping={'person_id': 'person_id', 'car': 'car'})
 
             # x:87 y:211
@@ -237,7 +262,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
             # x:345 y:340
             OperatableStateMachine.add('perfect',
-                                        SaraSay(sentence="Perfect! I'm now ready to follow you", emotion=1),
+                                        SaraSay(sentence="Perfect! I'm now ready to follow you. Please, tell me to stop when we arrive", emotion=1),
                                         transitions={'done': 'Follow operator'},
                                         autonomy={'done': Autonomy.Off})
 
