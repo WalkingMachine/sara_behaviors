@@ -13,6 +13,7 @@ from sara_flexbe_states.recognize_objects import ObjectsRecognize
 from flexbe_states.subscriber_state import SubscriberState
 from sara_flexbe_states.select_object import ObjectSelect
 from sara_flexbe_states.ObjectDetection_GetImages import ObjectDetection_GetImages
+from sara_flexbe_states.ObjectDetection_CreatePDF import ObjectDetection_CreatePDF
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -47,10 +48,11 @@ class SelectObjectSM(Behavior):
 
 
     def create(self):
-        # x:742 y:317, x:472 y:176, x:466 y:406
+        # x:900 y:225, x:472 y:176, x:466 y:406
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'timeout'])
         _state_machine.userdata.Name = "unknown"
         _state_machine.userdata.detection_1 = 1
+        _state_machine.userdata.try_1 = 1
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -130,9 +132,16 @@ class SelectObjectSM(Behavior):
             # x:542 y:310
             OperatableStateMachine.add('GetImageForPDF',
                                         ObjectDetection_GetImages(timeout=1),
-                                        transitions={'done': 'finished', 'failed': 'failed'},
+                                        transitions={'done': 'PDFDo', 'failed': 'failed'},
                                         autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'detection_n': 'detection_1'})
+
+            # x:696 y:197
+            OperatableStateMachine.add('PDFDo',
+                                        ObjectDetection_CreatePDF(timeout=1),
+                                        transitions={'done': 'finished', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'try_n': 'try_1'})
 
 
         return _state_machine
