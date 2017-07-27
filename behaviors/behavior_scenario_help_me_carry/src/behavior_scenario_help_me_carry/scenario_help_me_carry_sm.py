@@ -21,6 +21,7 @@ from flexbe_states.check_condition_state import CheckConditionState
 from flexbe_states.subscriber_state import SubscriberState
 from sara_flexbe_states.regex_tester import RegexTester
 from flexbe_states.calculation_state import CalculationState
+from sara_flexbe_states.pose_gen2 import GenPose2
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -55,7 +56,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
 
     def create(self):
-        # x:733 y:345, x:291 y:142
+        # x:937 y:356, x:291 y:142
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
         _state_machine.userdata.car = false
 
@@ -103,7 +104,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
 
         # x:384 y:427, x:823 y:153
-        _sm_follow_2 = OperatableStateMachine(outcomes=['failed', 'finished'], input_keys=['person_id', 'car'])
+        _sm_follow_2 = OperatableStateMachine(outcomes=['failed', 'finished'], input_keys=['person_id', 'car'], output_keys=['pose_robot'])
 
         with _sm_follow_2:
             # x:49 y:53
@@ -155,20 +156,57 @@ class Scenario_Help_me_carrySM(Behavior):
                                         remapping={'input_value': 'car'})
 
 
+        # x:30 y:322, x:130 y:322
+        _sm_take_bag_3 = OperatableStateMachine(outcomes=['finished', 'failed'])
+
+        with _sm_take_bag_3:
+            # x:34 y:91
+            OperatableStateMachine.add('wai',
+                                        WaitState(wait_time=1),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off})
+
+
+        # x:30 y:345, x:152 y:322
+        _sm_go_back_4 = OperatableStateMachine(outcomes=['failed', 'arrived'], output_keys=['pose_car'])
+
+        with _sm_go_back_4:
+            # x:64 y:28
+            OperatableStateMachine.add('get car pose',
+                                        Get_Robot_Pose(blocking=True, clear=False),
+                                        transitions={'done': 'gen entry', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'pose': 'pose_car'})
+
+            # x:219 y:89
+            OperatableStateMachine.add('gen entry',
+                                        GenPose2(x=4.72067403793, y=1.77969455719, z=0, ox=0, oy=0, oz=0.407051133058, ow=0.913405372809),
+                                        transitions={'done': 'move to entry', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'pose': 'pose'})
+
+            # x:391 y:79
+            OperatableStateMachine.add('move to entry',
+                                        SaraMoveBase(),
+                                        transitions={'arrived': 'arrived', 'failed': 'failed'},
+                                        autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'pose': 'pose'})
+
+
         # x:313 y:60, x:320 y:223, x:230 y:308, x:299 y:117, x:430 y:322
-        _sm_follow_operator_3 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['person_id', 'car'], conditions=[
+        _sm_follow_operator_5 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['person_id', 'car'], conditions=[
                                         ('failed', [('follow', 'failed')]),
                                         ('failed', [('listen', 'fail')]),
                                         ('finished', [('follow', 'finished')])
                                         ])
 
-        with _sm_follow_operator_3:
+        with _sm_follow_operator_5:
             # x:87 y:42
             OperatableStateMachine.add('follow',
                                         _sm_follow_2,
                                         transitions={'failed': 'failed', 'finished': 'finished'},
                                         autonomy={'failed': Autonomy.Inherit, 'finished': Autonomy.Inherit},
-                                        remapping={'person_id': 'person_id', 'car': 'car'})
+                                        remapping={'person_id': 'person_id', 'car': 'car', 'pose_robot': 'pose_robot'})
 
             # x:87 y:211
             OperatableStateMachine.add('listen',
@@ -179,9 +217,9 @@ class Scenario_Help_me_carrySM(Behavior):
 
 
         # x:30 y:308, x:130 y:308
-        _sm_find_operator_4 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['person_id'])
+        _sm_find_operator_6 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['person_id'])
 
-        with _sm_find_operator_4:
+        with _sm_find_operator_6:
             # x:121 y:126
             OperatableStateMachine.add('get id',
                                         GetPersonID(),
@@ -197,9 +235,9 @@ class Scenario_Help_me_carrySM(Behavior):
 
 
         # x:30 y:322, x:130 y:322
-        _sm_wait_for_operator_5 = OperatableStateMachine(outcomes=['found', 'fail'])
+        _sm_wait_for_operator_7 = OperatableStateMachine(outcomes=['found', 'fail'])
 
-        with _sm_wait_for_operator_5:
+        with _sm_wait_for_operator_7:
             # x:16 y:156
             OperatableStateMachine.add('say',
                                         SaraSay(sentence="I'm ready to star carrying groceries", emotion=1),
@@ -218,7 +256,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
             # x:46 y:131
             OperatableStateMachine.add('wait for operator',
-                                        _sm_wait_for_operator_5,
+                                        _sm_wait_for_operator_7,
                                         transitions={'found': 'instruct operator', 'fail': 'failed'},
                                         autonomy={'found': Autonomy.Inherit, 'fail': Autonomy.Inherit})
 
@@ -236,7 +274,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
             # x:49 y:333
             OperatableStateMachine.add('find operator',
-                                        _sm_find_operator_4,
+                                        _sm_find_operator_6,
                                         transitions={'finished': 'perfect', 'failed': 'instruct2'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'person_id': 'person_id'})
@@ -268,8 +306,8 @@ class Scenario_Help_me_carrySM(Behavior):
 
             # x:480 y:332
             OperatableStateMachine.add('Follow operator',
-                                        _sm_follow_operator_3,
-                                        transitions={'finished': 'finished', 'failed': 'operator lost'},
+                                        _sm_follow_operator_5,
+                                        transitions={'finished': 'take bag', 'failed': 'operator lost'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'person_id': 'person_id', 'car': 'car'})
 
@@ -278,6 +316,19 @@ class Scenario_Help_me_carrySM(Behavior):
                                         SaraSay(sentence="Sorry, I can't find you.", emotion=1),
                                         transitions={'done': 'failed'},
                                         autonomy={'done': Autonomy.Off})
+
+            # x:664 y:515
+            OperatableStateMachine.add('Go back',
+                                        _sm_go_back_4,
+                                        transitions={'failed': 'failed', 'arrived': 'finished'},
+                                        autonomy={'failed': Autonomy.Inherit, 'arrived': Autonomy.Inherit},
+                                        remapping={'pose_car': 'pose_car'})
+
+            # x:488 y:519
+            OperatableStateMachine.add('take bag',
+                                        _sm_take_bag_3,
+                                        transitions={'finished': 'Go back', 'failed': 'failed'},
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 
         return _state_machine
