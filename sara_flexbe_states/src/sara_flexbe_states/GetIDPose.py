@@ -25,7 +25,7 @@ class GetIDPose(EventState):
     def __init__(self):
         # See example_state.py for basic explanations.
         super(GetIDPose, self).__init__(outcomes=['done', 'lost', 'failed'],
-                                          input_keys=['person_id', 'last_pose'],
+                                          input_keys=['person_id'],
                                         output_keys=['person_pose'])
 
     def execute(self, userdata):
@@ -38,10 +38,11 @@ class GetIDPose(EventState):
 
         try:
             Logger.loginfo('Got list of tracked persons')
-            for person in tracked_persons:
+            for person in tracked_persons.tracks:
                 if person.track_id == userdata.person_id and person.is_matched:
                     pose2track = person.track_id
                     Logger.loginfo('Pose of ID to track retrieved')
+                    Logger.loginfo(str(pose2track))
                     userdata.person_pose = pose2track
                     return 'done'
                 elif person.track_id == userdata.person_id:

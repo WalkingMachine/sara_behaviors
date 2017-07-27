@@ -24,7 +24,7 @@ class GetPersonID(EventState):
 
     def __init__(self):
         # See example_state.py for basic explanations.
-        super(GetPersonID, self).__init__(outcomes=['done', 'failed'],
+        super(GetPersonID, self).__init__(outcomes=['done', 'failed', 'notfound'],
                                           output_keys=['person_id'])
 
     def execute(self, userdata):
@@ -33,24 +33,31 @@ class GetPersonID(EventState):
         # If no outcome is returned, the state will stay active.
         closest_pose = PoseWithCovariance()
         Logger.loginfo('Starting SPENCER people tracker')
-        os.system('roslaunch spencer_people_tracking_launch tracking_single_rgbd_sensor.launch height_above_ground:=1.6')
         tracked_persons = rospy.wait_for_message('/spencer/perception/tracked_persons', TrackedPersons, 30)
 
         try:
             Logger.loginfo('Got list of tracked persons')
-            for person in tracked_persons:
-                x_pos = person.pose.pose.position.x
-                y_pos = person.pose.pose.position.y
-                distance = math.sqrt(x_pos**2 + y_pos**2)
-                if distance <= 2.0:
-                    person2track = person.track_id
-                    Logger.loginfo("Closest person to track retrieved")
-                    userdata.person_id = person2track
-                    return 'done'
-                else:
-                    Logger.loginfo("Did not find any person close to robot")
-                    return 'failed'
-            # person2track = tracked_persons[0].track_id    --use if closest person calculation fails
+            # for person in tracked_persons.tracks:
+            #     Logger.loginfo(str(tracked_persons))
+            #     x_pos = person.pose.pose.position.x
+            #     y_pos = person.pose.pose.position.y
+            #     distance = math.sqrt(x_pos**2 + y_pos**2)
+            #     if distance <= 2.0:
+            #         person2track = person.track_id
+            #         Logger.loginfo("Closest person to track retrieved")
+            #         userdata.person_id = person2track
+            #         return 'done'
+            #     else:
+            #         Logger.loginfo("Did not find any person close to robot")
+            #         return 'failed'
+            if len(tracked_persons.tracks) != 0:
+                Logger.loginfo(str(tracked_persons))
+                person2track = tracked_persons.tracks[0].track_id    #--use if closest person calculation fails
+                Logger.loginfo('ID is ' + str(person2track))
+                userdata.person_id = person2track
+                return 'done'
+            else:
+                return 'notfound'
 
         except rospy.ROSException, e:
             Logger.loginfo("Did not find any person close to robot")
