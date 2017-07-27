@@ -69,5 +69,6 @@
   <run_depend>behavior_wonderland_goto_exit</run_depend>
   <run_depend>behavior_new_qualif</run_depend>
   <run_depend>behavior_scenario_help_me_carry</run_depend>
+  <run_depend>behavior_test_for</run_depend>
 
 </package>

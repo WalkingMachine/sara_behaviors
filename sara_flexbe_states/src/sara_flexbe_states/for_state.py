@@ -2,35 +2,35 @@
 
 from flexbe_core import EventState, Logger
 import rospy
-from wm_tts import srv
-from wm_tts import msg
 
-class SaraSay(EventState):
+
+class ForState(EventState):
     """
-    Make sara say something
+    Allow to loop a certain number of time
 
-    -- sentence     string      what to say
-    -- emotion     int       how to feel
+    -- repeat     int      number of repetitions
 
-    <= done                what's said is said
+    
+    <= index     current index
+
+    <= do        loop
+    <= end         finished       
     """
 
-    def __init__(self, sentence, emotion):
+    def __init__(self, repeat):
         """Constructor"""
 
-        super(SaraSay, self).__init__(outcomes = ['done'])
-        self.sentence = sentence
-        self.emotion = emotion
+        super(ForState, self).__init__(outcomes = ['do','end'], output_keys = ['index'])
+        self.repeat = repeat
+        self.index = 1
 
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
 
-        rospy.wait_for_service('/wm_say')
-        req = msg.say
-        req.sentence = str(self.sentence)
-        req.emotion = self.emotion
-        serv = rospy.ServiceProxy('/wm_say', srv.say_service )
-        serv( req )
-
-        return 'done'
+        if ( self.index < self.repeat ):
+            self.index = self.index+1
+            userdata.index = self.index
+            return 'do'
+        else:
+            return 'end'
 

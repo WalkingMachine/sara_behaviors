@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Scenario_Help_me_carry">
+
+	<executable package_path="behavior_scenario_help_me_carry.scenario_help_me_carry_sm" class="Scenario_Help_me_carrySM" />
+	<tagstring>scenario</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Thu Jul 27 2017</date>
+	<description>
+		Help_me_carry
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_Receive_Bag" />
+	<contains name="Action_Give_Back_Bag" />
+
+	<!-- Available Parameters -->
+
+</behavior>
