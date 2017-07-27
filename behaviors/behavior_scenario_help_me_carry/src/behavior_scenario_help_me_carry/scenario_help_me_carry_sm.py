@@ -15,6 +15,8 @@ from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.for_state import ForState
 from sara_flexbe_states.GetIDPose import GetIDPose
 from sara_flexbe_states.sara_move_base import SaraMoveBase
+from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
+from sara_flexbe_states.compare_poses import ComparePoses
 from flexbe_states.subscriber_state import SubscriberState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -90,7 +92,7 @@ class Scenario_Help_me_carrySM(Behavior):
             # x:49 y:53
             OperatableStateMachine.add('Get operator pose',
                                         _sm_get_operator_pose_0,
-                                        transitions={'failed': 'failed', 'lost': 'for', 'done': 'move'},
+                                        transitions={'failed': 'failed', 'lost': 'for', 'done': 'get robot pose'},
                                         autonomy={'failed': Autonomy.Inherit, 'lost': Autonomy.Inherit, 'done': Autonomy.Inherit},
                                         remapping={'person_id': 'person_id', 'pose': 'pose'})
 
@@ -101,18 +103,32 @@ class Scenario_Help_me_carrySM(Behavior):
                                         autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose'})
 
-            # x:349 y:55
+            # x:411 y:80
             OperatableStateMachine.add('say stop',
                                         SaraSay(sentence="Wait for me. I've lost you. Stay still until I find you again.", emotion=1),
                                         transitions={'done': 'Get operator pose'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:352 y:145
+            # x:383 y:165
             OperatableStateMachine.add('for',
                                         ForState(repeat=3),
                                         transitions={'do': 'say stop', 'end': 'failed'},
                                         autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
                                         remapping={'index': 'index'})
+
+            # x:173 y:339
+            OperatableStateMachine.add('get robot pose',
+                                        Get_Robot_Pose(blocking=True, clear=False),
+                                        transitions={'done': 'compare poses', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'pose': 'pose_robot'})
+
+            # x:481 y:341
+            OperatableStateMachine.add('compare poses',
+                                        ComparePoses(),
+                                        transitions={'done': 'move'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'pose_robot': 'pose_robot', 'pose_other': 'pose', 'pose': 'pose'})
 
 
         # x:313 y:60, x:320 y:223, x:230 y:308, x:330 y:322
