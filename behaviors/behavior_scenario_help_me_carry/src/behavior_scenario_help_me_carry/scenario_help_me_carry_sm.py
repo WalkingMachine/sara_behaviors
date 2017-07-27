@@ -22,6 +22,8 @@ from flexbe_states.subscriber_state import SubscriberState
 from sara_flexbe_states.regex_tester import RegexTester
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.pose_gen2 import GenPose2
+from behavior_action_receive_bag.action_receive_bag_sm import Action_Receive_BagSM
+from behavior_action_give_back_bag.action_give_back_bag_sm import Action_Give_Back_BagSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -45,6 +47,8 @@ class Scenario_Help_me_carrySM(Behavior):
         # parameters of this behavior
 
         # references to used behaviors
+        self.add_behavior(Action_Receive_BagSM, 'Action_Receive_Bag')
+        self.add_behavior(Action_Give_Back_BagSM, 'Action_Give_Back_Bag')
 
         # Additional initialization code can be added inside the following tags
         # [MANUAL_INIT]
@@ -59,6 +63,9 @@ class Scenario_Help_me_carrySM(Behavior):
         # x:937 y:356, x:291 y:142
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
         _state_machine.userdata.car = false
+        _state_machine.userdata.Closed_Gripper_Width = 0
+        _state_machine.userdata.Open_Gripper_Width = 255
+        _state_machine.userdata.effort = 100
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -156,21 +163,10 @@ class Scenario_Help_me_carrySM(Behavior):
                                         remapping={'input_value': 'car'})
 
 
-        # x:30 y:322, x:130 y:322
-        _sm_take_bag_3 = OperatableStateMachine(outcomes=['finished', 'failed'])
-
-        with _sm_take_bag_3:
-            # x:34 y:91
-            OperatableStateMachine.add('wai',
-                                        WaitState(wait_time=1),
-                                        transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.Off})
-
-
         # x:30 y:345, x:152 y:322
-        _sm_go_back_4 = OperatableStateMachine(outcomes=['failed', 'arrived'], output_keys=['pose_car'])
+        _sm_go_back_3 = OperatableStateMachine(outcomes=['failed', 'arrived'], output_keys=['pose_car'])
 
-        with _sm_go_back_4:
+        with _sm_go_back_3:
             # x:64 y:28
             OperatableStateMachine.add('get car pose',
                                         Get_Robot_Pose(blocking=True, clear=False),
@@ -194,13 +190,13 @@ class Scenario_Help_me_carrySM(Behavior):
 
 
         # x:313 y:60, x:320 y:223, x:230 y:308, x:299 y:117, x:430 y:322
-        _sm_follow_operator_5 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['person_id', 'car'], conditions=[
+        _sm_follow_operator_4 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['person_id', 'car'], conditions=[
                                         ('failed', [('follow', 'failed')]),
                                         ('failed', [('listen', 'fail')]),
                                         ('finished', [('follow', 'finished')])
                                         ])
 
-        with _sm_follow_operator_5:
+        with _sm_follow_operator_4:
             # x:87 y:42
             OperatableStateMachine.add('follow',
                                         _sm_follow_2,
@@ -217,9 +213,9 @@ class Scenario_Help_me_carrySM(Behavior):
 
 
         # x:30 y:308, x:130 y:308
-        _sm_find_operator_6 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['person_id'])
+        _sm_find_operator_5 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['person_id'])
 
-        with _sm_find_operator_6:
+        with _sm_find_operator_5:
             # x:121 y:126
             OperatableStateMachine.add('get id',
                                         GetPersonID(),
@@ -235,9 +231,9 @@ class Scenario_Help_me_carrySM(Behavior):
 
 
         # x:30 y:322, x:130 y:322
-        _sm_wait_for_operator_7 = OperatableStateMachine(outcomes=['found', 'fail'])
+        _sm_wait_for_operator_6 = OperatableStateMachine(outcomes=['found', 'fail'])
 
-        with _sm_wait_for_operator_7:
+        with _sm_wait_for_operator_6:
             # x:16 y:156
             OperatableStateMachine.add('say',
                                         SaraSay(sentence="I'm ready to star carrying groceries", emotion=1),
@@ -256,7 +252,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
             # x:46 y:131
             OperatableStateMachine.add('wait for operator',
-                                        _sm_wait_for_operator_7,
+                                        _sm_wait_for_operator_6,
                                         transitions={'found': 'instruct operator', 'fail': 'failed'},
                                         autonomy={'found': Autonomy.Inherit, 'fail': Autonomy.Inherit})
 
@@ -274,7 +270,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
             # x:49 y:333
             OperatableStateMachine.add('find operator',
-                                        _sm_find_operator_6,
+                                        _sm_find_operator_5,
                                         transitions={'finished': 'perfect', 'failed': 'instruct2'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'person_id': 'person_id'})
@@ -304,10 +300,10 @@ class Scenario_Help_me_carrySM(Behavior):
                                         transitions={'done': 'Follow operator'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:480 y:332
+            # x:486 y:294
             OperatableStateMachine.add('Follow operator',
-                                        _sm_follow_operator_5,
-                                        transitions={'finished': 'take bag', 'failed': 'operator lost'},
+                                        _sm_follow_operator_4,
+                                        transitions={'finished': 'Action_Receive_Bag', 'failed': 'operator lost'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'person_id': 'person_id', 'car': 'car'})
 
@@ -317,18 +313,26 @@ class Scenario_Help_me_carrySM(Behavior):
                                         transitions={'done': 'failed'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:664 y:515
+            # x:709 y:491
             OperatableStateMachine.add('Go back',
-                                        _sm_go_back_4,
-                                        transitions={'failed': 'failed', 'arrived': 'finished'},
+                                        _sm_go_back_3,
+                                        transitions={'failed': 'failed', 'arrived': 'Action_Give_Back_Bag'},
                                         autonomy={'failed': Autonomy.Inherit, 'arrived': Autonomy.Inherit},
                                         remapping={'pose_car': 'pose_car'})
 
-            # x:488 y:519
-            OperatableStateMachine.add('take bag',
-                                        _sm_take_bag_3,
+            # x:458 y:490
+            OperatableStateMachine.add('Action_Receive_Bag',
+                                        self.use_behavior(Action_Receive_BagSM, 'Action_Receive_Bag'),
                                         transitions={'finished': 'Go back', 'failed': 'failed'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'Closed_Gripper_Width': 'Closed_Gripper_Width', 'Open_Gripper_Width': 'Open_Gripper_Width', 'Closed_Gripper_Width': 'Closed_Gripper_Width'})
+
+            # x:680 y:289
+            OperatableStateMachine.add('Action_Give_Back_Bag',
+                                        self.use_behavior(Action_Give_Back_BagSM, 'Action_Give_Back_Bag'),
+                                        transitions={'finished': 'finished', 'failed': 'failed'},
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'effort': 'effort', 'Open_gripper': 'Open_Gripper_Width'})
 
 
         return _state_machine

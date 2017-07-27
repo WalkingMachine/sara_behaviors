@@ -12,6 +12,8 @@
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Action_Receive_Bag" />
+	<contains name="Action_Give_Back_Bag" />
 
 	<!-- Available Parameters -->
 
