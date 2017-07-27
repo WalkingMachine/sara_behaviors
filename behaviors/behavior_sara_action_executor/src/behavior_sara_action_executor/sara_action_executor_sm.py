@@ -22,6 +22,7 @@ from behavior_actionwrapper_place.actionwrapper_place_sm import ActionWrapper_Pl
 from behavior_actionwrapper_give.actionwrapper_give_sm import ActionWrapper_GiveSM
 from behavior_actionwrapper_pick.actionwrapper_pick_sm import ActionWrapper_PickSM
 from behavior_actionwrapper_turn.actionwrapper_turn_sm import ActionWrapper_TurnSM
+from flexbe_states.check_condition_state import CheckConditionState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -67,10 +68,11 @@ class SaraactionexecutorSM(Behavior):
 
 	def create(self):
 		# x:835 y:96, x:834 y:255
-		_state_machine = OperatableStateMachine(outcomes=['CriticalFail', 'Shutdown'], input_keys=['HighFIFO', 'MedFIFO', 'LowFIFO'])
+		_state_machine = OperatableStateMachine(outcomes=['CriticalFail', 'Shutdown'], input_keys=['HighFIFO', 'MedFIFO', 'LowFIFO', 'End'])
 		_state_machine.userdata.HighFIFO = []
 		_state_machine.userdata.MedFIFO = [['Move','forward']]
 		_state_machine.userdata.LowFIFO = []
+		_state_machine.userdata.End = False
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -188,10 +190,10 @@ class SaraactionexecutorSM(Behavior):
 										autonomy={'done': Autonomy.Off, 'empty': Autonomy.Off},
 										remapping={'FIFO': 'LowFIFO', 'Out': 'Action'})
 
-			# x:584 y:146
+			# x:585 y:186
 			OperatableStateMachine.add('Action',
 										_sm_action_0,
-										transitions={'Shutdown': 'Shutdown', 'CriticalFail': 'CriticalFail', 'done': 'wait for 0.1 s'},
+										transitions={'Shutdown': 'Shutdown', 'CriticalFail': 'CriticalFail', 'done': 'Check Condituion'},
 										autonomy={'Shutdown': Autonomy.Inherit, 'CriticalFail': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
 
@@ -201,6 +203,13 @@ class SaraactionexecutorSM(Behavior):
 										transitions={'done': 'Action', 'empty': 'Get MedAction'},
 										autonomy={'done': Autonomy.Off, 'empty': Autonomy.Off},
 										remapping={'FIFO': 'HighFIFO', 'Out': 'Action'})
+
+			# x:421 y:42
+			OperatableStateMachine.add('Check Condituion',
+										CheckConditionState(predicate=lambda x: x),
+										transitions={'true': 'Shutdown', 'false': 'wait for 0.1 s'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'End'})
 
 
 		return _state_machine

@@ -3,7 +3,7 @@
 <behavior name="New qualif">
 
 	<executable package_path="behavior_new_qualif.new_qualif_sm" class="NewqualifSM" />
-	<tagstring></tagstring>
+	<tagstring>Scenario 4</tagstring>
 	<author>Philippe La Madeleine</author>
 	<date>Wed Jul 26 2017</date>
 	<description>

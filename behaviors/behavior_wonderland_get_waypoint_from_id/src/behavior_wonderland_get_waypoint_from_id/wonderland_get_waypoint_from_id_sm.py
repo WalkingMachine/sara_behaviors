@@ -58,7 +58,7 @@ class Wonderland_get_waypoint_from_idSM(Behavior):
 		with _state_machine:
 			# x:179 y:112
 			OperatableStateMachine.add('calcu',
-										CalculationState(calculation=lambda x: "waypoint?id="+x),
+										CalculationState(calculation=lambda x: "waypoint?name="+x),
 										transitions={'done': 'Request to wonderland'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'waypoint_id', 'output_value': 'url'})

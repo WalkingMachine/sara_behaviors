@@ -12,8 +12,7 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Wonderland_Get_Entity" />
-	<contains name="Get_waypoint_pose" />
+	<contains name="Go_To_Room" />
 
 	<!-- Available Parameters -->
 

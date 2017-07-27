@@ -71,5 +71,7 @@
   <run_depend>behavior_scenario_help_me_carry</run_depend>
   <run_depend>behavior_test_for</run_depend>
   <run_depend>behavior_init_sequence</run_depend>
+  <run_depend>behavior_go_to_room</run_depend>
+  <run_depend>behavior_go_to_exit</run_depend>
 
 </package>

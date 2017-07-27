@@ -6,11 +6,12 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_init_sequence')
+import roslib; roslib.load_manifest('behavior_go_to_exit')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
+from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_move_base import SaraMoveBase
-from sara_flexbe_states.pose_gen2 import GenPose2
+from behavior_wonderland_get_doors.wonderland_get_doors_sm import Wonderland_Get_DoorsSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -18,22 +19,23 @@ from sara_flexbe_states.pose_gen2 import GenPose2
 
 
 '''
-Created on Thu Jul 27 2017
-@author: Redouane Laref Nicolas Nadeau
+Created on Fri Jul 28 2017
+@author: Redouane Laref
 '''
-class Init_SequenceSM(Behavior):
+class Go_to_exitSM(Behavior):
 	'''
-	Initialisation Sequence
+	go to exit
 	'''
 
 
 	def __init__(self):
-		super(Init_SequenceSM, self).__init__()
-		self.name = 'Init_Sequence'
+		super(Go_to_exitSM, self).__init__()
+		self.name = 'Go_to_exit'
 
 		# parameters of this behavior
 
 		# references to used behaviors
+		self.add_behavior(Wonderland_Get_DoorsSM, 'Wonderland_Get_Doors')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -45,7 +47,7 @@ class Init_SequenceSM(Behavior):
 
 
 	def create(self):
-		# x:976 y:64, x:579 y:148
+		# x:533 y:359, x:680 y:371
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 
 		# Additional creation code can be added inside the following tags
@@ -55,25 +57,31 @@ class Init_SequenceSM(Behavior):
 
 
 		with _state_machine:
-			# x:113 y:34
-			OperatableStateMachine.add('Wait_to_begin',
-										WaitState(wait_time=10),
-										transitions={'done': 'Gen_Pose_First_Objectif'},
+			# x:163 y:78
+			OperatableStateMachine.add('say exiting',
+										SaraSay(sentence="I'am going to exit the arena now", emotion=1),
+										transitions={'done': 'wait'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:731 y:51
-			OperatableStateMachine.add('Go_To_First_Objectif',
+			# x:301 y:90
+			OperatableStateMachine.add('wait',
+										WaitState(wait_time=3),
+										transitions={'done': 'Wonderland_Get_Doors'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:725 y:127
+			OperatableStateMachine.add('move',
 										SaraMoveBase(),
 										transitions={'arrived': 'finished', 'failed': 'failed'},
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'pose': 'pose'})
+										remapping={'pose': 'exit_pose'})
 
-			# x:418 y:50
-			OperatableStateMachine.add('Gen_Pose_First_Objectif',
-										GenPose2(x=4.9627, y=-0.62033, z=0, ox=0, oy=0, oz=0.9125315, ow=-0.4090063),
-										transitions={'done': 'Go_To_First_Objectif', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'pose': 'pose'})
+			# x:193 y:165
+			OperatableStateMachine.add('Wonderland_Get_Doors',
+										self.use_behavior(Wonderland_Get_DoorsSM, 'Wonderland_Get_Doors'),
+										transitions={'done': 'move', 'failed': 'failed'},
+										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'exit_pose': 'exit_pose', 'entrance_id': 'entrance_id', 'entrance_pose': 'entrance_pose', 'entrance_rooms_id': 'entrance_rooms_id', 'entrance_rooms_names': 'entrance_rooms_names', 'exit_id': 'exit_id', 'exit_rooms_id': 'exit_rooms_id', 'exit_rooms_names': 'exit_rooms_names'})
 
 
 		return _state_machine
