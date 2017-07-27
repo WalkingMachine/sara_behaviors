@@ -5,7 +5,7 @@ from geometry_msgs.msg import Pose
 import rospy
 import math
 
-class AmclInit(EventState):
+class ComparePoses(EventState):
     '''
     get a pose between two poses
 
@@ -15,7 +15,7 @@ class AmclInit(EventState):
 
     def __init__(self):
         # See example_state.py for basic explanations.
-        super(AmclInit, self).__init__(outcomes=['done'], input_keys=['pose_robot', 'pose_other'], output_keys=['pose'])
+        super(ComparePoses, self).__init__(outcomes=['done'], input_keys=['pose_robot', 'pose_other'], output_keys=['pose'])
 
 
     def execute(self, userdata):
