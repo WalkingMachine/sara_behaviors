@@ -9,6 +9,9 @@
 import roslib; roslib.load_manifest('behavior_scenario_help_me_carry')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.AMCL_initial_pose import AmclInit
+from flexbe_states.subscriber_state import SubscriberState
+from flexbe_states.calculation_state import CalculationState
+from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.GetPersonID import GetPersonID
 from flexbe_states.wait_state import WaitState
@@ -18,9 +21,6 @@ from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_states.compare_poses import ComparePoses
 from flexbe_states.check_condition_state import CheckConditionState
-from flexbe_states.subscriber_state import SubscriberState
-from sara_flexbe_states.regex_tester import RegexTester
-from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.pose_gen2 import GenPose2
 from behavior_action_receive_bag.action_receive_bag_sm import Action_Receive_BagSM
 from behavior_action_give_back_bag.action_give_back_bag_sm import Action_Give_Back_BagSM
@@ -230,15 +230,30 @@ class Scenario_Help_me_carrySM(Behavior):
                                         autonomy={'done': Autonomy.Off})
 
 
-        # x:30 y:322, x:130 y:322
+        # x:30 y:322, x:255 y:351
         _sm_wait_for_operator_6 = OperatableStateMachine(outcomes=['found', 'fail'])
 
         with _sm_wait_for_operator_6:
-            # x:16 y:156
-            OperatableStateMachine.add('say',
-                                        SaraSay(sentence="I'm ready to star carrying groceries", emotion=1),
-                                        transitions={'done': 'found'},
-                                        autonomy={'done': Autonomy.Off})
+            # x:138 y:84
+            OperatableStateMachine.add('sub',
+                                        SubscriberState(topic="/speach", blocking=True, clear=False),
+                                        transitions={'received': 'calc', 'unavailable': 'sub'},
+                                        autonomy={'received': Autonomy.Off, 'unavailable': Autonomy.Off},
+                                        remapping={'message': 'message'})
+
+            # x:463 y:75
+            OperatableStateMachine.add('calc',
+                                        CalculationState(calculation=lambda x: x.data),
+                                        transitions={'done': 'reg'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'input_value': 'message', 'output_value': 'sp'})
+
+            # x:499 y:202
+            OperatableStateMachine.add('reg',
+                                        RegexTester(regex='.*[Ll]ocating.*'),
+                                        transitions={'true': 'found', 'false': 'sub'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'text': 'sp', 'result': 'result'})
 
 
 
