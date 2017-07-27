@@ -12,7 +12,7 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Wonderland_get_waypoint_from_id" />
+	<contains name="Wonderland_Get_Entity" />
 
 	<!-- Available Parameters -->
 

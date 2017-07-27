@@ -9,9 +9,9 @@
 import roslib; roslib.load_manifest('behavior_go_to_room')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.wait_state import WaitState
-from behavior_wonderland_get_waypoint_from_id.wonderland_get_waypoint_from_id_sm import Wonderland_get_waypoint_from_idSM
 from sara_flexbe_states.sara_move_base import SaraMoveBase
-from sara_flexbe_states.Wonderland_Get_Waypoint import Wonderland_Get_Waypoint
+from behavior_wonderland_get_entity.wonderland_get_entity_sm import Wonderland_Get_EntitySM
+from sara_flexbe_states.Wonderland_Read_Entity import Wonderland_Read_Entity
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -35,7 +35,7 @@ class Go_To_RoomSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Wonderland_get_waypoint_from_idSM, 'Wonderland_get_waypoint_from_id')
+		self.add_behavior(Wonderland_Get_EntitySM, 'Wonderland_Get_Entity')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -62,29 +62,29 @@ class Go_To_RoomSM(Behavior):
 			# x:236 y:55
 			OperatableStateMachine.add('Wait_time',
 										WaitState(wait_time=3),
-										transitions={'done': 'Wonderland_get_waypoint_from_id'},
+										transitions={'done': 'Wonderland_Get_Entity'},
 										autonomy={'done': Autonomy.Off})
-
-			# x:409 y:46
-			OperatableStateMachine.add('Wonderland_get_waypoint_from_id',
-										self.use_behavior(Wonderland_get_waypoint_from_idSM, 'Wonderland_get_waypoint_from_id'),
-										transitions={'finished': 'waypoint', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'waypoint_id': 'name', 'json_text': 'json_text'})
 
 			# x:748 y:182
 			OperatableStateMachine.add('Move to object',
 										SaraMoveBase(),
 										transitions={'arrived': 'finished', 'failed': 'failed'},
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'pose': 'pose'})
+										remapping={'pose': 'waypoint_pose'})
 
-			# x:721 y:74
-			OperatableStateMachine.add('waypoint',
-										Wonderland_Get_Waypoint(index_function=lambda x: 0),
-										transitions={'done': 'Move to object', 'no_waypoint': 'failed', 'error': 'failed'},
-										autonomy={'done': Autonomy.Off, 'no_waypoint': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'json_text': 'json_text', 'input_value': 'index', 'id': 'id', 'name': 'name', 'x': 'x', 'y': 'y', 'theta': 'theta', 'pose': 'pose'})
+			# x:332 y:42
+			OperatableStateMachine.add('Wonderland_Get_Entity',
+										self.use_behavior(Wonderland_Get_EntitySM, 'Wonderland_Get_Entity'),
+										transitions={'done': 'read', 'failed': 'failed'},
+										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'name': 'name', 'entity': 'entity'})
+
+			# x:685 y:73
+			OperatableStateMachine.add('read',
+										Wonderland_Read_Entity(index_function=lambda x: 0),
+										transitions={'done': 'Move to object', 'empty': 'failed', 'error': 'failed'},
+										autonomy={'done': Autonomy.Off, 'empty': Autonomy.Off, 'error': Autonomy.Off},
+										remapping={'json_text': 'entity', 'input_value': 'name', 'id': 'id', 'name': 'name', 'time': 'time', 'x_pos': 'x_pos', 'y_pos': 'y_pos', 'z_pos': 'z_pos', 'waypoint_id': 'waypoint_id', 'waypoint_pose': 'waypoint_pose'})
 
 
 		return _state_machine
