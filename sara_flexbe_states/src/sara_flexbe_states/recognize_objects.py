@@ -31,7 +31,7 @@ class ObjectsRecognize(EventState):
 
         # Retrieve image to add bounding boxes to it
         Logger.loginfo("Wait for image")
-        image_msg = rospy.wait_for_message("/camera/rgb/image_rect_color", Image,
+        image_msg = rospy.wait_for_message("/base_xtion/rgb/image_rect_color", Image,
                                            30)  # for kinect2 : '/kinect2/qhd/image_color_rect' for xtion : '/camera/rgb/image_rect_color'
         try:
             userdata.image = image_msg
