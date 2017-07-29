@@ -28,5 +28,6 @@ class ReadTorque(EventState):
     def execute(self, userdata):
         self.torque = rospy.Subscriber("/elbow_torque", Float32)
         Logger.loginfo('Reading  torque from /elbow_torque topic: %f', self.torque)
-        if self.initial_torque < self.torque:
+
+        if abs(self.initial_torque - self.torque) >= 0.75:
             return 'done'

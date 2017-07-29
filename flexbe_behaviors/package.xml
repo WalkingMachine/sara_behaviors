@@ -73,5 +73,6 @@
   <run_depend>behavior_init_sequence</run_depend>
   <run_depend>behavior_go_to_room</run_depend>
   <run_depend>behavior_go_to_exit</run_depend>
+  <run_depend>behavior_action_receive_bag</run_depend>
 
 </package>

@@ -9,8 +9,8 @@
 import roslib; roslib.load_manifest('behavior_action_receive_bag')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.move_joint import MoveJoint
-from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.publisher_gripper_state import PublisherGripperState
+from sara_flexbe_states.torque_reader import ReadTorque
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -61,7 +61,7 @@ class Action_Receive_BagSM(Behavior):
 			# x:132 y:109
 			OperatableStateMachine.add('Go_to_receive_bag_pose',
 										MoveJoint(pose_name="Help_me_carry"),
-										transitions={'done': 'Wait_to_close_gripper', 'failed': 'failed'},
+										transitions={'done': 'Torque_Reader', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
 			# x:865 y:112
@@ -70,18 +70,18 @@ class Action_Receive_BagSM(Behavior):
 										transitions={'done': 'finished', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
-			# x:371 y:107
-			OperatableStateMachine.add('Wait_to_close_gripper',
-										WaitState(wait_time=5),
-										transitions={'done': 'Close_gripper'},
-										autonomy={'done': Autonomy.Off})
-
 			# x:599 y:111
 			OperatableStateMachine.add('Close_gripper',
 										PublisherGripperState(),
 										transitions={'done': 'Go_to_IdlePose'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'width': 'Closed_Gripper_Width', 'effort': 'effort'})
+
+			# x:392 y:109
+			OperatableStateMachine.add('Torque_Reader',
+										ReadTorque(),
+										transitions={'done': 'Close_gripper'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine
