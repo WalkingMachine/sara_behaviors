@@ -95,65 +95,75 @@ class SaraactionexecutorSM(Behavior):
                                         autonomy={'Bring': Autonomy.Off, 'Follow': Autonomy.Off, 'Move': Autonomy.Off, 'Attach': Autonomy.Off, 'LookAt': Autonomy.Off, 'Find': Autonomy.Off, 'Place': Autonomy.Off, 'Give': Autonomy.Off, 'Pick': Autonomy.Off, 'Turn': Autonomy.Off},
                                         remapping={'input_value': 'Action'})
 
-            # x:382 y:10
+            # x:413 y:27
             OperatableStateMachine.add('ActionWrapper_Bring',
                                         self.use_behavior(ActionWrapper_BringSM, 'Action/ActionWrapper_Bring'),
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'Action': 'Action'})
 
-            # x:382 y:70
+            # x:411 y:86
             OperatableStateMachine.add('ActionWrapper_Follow',
                                         self.use_behavior(ActionWrapper_FollowSM, 'Action/ActionWrapper_Follow'),
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'Action': 'Action'})
 
-            # x:383 y:129
+            # x:411 y:144
             OperatableStateMachine.add('ActionWrapper_Move',
                                         self.use_behavior(ActionWrapper_MoveSM, 'Action/ActionWrapper_Move'),
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'Action': 'Action'})
 
-            # x:384 y:188
+            # x:409 y:202
             OperatableStateMachine.add('ActionWrapper_Attach',
                                         self.use_behavior(ActionWrapper_AttachSM, 'Action/ActionWrapper_Attach'),
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'Action': 'Action'})
 
-            # x:383 y:247
+            # x:408 y:261
             OperatableStateMachine.add('ActionWrapper_LookAt',
                                         self.use_behavior(ActionWrapper_LookAtSM, 'Action/ActionWrapper_LookAt'),
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'Action': 'Action'})
 
-            # x:384 y:305
+            # x:416 y:320
             OperatableStateMachine.add('ActionWrapper_Find',
                                         self.use_behavior(ActionWrapper_FindSM, 'Action/ActionWrapper_Find'),
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'Action': 'Action'})
 
-            # x:384 y:363
+            # x:414 y:378
             OperatableStateMachine.add('ActionWrapper_Place',
                                         self.use_behavior(ActionWrapper_PlaceSM, 'Action/ActionWrapper_Place'),
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'Action': 'Action'})
 
-            # x:385 y:422
+            # x:418 y:437
             OperatableStateMachine.add('ActionWrapper_Give',
                                         self.use_behavior(ActionWrapper_GiveSM, 'Action/ActionWrapper_Give'),
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'Action': 'Action'})
 
-            # x:384 y:482
+            # x:420 y:496
             OperatableStateMachine.add('ActionWrapper_Pick',
                                         self.use_behavior(ActionWrapper_PickSM, 'Action/ActionWrapper_Pick'),
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'Action': 'Action'})
 
-            # x:382 y:543
+            # x:420 y:558
             OperatableStateMachine.add('ActionWrapper_Turn',
                                         self.use_behavior(ActionWrapper_TurnSM, 'Action/ActionWrapper_Turn'),
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'Action': 'Action'})
 
 
 
