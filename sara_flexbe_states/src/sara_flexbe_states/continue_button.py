@@ -19,21 +19,19 @@ class ContinueButton(EventState):
 
     def __init__(self):
 
-        super(ContinueButton, self).__init__(outcomes=['Continue', 'wait'])
+        super(ContinueButton, self).__init__(outcomes=['Continue'])
         self.state = False
 
 
-    def on_enter(self):
+    def on_enter(self, userdata):
         Logger.loginfo('Entering continue button state')
 
-    def execute(self):
+    def execute(self, userdata):
 
         self.state = rospy.wait_for_message('/ui/continue', Bool, timeout=None)
 
-        if  self.state == False:
-            return 'wait'
-        elif  self.state == True:
-            return  'continue'
+        if self.state is True:
+            return 'continue'
 
 
 

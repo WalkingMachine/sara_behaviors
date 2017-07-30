@@ -1,0 +1,24 @@
+<package>
+  <name>behavior_scenario_security_check</name>
+  <version>1.0.0</version>
+  <description>
+     englobe le scénario du test de sécurité.
+- On attend l'ouverture d'une porte
+- avance jusqu’à un waypoint spécifique
+- attend quelques secondes
+- vas au waypoint de sortie
+  </description>
+  <maintainer email="todo@todo.com">Philippe La Madeleine</maintainer>
+  <license>BSD</license>
+
+  <url>http://ros.org/wiki/behavior_scenario_security_check</url>
+  <author>Philippe La Madeleine</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>rospy</run_depend>
+  <run_depend>flexbe_core</run_depend>
+  <run_depend>flexbe_states</run_depend>
+  <run_depend>sara_flexbe_states</run_depend>
+
+</package>

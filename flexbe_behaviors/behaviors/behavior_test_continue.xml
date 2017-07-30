@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Test_continue">
+
+	<executable package_path="behavior_test_continue.test_continue_sm" class="Test_continueSM" />
+	<tagstring></tagstring>
+	<author>Philippe la Madeleine</author>
+	<date>Tue Jul 25 2017</date>
+	<description>
+		test the continue button
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

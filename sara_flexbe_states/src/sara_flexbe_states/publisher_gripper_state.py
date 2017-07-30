@@ -16,22 +16,20 @@ class PublisherGripperState(EventState):
     '''
 	Publishes a command for the gripper.
 
-	-- topic	string		The topic on which should be published.
-
-	>= width 					desired gripper width.
-	>= effort 					desired gripper effort.
+	>= width 	float		0-255 desired gripper width.
+	>= effort 	float		0-255 desired gripper effort.
 
 	<= done 					Done publishing.
 
 	'''
 
-    def __init__(self, topic):
+    def __init__(self):
         '''
 		Constructor
 		'''
         super(PublisherGripperState, self).__init__(outcomes=['done'], input_keys=['width','effort'])
 
-        self._topic = topic
+        self._topic = 'gripper/cmd'
         self._pub = ProxyPublisher({self._topic: GripperCommandActionGoal})
 
     def execute(self, userdata):
