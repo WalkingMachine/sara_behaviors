@@ -50,10 +50,11 @@ class SelectObjectSM(Behavior):
 
     def create(self):
         # x:900 y:225, x:472 y:176, x:466 y:406
-        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'timeout'])
+        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'timeout'], input_keys=['Name', 'detection_1', 'try_1'], output_keys=['pose'])
         _state_machine.userdata.Name = "unknown"
         _state_machine.userdata.detection_1 = 1
         _state_machine.userdata.try_1 = 1
+        _state_machine.userdata.pose = 0
 
 
         # Additional creation code can be added inside the following tags
