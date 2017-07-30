@@ -14,6 +14,7 @@ from flexbe_states.subscriber_state import SubscriberState
 from sara_flexbe_states.select_object import ObjectSelect
 from sara_flexbe_states.ObjectDetection_GetImages import ObjectDetection_GetImages
 from sara_flexbe_states.ObjectDetection_CreatePDF import ObjectDetection_CreatePDF
+
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -54,6 +55,7 @@ class SelectObjectSM(Behavior):
         _state_machine.userdata.detection_1 = 1
         _state_machine.userdata.try_1 = 1
         _state_machine.userdata.pose = 0
+
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -128,7 +130,14 @@ class SelectObjectSM(Behavior):
                                         _sm_group_2_1,
                                         transitions={'done': 'GetImageForPDF', 'failed': 'failed', 'timeout': 'timeout'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'timeout': Autonomy.Inherit},
-                                        remapping={'Name': 'Name', 'Image': 'Image', 'Pose': 'pose', 'workspace': 'workspace'})
+                                        remapping={'Name': 'Name', 'Image': 'Image', 'Pose': 'Pose', 'workspace': 'workspace'})
+
+            # x:544 y:301
+            OperatableStateMachine.add('GetGrasp',
+                                        GraspObject(),
+                                        transitions={'done': 'finished', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'workspace': 'workspace', 'grasps': 'grasps'})
 
             # x:542 y:310
             OperatableStateMachine.add('GetImageForPDF',

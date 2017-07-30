@@ -3,6 +3,8 @@
 
 from flexbe_core import EventState, Logger
 import json
+from geometry_msgs.msg import Pose, Point, Quaternion
+from tf import transformations
 
 class Wonderland_Read_Entity(EventState):
 	'''
@@ -24,7 +26,7 @@ class Wonderland_Read_Entity(EventState):
 	def __init__(self, index_function):
 		super(Wonderland_Read_Entity, self).__init__(outcomes=['done', 'empty', 'error'],
 													input_keys=['json_text', 'input_value'],
-													output_keys=['id', 'name', 'time', 'x_pos', 'y_pos', 'z_pos', 'waypoint_id'])
+													output_keys=['id', 'name', 'time', 'x_pos', 'y_pos', 'z_pos', 'waypoint_id', 'waypoint_pose'])
 		self._index_function = index_function
 		self._index = 0
 	
@@ -78,6 +80,9 @@ class Wonderland_Read_Entity(EventState):
 		if 'waypoint' in data[self._index]:
 			if 'id' in data[self._index]['waypoint']:
 				userdata.waypoint_id = data[self._index]['waypoint']['id']
+				pt = Point(data[self._index]['waypoint']['id']['x'], data[self._index]['waypoint']['id']['y'], 0)
+				qt = transformations.quaternion_from_euler(0, 0, data[self._index]['waypoint']['id']['theta'])
+				userdata.waypoint_pose = Pose(position=pt, orientation=Quaternion(*qt))
 
 		# continue to Done
 		return 'done'

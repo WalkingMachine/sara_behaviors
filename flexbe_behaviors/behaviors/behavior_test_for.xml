@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="test for">
+
+	<executable package_path="behavior_test_for.test_for_sm" class="testforSM" />
+	<tagstring></tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Thu Jul 27 2017</date>
+	<description>
+		test the for state
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
