@@ -64,6 +64,7 @@
   <run_depend>behavior_get_waypoint_pose</run_depend>
 
   <run_depend>behavior_wonderland_goto_exit</run_depend>
+  <run_depend>behavior_action_sarapick</run_depend>
 
 
 </package>

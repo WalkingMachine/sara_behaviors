@@ -2,7 +2,7 @@
 import rospy
 from std_msgs.msg import String
 from sensor_msgs.msg import PointCloud2, Image
-from geometry_msgs.msg import PoseWithCovarianceStamped, Pose
+from geometry_msgs.msg import PoseWithCovarianceStamped, Pose, PoseStamped
 from object_recognition_msgs.msg import *
 from wm_objects_selector.srv import *
 from object_recognition_msgs.msg import *
@@ -42,7 +42,7 @@ class ObjectSelect(EventState):
         rospy.logout("Fetch client initialized")
         # Create publisher for selected object_pose
         pub_object_pose = rospy.Publisher("/WMObjectProcessor/selected_object_pose",
-                                          PoseWithCovarianceStamped,
+                                          PoseStamped,
                                           queue_size=100)
         # Build request
         req = RecognizeObjectRequest()
@@ -60,7 +60,6 @@ class ObjectSelect(EventState):
             Logger.loginfo(
                 'Service found the requested object at\n\r ' +
                 str(slct_obj.selected_object_pose))
-            pub_object_pose.publish(slct_obj.selected_object_pose)
 
             # Do the transform to base_link frame
             transform = self.tf_buffer.lookup_transform('base_link',
@@ -70,6 +69,7 @@ class ObjectSelect(EventState):
                                                                 rospy.Duration(1.0))  # wait for 1 second
 
             pose_transformed = tf2_geometry_msgs.do_transform_pose(slct_obj.selected_object_pose.pose, transform)
+            pub_object_pose.publish(pose_transformed)
             userdata.pose = Pose()
             userdata.pose = pose_transformed
             userdata.workspace = str(slct_obj.workspace)
