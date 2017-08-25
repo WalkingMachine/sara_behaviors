@@ -28,4 +28,4 @@ class RegexTester(EventState):
         n = self.test.match(userdata.text)
         if n:
             return 'true'
-        return 'true'
+        return 'false'
