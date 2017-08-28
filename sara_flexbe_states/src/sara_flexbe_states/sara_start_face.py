@@ -4,7 +4,7 @@ from flexbe_core import EventState, Logger
 import std_srvs
 import rospy
 from std_srvs.srv._SetBool import SetBool
-
+#from std_msgs.msg.Bool import Bool
 
 class StartFace(EventState):
     '''
@@ -21,16 +21,16 @@ class StartFace(EventState):
          Logger.loginfo('Setting emotion and brightness')
 
     def execute(self, userdata):
-        Logger.loginfo('Waiting for service sara_face/Emotion ')
+        Logger.loginfo('Waiting for service sara_face/Start ')
 
         try:
-            rospy.wait_for_service('sara_face/Emotion', timeout=10)
+            rospy.wait_for_service('sara_face/Start', timeout=10)
         except:
             return 'failed'
 
         try:
-            set_expression = rospy.ServiceProxy('sara_face/Emotion', SetBool)
-            resp = set_expression(bool=True)
+            set_expression = rospy.ServiceProxy('sara_face/Start', SetBool)
+            resp = set_expression(True)
             Logger.loginfo('service called')
 
             if not resp.success:

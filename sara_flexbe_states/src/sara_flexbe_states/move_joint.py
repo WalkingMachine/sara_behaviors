@@ -34,7 +34,7 @@ class MoveJoint(EventState):
             send_pose = rospy.ServiceProxy('/move_joints', move_joints)
             resp = send_pose('RightArm', self.pose_name)
 
-            if not resp.succes:
+            if not resp.success:
                 Logger.logwarn("ERROR while calling service")
                 return 'failed'
 

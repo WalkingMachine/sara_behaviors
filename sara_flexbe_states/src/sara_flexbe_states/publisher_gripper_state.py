@@ -29,7 +29,7 @@ class PublisherGripperState(EventState):
 		'''
         super(PublisherGripperState, self).__init__(outcomes=['done'], input_keys=['width','effort'])
 
-        self._topic = 'gripper/cmd'
+        self._topic = 'sara_gripper_action_controller/gripper_cmd/goal'
         self._pub = ProxyPublisher({self._topic: GripperCommandActionGoal})
 
     def execute(self, userdata):

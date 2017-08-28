@@ -1,0 +1,20 @@
+<package>
+  <name>behavior_sara_presentation</name>
+  <version>1.0.0</version>
+  <description>
+     laisse sara se presenter
+  </description>
+  <maintainer email="todo@todo.com">PLM, MSTP</maintainer>
+  <license>BSD</license>
+
+  <url>http://ros.org/wiki/behavior_sara_presentation</url>
+  <author>PLM, MSTP</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>rospy</run_depend>
+  <run_depend>flexbe_core</run_depend>
+  <run_depend>flexbe_states</run_depend>
+  <run_depend>sara_flexbe_states</run_depend>
+
+</package>

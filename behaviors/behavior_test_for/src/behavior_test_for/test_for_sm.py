@@ -10,6 +10,7 @@ import roslib; roslib.load_manifest('behavior_test_for')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.log_state import LogState
 from sara_flexbe_states.for_state import ForState
+from sara_flexbe_states.regex_tester import RegexTester
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -44,8 +45,9 @@ class testforSM(Behavior):
 
 
     def create(self):
-        # x:30 y:322, x:130 y:322
+        # x:30 y:322, x:388 y:382
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
+        _state_machine.userdata.text = "it tests"
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -54,18 +56,31 @@ class testforSM(Behavior):
 
 
         with _state_machine:
-            # x:170 y:95
+            # x:132 y:39
             OperatableStateMachine.add('log',
                                         LogState(text="test", severity=Logger.REPORT_HINT),
-                                        transitions={'done': 'for'},
+                                        transitions={'done': 'reg'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:210 y:206
+            # x:129 y:155
             OperatableStateMachine.add('for',
                                         ForState(repeat=4),
-                                        transitions={'do': 'log', 'end': 'finished'},
+                                        transitions={'do': 'failed', 'end': 'finished'},
                                         autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
                                         remapping={'index': 'index'})
+
+            # x:370 y:185
+            OperatableStateMachine.add('reg',
+                                        RegexTester(regex=".*test.*"),
+                                        transitions={'true': 'success', 'false': 'failed'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'text': 'text', 'result': 'result'})
+
+            # x:217 y:298
+            OperatableStateMachine.add('success',
+                                        LogState(text="success", severity=Logger.REPORT_HINT),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off})
 
 
         return _state_machine
