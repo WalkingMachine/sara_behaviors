@@ -12,7 +12,6 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Go_To_Room" />
 
 	<!-- Available Parameters -->
 
