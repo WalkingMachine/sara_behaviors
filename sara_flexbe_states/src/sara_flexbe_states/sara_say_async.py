@@ -24,7 +24,7 @@ class SaraSayAsync(EventState):
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
 
-        pub = rospy.Publisher("/say", msg.say, queue_size=5)
+        pub = rospy.Publisher("/say", msg.say, queue_size=1)
         ms = msg.say()
         ms.sentence = self.sentence
         ms.emotion = self.emotion
