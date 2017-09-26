@@ -14,7 +14,7 @@ class SetKey(EventState):
     Set a Key to a predefined Value
     -- Value    object      The desired value.
     
-    <# Key	    object		The key to set.
+    <# Key      object      The key to set.
     
     <= done                 The key is set
     '''

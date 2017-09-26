@@ -8,24 +8,24 @@ from flexbe_core import EventState, Logger
 
 class Wonderland_Add_Human(EventState):
     '''
-	Add an human to Wonderland.
-	For the room, enter an integer ID or a string Name.
-	Return the ID of the added/updated human.
+    Add an human to Wonderland.
+    For the room, enter an integer ID or a string Name.
+    Return the ID of the added/updated human.
 
-	#> id               int     enter the id for edit or Null for add
-	># name             string  name of the human
-	># roomID           string  ID on the BDD or name of the room
-	># x_pos            float   Position on X
-	># y_pos            float   Position on Y
-	># z_pos            float   Position on Z
-	># gender           string  Gender of the person
-	># is_operator      boolean Say if it is the operator
+    #> id               int     enter the id for edit or Null for add
+    ># name             string  name of the human
+    ># roomID           string  ID on the BDD or name of the room
+    ># x_pos            float   Position on X
+    ># y_pos            float   Position on Y
+    ># z_pos            float   Position on Z
+    ># gender           string  Gender of the person
+    ># is_operator      boolean Say if it is the operator
 
-	#> id               int     ID on the BDD of the human
+    #> id               int     ID on the BDD of the human
 
-	<= done     data sent correctly
-	<= error    error while data is reading
-	'''
+    <= done     data sent correctly
+    <= error    error while data is reading
+    '''
 
     def __init__(self):
         super(Wonderland_Add_Human, self).__init__(outcomes=['done', 'error'],

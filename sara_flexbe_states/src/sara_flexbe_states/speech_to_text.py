@@ -9,7 +9,7 @@ class SpeechToText(EventState):
     '''
     Speech to text analyse mic audio file and output analysed word from it.
 
-    #> words 		object 	Output the recognized speech.
+    #> words    object     Output the recognized speech.
 
     <= done     Finish job.
     <= failed   Job as failed.

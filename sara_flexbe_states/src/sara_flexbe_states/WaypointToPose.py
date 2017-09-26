@@ -10,10 +10,10 @@ class WpToPose(EventState):
     Transforms Waypoint to pose
 
 
-    ># data uint8		uint8 to publish.
+    ># data     uint8        uint8 to publish.
     ># topic    string       topic to publish on.
-    <= done            state of the process
-    <= failed            state of the process.
+    <= done     state of the process
+    <= failed   state of the process.
 
     '''
 
@@ -24,10 +24,10 @@ class WpToPose(EventState):
 
 
     def on_enter(self, userdata):
-	    Logger.loginfo('Entering waypoint to pose transformation')
+        Logger.loginfo('Entering waypoint to pose transformation')
 
     def execute(self, userdata):
 
-		
-	    return 'done'
+
+        return 'done'
 

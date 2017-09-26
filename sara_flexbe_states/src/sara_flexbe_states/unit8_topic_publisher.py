@@ -12,9 +12,9 @@ class PublishUint8(EventState):
     Publishes a uit 8 on a topic.
 
 
-    ># data uint8		uint8 to publish.
+    ># data     uint8        uint8 to publish.
     ># topic    string       topic to publish on.
-    <= done            uint8 has been published.
+    <= done     uint8        has been published.
 
     '''
 

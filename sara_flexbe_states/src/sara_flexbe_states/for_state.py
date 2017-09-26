@@ -14,7 +14,7 @@ class ForState(EventState):
     <= index     current index
 
     <= do        loop
-    <= end         finished       
+    <= end       finished       
     """
 
     def __init__(self, repeat):
@@ -27,7 +27,7 @@ class ForState(EventState):
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
 
-        if ( self.index < self.repeat ):
+        if ( self.index <= self.repeat ):
             self.index = self.index+1
             userdata.index = self.index
             return 'do'

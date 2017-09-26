@@ -15,24 +15,24 @@ import json
 
 class Get_Robot_Pose(EventState):
     '''
-	Gets the latest message on the given topic and stores it to userdata.
+    Gets the latest message on the given topic and stores it to userdata.
 
-	-- topic 		string		The topic on which should be listened.
-	-- blocking 	bool 		Blocks until a message is received.
-	-- clear 		bool 		Drops last message on this topic on enter
-								in order to only handle message received since this state is active.
+    -- topic        string        The topic on which should be listened.
+    -- blocking     bool          Blocks until a message is received.
+    -- clear        bool          Drops last message on this topic on enter
+                                  in order to only handle message received since this state is active.
 
-	#> pose		Pose2D		    Latest message on the given topic of the respective type.
+    #> pose         Pose2D        Latest message on the given topic of the respective type.
 
-	<= done 				Message has been received and stored in userdata or state is not blocking.
-	<= failed 				The topic is not available when this state becomes actives.
+    <= done         Message has been received and stored in userdata or state is not blocking.
+    <= failed       The topic is not available when this state becomes actives.
 
-	'''
+    '''
 
     def __init__(self, blocking=True, clear=False):
         '''
-		Constructor
-		'''
+        Constructor
+        '''
         super(Get_Robot_Pose, self).__init__(outcomes=['done', 'failed'],
                                              output_keys=['pose'])
 
@@ -54,8 +54,8 @@ class Get_Robot_Pose(EventState):
 
     def execute(self, userdata):
         '''
-		Execute this state
-		'''
+        Execute this state
+        '''
         if not self._connected:
             return 'failed'
 

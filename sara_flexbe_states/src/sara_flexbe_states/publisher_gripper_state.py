@@ -14,19 +14,19 @@ Created on 31.01.2017
 
 class PublisherGripperState(EventState):
     '''
-	Publishes a command for the gripper.
+    Publishes a command for the gripper.
 
-	>= width 	float		0-255 desired gripper width.
-	>= effort 	float		0-255 desired gripper effort.
+    >= width      float        0-255 desired gripper width.
+    >= effort     float        0-255 desired gripper effort.
 
-	<= done 					Done publishing.
+    <= done       Done publishing.
 
-	'''
+    '''
 
     def __init__(self):
         '''
-		Constructor
-		'''
+        Constructor
+        '''
         super(PublisherGripperState, self).__init__(outcomes=['done'], input_keys=['width','effort'])
 
         self._topic = 'sara_gripper_action_controller/gripper_cmd/goal'
