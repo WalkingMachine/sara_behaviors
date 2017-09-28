@@ -18,7 +18,7 @@ Modified on 05/21/2017
 
 class SaraMoveBase(EventState):
     """
-    Navigates Sara to a global position and orientation using move_base.
+    Navigates Sara to a relative position and orientation using move_base.
 
     ># pose     Pose2D      Target waypoint for navigation.
 
@@ -92,7 +92,7 @@ class SaraMoveBase(EventState):
 
         goal.target_pose.pose = pose
 
-        goal.target_pose.header.frame_id = "map"
+        goal.target_pose.header.frame_id = "base_link"
         # goal.target_pose.header.stamp.secs = 5.0
 
         # Send the action goal for execution
