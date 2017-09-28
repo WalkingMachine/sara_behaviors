@@ -25,7 +25,7 @@ class SaraSetAngle(EventState):
 
         Logger.loginfo('Setting head angle to '+str(self.angle))
         pub = rospy.Publisher("/sara_head_pitch_controller/command", Float64, queue_size=1)
-        ms = Float64
+        ms = Float64()
         ms.data = self.angle
         pub.publish(ms)
 
