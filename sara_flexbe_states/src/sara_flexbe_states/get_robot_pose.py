@@ -33,5 +33,5 @@ class Get_Robot_Pose(EventState):
         posest = self._sub.get_last_msg(self._topic)
 
         userdata.pose = posest.pose
-        self._sub.remove_last_msg(self._topic)
+        #self._sub.remove_last_msg(self._topic)
         return 'done'
