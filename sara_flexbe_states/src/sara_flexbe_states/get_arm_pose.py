@@ -42,4 +42,4 @@ class GetArmPose(EventState):
         # This method is called when the state becomes active, a transition from another state to this one is taken.
         # It is primarily used to start actions which are associated with this state.
 
-        Logger.loginfo('Enter Move Arm')
+        Logger.loginfo('Enter get arm pose')
