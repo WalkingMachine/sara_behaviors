@@ -5,12 +5,12 @@ from flexbe_core import EventState, Logger
 from flexbe_core.proxy import ProxySubscriberCached
 from ar_track_alvar_msgs.msg import AlvarMarkers, AlvarMarker
 from tf.transformations import quaternion_from_euler
-
+from geometry_msgs.msg import Pose
 
 class GetMarker(EventState):
     '''
     Gets the pose of a AR marker.
-    
+
     -- index  index of the marker.
     -- 
 
@@ -25,21 +25,26 @@ class GetMarker(EventState):
         '''
         Constructor
         '''
-        super(GetMarker, self).__init__(outcomes=['done','not_found'], output_keys=['pose'])
+        super(GetMarker, self).__init__(outcomes=['done', 'not_found'], output_keys=['pose'])
         self.index = index
-        self._topic = "/arm_pose_marker"
+        self._topic = "/ar_pose_marker"
         self._sub = ProxySubscriberCached({self._topic: AlvarMarkers})
-        self.quat = quaternion_from_euler(3.14159,0,0)
+        self.pose = Pose
+
+        quat = quaternion_from_euler(3.14159, 0, 0)
+        self.pose.orientation = quat
 
     def execute(self, userdata):
         '''
         Execute this state
         '''
 
-        markers = userdata.pose = self._sub.get_last_msg(self._topic)
-        for marker in markers.markers:
-            if marker.id == self.index:
-                userdata.pose = marker.pose*self.quat
-                return 'done'
+        Logger.loginfo('looking for marker ' + str(self.index))
+        if self._sub.has_msg(self._topic):
+            markers = userdata.pose = self._sub.get_last_msg(self._topic)
+            for marker in markers.markers:
+                if marker.id == self.index:
+                    userdata.pose = marker.pose.pose * self.pose
+                    return 'done'
 
-        return 'not_found'
+            return 'not_found'
