@@ -4,6 +4,8 @@
 from flexbe_core import EventState, Logger
 from flexbe_core.proxy import ProxySubscriberCached
 from ar_track_alvar_msgs.msg import AlvarMarkers, AlvarMarker
+from tf.transformations import quaternion_from_euler
+
 
 class Get_Robot_Pose(EventState):
     '''
@@ -27,6 +29,7 @@ class Get_Robot_Pose(EventState):
         self.index = index
         self._topic = "/arm_pose_marker"
         self._sub = ProxySubscriberCached({self._topic: AlvarMarkers})
+        self.quat = quaternion_from_euler(3.14159,0,0)
 
     def execute(self, userdata):
         '''
@@ -36,7 +39,7 @@ class Get_Robot_Pose(EventState):
         markers = userdata.pose = self._sub.get_last_msg(self._topic)
         for marker in markers.markers:
             if marker.id == self.index:
-                userdata.pose = marker.pose
+                userdata.pose = marker.pose*self.quat
                 break
 
         return 'done'
