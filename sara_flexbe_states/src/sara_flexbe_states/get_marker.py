@@ -25,7 +25,7 @@ class Get_Robot_Pose(EventState):
         '''
         Constructor
         '''
-        super(Get_Robot_Pose, self).__init__(outcomes=['done'], output_keys=['pose'])
+        super(Get_Robot_Pose, self).__init__(outcomes=['done','not_found'], output_keys=['pose'])
         self.index = index
         self._topic = "/arm_pose_marker"
         self._sub = ProxySubscriberCached({self._topic: AlvarMarkers})
@@ -40,6 +40,6 @@ class Get_Robot_Pose(EventState):
         for marker in markers.markers:
             if marker.id == self.index:
                 userdata.pose = marker.pose*self.quat
-                break
+                return 'done'
 
-        return 'done'
+        return 'not_found'
