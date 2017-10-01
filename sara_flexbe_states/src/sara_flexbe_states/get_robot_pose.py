@@ -10,7 +10,7 @@ class Get_Robot_Pose(EventState):
     '''
     Gets the current pose of the robot.
 
-    #> pose         Pose2D        Latest message on the given topic of the respective type.
+    #> pose         geometry_msgs.Pose        Current pose of the robot.
 
     <= done         The pose is received.
 
@@ -20,18 +20,18 @@ class Get_Robot_Pose(EventState):
         '''
         Constructor
         '''
-        super(Get_Robot_Pose, self).__init__(outcomes=['done'],
-                                             output_keys=['pose'])
+        super(Get_Robot_Pose, self).__init__(outcomes=['done'], output_keys=['pose'])
 
         self._topic = "/robot_pose"
-        self._sub = ProxySubscriberCached({self._topic: PoseStamped})
+        self._sub = ProxySubscriberCached({self._topic: Pose})
 
     def execute(self, userdata):
         '''
         Execute this state
         '''
-        posest = self._sub.get_last_msg(self._topic)
 
-        userdata.pose = posest.pose
+        mypose = userdata.pose = self._sub.get_last_msg(self._topic)
+        Logger.loginfo('my pose is:'+str(mypose))
+        userdata.pose = mypose
         #self._sub.remove_last_msg(self._topic)
         return 'done'
