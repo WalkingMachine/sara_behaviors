@@ -2,7 +2,7 @@
 from __future__ import print_function
 from flexbe_core import EventState, Logger
 from geometry_msgs.msg import Pose
-from sara_moveit.srv import *
+from wm_moveit_server.srv import move
 import rospy
 
 
