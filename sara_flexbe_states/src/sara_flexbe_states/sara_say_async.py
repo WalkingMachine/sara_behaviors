@@ -2,7 +2,7 @@
 
 from flexbe_core import EventState, Logger
 import rospy
-from wm_tts import msg
+from wm_tts.msg import say
 
 class SaraSayAsync(EventState):
     """
@@ -25,7 +25,7 @@ class SaraSayAsync(EventState):
         """Wait for action result and return outcome accordingly"""
 
         pub = rospy.Publisher("/say", msg.say, queue_size=1)
-        ms = msg.say()
+        ms = say()
         ms.sentence = self.sentence
         ms.emotion = self.emotion
         pub.publish(ms)
