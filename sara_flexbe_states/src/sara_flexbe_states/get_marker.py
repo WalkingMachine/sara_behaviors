@@ -3,16 +3,18 @@
 
 from flexbe_core import EventState, Logger
 from flexbe_core.proxy import ProxySubscriberCached
-from ar_track_alvar_msgs.msg import AlvarMarkers, AlvarMarker
 from tf.transformations import quaternion_from_euler
 from geometry_msgs.msg import Pose
+import rostopic
+import inspect
+from rospy.rostime import get_time
 
 class GetMarker(EventState):
     '''
     Gets the pose of a AR marker.
 
     -- index  index of the marker.
-    -- 
+
 
     #> pose         geometry_msgs.Pose        Current pose of the AR marker.
 
@@ -28,7 +30,19 @@ class GetMarker(EventState):
         super(GetMarker, self).__init__(outcomes=['done', 'not_found'], output_keys=['pose'])
         self.index = index
         self._topic = "/ar_pose_marker"
-        self._sub = ProxySubscriberCached({self._topic: AlvarMarkers})
+        self._connected = False
+
+        (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic)
+
+
+        if msg_topic == self._topic:
+            msg_type = self._get_msg_from_path(msg_path)
+            self._sub = ProxySubscriberCached({self._topic: msg_type})
+            self._connected = True
+        else:
+            Logger.logwarn('Topic %s for state %s not yet available.\nFound: %s\nWill try again when entering the state...' % (self._topic, self.name, str(msg_topic)))
+
+
         self.pose = Pose
 
         quat = quaternion_from_euler(3.14159, 0, 0)
@@ -40,11 +54,46 @@ class GetMarker(EventState):
         '''
 
         Logger.loginfo('looking for marker ' + str(self.index))
+        if not self._connected:
+            return 'not_found'
+
+
         if self._sub.has_msg(self._topic):
-            markers = userdata.pose = self._sub.get_last_msg(self._topic)
-            for marker in markers.markers:
-                if marker.id == self.index:
+            message = self._sub.get_last_msg(self._topic)
+
+            #Logger.loginfo(str(message))
+            #Logger.loginfo('there is ' + str(len(message.markers))+' in the list')
+
+            for marker in message.markers:
+
+                Logger.loginfo('id is ' + str(marker.id))
+
+                if int(marker.id) == int(self.index):
                     userdata.pose = marker.pose.pose * self.pose
                     return 'done'
 
             return 'not_found'
+        if self.time < get_time()-5:
+            return 'not_found'
+
+
+    def on_enter(self, userdata):
+        if not self._connected:
+            (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic)
+            if msg_topic == self._topic:
+                msg_type = self._get_msg_from_path(msg_path)
+                self._sub = ProxySubscriberCached({self._topic: msg_type})
+                self._connected = True
+                Logger.loginfo('Successfully subscribed to previously unavailable topic %s' % self._topic)
+                self.time = get_time()
+            else:
+                Logger.logwarn('Topic %s still not available, giving up.' % self._topic)
+
+
+
+    def _get_msg_from_path(self, msg_path):
+        msg_import = msg_path.split('/')
+        msg_module = '%s.msg' % (msg_import[0])
+        package = __import__(msg_module, fromlist=[msg_module])
+        clsmembers = inspect.getmembers(package, lambda member: inspect.isclass(member) and member.__module__.endswith(msg_import[1]))
+        return clsmembers[0][1]
