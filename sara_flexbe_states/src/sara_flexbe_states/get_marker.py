@@ -39,6 +39,8 @@ class GetMarker(EventState):
             msg_type = self._get_msg_from_path(msg_path)
             self._sub = ProxySubscriberCached({self._topic: msg_type})
             self._connected = True
+
+            Logger.loginfo('connecting marker state to '+self._topic)
         else:
             Logger.logwarn('Topic %s for state %s not yet available.\nFound: %s\nWill try again when entering the state...' % (self._topic, self.name, str(msg_topic)))
 
@@ -52,6 +54,8 @@ class GetMarker(EventState):
         '''
         Execute this state
         '''
+
+
 
         Logger.loginfo('looking for marker ' + str(self.index))
         if not self._connected:
@@ -73,11 +77,18 @@ class GetMarker(EventState):
                     return 'done'
 
             return 'not_found'
-        if self.time < get_time()-5:
+
+        time = self.time - get_time()+5
+        Logger.loginfo('marker not found '+str(int(time))+' before giving up')
+        if (time <= 0):
             return 'not_found'
 
 
+
     def on_enter(self, userdata):
+        Logger.loginfo('entering marker state')
+
+        self.time = get_time()
         if not self._connected:
             (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic)
             if msg_topic == self._topic:
@@ -85,7 +96,6 @@ class GetMarker(EventState):
                 self._sub = ProxySubscriberCached({self._topic: msg_type})
                 self._connected = True
                 Logger.loginfo('Successfully subscribed to previously unavailable topic %s' % self._topic)
-                self.time = get_time()
             else:
                 Logger.logwarn('Topic %s still not available, giving up.' % self._topic)
 
