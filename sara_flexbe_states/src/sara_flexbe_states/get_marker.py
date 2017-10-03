@@ -4,7 +4,7 @@
 from flexbe_core import EventState, Logger
 from flexbe_core.proxy import ProxySubscriberCached
 from tf.transformations import quaternion_from_euler
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Quaternion
 import rostopic
 import inspect
 from rospy.rostime import get_time
@@ -70,8 +70,14 @@ class GetMarker(EventState):
                 Logger.loginfo('id is ' + str(marker.id))
 
                 if int(marker.id) == int(self.index):
-                    userdata.pose.orientation *= self.quat
-                    userdata.pose = marker.pose.pose# * self.pose
+                    quat = Quaternion()
+                    quat.x = marker.pose.pose.orientation.x
+                    quat.y = marker.pose.pose.orientation.y
+                    quat.z = marker.pose.pose.orientation.z
+                    quat.w = marker.pose.pose.orientation.w
+                    quat *= self.quat
+                    marker.pose.pose.orientation = quat
+                    userdata.pose = marker.pose.pose
                     return 'done'
 
             return 'not_found'
