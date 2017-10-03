@@ -13,7 +13,6 @@ class ContinueButton(EventState):
     Reads on a topic to see for the continue button.
 
     <= Continue            Continue if button pressed.
-    <=
 
     '''
 

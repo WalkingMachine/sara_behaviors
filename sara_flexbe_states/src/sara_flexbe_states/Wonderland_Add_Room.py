@@ -25,7 +25,7 @@ class Wonderland_Add_Room(EventState):
 
     <= done                 data sent correctly
     <= error                error while data is reading
-    <= already_registered
+    <= already_registered   already_registered
     '''
 
     def __init__(self):

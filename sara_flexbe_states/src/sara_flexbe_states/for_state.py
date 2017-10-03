@@ -4,7 +4,7 @@ from flexbe_core import EventState, Logger
 import rospy
 
 
-class ForState(EventState):
+class ForLoop(EventState):
     """
     Allow to loop a certain number of time
 
@@ -20,7 +20,7 @@ class ForState(EventState):
     def __init__(self, repeat):
         """Constructor"""
 
-        super(ForState, self).__init__(outcomes = ['do','end'], output_keys = ['index'])
+        super(ForLoop, self).__init__(outcomes = ['do','end'], output_keys = ['index'])
         self.repeat = repeat
         self.index = 1
 

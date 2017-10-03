@@ -9,7 +9,7 @@ from std_msgs.msg import UInt8
 
 class PublishUint8(EventState):
     '''
-    Publishes a uit 8 on a topic.
+    Publishes a uint 8 on a topic.
 
 
     ># data     uint8        uint8 to publish.

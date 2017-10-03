@@ -21,7 +21,7 @@ from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_states.compare_poses import ComparePoses
 from flexbe_states.check_condition_state import CheckConditionState
-from sara_flexbe_states.pose_gen2 import GenPose2
+from sara_flexbe_states.pose_gen_quat import GenPoseQuat
 from behavior_action_receive_bag.action_receive_bag_sm import Action_Receive_BagSM
 from behavior_action_give_back_bag.action_give_back_bag_sm import Action_Give_Back_BagSM
 # Additional imports can be added inside the following tags
@@ -176,7 +176,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
             # x:219 y:89
             OperatableStateMachine.add('gen entry',
-                                        GenPose2(x=4.72067403793, y=1.77969455719, z=0, ox=0, oy=0, oz=0.407051133058, ow=0.913405372809),
+                                        GenPoseQuat(x=4.72067403793, y=1.77969455719, z=0, ox=0, oy=0, oz=0.407051133058, ow=0.913405372809),
                                         transitions={'done': 'move to entry', 'failed': 'failed'},
                                         autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose'})

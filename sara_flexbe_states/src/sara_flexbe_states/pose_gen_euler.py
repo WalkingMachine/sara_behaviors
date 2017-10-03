@@ -1,23 +1,26 @@
 #!/usr/bin/env python
 from flexbe_core import EventState, Logger
 # from std_msgs.msg import String
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Pose, Point, Quaternion
+from tf import transformations
 import rospy
 
 
-class GenPoseX(EventState):
+class GenPoseEuler(EventState):
     '''
     MoveArm receive a ROS pose as input and launch a ROS service with the same pose
     (x,y,z)
-    (x,y,z,w)
+    roll =  quaternion_from_euler(0, X, X)
+    pitch = quaternion_from_euler(X, 0, X)
+    yaw =   quaternion_from_euler(X, X, 0)
 
     <= pose     Target waypoint for navigation.
     <= failed   Job as failed.
     '''
 
-    def __init__(self):
+    def __init__(self, x, y, z, roll, pitch, yaw):
         # See example_state.py for basic explanations.
-        super(GenPoseX, self).__init__(outcomes=['done', 'failed'], output_keys=['pose'])
+        super(GenPoseEuler, self).__init__(outcomes=['done', 'failed'], output_keys=['pose'])
 
         self._x = 0
         if x is not None: self._x = x
@@ -28,35 +31,25 @@ class GenPoseX(EventState):
         self._z = 0
         if z is not None: self._z = z
 
-        self._ox = 0
-        if x is not None: self._ox = ox
+        self._roll = 0
+        if roll is not None: self._roll = roll
 
-        self._oy = 0
-        if y is not None: self._oy = oy
+        self._pitch = 0
+        if pitch is not None: self._pitch = pitch
 
-        self._oz = 0
-        if z is not None: self._oz = oz
+        self._yaw = 0
+        if yaw is not None: self._yaw = yaw
 
-        self._ow = 0
-        if w is not None: self._ow = ow
-
+        print("(", x, ",", y, ",", z, ") - (", roll, ",", pitch, ",", yaw)
 
 
     def execute(self, userdata):
         # This method is called periodically while the state is active.
         # Main purpose is to check state conditions and trigger a corresponding outcome.
         # If no outcome is returned, the state will stay active.
-        pt = Pose()
-        pt.position.x = self._x
-        pt.position.y = self._y
-        pt.position.z = self._z
-
-        pt.position.ox = self._ox
-        pt.position.oy = self._oy
-        pt.position.oz = self._oz
-        pt.position.ow = self._ow
-
-        userdata.pose = pt
+        pt = Point(self._x, self._y, self._z)
+        qt = transformations.quaternion_from_euler(self._roll, self._pitch, self._yaw)
+        userdata.pose = Pose(position=pt, orientation=Quaternion(*qt))  # One of the outcomes declared above.
 
         return 'done'
 

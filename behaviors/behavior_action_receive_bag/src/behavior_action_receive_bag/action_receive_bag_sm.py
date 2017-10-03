@@ -9,7 +9,7 @@
 import roslib; roslib.load_manifest('behavior_action_receive_bag')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.move_joint import MoveJoint
-from sara_flexbe_states.publisher_gripper_state import PublisherGripperState
+from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.torque_reader import ReadTorque
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -72,7 +72,7 @@ class Action_Receive_BagSM(Behavior):
 
 			# x:599 y:111
 			OperatableStateMachine.add('Close_gripper',
-										PublisherGripperState(),
+										SetGripperState(),
 										transitions={'done': 'Go_to_IdlePose'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'width': 'Closed_Gripper_Width', 'effort': 'effort'})

@@ -12,7 +12,7 @@ Created on 31.01.2017
 '''
 
 
-class PublisherGripperState(EventState):
+class SetGripperState(EventState):
     '''
     Publishes a command for the gripper.
 
@@ -27,7 +27,7 @@ class PublisherGripperState(EventState):
         '''
         Constructor
         '''
-        super(PublisherGripperState, self).__init__(outcomes=['done'], input_keys=['width','effort'])
+        super(SetGripperState, self).__init__(outcomes=['done'], input_keys=['width','effort'])
 
         self._topic = 'sara_gripper_action_controller/gripper_cmd/goal'
         self._pub = ProxyPublisher({self._topic: GripperCommandActionGoal})

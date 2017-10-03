@@ -10,7 +10,7 @@ import roslib; roslib.load_manifest('behavior_new_qualif')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.AMCL_initial_pose import AmclInit
 from behavior_door_detector.door_detector_sm import DoorDetectorSM
-from sara_flexbe_states.pose_gen2 import GenPose2
+from sara_flexbe_states.pose_gen_quat import GenPoseQuat
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -72,7 +72,7 @@ class NewqualifSM(Behavior):
 
 			# x:43 y:274
 			OperatableStateMachine.add('gen',
-										GenPose2(x=1.69569063187, y=0.229661718011, z=0, ox=0, oy=0, oz=-0.0101022152482, ow=0.999948971322),
+										GenPoseQuat(x=1.69569063187, y=0.229661718011, z=0, ox=0, oy=0, oz=-0.0101022152482, ow=0.999948971322),
 										transitions={'done': 'move', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'pose'})

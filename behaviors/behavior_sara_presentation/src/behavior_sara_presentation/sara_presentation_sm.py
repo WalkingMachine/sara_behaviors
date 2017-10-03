@@ -17,7 +17,7 @@ from behavior_get_speech.get_speech_sm import Get_speechSM
 from sara_flexbe_states.sara_sound import SaraSound
 from sara_flexbe_states.unit8_topic_publisher import PublishUint8
 from sara_flexbe_states.move_joint import MoveJoint
-from sara_flexbe_states.publisher_gripper_state import PublisherGripperState
+from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.FOR_loop import ForState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -122,14 +122,14 @@ class Sara_presentationSM(Behavior):
 
 			# x:38 y:236
 			OperatableStateMachine.add('close',
-										PublisherGripperState(),
+										SetGripperState(),
 										transitions={'done': 'say catch'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'width': 'widthclosed', 'effort': 'effort'})
 
 			# x:52 y:479
 			OperatableStateMachine.add('open',
-										PublisherGripperState(),
+										SetGripperState(),
 										transitions={'done': 'lower'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'width': 'widthopen', 'effort': 'effort'})
@@ -154,7 +154,7 @@ class Sara_presentationSM(Behavior):
 
 			# x:234 y:82
 			OperatableStateMachine.add('opp',
-										PublisherGripperState(),
+										SetGripperState(),
 										transitions={'done': 'show'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'width': 'widthopen', 'effort': 'effort'})

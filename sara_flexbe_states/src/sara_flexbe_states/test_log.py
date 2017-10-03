@@ -10,7 +10,7 @@ class test_log(EventState):
     
     ># text     object  object to print
     
-    <= done
+    <= done     done
     '''
 
     def __init__(self):
