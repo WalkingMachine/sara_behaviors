@@ -45,10 +45,7 @@ class GetMarker(EventState):
             Logger.logwarn('Topic %s for state %s not yet available.\nFound: %s\nWill try again when entering the state...' % (self._topic, self.name, str(msg_topic)))
 
         self.quat = Quaternion()
-        self.quat.x = quaternion_from_euler(3.14159, 0, 0, 'x')
-        self.quat.y = quaternion_from_euler(3.14159, 0, 0, 'y')
-        self.quat.z = quaternion_from_euler(3.14159, 0, 0, 'z')
-        self.quat.w = quaternion_from_euler(3.14159, 0, 0, 'w')
+        self.quat.x = quaternion_from_euler(3.14159, 0, 0)
 
     def execute(self, userdata):
         '''
