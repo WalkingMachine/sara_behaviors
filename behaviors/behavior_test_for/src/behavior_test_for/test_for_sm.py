@@ -9,7 +9,7 @@
 import roslib; roslib.load_manifest('behavior_test_for')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.log_state import LogState
-from sara_flexbe_states.FOR_loop import ForState
+from sara_flexbe_states.for_loop import ForState
 from sara_flexbe_states.regex_tester import RegexTester
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]

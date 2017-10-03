@@ -15,7 +15,7 @@ from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.GetPersonID import GetPersonID
 from flexbe_states.wait_state import WaitState
-from sara_flexbe_states.FOR_loop import ForState
+from sara_flexbe_states.for_loop import ForState
 from sara_flexbe_states.GetIDPose import GetIDPose
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
