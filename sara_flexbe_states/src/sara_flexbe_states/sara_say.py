@@ -2,8 +2,7 @@
 
 from flexbe_core import EventState, Logger
 import rospy
-from wm_tts import srv
-from wm_tts import msg
+from wm_tts.msg import say
 
 class SaraSay(EventState):
     """
@@ -19,18 +18,13 @@ class SaraSay(EventState):
         """Constructor"""
 
         super(SaraSay, self).__init__(outcomes = ['done'])
-        self.sentence = sentence
-        self.emotion = emotion
+        self.pub = rospy.Publisher("/say", say, queue_size=1)
+        self.msg = say(sentence, emotion)
 
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
-
-        rospy.wait_for_service('/wm_say')
-        req = msg.say
-        req.sentence = str(self.sentence)
-        req.emotion = self.emotion
-        serv = rospy.ServiceProxy('/wm_say', srv.say_service )
-        serv( req )
+        self.pub.publish(self.msg)
+        Logger.loginfo('Publishing done')
 
         return 'done'
 
