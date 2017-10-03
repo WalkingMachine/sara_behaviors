@@ -10,7 +10,7 @@ import roslib; roslib.load_manifest('behavior_sara_main_behavior')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.log_state import LogState
 from behavior_sara_command_manager.sara_command_manager_sm import sara_command_managerSM
-from sara_flexbe_states.for_state import ForState
+from sara_flexbe_states.FOR_loop import ForState
 from flexbe_states.calculation_state import CalculationState
 from behavior_go_to_exit.go_to_exit_sm import Go_to_exitSM
 from behavior_sara_action_executor.sara_action_executor_sm import SaraactionexecutorSM

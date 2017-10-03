@@ -18,7 +18,7 @@ from sara_flexbe_states.sara_sound import SaraSound
 from sara_flexbe_states.unit8_topic_publisher import PublishUint8
 from sara_flexbe_states.move_joint import MoveJoint
 from sara_flexbe_states.publisher_gripper_state import PublisherGripperState
-from sara_flexbe_states.for_state import ForState
+from sara_flexbe_states.FOR_loop import ForState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
