@@ -3,7 +3,7 @@
 
 from flexbe_core import EventState, Logger
 from flexbe_core.proxy import ProxySubscriberCached
-from tf.transformations import quaternion_from_euler
+from tf.transformations import quaternion_from_euler, quaternion_matrix, quaternion_from_matrix
 from geometry_msgs.msg import Quaternion
 import rostopic
 import inspect
@@ -44,8 +44,9 @@ class GetMarker(EventState):
         else:
             Logger.logwarn('Topic %s for state %s not yet available.\nFound: %s\nWill try again when entering the state...' % (self._topic, self.name, str(msg_topic)))
 
-        self.quat = Quaternion()
-        self.quat.x = quaternion_from_euler(3.14159, 0, 0)
+        quat = Quaternion()
+        quat = quaternion_from_euler(3.14159, 0, 0)
+        self.mat = quaternion_matrix(quat)
 
     def execute(self, userdata):
         '''
@@ -70,12 +71,9 @@ class GetMarker(EventState):
                 Logger.loginfo('id is ' + str(marker.id))
 
                 if int(marker.id) == int(self.index):
-                    quat = Quaternion()
-                    quat.x = marker.pose.pose.orientation.x
-                    quat.y = marker.pose.pose.orientation.y
-                    quat.z = marker.pose.pose.orientation.z
-                    quat.w = marker.pose.pose.orientation.w
-                    quat *= self.quat
+
+                    mat = quaternion_matrix(marker.pose.pose.orientation)
+                    quat = quaternion_from_matrix(mat*self.mat)
 
                     marker.pose.pose.orientation.x = quat.x
                     marker.pose.pose.orientation.y = quat.y
