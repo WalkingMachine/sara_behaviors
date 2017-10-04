@@ -3,6 +3,7 @@
 from flexbe_core import EventState, Logger
 import rospy
 from wm_tts.msg import say
+from wm_tts.srv import say_service
 
 class SaraSayKey(EventState):
     """
