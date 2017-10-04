@@ -71,8 +71,12 @@ class GetMarker(EventState):
                 Logger.loginfo('id is ' + str(marker.id))
 
                 if int(marker.id) == int(self.index):
-
-                    mat = quaternion_matrix(marker.pose.pose.orientation)
+                    pose = Quaternion()
+                    pose.w = marker.pose.pose.orientation.w
+                    pose.x = marker.pose.pose.orientation.x
+                    pose.y = marker.pose.pose.orientation.y
+                    pose.z = marker.pose.pose.orientation.z
+                    mat = quaternion_matrix(pose)
                     quat = quaternion_from_matrix(mat*self.mat)
                     quat
                     marker.pose.pose.orientation.w = quat[0]
