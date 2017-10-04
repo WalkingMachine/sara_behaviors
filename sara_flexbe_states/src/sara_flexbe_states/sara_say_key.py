@@ -42,7 +42,3 @@ class SaraSayKey(EventState):
             Logger.loginfo('Publishing done')
 
         return 'done'
-        Logger.loginfo('Publishing done')
-
-        return 'done'
-
