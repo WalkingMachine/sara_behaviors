@@ -74,11 +74,11 @@ class GetMarker(EventState):
 
                     mat = quaternion_matrix(marker.pose.pose.orientation)
                     quat = quaternion_from_matrix(mat*self.mat)
-
-                    marker.pose.pose.orientation.x = quat.x
-                    marker.pose.pose.orientation.y = quat.y
-                    marker.pose.pose.orientation.z = quat.z
-                    marker.pose.pose.orientation.w = quat.w
+                    quat
+                    marker.pose.pose.orientation.w = quat[0]
+                    marker.pose.pose.orientation.x = quat[1]
+                    marker.pose.pose.orientation.y = quat[2]
+                    marker.pose.pose.orientation.z = quat[3]
                     userdata.pose = marker.pose.pose
                     return 'done'
 
