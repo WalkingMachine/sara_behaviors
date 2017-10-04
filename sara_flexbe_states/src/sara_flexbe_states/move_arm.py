@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 from __future__ import print_function
 from flexbe_core import EventState, Logger
-from geometry_msgs.msg import Pose
-from wm_moveit_server.srv import move
+from moveit_commander import MoveGroupCommander
 import rospy
-import moveit_commander as mc
+import moveit_msgs.msg
 
 class MoveArm(EventState):
     '''
@@ -19,9 +18,7 @@ class MoveArm(EventState):
     def __init__(self):
         # See example_state.py for basic explanations.
         super(MoveArm, self).__init__(outcomes=['done', 'failed'], input_keys=['pose'])
-        self.robot = mc.RobotCommander()
-        self.PS = mc.PlanningSceneInterface()
-        self.group = mc.MoveGroupCommander("RightArm")
+        self.group = MoveGroupCommander("RightArm")
         self.plan = None
 
     def execute(self, userdata):

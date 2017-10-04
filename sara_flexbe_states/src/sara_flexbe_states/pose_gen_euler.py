@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 from flexbe_core import EventState, Logger
-# from std_msgs.msg import String
 from geometry_msgs.msg import Pose, Point, Quaternion
 from tf import transformations
-import rospy
 
 
 class GenPoseEuler(EventState):

@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 from flexbe_core import EventState, Logger
-# from std_msgs.msg import String
 from geometry_msgs.msg import Pose
-import rospy
-
 
 class GenPoseQuat(EventState):
     '''
@@ -29,16 +26,16 @@ class GenPoseQuat(EventState):
         if z is not None: self._z = z
 
         self._ox = 0
-        if x is not None: self._ox = ox
+        if ox is not None: self._ox = ox
 
         self._oy = 0
-        if y is not None: self._oy = oy
+        if oy is not None: self._oy = oy
 
         self._oz = 0
-        if z is not None: self._oz = oz
+        if oz is not None: self._oz = oz
 
         self._ow = 0
-        if w is not None: self._ow = ow
+        if ow is not None: self._ow = ow
 
 
 
@@ -51,10 +48,10 @@ class GenPoseQuat(EventState):
         pt.position.y = self._y
         pt.position.z = self._z
 
-        pt.position.ox = self._ox
-        pt.position.oy = self._oy
-        pt.position.oz = self._oz
-        pt.position.ow = self._ow
+        pt.orientation.x = self._ox
+        pt.orientation.y = self._oy
+        pt.orientation.z = self._oz
+        pt.orientation.w = self._ow
 
         userdata.pose = pt
 
