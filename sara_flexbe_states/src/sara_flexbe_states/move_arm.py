@@ -4,13 +4,13 @@ from flexbe_core import EventState, Logger
 from geometry_msgs.msg import Pose
 from wm_moveit_server.srv import move
 import rospy
-
+import moveit_commander as mc
 
 class MoveArm(EventState):
     '''
-    MoveArm receive a ROS pose as input and launch a ROS service with the same pose
+    MoveArm move the arm to a specific pose
 
-    ># pose     Pose      Target waypoint for navigation.
+    ># pose     Pose      Targetpose.
 
     <= done     Finish job.
     <= failed   Job as failed.
@@ -19,32 +19,25 @@ class MoveArm(EventState):
     def __init__(self):
         # See example_state.py for basic explanations.
         super(MoveArm, self).__init__(outcomes=['done', 'failed'], input_keys=['pose'])
+        self.robot = mc.RobotCommander()
+        self.PS = mc.PlanningSceneInterface()
+        self.group = mc.MoveGroupCommander("RightArm")
+        self.plan = None
 
     def execute(self, userdata):
-        # This method is called periodically while the state is active.
-        # Main purpose is to check state conditions and trigger a corresponding outcome.
-        # If no outcome is returned, the state will stay active.
-        Logger.loginfo('Waiting for move_arm')
-        rospy.wait_for_service('move_arm')
-        Logger.loginfo('Rospy wait')
 
-        try:
-            move_arm = rospy.ServiceProxy('move_arm', move)
-            resp = move_arm(move_group="RightArm", pose=userdata.pose)
-            Logger.loginfo('service called')
-
-            if not resp.success:
-                Logger.logwarn("ERROR while calling service")
-                return 'failed'
-        except rospy.ServiceException as e:
-            print("Service call failed: %s" % e)
-
-        Logger.loginfo('The arm should move NOW.')
-
-        return 'done'  # One of the outcomes declared above.
+        if (self.group.execute(self.plan)):
+            return 'done'  # One of the outcomes declared above.
+        else:
+            return 'failed'
 
     def on_enter(self, userdata):
         # This method is called when the state becomes active, a transition from another state to this one is taken.
         # It is primarily used to start actions which are associated with this state.
-
         Logger.loginfo('Enter Move Arm')
+        self.group.set_pose_target( userdata.pose )
+        self.plan = self.group.plan()
+
+    def on_exit(self, userdata):
+
+        self.group.stop()
