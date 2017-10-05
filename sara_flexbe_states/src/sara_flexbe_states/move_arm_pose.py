@@ -2,12 +2,11 @@
 from __future__ import print_function
 from flexbe_core import EventState, Logger
 from moveit_commander import MoveGroupCommander
-import rospy
-import moveit_msgs.msg
 
-class MoveArm(EventState):
+class MoveArmPose(EventState):
     '''
-    MoveArm move the arm to a specific pose
+    MoveArmPose move the arm to a specific pose
+    -- wait     wait for execution
 
     ># pose     Pose      Targetpose.
 
@@ -15,15 +14,16 @@ class MoveArm(EventState):
     <= failed   Job as failed.
     '''
 
-    def __init__(self):
+    def __init__(self, wait=True):
         # See example_state.py for basic explanations.
-        super(MoveArm, self).__init__(outcomes=['done', 'failed'], input_keys=['pose'])
+        super(MoveArmPose, self).__init__(outcomes=['done', 'failed'], input_keys=['pose'])
         self.group = MoveGroupCommander("RightArm")
         self.plan = None
+        self.wait = wait
 
     def execute(self, userdata):
 
-        if (self.group.execute(self.plan)):
+        if self.group.execute(self.plan, wait=self.wait):
             return 'done'  # One of the outcomes declared above.
         else:
             return 'failed'

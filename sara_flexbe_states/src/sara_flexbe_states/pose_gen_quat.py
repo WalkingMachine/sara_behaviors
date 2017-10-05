@@ -4,61 +4,30 @@ from geometry_msgs.msg import Pose
 
 class GenPoseQuat(EventState):
     '''
-    MoveArm receive a ROS pose as input and launch a ROS service with the same pose
-    (x,y,z)
-    (x,y,z,w)
+    Generate a pose from xyz and quaternion
+    x       x
+    y       y
+    z       z
+    ox      ox
+    oy      oy
+    oz      oz
+    ow      ow
 
-    <= pose     Target waypoint for navigation.
-    <= failed   Job as failed.
+    <= pose   generated pose
     '''
 
     def __init__(self, x, y, z, ox, oy, oz, ow):
-        # See example_state.py for basic explanations.
-        super(GenPoseQuat, self).__init__(outcomes=['done', 'failed'], output_keys=['pose'])
+        super(GenPoseQuat, self).__init__(outcomes=['done'], output_keys=['pose'])
 
-        self._x = 0
-        if x is not None: self._x = x
-
-        self._y = 0
-        if y is not None: self._y = y
-
-        self._z = 0
-        if z is not None: self._z = z
-
-        self._ox = 0
-        if ox is not None: self._ox = ox
-
-        self._oy = 0
-        if oy is not None: self._oy = oy
-
-        self._oz = 0
-        if oz is not None: self._oz = oz
-
-        self._ow = 0
-        if ow is not None: self._ow = ow
-
-
+        self.pt = Pose()
+        self.pt.position.x = x
+        self.pt.position.y = y
+        self.pt.position.z = z
+        self.pt.orientation.x = ox
+        self.pt.orientation.y = oy
+        self.pt.orientation.z = oz
+        self.pt.orientation.w = ow
 
     def execute(self, userdata):
-        # This method is called periodically while the state is active.
-        # Main purpose is to check state conditions and trigger a corresponding outcome.
-        # If no outcome is returned, the state will stay active.
-        pt = Pose()
-        pt.position.x = self._x
-        pt.position.y = self._y
-        pt.position.z = self._z
-
-        pt.orientation.x = self._ox
-        pt.orientation.y = self._oy
-        pt.orientation.z = self._oz
-        pt.orientation.w = self._ow
-
-        userdata.pose = pt
-
+        userdata.pose = self.pt
         return 'done'
-
-    def on_enter(self, userdata):
-        # This method is called when the state becomes active, a transition from another state to this one is taken.
-        # It is primarily used to start actions which are associated with this state.
-
-        Logger.loginfo('Enter Gen Pose')
