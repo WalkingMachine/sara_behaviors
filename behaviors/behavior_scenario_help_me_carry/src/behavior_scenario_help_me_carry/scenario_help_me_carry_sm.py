@@ -15,7 +15,7 @@ from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.GetPersonID import GetPersonID
 from flexbe_states.wait_state import WaitState
-from sara_flexbe_states.for_loop import ForState
+from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.GetIDPose import GetIDPose
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
@@ -136,7 +136,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
             # x:380 y:239
             OperatableStateMachine.add('for',
-                                        ForState(repeat=3),
+                                        ForLoop(repeat=3),
                                         transitions={'do': 'say stop', 'end': 'failed'},
                                         autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
                                         remapping={'index': 'index'})
@@ -298,7 +298,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
             # x:69 y:436
             OperatableStateMachine.add('For',
-                                        ForState(repeat=3),
+                                        ForLoop(repeat=3),
                                         transitions={'do': 'find operator', 'end': 'say sorry'},
                                         autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
                                         remapping={'index': 'index'})

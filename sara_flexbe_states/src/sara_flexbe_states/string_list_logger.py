@@ -7,7 +7,7 @@ from flexbe_core import EventState, Logger
 
 class StringListLogger(EventState):
     '''
-    MoveArm receive a ROS pose as input and launch a ROS service with the same pose
+    MoveArmPose receive a ROS pose as input and launch a ROS service with the same pose
 
     ># List     string[]      list to log
 

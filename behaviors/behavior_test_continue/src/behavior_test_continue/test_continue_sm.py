@@ -8,7 +8,8 @@
 
 import roslib; roslib.load_manifest('behavior_test_continue')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.continue_button import ContinueButton
+from sara_flexbe_states.pose_gen_euler import GenPoseEuler
+from sara_flexbe_states.move_arm_pose import MoveArmPose
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -53,11 +54,19 @@ class Test_continueSM(Behavior):
 
 
         with _state_machine:
-            # x:243 y:140
-            OperatableStateMachine.add('continue',
-                                        ContinueButton(),
-                                        transitions={'Continue': 'finished', 'wait': 'failed'},
-                                        autonomy={'Continue': Autonomy.Off, 'wait': Autonomy.Off})
+            # x:139 y:34
+            OperatableStateMachine.add('gen',
+                                        GenPoseEuler(x=0, y=0, z=0, roll=0, pitch=0, yaw=0),
+                                        transitions={'done': 'move', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'pose': 'pose'})
+
+            # x:318 y:29
+            OperatableStateMachine.add('move',
+                                        MoveArmPose(),
+                                        transitions={'done': 'finished', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'pose': 'pose'})
 
 
         return _state_machine

@@ -8,7 +8,7 @@ from std_srvs.srv._SetBool import SetBool
 
 class StartFace(EventState):
     '''
-    MoveArm receive a ROS pose as input and launch a ROS service with the same pose
+    [Deprecated!]
 
     <= done     Finish job.
     <= failed   Job as failed.

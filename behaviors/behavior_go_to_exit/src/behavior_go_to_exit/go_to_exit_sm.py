@@ -11,7 +11,6 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_move_base import SaraMoveBase
-from behavior_wonderland_get_doors.wonderland_get_doors_sm import Wonderland_Get_DoorsSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -35,7 +34,6 @@ class Go_to_exitSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Wonderland_Get_DoorsSM, 'Wonderland_Get_Doors')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -63,11 +61,6 @@ class Go_to_exitSM(Behavior):
 										transitions={'done': 'wait'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:301 y:90
-			OperatableStateMachine.add('wait',
-										WaitState(wait_time=3),
-										transitions={'done': 'Wonderland_Get_Doors'},
-										autonomy={'done': Autonomy.Off})
 
 			# x:725 y:127
 			OperatableStateMachine.add('move',
@@ -75,14 +68,6 @@ class Go_to_exitSM(Behavior):
 										transitions={'arrived': 'finished', 'failed': 'failed'},
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'exit_pose'})
-
-			# x:193 y:165
-			OperatableStateMachine.add('Wonderland_Get_Doors',
-										self.use_behavior(Wonderland_Get_DoorsSM, 'Wonderland_Get_Doors'),
-										transitions={'done': 'move', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'exit_pose': 'exit_pose', 'entrance_id': 'entrance_id', 'entrance_pose': 'entrance_pose', 'entrance_rooms_id': 'entrance_rooms_id', 'entrance_rooms_names': 'entrance_rooms_names', 'exit_id': 'exit_id', 'exit_rooms_id': 'exit_rooms_id', 'exit_rooms_names': 'exit_rooms_names'})
-
 
 		return _state_machine
 

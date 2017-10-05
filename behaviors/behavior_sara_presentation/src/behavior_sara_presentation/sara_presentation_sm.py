@@ -16,7 +16,7 @@ from sara_flexbe_states.regex_tester import RegexTester
 from behavior_get_speech.get_speech_sm import Get_speechSM
 from sara_flexbe_states.sara_sound import SaraSound
 from sara_flexbe_states.unit8_topic_publisher import PublishUint8
-from sara_flexbe_states.move_joint import MoveJoint
+from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
@@ -255,13 +255,13 @@ class Sara_presentationSM(Behavior):
 
 			# x:66 y:127
 			OperatableStateMachine.add('show',
-									   MoveJoint(pose_name="ShowGripper"),
+									   MoveArmNamedPose(pose_name="ShowGripper"),
 									   transitions={'done': 'close', 'failed': 'close'},
 									   autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
 			# x:116 y:568
 			OperatableStateMachine.add('lower',
-									   MoveJoint(pose_name="IdlePose"),
+									   MoveArmNamedPose(pose_name="IdlePose"),
 									   transitions={'done': 'done', 'failed': 'done'},
 									   autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
@@ -307,7 +307,7 @@ class Sara_presentationSM(Behavior):
 
 			# x:41 y:338
 			OperatableStateMachine.add('move to idle',
-									   MoveJoint(pose_name="IdlePose"),
+									   MoveArmNamedPose(pose_name="IdlePose"),
 									   transitions={'done': 'done', 'failed': 'sad'},
 									   autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
@@ -319,7 +319,7 @@ class Sara_presentationSM(Behavior):
 
 			# x:57 y:134
 			OperatableStateMachine.add('show',
-									   MoveJoint(pose_name="ShowGripper"),
+									   MoveArmNamedPose(pose_name="ShowGripper"),
 									   transitions={'done': 'say cap', 'failed': 'sad'},
 									   autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 

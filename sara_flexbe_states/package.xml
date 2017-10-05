@@ -11,6 +11,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <run_depend>rospy</run_depend>
+  <run_depend>moveit</run_depend>
 
   <run_depend>flexbe_core</run_depend>
 

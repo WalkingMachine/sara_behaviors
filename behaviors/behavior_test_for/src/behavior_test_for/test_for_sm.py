@@ -9,7 +9,7 @@
 import roslib; roslib.load_manifest('behavior_test_for')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.log_state import LogState
-from sara_flexbe_states.for_loop import ForState
+from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.regex_tester import RegexTester
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -64,7 +64,7 @@ class testforSM(Behavior):
 
             # x:129 y:155
             OperatableStateMachine.add('for',
-                                        ForState(repeat=4),
+                                        ForLoop(repeat=4),
                                         transitions={'do': 'failed', 'end': 'finished'},
                                         autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
                                         remapping={'index': 'index'})
