@@ -77,7 +77,8 @@ class GetMarker(EventState):
                     pose.append(marker.pose.pose.orientation.z)
 
                     quat = self.quat
-                    marker.pose.pose.position.x -= 0.3
+                    marker.pose.pose.position.x -= 0.20
+                    marker.pose.pose.position.z += 0.05
                     marker.pose.pose.orientation.x = -0.460612186114
                     marker.pose.pose.orientation.y = -0.46897814506
                     marker.pose.pose.orientation.z = 0.501742587173
