@@ -8,7 +8,6 @@
 
 import roslib; roslib.load_manifest('behavior_scenario_help_me_carry')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.AMCL_initial_pose import AmclInit
 from flexbe_states.subscriber_state import SubscriberState
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.regex_tester import RegexTester
@@ -258,12 +257,6 @@ class Scenario_Help_me_carrySM(Behavior):
 
 
         with _state_machine:
-            # x:57 y:52
-            OperatableStateMachine.add('init amcl',
-                                        AmclInit(x=0.494079113007, y=0.182213068008, z=0, ox=0, oy=0, oz=-0.00849557845025, ow=0.999963911922),
-                                        transitions={'done': 'wait for operator', 'failed': 'failed'},
-                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-                                        remapping={'pose': 'pose'})
 
             # x:46 y:131
             OperatableStateMachine.add('wait for operator',

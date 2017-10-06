@@ -8,7 +8,6 @@
 
 import roslib; roslib.load_manifest('behavior_new_qualif')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.AMCL_initial_pose import AmclInit
 from behavior_door_detector.door_detector_sm import DoorDetectorSM
 from sara_flexbe_states.pose_gen_quat import GenPoseQuat
 from sara_flexbe_states.sara_move_base import SaraMoveBase
