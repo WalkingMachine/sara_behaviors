@@ -25,6 +25,11 @@ class MoveArmNamedPose(EventState):
         self.wait = wait
 
     def execute(self, userdata):
+        if self.error:
+            try:
+                self.plan = self.group.plan()
+            except:
+                return False
 
         if (self.group.execute(self.plan, wait=self.wait)):
             return 'done'  # One of the outcomes declared above.
@@ -35,8 +40,10 @@ class MoveArmNamedPose(EventState):
     def on_enter(self, userdata):
 
         self.group.set_named_target(self.pose_name)
-        self.plan = self.group.plan()
-
+        try:
+            self.plan = self.group.plan()
+        except:
+            self.error = True
 
     def on_exit(self, userdata):
 
