@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from flexbe_core import EventState, Logger
 from tf.transformations import quaternion_from_euler
-
+from geometry_msgs.msg import Pose
 
 class GenPoseEuler(EventState):
     '''
@@ -19,7 +19,7 @@ class GenPoseEuler(EventState):
     def __init__(self, x, y, z, roll, pitch, yaw):
         # See example_state.py for basic explanations.
         super(GenPoseEuler, self).__init__(outcomes=['done'], output_keys=['pose'])
-
+        self.pt = Pose()
         self.pt.position.x = x
         self.pt.position.y = y
         self.pt.position.z = z
