@@ -24,13 +24,11 @@ class MoveArmPose(EventState):
     def execute(self, userdata):
 
         if self.group.execute(self.plan, wait=self.wait):
-            return 'done'  # One of the outcomes declared above.
+            return 'done'
         else:
             return 'failed'
 
     def on_enter(self, userdata):
-        # This method is called when the state becomes active, a transition from another state to this one is taken.
-        # It is primarily used to start actions which are associated with this state.
         Logger.loginfo('Enter Move Arm')
         self.group.set_pose_target( userdata.pose )
         self.plan = self.group.plan()
