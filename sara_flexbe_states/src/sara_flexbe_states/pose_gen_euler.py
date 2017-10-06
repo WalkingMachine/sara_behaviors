@@ -23,7 +23,7 @@ class GenPoseEuler(EventState):
         self.pt.position.x = x
         self.pt.position.y = y
         self.pt.position.z = z
-        self.pt.orientation = quaternion_from_euler(self._roll, self._pitch, self._yaw)
+        self.pt.orientation = quaternion_from_euler(roll, pitch, yaw)
 
     def execute(self, userdata):
         userdata.pose = self.pt
