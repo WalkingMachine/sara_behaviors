@@ -23,6 +23,7 @@ class MoveArmNamedPose(EventState):
         self.plan = None
         self.pose_name = pose_name
         self.wait = wait
+        self.error = False
 
     def execute(self, userdata):
         if self.error:
