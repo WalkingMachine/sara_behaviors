@@ -24,4 +24,4 @@ class GetArmPose(EventState):
 
     def on_enter(self, userdata):
         Logger.loginfo('Getting arm pose')
-        self.group.get_current_pose()
+        userdata.pose = self.group.get_current_pose().pose
