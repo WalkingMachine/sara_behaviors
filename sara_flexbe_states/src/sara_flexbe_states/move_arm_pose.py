@@ -20,8 +20,14 @@ class MoveArmPose(EventState):
         self.group = MoveGroupCommander("RightArm")
         self.plan = None
         self.wait = wait
+        self.error = False
 
     def execute(self, userdata):
+        if self.error:
+            try:
+                self.plan = self.group.plan()
+            except:
+                return 'failed'
 
         if self.group.execute(self.plan, wait=self.wait):
             return 'done'
@@ -31,7 +37,10 @@ class MoveArmPose(EventState):
     def on_enter(self, userdata):
         Logger.loginfo('Enter Move Arm')
         self.group.set_pose_target( userdata.pose )
-        self.plan = self.group.plan()
+        try:
+            self.plan = self.group.plan()
+        except:
+            self.error = True
 
     def on_exit(self, userdata):
 

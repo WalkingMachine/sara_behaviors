@@ -30,7 +30,7 @@ class MoveArmNamedPose(EventState):
             try:
                 self.plan = self.group.plan()
             except:
-                return False
+                return 'failed'
 
         if (self.group.execute(self.plan, wait=self.wait)):
             return 'done'  # One of the outcomes declared above.
