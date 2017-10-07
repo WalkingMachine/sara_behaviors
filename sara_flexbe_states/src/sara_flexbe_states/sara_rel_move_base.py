@@ -16,7 +16,7 @@ Modified on 05/21/2017
 @mofificator: Nicolas Nadeau & Philippe La Madeleine
 """
 
-class SaraMoveBase(EventState):
+class SaraRelMoveBase(EventState):
     """
     Navigates Sara to a relative position and orientation using move_base.
 
@@ -29,7 +29,7 @@ class SaraMoveBase(EventState):
     def __init__(self):
         """Constructor"""
 
-        super(SaraMoveBase, self).__init__( outcomes=['arrived', 'failed'],
+        super(SaraRelMoveBase, self).__init__( outcomes=['arrived', 'failed'],
                                             input_keys=['pose'])
 
         self._action_topic = "/move_base"
