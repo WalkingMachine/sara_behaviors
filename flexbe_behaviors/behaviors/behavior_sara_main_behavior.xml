@@ -15,8 +15,6 @@
 	<contains name="sara_command_manager" />
 	<contains name="Go_to_exit" />
 	<contains name="Sara action executor" />
-	<contains name="Init_Sequence" />
-	<contains name="New qualif" />
 
 	<!-- Available Parameters -->
 	<params>

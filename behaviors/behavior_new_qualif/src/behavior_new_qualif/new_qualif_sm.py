@@ -56,12 +56,6 @@ class NewqualifSM(Behavior):
 
 
 		with _state_machine:
-			# x:43 y:79
-			OperatableStateMachine.add('init',
-										AmclInit(x=0.494079113007, y=0.182213068008, z=0, ox=0, oy=0, oz=-0.00849557845025, ow=0.999963911922),
-										transitions={'done': 'Door Detector', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'pose': 'pose'})
 
 			# x:24 y:168
 			OperatableStateMachine.add('Door Detector',
