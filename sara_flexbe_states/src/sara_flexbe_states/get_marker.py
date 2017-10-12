@@ -70,19 +70,19 @@ class GetMarker(EventState):
                 Logger.loginfo('id is ' + str(marker.id))
 
                 if int(marker.id) == int(self.index):
-                    pose = []
-                    pose.append(marker.pose.pose.orientation.w)
-                    pose.append(marker.pose.pose.orientation.x)
-                    pose.append(marker.pose.pose.orientation.y)
-                    pose.append(marker.pose.pose.orientation.z)
-
-                    quat = self.quat
-                    marker.pose.pose.position.x -= 0.20
-                    marker.pose.pose.position.z += 0.05
-                    marker.pose.pose.orientation.x = -0.460612186114
-                    marker.pose.pose.orientation.y = -0.46897814506
-                    marker.pose.pose.orientation.z = 0.501742587173
-                    marker.pose.pose.orientation.w = 0.56227243368
+                    # pose = []
+                    # pose.append(marker.pose.pose.orientation.w)
+                    # pose.append(marker.pose.pose.orientation.x)
+                    # pose.append(marker.pose.pose.orientation.y)
+                    # pose.append(marker.pose.pose.orientation.z)
+                    #
+                    # quat = self.quat
+                    # marker.pose.pose.position.x -= 0.20
+                    # marker.pose.pose.position.z += 0.05
+                    # marker.pose.pose.orientation.x = -0.460612186114
+                    # marker.pose.pose.orientation.y = -0.46897814506
+                    # marker.pose.pose.orientation.z = 0.501742587173
+                    # marker.pose.pose.orientation.w = 0.56227243368
                     userdata.pose = marker.pose.pose
                     return 'done'
 
