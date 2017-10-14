@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="test_set_expression_state">
+
+	<executable package_path="behavior_test_set_expression_state.test_set_expression_state_sm" class="test_set_expression_stateSM" />
+	<tagstring>test</tagstring>
+	<author>Raphael Duchaine</author>
+	<date>Sat Oct 14 2017</date>
+	<description>
+		Test pour la meilleure des states
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

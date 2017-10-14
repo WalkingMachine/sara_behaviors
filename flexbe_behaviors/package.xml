@@ -77,5 +77,7 @@
   <run_depend>behavior_action_receive_bag</run_depend>
   <run_depend>behavior_sara_presentation</run_depend>
   <run_depend>behavior_get_speech</run_depend>
+  <run_depend>behavior_hello_world</run_depend>
+  <run_depend>behavior_test_set_expression_state</run_depend>
 
 </package>
