@@ -5,6 +5,7 @@ from flexbe_core import EventState, Logger
 from flexbe_core.proxy import ProxySubscriberCached
 import rostopic
 from rospy.rostime import get_time
+import inspect
 
 class GetSpeech(EventState):
     '''
@@ -48,16 +49,18 @@ class GetSpeech(EventState):
             return 'fail'
 
         if self._sub.has_msg(self._topic):
+            Logger.loginfo('getting message')
             message = self._sub.get_last_msg(self._topic)
             userdata.words = message.data
-
+            self._sub.remove_last_msg(self._topic)
+            return 'done'
         if (self.time-get_time() <= 0):
             return 'nothing'
 
     def on_enter(self, userdata):
         Logger.loginfo('entering marker state')
 
-        self.timer = get_time()+self.watchdog
+        self.time = get_time()+self.watchdog
         if not self._connected:
             (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic)
             if msg_topic == self._topic:
@@ -65,8 +68,13 @@ class GetSpeech(EventState):
                 self._sub = ProxySubscriberCached({self._topic: msg_type})
                 self._connected = True
                 Logger.loginfo('Successfully subscribed to previously unavailable topic %s' % self._topic)
+
             else:
                 Logger.logwarn('Topic %s still not available, giving up.' % self._topic)
+        if self._connected and self._sub.has_msg(self._topic):
+            self._sub.remove_last_msg(self._topic)
+
+
 
     def _get_msg_from_path(self, msg_path):
         msg_import = msg_path.split('/')
