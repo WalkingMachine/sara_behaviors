@@ -84,6 +84,7 @@ class GetMarker(EventState):
                     # marker.pose.pose.orientation.z = 0.501742587173
                     # marker.pose.pose.orientation.w = 0.56227243368
                     userdata.pose = marker.pose.pose
+                    self._sub.remove_last_msg(self._topic)
                     return 'done'
 
             return 'not_found'
