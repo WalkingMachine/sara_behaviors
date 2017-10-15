@@ -1,36 +1,65 @@
 #!/usr/bin/env python
 
 from flexbe_core import EventState, Logger
-import rospy
-from std_msgs.msg import Bool
-
-from flexbe_core.proxy import ProxyPublisher
-
+from flexbe_core.proxy import ProxySubscriberCached
+import rostopic
+import inspect
 
 
 class ContinueButton(EventState):
     '''
     Reads on a topic to see for the continue button.
 
-    <= Continue            Continue if button pressed.
+    <= done            Continue if button pressed.
 
     '''
 
     def __init__(self):
+        '''
+        Constructor
+        '''
+        super(ContinueButton, self).__init__(outcomes=['done'])
+        self._topic = "/ui/continue"
+        self._connected = False
 
-        super(ContinueButton, self).__init__(outcomes=['Continue'])
-        self.state = False
+        (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic)
 
 
-    def on_enter(self, userdata):
-        Logger.loginfo('Entering continue button state')
+        if msg_topic == self._topic:
+            msg_type = self._get_msg_from_path(msg_path)
+            self._sub = ProxySubscriberCached({self._topic: msg_type})
+            self._connected = True
+
+            Logger.loginfo('connecting to '+self._topic)
+        else:
+            Logger.logwarn('Topic %s for state %s not yet available.\nFound: %s\nWill try again when entering the state...' % (self._topic, self.name, str(msg_topic)))
 
     def execute(self, userdata):
 
-        self.state = rospy.wait_for_message('/ui/continue', Bool, timeout=None)
+        Logger.loginfo('looking for voice command ')
+        if self._connected and self._sub.has_msg(self._topic):
+            return 'done'
 
-        if self.state is True:
-            return 'continue'
+    def on_enter(self, userdata):
+        Logger.loginfo('entering marker state')
+
+        if not self._connected:
+            (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic)
+            if msg_topic == self._topic:
+                msg_type = self._get_msg_from_path(msg_path)
+                self._sub = ProxySubscriberCached({self._topic: msg_type})
+                self._connected = True
+                Logger.loginfo('Successfully subscribed to previously unavailable topic %s' % self._topic)
+
+            else:
+                Logger.logwarn('Topic %s still not available, giving up.' % self._topic)
+        if self._connected and self._sub.has_msg(self._topic):
+            self._sub.remove_last_msg(self._topic)
 
 
-
+    def _get_msg_from_path(self, msg_path):
+        msg_import = msg_path.split('/')
+        msg_module = '%s.msg' % (msg_import[0])
+        package = __import__(msg_module, fromlist=[msg_module])
+        clsmembers = inspect.getmembers(package, lambda member: inspect.isclass(member) and member.__module__.endswith(msg_import[1]))
+        return clsmembers[0][1]
