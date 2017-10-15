@@ -15,7 +15,7 @@ from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.regex_tester import RegexTester
 from behavior_get_speech.get_speech_sm import Get_speechSM
 from sara_flexbe_states.sara_sound import SaraSound
-from sara_flexbe_states.unit8_topic_publisher import PublishUint8
+from sara_flexbe_states.uint8_topic_publisher import PublishUint8
 from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.sara_move_base import SaraMoveBase
