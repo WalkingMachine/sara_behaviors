@@ -58,7 +58,7 @@ class Test_gripperSM(Behavior):
             # x:155 y:151
             OperatableStateMachine.add('Set gripper width',
                                         SetGripperState(topic="/sara_gripper_action_controller/gripper_cmd/goal"),
-                                        transitions={'done': 'finished'},
+                                        transitions={'no_object': 'finished'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'width': 'width', 'effort': 'effort'})
 

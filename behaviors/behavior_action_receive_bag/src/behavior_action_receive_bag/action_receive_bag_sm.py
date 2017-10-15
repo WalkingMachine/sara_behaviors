@@ -73,7 +73,7 @@ class Action_Receive_BagSM(Behavior):
 			# x:599 y:111
 			OperatableStateMachine.add('Close_gripper',
 										SetGripperState(),
-										transitions={'done': 'Go_to_IdlePose'},
+										transitions={'no_object': 'Go_to_IdlePose'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'width': 'Closed_Gripper_Width', 'effort': 'effort'})
 

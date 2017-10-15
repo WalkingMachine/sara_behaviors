@@ -66,7 +66,7 @@ class Action_Give_Back_BagSM(Behavior):
 			# x:502 y:155
 			OperatableStateMachine.add('Open_gripper',
 										SetGripperState(),
-										transitions={'done': 'Say_to take_bag'},
+										transitions={'no_object': 'Say_to take_bag'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'width': 'Open_gripper', 'effort': 'effort'})
 
