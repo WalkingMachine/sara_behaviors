@@ -16,7 +16,8 @@ catkin_python_setup()
 # CFG_EXTRAS - Additional configuration options 
 catkin_package(
     INCLUDE_DIRS src
-    LIBRARIES ${PROJECT_NAME})
+    LIBRARIES ${PROJECT_NAME}
+    moveit)
 
 # use add_library() or add_executable() as required
 #add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SRCS})

@@ -1,0 +1,33 @@
+#!/usr/bin/env python
+from flexbe_core import EventState, Logger
+from geometry_msgs.msg import Pose
+
+class GenPoseQuat(EventState):
+    '''
+    Generate a pose from xyz and quaternion
+    x       x
+    y       y
+    z       z
+    ox      ox
+    oy      oy
+    oz      oz
+    ow      ow
+
+    <= pose   generated pose
+    '''
+
+    def __init__(self, x, y, z, ox, oy, oz, ow):
+        super(GenPoseQuat, self).__init__(outcomes=['done'], output_keys=['pose'])
+
+        self.pt = Pose()
+        self.pt.position.x = x
+        self.pt.position.y = y
+        self.pt.position.z = z
+        self.pt.orientation.x = ox
+        self.pt.orientation.y = oy
+        self.pt.orientation.z = oz
+        self.pt.orientation.w = ow
+
+    def execute(self, userdata):
+        userdata.pose = self.pt
+        return 'done'

@@ -8,20 +8,19 @@
 
 import roslib; roslib.load_manifest('behavior_scenario_help_me_carry')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.AMCL_initial_pose import AmclInit
 from flexbe_states.subscriber_state import SubscriberState
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.GetPersonID import GetPersonID
 from flexbe_states.wait_state import WaitState
-from sara_flexbe_states.for_state import ForState
+from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.GetIDPose import GetIDPose
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_states.compare_poses import ComparePoses
 from flexbe_states.check_condition_state import CheckConditionState
-from sara_flexbe_states.pose_gen2 import GenPose2
+from sara_flexbe_states.pose_gen_quat import GenPoseQuat
 from behavior_action_receive_bag.action_receive_bag_sm import Action_Receive_BagSM
 from behavior_action_give_back_bag.action_give_back_bag_sm import Action_Give_Back_BagSM
 # Additional imports can be added inside the following tags
@@ -136,7 +135,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
             # x:380 y:239
             OperatableStateMachine.add('for',
-                                        ForState(repeat=3),
+                                        ForLoop(repeat=3),
                                         transitions={'do': 'say stop', 'end': 'failed'},
                                         autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
                                         remapping={'index': 'index'})
@@ -176,7 +175,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
             # x:219 y:89
             OperatableStateMachine.add('gen entry',
-                                        GenPose2(x=4.72067403793, y=1.77969455719, z=0, ox=0, oy=0, oz=0.407051133058, ow=0.913405372809),
+                                        GenPoseQuat(x=4.72067403793, y=1.77969455719, z=0, ox=0, oy=0, oz=0.407051133058, ow=0.913405372809),
                                         transitions={'done': 'move to entry', 'failed': 'failed'},
                                         autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose'})
@@ -258,12 +257,6 @@ class Scenario_Help_me_carrySM(Behavior):
 
 
         with _state_machine:
-            # x:57 y:52
-            OperatableStateMachine.add('init amcl',
-                                        AmclInit(x=0.494079113007, y=0.182213068008, z=0, ox=0, oy=0, oz=-0.00849557845025, ow=0.999963911922),
-                                        transitions={'done': 'wait for operator', 'failed': 'failed'},
-                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-                                        remapping={'pose': 'pose'})
 
             # x:46 y:131
             OperatableStateMachine.add('wait for operator',
@@ -298,7 +291,7 @@ class Scenario_Help_me_carrySM(Behavior):
 
             # x:69 y:436
             OperatableStateMachine.add('For',
-                                        ForState(repeat=3),
+                                        ForLoop(repeat=3),
                                         transitions={'do': 'find operator', 'end': 'say sorry'},
                                         autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
                                         remapping={'index': 'index'})

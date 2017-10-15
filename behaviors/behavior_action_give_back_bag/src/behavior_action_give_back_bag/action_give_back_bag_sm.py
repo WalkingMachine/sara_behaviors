@@ -8,8 +8,8 @@
 
 import roslib; roslib.load_manifest('behavior_action_give_back_bag')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.move_joint import MoveJoint
-from sara_flexbe_states.publisher_gripper_state import PublisherGripperState
+from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
+from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.sara_say import SaraSay
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -59,14 +59,14 @@ class Action_Give_Back_BagSM(Behavior):
 		with _state_machine:
 			# x:262 y:96
 			OperatableStateMachine.add('Give_back',
-										MoveJoint(pose_name="Help_me_carry"),
+										MoveArmNamedPose(pose_name="Help_me_carry"),
 										transitions={'done': 'Open_gripper', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
 			# x:502 y:155
 			OperatableStateMachine.add('Open_gripper',
-										PublisherGripperState(),
-										transitions={'done': 'Say_to take_bag'},
+										SetGripperState(),
+										transitions={'no_object': 'Say_to take_bag'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'width': 'Open_gripper', 'effort': 'effort'})
 

@@ -8,7 +8,7 @@
 
 import roslib; roslib.load_manifest('behavior_test_gripper')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.publisher_gripper_state import PublisherGripperState
+from sara_flexbe_states.set_gripper_state import SetGripperState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -57,8 +57,8 @@ class Test_gripperSM(Behavior):
         with _state_machine:
             # x:155 y:151
             OperatableStateMachine.add('Set gripper width',
-                                        PublisherGripperState(topic="/sara_gripper_action_controller/gripper_cmd/goal"),
-                                        transitions={'done': 'finished'},
+                                        SetGripperState(topic="/sara_gripper_action_controller/gripper_cmd/goal"),
+                                        transitions={'no_object': 'finished'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'width': 'width', 'effort': 'effort'})
 

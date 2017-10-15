@@ -10,8 +10,6 @@ import roslib; roslib.load_manifest('behavior_go_to_room')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_move_base import SaraMoveBase
-from behavior_wonderland_get_entity.wonderland_get_entity_sm import Wonderland_Get_EntitySM
-from sara_flexbe_states.Wonderland_Read_Entity import Wonderland_Read_Entity
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -35,7 +33,6 @@ class Go_To_RoomSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Wonderland_Get_EntitySM, 'Wonderland_Get_Entity')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -72,12 +69,6 @@ class Go_To_RoomSM(Behavior):
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'waypoint_pose'})
 
-			# x:332 y:42
-			OperatableStateMachine.add('Wonderland_Get_Entity',
-										self.use_behavior(Wonderland_Get_EntitySM, 'Wonderland_Get_Entity'),
-										transitions={'done': 'read', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'name': 'name', 'entity': 'entity'})
 
 			# x:685 y:73
 			OperatableStateMachine.add('read',

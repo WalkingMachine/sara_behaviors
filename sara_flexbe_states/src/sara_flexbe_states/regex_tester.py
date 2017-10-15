@@ -25,7 +25,7 @@ class RegexTester(EventState):
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
 
-        n = self.test.match(userdata.text)
+        n = self.test.match(str(userdata.text).lower())
         if n:
             return 'true'
         return 'false'

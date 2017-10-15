@@ -1,25 +1,33 @@
 #!/usr/bin/env python
+# encoding=utf8
 
 from flexbe_core import EventState, Logger
 from flexbe_core.proxy import ProxySubscriberCached
 import rostopic
+from rospy.rostime import get_time
 import inspect
 
-
-class ContinueButton(EventState):
+class GetSpeech(EventState):
     '''
-    Reads on a topic to see for the continue button.
+    Gets latest voice command given to sara.
+    -- watchdog    float     max time in seconds before continuing
 
-    <= done            Continue if button pressed.
+    #> words        String    command given
+    
+
+    <= received         The command is received.
+    <= nothing          Nothing has been said.
+    <= fail             Sara can't hear you.
 
     '''
 
-    def __init__(self):
+    def __init__(self, watchdog):
         '''
         Constructor
         '''
-        super(ContinueButton, self).__init__(outcomes=['done'])
-        self._topic = "/ui/continue"
+        super(GetSpeech, self).__init__(outcomes=['done', 'nothing', 'fail'], output_keys=['words'])
+        self.watchdog = watchdog
+        self._topic = "/sara_command"
         self._connected = False
 
         (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic)
@@ -37,12 +45,22 @@ class ContinueButton(EventState):
     def execute(self, userdata):
 
         Logger.loginfo('looking for voice command ')
-        if self._connected and self._sub.has_msg(self._topic):
+        if not self._connected:
+            return 'fail'
+
+        if self._sub.has_msg(self._topic):
+            Logger.loginfo('getting message')
+            message = self._sub.get_last_msg(self._topic)
+            userdata.words = message.data
+            self._sub.remove_last_msg(self._topic)
             return 'done'
+        if (self.time-get_time() <= 0):
+            return 'nothing'
 
     def on_enter(self, userdata):
         Logger.loginfo('entering marker state')
 
+        self.time = get_time()+self.watchdog
         if not self._connected:
             (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic)
             if msg_topic == self._topic:
@@ -55,6 +73,7 @@ class ContinueButton(EventState):
                 Logger.logwarn('Topic %s still not available, giving up.' % self._topic)
         if self._connected and self._sub.has_msg(self._topic):
             self._sub.remove_last_msg(self._topic)
+
 
 
     def _get_msg_from_path(self, msg_path):

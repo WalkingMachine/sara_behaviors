@@ -12,8 +12,8 @@ Created on 25.05.2017
 class FIFO_Add(EventState):
     '''
     Add an entry in a FIFO
-    ># FIFO	    object		The FIFO in which we want to add an entry.
-    ># Entry	object		The value to enter.
+    ># FIFO        object        The FIFO in which we want to add an entry.
+    ># Entry       object        The value to enter.
     '''
 
     def __init__(self):

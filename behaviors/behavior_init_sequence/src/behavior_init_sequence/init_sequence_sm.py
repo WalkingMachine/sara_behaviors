@@ -10,7 +10,7 @@ import roslib; roslib.load_manifest('behavior_init_sequence')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_move_base import SaraMoveBase
-from sara_flexbe_states.pose_gen2 import GenPose2
+from sara_flexbe_states.pose_gen_quat import GenPoseQuat
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -70,7 +70,7 @@ class Init_SequenceSM(Behavior):
 
 			# x:418 y:50
 			OperatableStateMachine.add('Gen_Pose_First_Objectif',
-										GenPose2(x=4.9627, y=-0.62033, z=0, ox=0, oy=0, oz=0.9125315, ow=-0.4090063),
+										GenPoseQuat(x=4.9627, y=-0.62033, z=0, ox=0, oy=0, oz=0.9125315, ow=-0.4090063),
 										transitions={'done': 'Go_To_First_Objectif', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'pose'})

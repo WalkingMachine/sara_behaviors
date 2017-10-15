@@ -12,8 +12,8 @@ Created on 25.05.2017
 class FIFO_Get(EventState):
     '''
     Take away the last entry from a FIFO
-    ># FIFO	    object		The FIFO in which we want to add an entry.
-    <# Out	object		The value on top of the FIFO.
+    ># FIFO     object        The FIFO in which we want to add an entry.
+    <# Out      object        The value on top of the FIFO.
     '''
 
     def __init__(self):

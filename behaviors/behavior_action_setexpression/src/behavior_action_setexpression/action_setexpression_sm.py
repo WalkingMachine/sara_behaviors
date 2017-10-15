@@ -9,7 +9,7 @@
 import roslib; roslib.load_manifest('behavior_action_setexpression')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.sara_start_face import StartFace
-from sara_flexbe_states.unit8_topic_publisher import PublishUint8
+from sara_flexbe_states.uint8_topic_publisher import PublishUint8
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
