@@ -21,7 +21,7 @@ from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from sara_flexbe_states.for_loop import ForLoop
-from sara_flexbe_states.sara_set_angle import SaraSetAngle
+from sara_flexbe_states.sara_set_angle import SaraSetHeadAngle
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -756,7 +756,7 @@ class Sara_presentationSM(Behavior):
 
 			# x:268 y:53
 			OperatableStateMachine.add('set head angle',
-									   SaraSetAngle(angle=0),
+									   SaraSetHeadAngle(angle=0),
 									   transitions={'done': 'Get_speech_2'},
 									   autonomy={'done': Autonomy.Off})
 

@@ -5,7 +5,7 @@ import rospy
 from std_msgs.msg import Float64
 
 
-class SaraSetAngle(EventState):
+class SaraSetHeadAngle(EventState):
     """
     Make sara change the angle her the head
 
@@ -18,7 +18,7 @@ class SaraSetAngle(EventState):
     def __init__(self, angle):
         """Constructor"""
 
-        super(SaraSetAngle, self).__init__(outcomes = ['done'])
+        super(SaraSetHeadAngle, self).__init__(outcomes = ['done'])
         self.angle = angle
 
     def execute(self, userdata):

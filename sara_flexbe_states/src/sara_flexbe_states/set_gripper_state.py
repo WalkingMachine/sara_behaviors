@@ -62,7 +62,7 @@ class SetGripperState(EventState):
             size = message.result.position
             self._sub.remove_last_msg(self._topic_f)
             userdata.object_size = size
-            if abs( size-self.width) > 0.02:
+            if abs( size-self.width) > 0.006:
                 return 'object'
             else:
                 return 'no_object'
