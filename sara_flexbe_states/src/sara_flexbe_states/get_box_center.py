@@ -29,7 +29,7 @@ class GetBoxCenter(EventState):
         '''
         super(GetBoxCenter, self).__init__(outcomes=['done', 'not_found'], output_keys=['point'])
         self.Class = name
-        self._topic = "/frame_to_box/bounding_boxes"
+        self._topic = "/frame_to_boxes/bounding_boxes"
         self._connected = False
 
         (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic)
@@ -63,26 +63,26 @@ class GetBoxCenter(EventState):
             message = self._sub.get_last_msg(self._topic)
 
 
+            Logger.loginfo('getting message')
             for box in message.boundingBoxes:
 
                 Logger.loginfo('name is ' + str(box.Class))
 
-                if int(box.Class) == int(self.Class):
+                if str(box.Class) == str(self.Class):
                     userdata.point = box.Center
                     self._sub.remove_last_msg(self._topic)
                     return 'done'
 
-            return 'not_found'
 
         time = self.time - get_time()+5
-        Logger.loginfo('marker not found '+str(int(time))+' before giving up')
+        Logger.loginfo('box not found '+str(int(time))+' before giving up')
         if (time <= 0):
             return 'not_found'
 
 
 
     def on_enter(self, userdata):
-        Logger.loginfo('entering marker state')
+        Logger.loginfo('entering boxes state')
 
         self.time = get_time()
         if not self._connected:
