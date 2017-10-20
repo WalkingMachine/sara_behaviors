@@ -2,8 +2,8 @@
 # encoding=utf8
 
 from flexbe_core import EventState, Logger
-from geometry_msgs.msg import Pose, Quaternion
-from tf.transformations import quaternion_from_euler
+from geometry_msgs.msg import Pose, Point, Quaternion
+from tf.transformations import quaternion_from_euler, quaternion_multiply
 
 class GenGripperPose(EventState):
     '''
@@ -12,8 +12,8 @@ class GenGripperPose(EventState):
     -- offset_y    float      offset y
     -- offset_z    float      offset z
     -- offset_tetha  float      offset theta around the Z axis
-    
-    >= pose_in     Pose     input pose
+
+    >= pose_in     Pose/point     input pose
     <= pose_out    Pose     output pose
     '''
 
@@ -23,20 +23,36 @@ class GenGripperPose(EventState):
         self.x = x
         self.y = y
         self.z = z
-        quat = quaternion_from_euler(0, 0, t)
+        quat1 = quaternion_from_euler(0, 0, t)
+        quat2 = [-0.460612186114,
+                 -0.46897814506,
+                 0.501742587173,
+                 0.56227243368]
+        quat = quaternion_multiply(quat1, quat2)
+
         self.quat = Quaternion()
-        self.quat.x = -0.460612186114*quat[0]
-        self.quat.y = -0.46897814506*quat[1]
-        self.quat.z = 0.501742587173*quat[2]
-        self.quat.w = 0.56227243368*quat[3]
+        self.quat.x = quat[0]
+        self.quat.y = quat[1]
+        self.quat.z = quat[2]
+        self.quat.w = quat[3]
+
 
     def execute(self, userdata):
 
         out = Pose()
-        out.position.x = userdata.pose_in.position.x-0.20+self.x
-        out.position.y = userdata.pose_in.position.y+self.y
-        out.position.z = userdata.pose_in.position.z+0.05+self.z
-        out.orientation = self.quat
+        if type(userdata.pose_in) is Pose:
+            out.position.x = userdata.pose_in.position.x-0.20+self.x
+            out.position.y = userdata.pose_in.position.y+self.y
+            out.position.z = userdata.pose_in.position.z+0.05+self.z
+        elif type(userdata.pose_in) is Point:
+            out.position.x = userdata.pose_in.x-0.20+self.x
+            out.position.y = userdata.pose_in.y+self.y
+            out.position.z = userdata.pose_in.z+0.05+self.z
+        else:
 
+            Logger.loginfo('ERROR in '+str(self.name)+' : pose_in is not a Pose() nor a Point()')
+            return 'done'
+
+        out.orientation = self.quat
         userdata.pose_out = out
         return 'done'
