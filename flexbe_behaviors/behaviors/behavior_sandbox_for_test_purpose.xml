@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Sandbox_for_test_purpose">
+
+	<executable package_path="behavior_sandbox_for_test_purpose.sandbox_for_test_purpose_sm" class="Sandbox_for_test_purposeSM" />
+	<tagstring>Sandbox</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Thu Sep 21 2017</date>
+	<description>
+		Sandbox for test purpose.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
