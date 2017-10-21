@@ -13,24 +13,26 @@ class GetBoxCenter(EventState):
     '''
     Temporary feature: Gets the center point of a box given by frame_to_box.
 
-    -- name  name of the box.
+    -- watchdog    time limit
 
-
+    ># name      string     name of the box.
+    
     #> point         geometry_msgs.Point        center of the box
-
+    
+    
     <= done         The point is received.
     <= not_found         The box is not found
 
     '''
 
-    def __init__(self, name):
+    def __init__(self, watchdog):
         '''
         Constructor
         '''
-        super(GetBoxCenter, self).__init__(outcomes=['done', 'not_found'], output_keys=['point'])
-        self.Class = name
+        super(GetBoxCenter, self).__init__(outcomes=['done', 'not_found'], input_keys=['box_name'], output_keys=['point'])
         self._topic = "/frame_to_boxes/bounding_boxes"
         self._connected = False
+        self.watchdog = watchdog
 
         (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic)
 
@@ -48,38 +50,27 @@ class GetBoxCenter(EventState):
         #self.mat = quaternion_matrix(quat)
 
     def execute(self, userdata):
-        '''
-        Execute this state
-        '''
-
-
-
-        Logger.loginfo('looking for box ' + str(self.Class))
+        Logger.loginfo('looking for box ' + str(userdata.box_name))
         if not self._connected:
             return 'not_found'
 
-
         if self._sub.has_msg(self._topic):
             message = self._sub.get_last_msg(self._topic)
-
 
             Logger.loginfo('getting message')
             for box in message.boundingBoxes:
 
                 Logger.loginfo('name is ' + str(box.Class))
 
-                if str(box.Class) == str(self.Class):
+                if str(box.Class) == str(userdata.box_name):
                     userdata.point = box.Center
                     self._sub.remove_last_msg(self._topic)
                     return 'done'
 
-
-        time = self.time - get_time()+5
+        time = self.time - get_time()+self.watchdog
         Logger.loginfo('box not found '+str(int(time))+' before giving up')
         if (time <= 0):
             return 'not_found'
-
-
 
     def on_enter(self, userdata):
         Logger.loginfo('entering boxes state')
