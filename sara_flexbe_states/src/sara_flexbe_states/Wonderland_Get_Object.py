@@ -9,7 +9,7 @@ from tf.transformations import quaternion_from_euler
 
 class GetObject(EventState):
     '''
-    Get an 
+    Get the informations of an object
     
     ># id    int    id of the object
     ># name    string    name of the object

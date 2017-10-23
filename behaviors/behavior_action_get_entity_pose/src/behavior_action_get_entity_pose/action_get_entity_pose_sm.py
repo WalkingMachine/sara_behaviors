@@ -9,6 +9,7 @@
 import roslib; roslib.load_manifest('behavior_action_get_entity_pose')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.get_box_center import GetBoxCenter
+from sara_flexbe_states.sara_set_angle import SaraSetHeadAngle
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -55,10 +56,29 @@ class Action_get_entity_poseSM(Behavior):
 
 
         with _state_machine:
-            # x:106 y:129
-            OperatableStateMachine.add('get box',
+            # x:53 y:106
+            OperatableStateMachine.add('head1',
+                                        SaraSetHeadAngle(angle=0.8),
+                                        transitions={'done': 'get box'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:60 y:232
+            OperatableStateMachine.add('head2',
+                                        SaraSetHeadAngle(angle=0.0),
+                                        transitions={'done': 'get box 2'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:252 y:318
+            OperatableStateMachine.add('get box 2',
                                         GetBoxCenter(watchdog=5),
                                         transitions={'done': 'found', 'not_found': 'not found'},
+                                        autonomy={'done': Autonomy.Off, 'not_found': Autonomy.Off},
+                                        remapping={'box_name': 'name', 'point': 'pose'})
+
+            # x:221 y:155
+            OperatableStateMachine.add('get box',
+                                        GetBoxCenter(watchdog=5),
+                                        transitions={'done': 'found', 'not_found': 'head2'},
                                         autonomy={'done': Autonomy.Off, 'not_found': Autonomy.Off},
                                         remapping={'box_name': 'name', 'point': 'pose'})
 
