@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Action_get_entity_pose">
+
+	<executable package_path="behavior_action_get_entity_pose.action_get_entity_pose_sm" class="Action_get_entity_poseSM" />
+	<tagstring>Action</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Fri Oct 20 2017</date>
+	<description>
+		standard way to get the pose on an entity
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
