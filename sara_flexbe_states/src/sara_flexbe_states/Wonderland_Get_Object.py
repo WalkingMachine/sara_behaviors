@@ -33,7 +33,7 @@ class GetObject(EventState):
         # See example_state.py for basic explanations.
         super(GetObject, self).__init__(outcomes=['found', 'unknown', 'error'],
                                                               input_keys=['id', 'name', 'color', 'room', 'type', 'expected_pose'],
-                                                              output_keys=['id', 'object_pose', 'object_name', 'object_color', 'object_room', 'expected_pose'])
+                                                              output_keys=['id', 'object_pose', 'object_name', 'object_color', 'object_room', 'object_type'])
         self._index = 0
         self._header = {'api-key': 'asdf'}
 
