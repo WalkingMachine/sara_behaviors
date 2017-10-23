@@ -56,7 +56,7 @@ class Test_continueSM(Behavior):
 		# x:653 y:645, x:641 y:194
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.id = None
-		_state_machine.userdata.name = "vase"
+		_state_machine.userdata.name = "cup"
 		_state_machine.userdata.color = None
 		_state_machine.userdata.type = None
 		_state_machine.userdata.room = None
@@ -101,24 +101,24 @@ class Test_continueSM(Behavior):
 										autonomy={'success': Autonomy.Inherit, 'too far': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not seen': Autonomy.Inherit, 'critical fail': Autonomy.Inherit, 'missed': Autonomy.Inherit},
 										remapping={'object': 'object_name', 'grip_pose': 'grip_pose'})
 
-			# x:45 y:293
+			# x:47 y:193
 			OperatableStateMachine.add('obj',
 										GetObject(),
-										transitions={'found': 'move', 'unknown': 'fail', 'error': 'fail'},
+										transitions={'found': 'say1', 'unknown': 'say 3', 'error': 'fail'},
 										autonomy={'found': Autonomy.Off, 'unknown': Autonomy.Off, 'error': Autonomy.Off},
 										remapping={'id': 'id', 'name': 'name', 'color': 'color', 'room': 'room', 'type': 'type', 'expected_pose': 'expected_pose', 'object_pose': 'object_pose', 'object_name': 'object_name', 'object_color': 'object_color', 'object_room': 'object_room', 'object_type': 'object_type'})
 
-			# x:40 y:199
+			# x:37 y:282
 			OperatableStateMachine.add('say1',
 										SaraSayKey(Format=lambda x: "I'm going to pick the "+x, emotion=1, block=False),
-										transitions={'done': 'obj'},
+										transitions={'done': 'move'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'name'})
 
 			# x:41 y:112
 			OperatableStateMachine.add('get pose',
 										Get_Robot_Pose(),
-										transitions={'done': 'say1'},
+										transitions={'done': 'obj'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'expected_pose'})
 
@@ -141,6 +141,13 @@ class Test_continueSM(Behavior):
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'object_color'})
+
+			# x:226 y:162
+			OperatableStateMachine.add('say 3',
+										SaraSayKey(Format=lambda x: "I don't know this "+x, emotion=1, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'name'})
 
 
 		return _state_machine

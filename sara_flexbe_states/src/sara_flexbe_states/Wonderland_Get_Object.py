@@ -42,15 +42,15 @@ class GetObject(EventState):
         # Generate URL to contact
         url = "http://wonderland:8000/api/object/?"
         if userdata.id != None:
-            url += "id="+userdata.id+"&"
+            url += "id="+str(userdata.id)+"&"
         if userdata.name != None:
-            url += "name="+userdata.name+"&"
+            url += "name="+str(userdata.name)+"&"
         if userdata.color != None:
-            url += "color="+userdata.color+"&"
+            url += "color="+str(userdata.color)+"&"
         if userdata.room != None:
-            url += "room="+userdata.room+"&"
+            url += "room="+str(userdata.room)+"&"
         if userdata.type != None:
-            url += "type="+userdata.type+"&"
+            url += "type="+str(userdata.type)+"&"
         if userdata.expected_pose == None:
             Logger.logerr("in "+self.name+", you must give an expected pose or point")
             return 'error'
