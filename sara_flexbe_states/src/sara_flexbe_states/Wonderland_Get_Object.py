@@ -1,0 +1,109 @@
+#!/usr/bin/env python
+# encoding=utf8
+
+from flexbe_core import EventState, Logger
+import requests
+import json
+from geometry_msgs.msg import Pose, Point
+from tf.transformations import quaternion_from_euler
+
+class GetObject(EventState):
+    '''
+    Get an 
+    
+    ># id    int    id of the object
+    ># name    string    name of the object
+    ># color    string    color of the object
+    ># room    string    room of the object
+    ># type    string    category of the object
+    ># expected_pose    pose/point    expected position of the object
+    
+    #> object_pose     pose     the pose of the returned object
+    #> object_name    string    name of the object
+    #> object_color    string    color of the object
+    #> object_room    string    room of the object
+    #> object_type    string    category of the object
+
+    <= found         object     found
+    <= unknown       the object is unknown
+    <= error        return when error reading data
+    '''
+
+    def __init__(self):
+        # See example_state.py for basic explanations.
+        super(GetObject, self).__init__(outcomes=['found', 'unknown', 'error'],
+                                                              input_keys=['id', 'name', 'color', 'room', 'type', 'robot_pose'],
+                                                              output_keys=['id', 'object_pose', 'object_name', 'object_color', 'object_room', 'expected_pose'])
+        self._index = 0
+        self._header = {'api-key': 'asdf'}
+
+    def execute(self, userdata):
+
+        # Generate URL to contact
+        url = "http://wonderland:8000/api/object/?"
+        if userdata.id != None:
+            url += "?id="+userdata.id+"&"
+        if userdata.name != None:
+            url += "?name="+userdata.name+"&"
+        if userdata.name != None:
+            url += "?color="+userdata.color+"&"
+        if userdata.name != None:
+            url += "?room="+userdata.room+"&"
+        if userdata.name != None:
+            url += "?type="+userdata.type+"&"
+        if userdata.expected_pose == None:
+            Logger.logerr("in "+self.name+", you must give an expected pose or point")
+            return 'error'
+
+        if type(userdata.expected_pose) is Pose:
+            expX = userdata.expected_pose.position.x
+            expY = userdata.expected_pose.position.y
+            expZ = userdata.expected_pose.position.z
+        elif type(userdata.expected_pose) is Point:
+            expX = userdata.expected_pose.position.x
+            expY = userdata.expected_pose.position.y
+            expZ = userdata.expected_pose.position.z
+        else:
+            return 'error'
+
+        # try the request
+        try:
+            response = requests.get(url, headers=self._header)
+        except requests.exceptions.RequestException as e:
+            Logger.logerr(str(e))
+            return 'error'
+
+        # parse parameter json data
+        data = json.loads(response.content)
+        if len(data) == 0:
+            return 'unknown'
+
+        # find the nearest object
+        bestScore = 1000000
+        best = None
+        for d in data:
+            score = ((expX-d['object']['x_position'])**2+(expY-d['object']['y_position'])**2+(expZ-d['object']['z_position'])**2)**0.5
+            if score < bestScore:
+                bestScore = score
+                best = d
+
+        # generate the output pose
+        pose = Pose()
+        pose.position.x = best['object']['x']
+        pose.position.y = best['object']['y']
+        pose.position.z = best['object']['z']
+        quat = quaternion_from_euler(0, 0, best['object']['t'])
+        pose.orientation.x = quat[0]
+        pose.orientation.y = quat[1]
+        pose.orientation.z = quat[2]
+        pose.orientation.w = quat[3]
+
+        # send the outputs
+        userdata.object_id = best['object']['id']
+        userdata.object_pose = pose
+        userdata.object_name = best['object']['name']
+        userdata.object_color = best['object']['color']
+        userdata.object_type = best['object']['type']
+        userdata.object_category = best['object']['category']
+
+        return 'found'
