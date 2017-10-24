@@ -6,9 +6,10 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_test_set_expression_state')
+import roslib; roslib.load_manifest('behavior_sandbox_for_test_purpose')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.sara_set_expression import SetExpression
+from sara_flexbe_states.get_box_center import GetBoxCenter
+from sara_flexbe_states.gen_gripper_pose import GenGripperPose
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -16,18 +17,18 @@ from sara_flexbe_states.sara_set_expression import SetExpression
 
 
 '''
-Created on Sat Oct 14 2017
-@author: Raphael Duchaine
+Created on Thu Sep 21 2017
+@author: Philippe La Madeleine
 '''
-class test_set_expression_stateSM(Behavior):
+class Sandbox_for_test_purposeSM(Behavior):
     '''
-    Test pour la meilleure des states
+    Sandbox for test purpose.
     '''
 
 
     def __init__(self):
-        super(test_set_expression_stateSM, self).__init__()
-        self.name = 'test_set_expression_state'
+        super(Sandbox_for_test_purposeSM, self).__init__()
+        self.name = 'Sandbox_for_test_purpose'
 
         # parameters of this behavior
 
@@ -43,7 +44,7 @@ class test_set_expression_stateSM(Behavior):
 
 
     def create(self):
-        # x:30 y:322, x:130 y:322
+        # x:605 y:111, x:130 y:325
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 
         # Additional creation code can be added inside the following tags
@@ -53,11 +54,19 @@ class test_set_expression_stateSM(Behavior):
 
 
         with _state_machine:
-            # x:30 y:40
-            OperatableStateMachine.add('das',
-                                        SetExpression(emotion=1, brightness=10),
+            # x:87 y:90
+            OperatableStateMachine.add('box',
+                                        GetBoxCenter(name="cup"),
+                                        transitions={'done': 'ee', 'not_found': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'not_found': Autonomy.Off},
+                                        remapping={'point': 'point'})
+
+            # x:340 y:95
+            OperatableStateMachine.add('ee',
+                                        GenGripperPose(x=02, y=0, z=0),
                                         transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.High})
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'pose_in': 'point', 'pose_out': 'pose_out'})
 
 
         return _state_machine

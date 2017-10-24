@@ -1,13 +1,13 @@
 <package>
-  <name>behavior_test_gripper</name>
+  <name>behavior_sandbox_for_test_purpose</name>
   <version>1.0.0</version>
   <description>
-     test the gripper
+     Sandbox for test purpose.
   </description>
-  <maintainer email="philippe117@live.fr">Philippe La Madeleine</maintainer>
+  <maintainer email="todo@todo.com">Philippe La Madeleine</maintainer>
   <license>BSD</license>
 
-  <url>http://ros.org/wiki/behavior_test_gripper</url>
+  <url>http://ros.org/wiki/behavior_sandbox_for_test_purpose</url>
   <author>Philippe La Madeleine</author>
 
   <buildtool_depend>catkin</buildtool_depend>

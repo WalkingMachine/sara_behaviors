@@ -8,12 +8,16 @@
 
 import roslib; roslib.load_manifest('behavior_test_continue')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.set_gripper_state import SetGripperState
-from sara_flexbe_states.get_marker import GetMarker
-from sara_flexbe_states.gen_gripper_pose import GenGripperPose
-from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_states.move_arm_pose import MoveArmPose
 from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
+from flexbe_states.log_key_state import LogKeyState
+from flexbe_states.log_state import LogState
+from sara_flexbe_states.sara_move_base import SaraMoveBase
+from behavior_action_pick.action_pick_sm import Action_pickSM
+from sara_flexbe_states.Wonderland_Get_Object import GetObject
+from sara_flexbe_states.sara_say_key import SaraSayKey
+from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
+from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.for_loop import ForLoop
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -37,111 +41,113 @@ class Test_continueSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
+		self.add_behavior(Action_pickSM, 'Action_pick')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
-        
-        # [/MANUAL_INIT]
+
+	# [/MANUAL_INIT]
 
 		# Behavior comments:
 
 
 
 	def create(self):
-		# x:785 y:394, x:523 y:338
+		# x:653 y:645, x:641 y:194
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
+		_state_machine.userdata.id = None
+		_state_machine.userdata.name = "cup"
+		_state_machine.userdata.color = None
+		_state_machine.userdata.type = None
+		_state_machine.userdata.room = None
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
-        
-        # [/MANUAL_CREATE]
+
+		# [/MANUAL_CREATE]
 
 
 		with _state_machine:
-			# x:443 y:124
-			OperatableStateMachine.add('gri',
-										SetGripperState(width=0.05, effort=255),
-										transitions={'object': 'close', 'no_object': 'close'},
-										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
-										remapping={'object_size': 'object_size'})
+			# x:42 y:30
+			OperatableStateMachine.add('place arm',
+										MoveArmNamedPose(pose_name="PreGripPose", wait=True),
+										transitions={'done': 'get pose', 'failed': 'get pose'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
-			# x:142 y:92
-			OperatableStateMachine.add('mm',
-										GetMarker(index=15),
-										transitions={'done': 'sss', 'not_found': 'say'},
-										autonomy={'done': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'pose': 'pose_in'})
-
-			# x:49 y:200
-			OperatableStateMachine.add('gg',
-										GenGripperPose(x=-0.1, y=0, z=0),
-										transitions={'done': 'p'},
+			# x:49 y:491
+			OperatableStateMachine.add('log',
+										LogKeyState(text="{}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'Action_pick'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'pose_in': 'pose_in', 'pose_out': 'pose_out'})
+										remapping={'data': 'object_color'})
 
-			# x:242 y:116
-			OperatableStateMachine.add('sss',
-										SaraSay(sentence="I see it. Let me take it", emotion=1, block=False),
-										transitions={'done': 'gg'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:69 y:286
-			OperatableStateMachine.add('p',
-										MoveArmPose(wait=True),
-										transitions={'done': 'ggggg', 'failed': 'www'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'pose': 'pose_out'})
-
-			# x:35 y:101
-			OperatableStateMachine.add('say',
-										SaraSay(sentence="show me a tag 15", emotion=1, block=True),
-										transitions={'done': 'mm'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:830 y:232
-			OperatableStateMachine.add('ggg',
-										SaraSay(sentence="got it", emotion=1, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:82 y:483
-			OperatableStateMachine.add('ddddd',
-										MoveArmPose(wait=True),
-										transitions={'done': 'ssssss', 'failed': 'www'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'pose': 'pose_out'})
-
-			# x:70 y:390
-			OperatableStateMachine.add('ggggg',
-										GenGripperPose(x=0, y=0, z=0),
-										transitions={'done': 'ddddd'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose_in': 'pose_in', 'pose_out': 'pose_out'})
-
-			# x:390 y:300
-			OperatableStateMachine.add('www',
-										SaraSay(sentence="I can't reach it", emotion=1, block=True),
+			# x:312 y:259
+			OperatableStateMachine.add('fail',
+										LogState(text="fail", severity=Logger.REPORT_HINT),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:658 y:146
-			OperatableStateMachine.add('close',
-										SetGripperState(width=0.0, effort=255),
-										transitions={'object': 'ggg', 'no_object': 'says'},
-										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
-										remapping={'object_size': 'object_size'})
+			# x:38 y:377
+			OperatableStateMachine.add('move',
+										SaraMoveBase(),
+										transitions={'arrived': 'log', 'failed': 'fail'},
+										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'pose': 'object_pose'})
 
-			# x:489 y:517
-			OperatableStateMachine.add('ssssss',
-										MoveArmNamedPose(pose_name="IdlePose", wait=True),
-										transitions={'done': 'say', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
+			# x:45 y:590
+			OperatableStateMachine.add('Action_pick',
+										self.use_behavior(Action_pickSM, 'Action_pick'),
+										transitions={'success': 'say3', 'too far': 'failed', 'unreachable': 'failed', 'not seen': 'failed', 'critical fail': 'failed', 'missed': 'say2'},
+										autonomy={'success': Autonomy.Inherit, 'too far': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not seen': Autonomy.Inherit, 'critical fail': Autonomy.Inherit, 'missed': Autonomy.Inherit},
+										remapping={'object': 'object_name', 'grip_pose': 'grip_pose'})
 
-			# x:660 y:245
-			OperatableStateMachine.add('says',
-										SaraSay(sentence="There is nothing in my hand", emotion=1, block=True),
-										transitions={'done': 'finished'},
+			# x:47 y:193
+			OperatableStateMachine.add('obj',
+										GetObject(),
+										transitions={'found': 'say1', 'unknown': 'say 3', 'error': 'fail'},
+										autonomy={'found': Autonomy.Off, 'unknown': Autonomy.Off, 'error': Autonomy.Off},
+										remapping={'id': 'id', 'name': 'name', 'color': 'color', 'room': 'room', 'type': 'type', 'expected_pose': 'expected_pose', 'object_pose': 'object_pose', 'object_name': 'object_name', 'object_color': 'object_color', 'object_room': 'object_room', 'object_type': 'object_type'})
+
+			# x:37 y:282
+			OperatableStateMachine.add('say1',
+										SaraSayKey(Format=lambda x: "I'm going to pick the "+x, emotion=1, block=False),
+										transitions={'done': 'move'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'name'})
+
+			# x:41 y:112
+			OperatableStateMachine.add('get pose',
+										Get_Robot_Pose(),
+										transitions={'done': 'obj'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'pose': 'expected_pose'})
+
+			# x:175 y:426
+			OperatableStateMachine.add('say2',
+										SaraSay(sentence=lambda x: "I got it, it is "+x, emotion=1, block=False),
+										transitions={'done': 'for'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:240 y:511
+			OperatableStateMachine.add('for',
+										ForLoop(repeat=1),
+										transitions={'do': 'Action_pick', 'end': 'failed'},
+										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+										remapping={'index': 'index'})
+
+			# x:358 y:589
+			OperatableStateMachine.add('say3',
+										SaraSayKey(Format=lambda x: "I got it, it is "+x, emotion=1, block=False),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'object_color'})
+
+			# x:226 y:162
+			OperatableStateMachine.add('say 3',
+										SaraSayKey(Format=lambda x: "I don't know this "+x, emotion=1, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'name'})
 
 
 		return _state_machine
@@ -149,5 +155,5 @@ class Test_continueSM(Behavior):
 
 	# Private functions can be added inside the following tags
 	# [MANUAL_FUNC]
-    
-    # [/MANUAL_FUNC]
+
+	# [/MANUAL_FUNC]
