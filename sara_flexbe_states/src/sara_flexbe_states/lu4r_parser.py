@@ -155,6 +155,7 @@ class LU4R_Parser(EventState):
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Give',
                     '.*(giving).*',
+                    '.*(theme).*',
                     '.*(recipient).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
