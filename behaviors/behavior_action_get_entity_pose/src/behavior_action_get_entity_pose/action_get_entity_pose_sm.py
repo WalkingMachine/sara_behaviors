@@ -98,19 +98,19 @@ class Action_get_entity_poseSM(Behavior):
 
 			# x:281 y:104
 			OperatableStateMachine.add('w1',
-										WaitState(wait_time=2),
+										WaitState(wait_time=3),
 										transitions={'done': 'get box'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:293 y:268
 			OperatableStateMachine.add('w2',
-										WaitState(wait_time=2),
+										WaitState(wait_time=3),
 										transitions={'done': 'get box 2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:295 y:416
 			OperatableStateMachine.add('w3',
-										WaitState(wait_time=2),
+										WaitState(wait_time=3),
 										transitions={'done': 'get box 3'},
 										autonomy={'done': Autonomy.Off})
 
