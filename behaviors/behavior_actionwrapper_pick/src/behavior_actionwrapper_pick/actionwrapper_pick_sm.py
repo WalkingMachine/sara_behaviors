@@ -58,7 +58,7 @@ class ActionWrapper_PickSM(Behavior):
 
 
     def create(self):
-        # x:773 y:409, x:754 y:234
+        # x:727 y:189, x:724 y:315
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action', 'ObjectInGripper'])
         _state_machine.userdata.Action = ["Pick","elephant","room"]
         _state_machine.userdata.ObjectInGripper = False
@@ -164,7 +164,7 @@ class ActionWrapper_PickSM(Behavior):
                                         remapping={'Key': 'relative'})
 
 
-        # x:778 y:25, x:231 y:413
+        # x:778 y:25, x:580 y:518
         _sm_pick_3 = OperatableStateMachine(outcomes=['success', 'failed'], input_keys=['Action'])
 
         with _sm_pick_3:
@@ -178,21 +178,21 @@ class ActionWrapper_PickSM(Behavior):
             # x:202 y:39
             OperatableStateMachine.add('Action_pick',
                                         self.use_behavior(Action_pickSM, 'pick/Action_pick'),
-                                        transitions={'success': 'success', 'too far': 'get closer', 'unreachable': 'say unreachable', 'not seen': 'say fail', 'critical fail': 'say fail', 'missed': 'say fail'},
+                                        transitions={'success': 'success', 'too far': 'get closer', 'unreachable': 'say unreachable', 'not seen': 'say fail', 'critical fail': 'failed', 'missed': 'say fail'},
                                         autonomy={'success': Autonomy.Inherit, 'too far': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not seen': Autonomy.Inherit, 'critical fail': Autonomy.Inherit, 'missed': Autonomy.Inherit},
                                         remapping={'object': 'name', 'grip_pose': 'grip_pose'})
 
-            # x:775 y:99
+            # x:738 y:120
             OperatableStateMachine.add('say fail',
                                         SaraSayKey(Format=lambda x: "Sorry, I failed to get the "+x, emotion=1, block=True),
-                                        transitions={'done': 'failed'},
+                                        transitions={'done': 'success'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'sentence': 'name'})
 
             # x:22 y:313
             OperatableStateMachine.add('Get object',
                                         GetObject(),
-                                        transitions={'found': 'Action_Move', 'unknown': 'failed', 'error': 'failed'},
+                                        transitions={'found': 'Action_Move', 'unknown': 'say unknow', 'error': 'failed'},
                                         autonomy={'found': Autonomy.Off, 'unknown': Autonomy.Off, 'error': Autonomy.Off},
                                         remapping={'id': 'id', 'name': 'name', 'color': 'color', 'room': 'room', 'type': 'type', 'expected_pose': 'expected_pose', 'object_pose': 'object_pose', 'object_name': 'object_name', 'object_color': 'object_color', 'object_room': 'object_room', 'object_type': 'object_type'})
 
@@ -210,20 +210,20 @@ class ActionWrapper_PickSM(Behavior):
                                         autonomy={'done': Autonomy.Inherit},
                                         remapping={'Action': 'Action', 'name': 'name'})
 
-            # x:9 y:397
+            # x:18 y:576
             OperatableStateMachine.add('Action_Move',
                                         self.use_behavior(Action_MoveSM, 'pick/Action_Move'),
                                         transitions={'finished': 'Action_pick', 'failed': 'failed'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'pose': 'object_pose', 'relative': 'relative'})
 
-            # x:200 y:297
+            # x:200 y:311
             OperatableStateMachine.add('Forward',
                                         _sm_forward_0,
                                         transitions={'finished': 'Action_pick', 'failed': 'failed'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-            # x:257 y:227
+            # x:257 y:230
             OperatableStateMachine.add('for',
                                         ForLoop(repeat=2),
                                         transitions={'do': 'Forward', 'end': 'say fail'},
@@ -241,6 +241,13 @@ class ActionWrapper_PickSM(Behavior):
                                         SaraSay(sentence="I need to get closer", emotion=1, block=False),
                                         transitions={'done': 'for'},
                                         autonomy={'done': Autonomy.Off})
+
+            # x:229 y:426
+            OperatableStateMachine.add('say unknow',
+                                        SaraSayKey(Format=lambda x: "I don't know any "+x, emotion=1, block=True),
+                                        transitions={'done': 'say fail'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'sentence': 'name'})
 
 
 
