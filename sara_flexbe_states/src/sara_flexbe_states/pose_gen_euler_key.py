@@ -25,7 +25,8 @@ class GenPoseEulerKey(EventState):
 
     def __init__(self):
         # See example_state.py for basic explanations.
-        super(GenPoseEulerKey, self).__init__(outcomes=['done'], output_keys=['pose'])
+        super(GenPoseEulerKey, self).__init__(outcomes=['done'], output_keys=['pose']
+            ,input_keys=['x', 'y', 'z', 'yaw', 'pitch', 'roll'])
         self.pt = Pose()
         self.pt.position.x = userdata.x
         self.pt.position.y = userdata.y
