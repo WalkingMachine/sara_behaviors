@@ -46,7 +46,7 @@ class Test_continueSM(Behavior):
     def create(self):
         # x:649 y:285, x:641 y:194
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
-        _state_machine.userdata.sentence = "get the cup from the kitchen"
+        _state_machine.userdata.sentence = "bring the cup from the table to the room"
         _state_machine.userdata.HighFIFO = []
         _state_machine.userdata.MedFIFO = []
         _state_machine.userdata.LowFIFO = []

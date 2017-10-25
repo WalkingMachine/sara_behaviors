@@ -12,7 +12,6 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Action_pick" />
 
 	<!-- Available Parameters -->
 
