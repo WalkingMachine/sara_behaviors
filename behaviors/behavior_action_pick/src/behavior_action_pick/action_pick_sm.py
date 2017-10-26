@@ -70,14 +70,14 @@ class Action_pickSM(Behavior):
 		with _sm_get_0:
 			# x:293 y:116
 			OperatableStateMachine.add('gen1',
-										GenGripperPose(x=0.04, y=0, z=0, t=0),
+										GenGripperPose(x=0.04, y=0, z=-0.05, t=0),
 										transitions={'done': 'move1'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose_in': 'pose', 'pose_out': 'pose_out'})
 
 			# x:297 y:441
 			OperatableStateMachine.add('gen3',
-										GenGripperPose(x=0.04, y=0, z=0, t=-0.5),
+										GenGripperPose(x=0.04, y=0, z=-0.05, t=-0.5),
 										transitions={'done': 'move3'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose_in': 'pose', 'pose_out': 'pose_out'})
@@ -105,7 +105,7 @@ class Action_pickSM(Behavior):
 
 			# x:296 y:282
 			OperatableStateMachine.add('gen2',
-										GenGripperPose(x=0.04, y=0, z=0, t=0.5),
+										GenGripperPose(x=0.04, y=0, z=-0.05, t=0.5),
 										transitions={'done': 'move2'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose_in': 'pose', 'pose_out': 'pose_out'})
@@ -131,7 +131,7 @@ class Action_pickSM(Behavior):
 
 			# x:334 y:294
 			OperatableStateMachine.add('gen2',
-										GenGripperPose(x=-0.1, y=-0.1, z=0, t=0.5),
+										GenGripperPose(x=-0.1, y=-0.15, z=0, t=0.5),
 										transitions={'done': 'move2'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose_in': 'pose', 'pose_out': 'pose_out'})
@@ -145,7 +145,7 @@ class Action_pickSM(Behavior):
 
 			# x:333 y:452
 			OperatableStateMachine.add('gen3',
-										GenGripperPose(x=-0.1, y=0.1, z=0, t=-0.5),
+										GenGripperPose(x=-0.1, y=0.15, z=0, t=-0.5),
 										transitions={'done': 'move3'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose_in': 'pose', 'pose_out': 'pose_out'})

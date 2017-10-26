@@ -161,7 +161,7 @@ class Sara_main_behaviorSM(Behavior):
 
 			# x:122 y:228
 			OperatableStateMachine.add('say',
-										SaraSay(sentence="I'm goint to shutdown for safetiy reasons", emotion=1, block=True),
+										SaraSay(sentence="I'm goint to shutdown for safety reasons", emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 

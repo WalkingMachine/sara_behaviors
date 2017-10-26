@@ -64,7 +64,7 @@ class Check_reachabilitySM(Behavior):
 
 			# x:68 y:411
 			OperatableStateMachine.add('third check',
-										CheckConditionState(predicate=lambda x: (x.position.x**2+x.position.y**2+(x.position.z-1.4))**0.5 < 0.8),
+										CheckConditionState(predicate=lambda x: (x.position.x**2+x.position.y**2+(x.position.z-1))**0.5 < 1.5),
 										transitions={'true': 'ok', 'false': 'too_far'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'pose_out'})
