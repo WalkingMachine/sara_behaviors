@@ -12,8 +12,8 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Action_get_entity_pose" />
 	<contains name="Check_reachability" />
+	<contains name="Action_get_entity_pose" />
 
 	<!-- Available Parameters -->
 

@@ -8,9 +8,10 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_give')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.check_condition_state import CheckConditionState
+from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_say_key import SaraSayKey
+from flexbe_states.check_condition_state import CheckConditionState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -43,7 +44,7 @@ class ActionWrapper_GiveSM(Behavior):
         # Behavior comments:
 
         # O 288 66 
-        # Give|n1- to who
+        # Give|n1- what|n2- to who
 
 
 
@@ -59,25 +60,32 @@ class ActionWrapper_GiveSM(Behavior):
 
 
         with _state_machine:
-            # x:30 y:40
-            OperatableStateMachine.add('cond',
-                                        CheckConditionState(predicate=lambda x: x[1] != ''),
-                                        transitions={'true': 'say giving to person', 'false': 'say giving'},
-                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-                                        remapping={'input_value': 'Action'})
+            # x:43 y:94
+            OperatableStateMachine.add('get ',
+                                        CalculationState(calculation=lambda x: x[1]),
+                                        transitions={'done': 'cond'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'input_value': 'Action', 'output_value': 'object'})
 
             # x:232 y:184
             OperatableStateMachine.add('say giving',
-                                        SaraSay(sentence="I'm giving it to you", emotion=1),
+                                        SaraSay(sentence="I'm giving it to you", emotion=1, block=True),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
 
             # x:196 y:284
             OperatableStateMachine.add('say giving to person',
-                                        SaraSayKey(Format=lambda x: "I'm giving it to "+x[1], emotion=1),
+                                        SaraSayKey(Format=lambda x: "I'm giving it to "+x[1], emotion=1, block=True),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'sentence': 'Action'})
+
+            # x:40 y:190
+            OperatableStateMachine.add('cond',
+                                        CheckConditionState(predicate=lambda x: x[2] != ''),
+                                        transitions={'true': 'say giving to person', 'false': 'say giving'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'Action'})
 
 
         return _state_machine
