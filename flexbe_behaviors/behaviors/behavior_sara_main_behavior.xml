@@ -13,7 +13,6 @@
 
 	<!-- Contained Behaviors -->
 	<contains name="sara_command_manager" />
-	<contains name="Go_to_exit" />
 	<contains name="Sara action executor" />
 
 	<!-- Available Parameters -->

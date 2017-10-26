@@ -8,11 +8,9 @@
 
 import roslib; roslib.load_manifest('behavior_sara_command_manager')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.subscriber_state import SubscriberState
-from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.lu4r_parser import LU4R_Parser
-from flexbe_states.calculation_state import CalculationState
-from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.sara_say import SaraSay
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -47,7 +45,7 @@ class sara_command_managerSM(Behavior):
 
 
     def create(self):
-        # x:857 y:132, x:609 y:334
+        # x:857 y:132, x:440 y:368
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['HighFIFO', 'MedFIFO', 'LowFIFO', 'DoNow'])
         _state_machine.userdata.HighFIFO = []
         _state_machine.userdata.MedFIFO = []
@@ -62,18 +60,12 @@ class sara_command_managerSM(Behavior):
 
 
         with _state_machine:
-            # x:44 y:112
-            OperatableStateMachine.add('sub',
-                                        SubscriberState(topic="/sara_command", blocking=False, clear=False),
-                                        transitions={'received': 'sss', 'unavailable': 'finished'},
-                                        autonomy={'received': Autonomy.Off, 'unavailable': Autonomy.Off},
-                                        remapping={'message': 'message'})
-
-            # x:404 y:211
-            OperatableStateMachine.add('sorry',
-                                        SaraSay(sentence="Sorry, I did not understand. Could you repeat please?", emotion=1),
-                                        transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.Off})
+            # x:156 y:80
+            OperatableStateMachine.add('get speech',
+                                        GetSpeech(watchdog=5),
+                                        transitions={'done': 'parse text', 'nothing': 'finished', 'fail': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
+                                        remapping={'words': 'sentence'})
 
             # x:378 y:40
             OperatableStateMachine.add('parse text',
@@ -82,23 +74,15 @@ class sara_command_managerSM(Behavior):
                                         autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
                                         remapping={'sentence': 'sentence', 'HighFIFO': 'HighFIFO', 'MedFIFO': 'MedFIFO', 'LowFIFO': 'LowFIFO', 'DoNow': 'DoNow'})
 
-            # x:216 y:41
-            OperatableStateMachine.add('GET TEXT',
-                                        CalculationState(calculation=lambda x: x.data),
-                                        transitions={'done': 'parse text'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'input_value': 'message', 'output_value': 'sentence'})
-
-            # x:103 y:185
-            OperatableStateMachine.add('sss',
-                                        CheckConditionState(predicate=lambda x: x != None),
-                                        transitions={'true': 'GET TEXT', 'false': 'finished'},
-                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-                                        remapping={'input_value': 'message'})
-
             # x:579 y:41
             OperatableStateMachine.add('understood',
-                                        SaraSay(sentence="Understood", emotion=1),
+                                        SaraSay(sentence="Understood", emotion=1, block=True),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:404 y:211
+            OperatableStateMachine.add('sorry',
+                                        SaraSay(sentence="Sorry, I did not understand. Could you repeat please?", emotion=1, block=True),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
 

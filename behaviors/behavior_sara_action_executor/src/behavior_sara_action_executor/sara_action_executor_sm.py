@@ -74,6 +74,7 @@ class SaraactionexecutorSM(Behavior):
         _state_machine.userdata.LowFIFO = []
         _state_machine.userdata.End = False
         _state_machine.userdata.Index = 0
+        _state_machine.userdata.ObjectInGripper = False
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -81,7 +82,7 @@ class SaraactionexecutorSM(Behavior):
         # [/MANUAL_CREATE]
 
         # x:896 y:331, x:913 y:610, x:913 y:7
-        _sm_action_0 = OperatableStateMachine(outcomes=['Shutdown', 'CriticalFail', 'done'], input_keys=['Action', 'index'])
+        _sm_action_0 = OperatableStateMachine(outcomes=['Shutdown', 'CriticalFail', 'done'], input_keys=['Action', 'index', 'ObjectInGripper'])
 
         with _sm_action_0:
             # x:53 y:27
@@ -103,7 +104,7 @@ class SaraactionexecutorSM(Behavior):
                                         self.use_behavior(ActionWrapper_BringSM, 'Action/ActionWrapper_Bring'),
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'Action': 'Action', 'index': 'index'})
+                                        remapping={'Action': 'Action'})
 
             # x:411 y:86
             OperatableStateMachine.add('ActionWrapper_Follow',
@@ -117,7 +118,7 @@ class SaraactionexecutorSM(Behavior):
                                         self.use_behavior(ActionWrapper_MoveSM, 'Action/ActionWrapper_Move'),
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'Action': 'Action', 'index': 'index'})
+                                        remapping={'Action': 'Action'})
 
             # x:409 y:202
             OperatableStateMachine.add('ActionWrapper_Attach',
@@ -138,7 +139,7 @@ class SaraactionexecutorSM(Behavior):
                                         self.use_behavior(ActionWrapper_FindSM, 'Action/ActionWrapper_Find'),
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'Action': 'Action', 'index': 'index'})
+                                        remapping={'Action': 'Action'})
 
             # x:414 y:378
             OperatableStateMachine.add('ActionWrapper_Place',
@@ -159,7 +160,7 @@ class SaraactionexecutorSM(Behavior):
                                         self.use_behavior(ActionWrapper_PickSM, 'Action/ActionWrapper_Pick'),
                                         transitions={'finished': 'done', 'failed': 'CriticalFail'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'Action': 'Action'})
+                                        remapping={'Action': 'Action', 'ObjectInGripper': 'ObjectInGripper'})
 
             # x:420 y:558
             OperatableStateMachine.add('ActionWrapper_Turn',
@@ -196,7 +197,7 @@ class SaraactionexecutorSM(Behavior):
                                         _sm_action_0,
                                         transitions={'Shutdown': 'Shutdown', 'CriticalFail': 'CriticalFail', 'done': 'Check Condituion'},
                                         autonomy={'Shutdown': Autonomy.Inherit, 'CriticalFail': Autonomy.Inherit, 'done': Autonomy.Inherit},
-                                        remapping={'Action': 'Action', 'index': 'Index'})
+                                        remapping={'Action': 'Action', 'index': 'Index', 'ObjectInGripper': 'ObjectInGripper'})
 
             # x:294 y:154
             OperatableStateMachine.add('Get HighAction',
