@@ -32,5 +32,6 @@ class ForLoop(EventState):
             userdata.index = self.index
             return 'do'
         else:
+            self.index = 1
             return 'end'
 
