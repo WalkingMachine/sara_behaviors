@@ -234,7 +234,7 @@ class Action_pickSM(Behavior):
 			# x:729 y:519
 			OperatableStateMachine.add('move back',
 										MoveArmNamedPose(pose_name="PostGripPose", wait=True),
-										transitions={'done': 'open gripper', 'failed': 'critical fail'},
+										transitions={'done': 'success', 'failed': 'critical fail'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
 			# x:233 y:520
@@ -258,14 +258,14 @@ class Action_pickSM(Behavior):
 
 			# x:52 y:255
 			OperatableStateMachine.add('see it',
-										SaraSay(sentence="I see it", emotion=1, block=False),
+										SaraSay(sentence="I see it", emotion=1, block=True),
 										transitions={'done': 'Check_reachability'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:268 y:269
+			# x:407 y:266
 			OperatableStateMachine.add('too far s',
 										SaraSay(sentence="But it is too far", emotion=1, block=True),
-										transitions={'done': 'get_pose'},
+										transitions={'done': 'too far'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:282 y:117
@@ -317,10 +317,10 @@ class Action_pickSM(Behavior):
 			# x:1032 y:568
 			OperatableStateMachine.add('move back 2',
 										MoveArmNamedPose(pose_name="PreGripPose", wait=True),
-										transitions={'done': 'open gripper', 'failed': 'open gripper'},
+										transitions={'done': 'missed', 'failed': 'missed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
-			# x:684 y:317
+			# x:789 y:354
 			OperatableStateMachine.add('sad',
 										SetExpression(emotion=2, brightness=999),
 										transitions={'done': 'open gripper'},
@@ -339,7 +339,7 @@ class Action_pickSM(Behavior):
 										transitions={'done': 'say not seen'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:354 y:311
+			# x:242 y:287
 			OperatableStateMachine.add('humm2',
 										SetExpression(emotion=3, brightness=999),
 										transitions={'done': 'too far s'},
