@@ -6,7 +6,7 @@ import requests
 import json
 from geometry_msgs.msg import Pose, Point
 from tf.transformations import quaternion_from_euler
-
+from math import atan2
 
 class WonderlandGetObject(EventState):
     '''
@@ -89,7 +89,9 @@ class WonderlandGetObject(EventState):
         pose.position.x = best['x_position']
         pose.position.y = best['y_position']
         pose.position.z = best['z_position']
-        quat = quaternion_from_euler(0, 0, best['theta'])
+
+        theta = atan2(pose.position.y-userdata.expected_pose.position.y, pose.position.x-userdata.expected_pose.position.x)
+        quat = quaternion_from_euler(0, 0, theta)
         pose.orientation.x = quat[0]
         pose.orientation.y = quat[1]
         pose.orientation.z = quat[2]
