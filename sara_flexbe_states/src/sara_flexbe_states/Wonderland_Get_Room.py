@@ -8,7 +8,7 @@ from geometry_msgs.msg import Pose, Point
 from tf.transformations import quaternion_from_euler
 from math import atan2
 
-class WonderlandGetObject(EventState):
+class WonderlandGetRoom(EventState):
     '''
     Get the informations of an room
 
@@ -28,7 +28,7 @@ class WonderlandGetObject(EventState):
 
     def __init__(self):
         # See example_state.py for basic explanations.
-        super(WonderlandGetObject, self).__init__(outcomes=['found', 'unknown', 'error'],
+        super(WonderlandGetRoom, self).__init__(outcomes=['found', 'unknown', 'error'],
                                                   input_keys=['id', 'name', 'type', 'expected_pose'],
                                                   output_keys=['id', 'room_pose', 'room_name', 'room_type'])
         self._index = 0
