@@ -2,114 +2,103 @@
 # encoding=utf8
 
 from flexbe_core import EventState, Logger
+import requests
 import json
+from geometry_msgs.msg import Pose, Point
+from tf.transformations import quaternion_from_euler
 
 
-class Wonderland_Get_Entity_Room(EventState):
+class WonderlandGetObject(EventState):
     '''
-    Read the position of a room in a json string
-    -- index_function   function    index of the
+    Get the informations of an room
 
-    ># json_text    string  command to read
-    ># input_value      object    Input to the index function.
+    ># id    int    id of the room
+    ># name    string    name of the room
+    ># type    string    category of the room
+    ># expected_pose    pose/point    expected position of the room
 
-    #> id           int     id of the room
-    #> name         string  name of the room
-    #> x1           float   position of the room
-    #> x2           float   position of the room
-    #> x3           float   position of the room
-    #> x4           float   position of the room
-    #> y1           float   position of the room
-    #> y2           float   position of the room
-    #> y3           float   position of the room
-    #> y4           float   position of the room
+    #> room_pose     pose     the pose of the returned room
+    #> room_name    string    name of the room
+    #> room_type    string    category of the room
 
-    <= done         return when at least one entity exist
-    <= no_room        return when no entity have the selected name
+    <= found         room     found
+    <= unknown       the room is unknown
     <= error        return when error reading data
     '''
 
-    def __init__(self, index_function):
+    def __init__(self):
         # See example_state.py for basic explanations.
-        super(Wonderland_Get_Entity_Room, self).__init__(outcomes=['done', 'no_room', 'error'],
-                                                              input_keys=['json_text', 'input_value'],
-                                                              output_keys=['id','name','x1','x2','x3','x4','y1','y2','y3','y4'])
-        self._index_function = index_function
+        super(WonderlandGetObject, self).__init__(outcomes=['found', 'unknown', 'error'],
+                                                  input_keys=['id', 'name', 'type', 'expected_pose'],
+                                                  output_keys=['id', 'room_pose', 'room_name', 'room_type'])
         self._index = 0
+        self._header = {'api-key': 'asdf'}
 
     def execute(self, userdata):
+
+        # Generate URL to contact
+        url = "http://wonderland:8000/api/room/?"
+        if userdata.id != None:
+            url += "id=" + str(userdata.id) + "&"
+        if userdata.name != None:
+            url += "name=" + str(userdata.name) + "&"
+        if userdata.type != None:
+            url += "type=" + str(userdata.type) + "&"
+        if userdata.expected_pose == None:
+            Logger.logerr("in " + self.name + ", you must give an expected pose or point")
+            return 'error'
+
+        if type(userdata.expected_pose) is Pose:
+            expX = userdata.expected_pose.position.x
+            expY = userdata.expected_pose.position.y
+            expZ = userdata.expected_pose.position.z
+        elif type(userdata.expected_pose) is Point:
+            expX = userdata.expected_pose.position.x
+            expY = userdata.expected_pose.position.y
+            expZ = userdata.expected_pose.position.z
+        else:
+            return 'error'
+
+        # try the request
+        try:
+            response = requests.get(url, headers=self._header)
+        except requests.exceptions.RequestException as e:
+            Logger.logerr(str(e))
+            return 'error'
+
         # parse parameter json data
-        data = json.loads(userdata.json_text)
+        data = json.loads(response.content)
+        print "data:"
+        print data
+        if len(data) == 0:
+            return 'unknown'
 
-        # read if there is data
-        if not data[self._index]:
-            # continue to Zero
-            return 'error'
+        # find the nearest room
+        bestScore = 1000000
+        best = None
+        for d in data:
+            print d
+            score = ((expX - d['x_position']) ** 2 + (expY - d['y_position']) ** 2 + (
+            expZ - d['z_position']) ** 2) ** 0.5
+            if score < bestScore:
+                bestScore = score
+                best = d
 
-        # read if there is data
-        if not data[self._index]:
-            # continue to Zero
-            return 'no_room'
+        # generate the output pose
+        pose = Pose()
+        pose.position.x = best['x_position']
+        pose.position.y = best['y_position']
+        pose.position.z = best['z_position']
+        quat = quaternion_from_euler(0, 0, best['theta'])
+        pose.orientation.x = quat[0]
+        pose.orientation.y = quat[1]
+        pose.orientation.z = quat[2]
+        pose.orientation.w = quat[3]
 
-        # try to read data
-        if 'id' not in data[self._index]:
-            # continue to Error
-            return 'error'
+        # send the outputs
+        userdata.room_id = best['id']
+        userdata.room_pose = pose
+        userdata.room_name = best['name']
+        userdata.room_type = best['type']
 
-        if 'name' not in data[self._index]:
-            # continue to Error
-            return 'error'
-
-        if 'x1' not in data[self._index]:
-            # continue to Error
-            return 'error'
-
-        if 'x2' not in data[self._index]:
-            # continue to Error
-            return 'error'
-
-        if 'x3' not in data[self._index]:
-            # continue to Error
-            return 'error'
-
-        if 'x4' not in data[self._index]:
-            # continue to Error
-            return 'error'
-
-        if 'y1' not in data[self._index]:
-            # continue to Error
-            return 'error'
-
-        if 'y2' not in data[self._index]:
-            # continue to Error
-            return 'error'
-
-        if 'y3' not in data[self._index]:
-            # continue to Error
-            return 'error'
-
-        if 'y4' not in data[self._index]:
-            # continue to Error
-            return 'error'
-
-        # write return datas
-        userdata.id = data[self._index]['id']
-        userdata.name = data[self._index]['name']
-        userdata.x1 = data[self._index]['x1']
-        userdata.x2 = data[self._index]['x2']
-        userdata.x3 = data[self._index]['x3']
-        userdata.x4 = data[self._index]['x4']
-        userdata.y1 = data[self._index]['y1']
-        userdata.y2 = data[self._index]['y2']
-        userdata.y3 = data[self._index]['y3']
-        userdata.y4 = data[self._index]['y4']
-
-        # continue to Done
-        return 'done'
-
-    def on_enter(self, userdata):
-        if self._index_function is not None:
-            try:
-                self._index = self._index_function(userdata.input_value)
-            except Exception as e:
-                Logger.logwarn('Failed to execute index function!\n%s' % str(e))
+        return 'found'
