@@ -172,7 +172,7 @@ class ActionWrapper_MoveSM(Behavior):
 
 
         # x:652 y:66, x:655 y:247
-        _sm_get_location_2 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['Action'])
+        _sm_get_location_2 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['Action'], output_keys=['room_pose'])
 
         with _sm_get_location_2:
             # x:30 y:40
@@ -258,7 +258,7 @@ class ActionWrapper_MoveSM(Behavior):
                                         _sm_get_location_2,
                                         transitions={'done': 'move sara absolute', 'failed': 'say no goal given'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'Action': 'Action'})
+                                        remapping={'Action': 'Action', 'room_pose': 'room_pose'})
 
             # x:327 y:307
             OperatableStateMachine.add('gen vector',
@@ -279,7 +279,7 @@ class ActionWrapper_MoveSM(Behavior):
                                         SaraMoveBase(),
                                         transitions={'arrived': 'finished', 'failed': 'finished'},
                                         autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
-                                        remapping={'pose': 'pose'})
+                                        remapping={'pose': 'room_pose'})
 
 
         return _state_machine
