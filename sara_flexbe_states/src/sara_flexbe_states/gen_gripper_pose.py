@@ -41,9 +41,9 @@ class GenGripperPose(EventState):
 
         out = Pose()
         if type(userdata.pose_in) is Pose:
-            out.position.x = userdata.pose_in.position.x-0.20+self.x
+            out.position.x = userdata.pose_in.position.x-0.23+self.x
             out.position.y = userdata.pose_in.position.y+self.y
-            out.position.z = userdata.pose_in.position.z+0.05+self.z
+            out.position.z = userdata.pose_in.position.z+0.07+self.z
         elif type(userdata.pose_in) is Point:
             out.position.x = userdata.pose_in.x-0.20+self.x
             out.position.y = userdata.pose_in.y+self.y
