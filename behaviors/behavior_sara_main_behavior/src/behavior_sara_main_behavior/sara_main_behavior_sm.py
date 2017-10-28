@@ -15,6 +15,7 @@ from flexbe_states.calculation_state import CalculationState
 from behavior_sara_action_executor.sara_action_executor_sm import SaraactionexecutorSM
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.FIFO_New import FIFO_New
+from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -173,13 +174,6 @@ class Sara_main_behaviorSM(Behavior):
 										])
 
 		with _sm_sara_parallel_runtime_4:
-			# x:57 y:333
-			OperatableStateMachine.add('Sara brain',
-										_sm_sara_brain_1,
-										transitions={'error': 'Shutdown'},
-										autonomy={'error': Autonomy.Inherit},
-										remapping={'HighFIFO': 'HighFIFO', 'LowFIFO': 'LowFIFO', 'MedFIFO': 'MedFIFO', 'DoNow': 'DoNow', 'End': 'End'})
-
 			# x:52 y:416
 			OperatableStateMachine.add('Sara action executor',
 										_sm_sara_action_executor_0,
@@ -187,13 +181,20 @@ class Sara_main_behaviorSM(Behavior):
 										autonomy={'shutdown': Autonomy.Inherit},
 										remapping={'HighFIFO': 'HighFIFO', 'MedFIFO': 'MedFIFO', 'LowFIFO': 'LowFIFO', 'DoNow': 'DoNow', 'End': 'End'})
 
+			# x:57 y:333
+			OperatableStateMachine.add('Sara brain',
+										_sm_sara_brain_1,
+										transitions={'error': 'Shutdown'},
+										autonomy={'error': Autonomy.Inherit},
+										remapping={'HighFIFO': 'HighFIFO', 'LowFIFO': 'LowFIFO', 'MedFIFO': 'MedFIFO', 'DoNow': 'DoNow', 'End': 'End'})
+
 
 
 		with _state_machine:
 			# x:43 y:60
 			OperatableStateMachine.add('log',
 										LogState(text="Start Sara", severity=Logger.REPORT_HINT),
-										transitions={'done': 'Create_FIFOs'},
+										transitions={'done': 'set arm'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:400 y:331
@@ -215,6 +216,18 @@ class Sara_main_behaviorSM(Behavior):
 										transitions={'done': 'Sara parallel Runtime'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'HighFIFO': 'HighFIFO', 'MedFIFO': 'MedFIFO', 'LowFIFO': 'LowFIFO', 'DoNow': 'DoNow'})
+
+			# x:118 y:133
+			OperatableStateMachine.add('hello',
+										SaraSay(sentence="Good morning. My name is Sara", emotion=1, block=True),
+										transitions={'done': 'Create_FIFOs'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:224 y:53
+			OperatableStateMachine.add('set arm',
+										MoveArmNamedPose(pose_name="PreGripPose", wait=False),
+										transitions={'done': 'hello', 'failed': 'hello'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
 
 		return _state_machine
