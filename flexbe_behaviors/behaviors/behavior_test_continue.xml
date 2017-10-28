@@ -12,7 +12,7 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Action_pick" />
+	<contains name="Action_Move" />
 
 	<!-- Available Parameters -->
 

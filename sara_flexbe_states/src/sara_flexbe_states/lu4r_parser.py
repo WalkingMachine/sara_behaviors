@@ -57,7 +57,7 @@ class LU4R_Parser(EventState):
 
 
         HYPO = {'hypotheses':[{"transcription":userdata.sentence,"confidence":"0.9","rank":"1"}]}
-        ENT = {'entities': [{"atom":"book1","type":"book","preferredLexicalReference":"book","alternativeLexicalReferences":["volume","manual","dictionary","text"],"coordinate":{"x":"13.0","y":"0.0","z":"0.0","angle":"0"}},{"atom":"table1","type":"table","preferredLexicalReference":"table","alternativeLexicalReferences":["counter","desk"],"coordinate":{"x":"16.0","y":"0.0","z":"0.0","angle":"0.671"}},{"atom":"glass1","type":"glass","preferredLexicalReference":"glass","alternativeLexicalReferences":["cup","decanter","chalice"],"coordinate":{"x":"5.0","y":"8.0","z":"0.0","angle":"0"}},{"atom":"bedroom1","type":"bedroom","preferredLexicalReference":"bedroom","alternativeLexicalReferences":["chamber","cubicle","bedchamber"],"coordinate":{"x":"11.0","y":"6.0","z":"0.0","angle":"0"}},{"atom":"studio1","type":"studio","preferredLexicalReference":"studio","alternativeLexicalReferences":["library","office"],"coordinate":{"x":"9.0","y":"14.0","z":"0.0","angle":"0"}},{"atom":"person1","type":"person","preferredLexicalReference":"person","alternativeLexicalReferences":["body","character","guy","man","woman"],"coordinate":{"x":"2.0","y":"2.0","z":"0.0","angle":"0"}}]}
+        ENT = {'entities': [{"atom":"cup1","type":"drink","preferredLexicalReference":"cup","alternativeLexicalReferences":["glass","cup","drink"],"coordinate":{"x":"3.0","y":"0.0","z":"0.0","angle":"0"}}]}
         r = requests.post(lu4r_url, data={'hypo':str(HYPO) , 'entities':str(ENT)}, headers=HEADERS)
 
         lu4r = Lu4r()
@@ -65,16 +65,16 @@ class LU4R_Parser(EventState):
 
         for line in r.iter_lines():
             if line:
-                operation = re.compile('(\s*:op\d\s)?\([a-zA-Z0-9\-]+ / ([a-zA-Z\-]+)')
-                m = operation.match(line)
+                regex = re.compile('(\s*:op\d\s)?\([a-zA-Z0-9\-]+ / ([a-zA-Z\-]+)')
+                m = regex.match(line)
                 if m:
                     if opItem.action != "" and opItem.action != 'and':
                         lu4r.opList.append(opItem)
                     opItem = Operation()
                     opItem.action = m.group(2)
                 else:
-                    action = re.compile('\s*:([a-zA-Z0-9]*) \([a-zA-Z0-9]* / ([a-zA-Z0-9]*)\)')
-                    n = action.match(line)
+                    regex = re.compile('\s*:([a-zA-Z0-9]*) \([a-zA-Z0-9]* / ([a-zA-Z0-9]*)\)')
+                    n = regex.match(line)
                     if n:
                         arg = args()
                         arg.type = n.group(1)
@@ -91,9 +91,8 @@ class LU4R_Parser(EventState):
 
         lu4r.opList = self.ManageSubject( lu4r.opList );
 
-        test = re.compile('.*[Ss]top.*')
-        n = test.match(lu4r.opList[0].action)
-        if n:
+        regex = re.compile('.*(stop).*')
+        if regex.match(lu4r.opList[0].action.lower()):
             Logger.loginfo("Action: Stop now!")
             userdata.DoNow = []
             userdata.DoNow.append('Stop')
@@ -112,73 +111,74 @@ class LU4R_Parser(EventState):
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Bring',
-                    '.*[Bb]ring.*',
-                    '.*([Tt]heme).*',
-                    '.*([Aa]rea)|([Ss]ource).*',
-                    '.*([Bb]eneficiary)|([Gg]oal).*'])
+                    '.*(bring).*',
+                    '.*(theme).*',
+                    '.*((area)|(source)).*',
+                    '.*((beneficiary)|(goal)).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Follow',
-                    '.*[Cc]otheme.*',
-                    '.*([Tt]heme).*',
-                    '.*([Aa]rea).*',
-                    '.*([Pp]ath)|([Rr]oad).*'])
+                    '.*(cotheme).*',
+                    '.*(theme).*',
+                    '.*(area).*',
+                    '.*((path)|(road)).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder( opitem, [
                     'Move',
-                    '.*[Mm]otion.*',
-                    '.*([Tt]heme)|([Aa]rea)|([Gg]oal).*',
-                    '.*([Dd]irection).*',
-                    '.*([Dd]istance).*'])
+                    '.*(motion).*',
+                    '.*((theme)|(area)|(goal)).*',
+                    '.*(direction).*',
+                    '.*(distance).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Attach',
-                    '.*[Aa]ttaching.*',
-                    '.*([Ii]tem).*',
-                    '.*([Gg]oal)|([Cc]onnector).*'])
+                    '.*(attaching).*',
+                    '.*(item).*',
+                    '.*((goal)|(connector)).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'LookAt',
-                    '.*[Ii]specting.*',
-                    '.*([Gg]round)|([Pp]henomenon).*'])
+                    '.*(ispecting).*',
+                    '.*((ground)|(phenomenon)).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Find',
-                    '.*[Ll]ocating.*',
-                    '.*([Ss]ought_entity)|([Pp]henomenon).*',
-                    '.*([Gg]round)|([[Ll]ocation]).*'])
+                    '.*(locating).*',
+                    '.*((sought_entity)|(phenomenon)).*',
+                    '.*((ground)|(location)).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Place',
-                    '.*[Pp]lacing.*',
-                    '.*[Gg]oal.*'])
+                    '.*(placing).*',
+                    '.*(goal).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Give',
-                    '.*[Gg]iving.*',
-                    '.*[Rr]ecipient.*'])
+                    '.*(giving).*',
+                    '.*(theme).*',
+                    '.*(recipient).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Pick',
-                    '.*[Mm]anipulation.*',
-                    '.*([Ee]ntity).*',
-                    '.*([Aa]rea).*'])
+                    '.*(manipulation).*',
+                    '.*(entity).*',
+                    '.*((area)|(source)).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'LookAt',
-                    '.*([Pp]erception)|([Ll]ook).*',
-                    '.*([Dd]irection)|([Pp]henomenon).*'])
+                    '.*((perception)|(look)).*',
+                    '.*((direction)|(phenomenon)).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Pick',
-                    '.*[Tt]aking.*',
-                    '.*([Tt]heme).*',
-                    '.*([Aa]rea).*'])
+                    '.*((get)|(taking)).*',
+                    '.*(theme).*',
+                    '.*((area)|(source)).*'])
             if ActionForm == None:
                 ActionForm = self.ActionFormBuilder(opitem, [
                     'Turn',
-                    '.*[Cc]ange [Dd]irection.*',
-                    '.*([Dd]irection).*'])
+                    '.*(change direction).*',
+                    '.*(direction).*'])
 
 
             if ActionForm != None:
@@ -203,9 +203,8 @@ class LU4R_Parser(EventState):
 
         PreActionForm = None
         # - Generic ActionForm builder
-        test = re.compile(positions[1])
-        n = test.match(opitem.action)
-        if n:
+        regex = re.compile(positions[1])
+        if regex.match(opitem.action.lower()):
             PreActionForm = []
             PreActionForm.append(positions[0])
             i=2
@@ -217,9 +216,8 @@ class LU4R_Parser(EventState):
                 Logger.loginfo("arg-content: " + arg.content)
                 i = 2
                 while i < len(positions):
-                    test = re.compile(positions[i])
-                    n = test.match(arg.type)
-                    if n:
+                    regex = re.compile(positions[i])
+                    if regex.match(arg.type.lower()):
                         PreActionForm[i-1] = arg.content
                     i = i + 1
         return PreActionForm
@@ -227,37 +225,27 @@ class LU4R_Parser(EventState):
     def ManageSubject(self, opitems):
         for opitem in opitems:
             for arg in opitem.args:
-                test = re.compile('.*([Tt]heme)|([Gg]oal)|([Ss]ought_entity)|([Pp]henomenon).*')
-                n = test.match(arg.type)
-                if n:
-                    test = re.compile('.*([Tt]his)|([Tt]hat)|([Ii]t).*')
-                    n = test.match(arg.content)
-                    if n:
+                regex = re.compile('.*((theme)|(goal)|(sought_entity)|(phenomenon)).*')
+                if regex.match(arg.type.lower()):
+                    regex = re.compile('.*((this)|(that)|(it)).*')
+                    if regex.match(arg.content.lower()):
                         arg.content = self.Subject
                     else:
                         self.Subject = arg.content
-
-                test = re.compile('.*([Bb]eneficiary).*')
-                n = test.match(arg.type)
-                if n:
-                    test = re.compile('.*([Hh]im)|([Hh]er).*')
-                    n = test.match(arg.content)
-                    if n:
+                regex = re.compile('.*(beneficiary).*')
+                if regex.match(arg.type.lower()):
+                    regex = re.compile('.*((him)|(her)).*')
+                    if regex.match(arg.content.lower()):
                         arg.content = self.Person
                     else:
                         self.Person = arg.content
-                    test = re.compile('.*([Mm]e)|([Mm]yself).*')
-                    n = test.match(arg.content)
-                    if n:
+                    regex = re.compile('.*((me)|(myself)).*')
+                    if regex.match(arg.content.lower()):
                         arg.content = 'you'
                         continue
-
-                    test = re.compile('.*([Yy]ou)|([Ss]ara)|([Yy]ourself).*')
-                    n = test.match(arg.content)
-                    if n:
+                    regex = re.compile('.*(you)|(sara)|(yourself).*')
+                    if regex.match(arg.content.lower()):
                         arg.content = 'myself'
                         continue
-
-
 
         return opitems

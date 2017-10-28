@@ -7,7 +7,7 @@ import json
 from geometry_msgs.msg import Pose, Point
 from tf.transformations import quaternion_from_euler
 
-class GetObject(EventState):
+class WonderlandGetObject(EventState):
     '''
     Get the informations of an object
     
@@ -31,7 +31,7 @@ class GetObject(EventState):
 
     def __init__(self):
         # See example_state.py for basic explanations.
-        super(GetObject, self).__init__(outcomes=['found', 'unknown', 'error'],
+        super(WonderlandGetObject, self).__init__(outcomes=['found', 'unknown', 'error'],
                                                               input_keys=['id', 'name', 'color', 'room', 'type', 'expected_pose'],
                                                               output_keys=['id', 'object_pose', 'object_name', 'object_color', 'object_room', 'object_type'])
         self._index = 0
@@ -106,6 +106,7 @@ class GetObject(EventState):
         userdata.object_pose = pose
         userdata.object_name = best['name']
         userdata.object_color = best['color']
+        userdata.object_room = best['room']
         userdata.object_type = best['type']
 
         return 'found'
