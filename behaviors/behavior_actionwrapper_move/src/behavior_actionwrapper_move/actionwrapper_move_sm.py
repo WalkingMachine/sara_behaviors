@@ -19,8 +19,7 @@ from sara_flexbe_states.pose_gen_euler_key import GenPoseEulerKey
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.Get_Number_From_Text import GetNumberFromText
 from flexbe_states.log_key_state import LogKeyState
-from sara_flexbe_states.sara_rel_move_base import SaraRelMoveBase
-from sara_flexbe_states.sara_move_base import SaraMoveBase
+from behavior_action_move.action_move_sm import Action_MoveSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -44,6 +43,8 @@ class ActionWrapper_MoveSM(Behavior):
         # parameters of this behavior
 
         # references to used behaviors
+        self.add_behavior(Action_MoveSM, 'Action_Move')
+        self.add_behavior(Action_MoveSM, 'Action_Move_2')
 
         # Additional initialization code can be added inside the following tags
         # [MANUAL_INIT]
@@ -256,30 +257,44 @@ class ActionWrapper_MoveSM(Behavior):
             # x:393 y:116
             OperatableStateMachine.add('get location',
                                         _sm_get_location_2,
-                                        transitions={'done': 'move sara absolute', 'failed': 'say no goal given'},
+                                        transitions={'done': 'true', 'failed': 'say no goal given'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'Action': 'Action', 'room_pose': 'room_pose'})
 
             # x:327 y:307
             OperatableStateMachine.add('gen vector',
                                         _sm_gen_vector_1,
-                                        transitions={'finished': 'move sara rel', 'failed': 'say no goal given'},
+                                        transitions={'finished': 'false', 'failed': 'say no goal given'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'Action': 'Action', 'pose': 'pose'})
 
-            # x:499 y:302
-            OperatableStateMachine.add('move sara rel',
-                                        SaraRelMoveBase(),
-                                        transitions={'arrived': 'finished', 'failed': 'finished'},
-                                        autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
-                                        remapping={'pose': 'pose'})
+            # x:644 y:130
+            OperatableStateMachine.add('Action_Move',
+                                        self.use_behavior(Action_MoveSM, 'Action_Move'),
+                                        transitions={'finished': 'finished', 'failed': 'failed'},
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'pose': 'room_pose', 'relative': 'relative'})
 
-            # x:569 y:132
-            OperatableStateMachine.add('move sara absolute',
-                                        SaraMoveBase(),
-                                        transitions={'arrived': 'finished', 'failed': 'finished'},
-                                        autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
-                                        remapping={'pose': 'room_pose'})
+            # x:569 y:270
+            OperatableStateMachine.add('Action_Move_2',
+                                        self.use_behavior(Action_MoveSM, 'Action_Move_2'),
+                                        transitions={'finished': 'finished', 'failed': 'failed'},
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'pose': 'pose', 'relative': 'relative'})
+
+            # x:605 y:31
+            OperatableStateMachine.add('true',
+                                        SetKey(Value=True),
+                                        transitions={'done': 'Action_Move'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'Key': 'relative'})
+
+            # x:495 y:222
+            OperatableStateMachine.add('false',
+                                        SetKey(Value=False),
+                                        transitions={'done': 'Action_Move_2'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'Key': 'relative'})
 
 
         return _state_machine
