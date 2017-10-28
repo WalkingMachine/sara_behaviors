@@ -12,12 +12,15 @@ from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.pose_gen_euler_key import GenPoseEulerKey
+from sara_flexbe_states.Wonderland_Get_Room import WonderlandGetRoom
+from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_states.SetKey import SetKey
+from sara_flexbe_states.pose_gen_euler_key import GenPoseEulerKey
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.Get_Number_From_Text import GetNumberFromText
 from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.sara_rel_move_base import SaraRelMoveBase
+from sara_flexbe_states.sara_move_base import SaraMoveBase
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -54,7 +57,7 @@ class ActionWrapper_MoveSM(Behavior):
     def create(self):
         # x:822 y:356, x:821 y:464
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
-        _state_machine.userdata.Action = ['Move','',' backward',' one meter']
+        _state_machine.userdata.Action = ['Move',' kitchen',' backward',' one meter']
         _state_machine.userdata.x = ""
         _state_machine.userdata.y = ""
         _state_machine.userdata.z = ""
@@ -168,16 +171,44 @@ class ActionWrapper_MoveSM(Behavior):
                                         remapping={'input_value': 'distance', 'output_value': 'distance'})
 
 
-        # x:30 y:325
-        _sm_move_to_location_2 = OperatableStateMachine(outcomes=['done'], input_keys=['Action'])
+        # x:652 y:66, x:655 y:247
+        _sm_get_location_2 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['Action'])
 
-        with _sm_move_to_location_2:
+        with _sm_get_location_2:
             # x:30 y:40
             OperatableStateMachine.add('Get name of location',
                                         CalculationState(calculation=lambda x: x[1]),
-                                        transitions={'done': 'done'},
+                                        transitions={'done': 'Set id'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'input_value': 'Action', 'output_value': 'name'})
+
+            # x:282 y:177
+            OperatableStateMachine.add('Get Room',
+                                        WonderlandGetRoom(),
+                                        transitions={'found': 'done', 'unknown': 'failed', 'error': 'failed'},
+                                        autonomy={'found': Autonomy.Off, 'unknown': Autonomy.Off, 'error': Autonomy.Off},
+                                        remapping={'id': 'id', 'name': 'name', 'type': 'type', 'expected_pose': 'pose', 'room_pose': 'room_pose', 'room_name': 'room_name', 'room_type': 'room_type'})
+
+            # x:279 y:77
+            OperatableStateMachine.add('Get Robot Pose',
+                                        Get_Robot_Pose(),
+                                        transitions={'done': 'Get Room'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'pose': 'pose'})
+
+            # x:180 y:37
+            OperatableStateMachine.add('set type',
+                                        SetKey(Value=None),
+                                        transitions={'done': 'Get Robot Pose'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'Key': 'type'})
+
+            # x:52 y:127
+            OperatableStateMachine.add('Set id',
+                                        SetKey(Value=None),
+                                        transitions={'done': 'set type'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'Key': 'id'})
 
 
 
@@ -199,7 +230,7 @@ class ActionWrapper_MoveSM(Behavior):
             # x:230 y:127
             OperatableStateMachine.add('say area',
                                         SaraSayKey(Format=lambda x: "I'm now going to the "+x[1], emotion=1, block=True),
-                                        transitions={'done': 'move to location'},
+                                        transitions={'done': 'get location'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'sentence': 'Action'})
 
@@ -216,17 +247,17 @@ class ActionWrapper_MoveSM(Behavior):
                                         transitions={'done': 'say no goal given'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:373 y:528
+            # x:413 y:523
             OperatableStateMachine.add('say no goal given',
                                         SaraSay(sentence="I'm lost now because of you", emotion=1, block=True),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:362 y:125
-            OperatableStateMachine.add('move to location',
-                                        _sm_move_to_location_2,
-                                        transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.Inherit},
+            # x:393 y:116
+            OperatableStateMachine.add('get location',
+                                        _sm_get_location_2,
+                                        transitions={'done': 'move sara absolute', 'failed': 'say no goal given'},
+                                        autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'Action': 'Action'})
 
             # x:327 y:307
@@ -239,6 +270,13 @@ class ActionWrapper_MoveSM(Behavior):
             # x:499 y:302
             OperatableStateMachine.add('move sara rel',
                                         SaraRelMoveBase(),
+                                        transitions={'arrived': 'finished', 'failed': 'finished'},
+                                        autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'pose': 'pose'})
+
+            # x:569 y:132
+            OperatableStateMachine.add('move sara absolute',
+                                        SaraMoveBase(),
                                         transitions={'arrived': 'finished', 'failed': 'finished'},
                                         autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose'})
