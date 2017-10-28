@@ -12,8 +12,8 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="sara_command_manager" />
 	<contains name="Sara action executor" />
+	<contains name="sara_command_manager" />
 
 	<!-- Available Parameters -->
 	<params>
