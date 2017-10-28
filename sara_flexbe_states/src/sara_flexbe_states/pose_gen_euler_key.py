@@ -25,19 +25,19 @@ class GenPoseEulerKey(EventState):
 
     def __init__(self):
         # See example_state.py for basic explanations.
-        super(GenPoseEulerKey, self).__init__(outcomes=['done'], output_keys=['pose']
-            ,input_keys=['x', 'y', 'z', 'yaw', 'pitch', 'roll'])
+        super(GenPoseEulerKey, self).__init__(outcomes=['done'], output_keys=['pose'],input_keys=['xpos', 'ypos', 'zpos', 'yaw', 'pitch', 'roll'])
         self.pt = Pose()
-        self.pt.position.x = userdata.x
-        self.pt.position.y = userdata.y
-        self.pt.position.z = userdata.z
+
+    def execute(self, userdata):
+        print("HLLEO")
+        self.pt.position.y = userdata.ypos
+        self.pt.position.z = userdata.zpos
+        self.pt.position.x = userdata.xpos
         qt = quaternion_from_euler(userdata.roll, userdata.pitch, userdata.yaw)
         self.pt.orientation.w = qt[3]
         self.pt.orientation.x = qt[0]
         self.pt.orientation.y = qt[1]
         self.pt.orientation.z = qt[2]
 
-
-    def execute(self, userdata):
         userdata.pose = self.pt
         return 'done'
