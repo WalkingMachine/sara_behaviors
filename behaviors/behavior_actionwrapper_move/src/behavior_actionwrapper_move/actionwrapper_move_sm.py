@@ -31,276 +31,276 @@ Created on Sat Oct 28 2017
 @author: Raphael Duchaine
 '''
 class ActionWrapper_MoveSM(Behavior):
-    '''
-    Behaviours
-    '''
+	'''
+	ActionWrapper for movements
+	'''
 
 
-    def __init__(self):
-        super(ActionWrapper_MoveSM, self).__init__()
-        self.name = 'ActionWrapper_Move'
+	def __init__(self):
+		super(ActionWrapper_MoveSM, self).__init__()
+		self.name = 'ActionWrapper_Move'
 
-        # parameters of this behavior
+		# parameters of this behavior
 
-        # references to used behaviors
-        self.add_behavior(Action_MoveSM, 'Action_Move')
-        self.add_behavior(Action_MoveSM, 'Action_Move_2')
+		# references to used behaviors
+		self.add_behavior(Action_MoveSM, 'Action_Move')
+		self.add_behavior(Action_MoveSM, 'Action_Move_2')
 
-        # Additional initialization code can be added inside the following tags
-        # [MANUAL_INIT]
+		# Additional initialization code can be added inside the following tags
+		# [MANUAL_INIT]
 
         # [/MANUAL_INIT]
 
-        # Behavior comments:
+		# Behavior comments:
 
 
 
-    def create(self):
-        # x:822 y:356, x:821 y:464
-        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
-        _state_machine.userdata.Action = ['Move',' kitchen',' backward',' one meter']
-        _state_machine.userdata.x = ""
-        _state_machine.userdata.y = ""
-        _state_machine.userdata.z = ""
-        _state_machine.userdata.theta = ""
-        _state_machine.userdata.waypoint_id = ""
-        _state_machine.userdata.pose = ""
+	def create(self):
+		# x:822 y:356, x:821 y:464
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
+		_state_machine.userdata.Action = ['Move','kitchen','backward','one meter']
+		_state_machine.userdata.x = ""
+		_state_machine.userdata.y = ""
+		_state_machine.userdata.z = ""
+		_state_machine.userdata.theta = ""
+		_state_machine.userdata.waypoint_id = ""
+		_state_machine.userdata.pose = ""
 
-        # Additional creation code can be added inside the following tags
-        # [MANUAL_CREATE]
+		# Additional creation code can be added inside the following tags
+		# [MANUAL_CREATE]
 
         # [/MANUAL_CREATE]
 
-        # x:30 y:293
-        _sm_initialize_vars_0 = OperatableStateMachine(outcomes=['done'], output_keys=['y', 'z', 'yaw', 'pitch', 'roll'])
+		# x:30 y:293
+		_sm_initialize_vars_0 = OperatableStateMachine(outcomes=['done'], output_keys=['y', 'z', 'yaw', 'pitch', 'roll'])
 
-        with _sm_initialize_vars_0:
-            # x:31 y:40
-            OperatableStateMachine.add('set z',
-                                        SetKey(Value=0),
-                                        transitions={'done': 'set y'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'Key': 'z'})
+		with _sm_initialize_vars_0:
+			# x:31 y:40
+			OperatableStateMachine.add('set z',
+										SetKey(Value=0),
+										transitions={'done': 'set y'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'z'})
 
-            # x:100 y:40
-            OperatableStateMachine.add('set yaw',
-                                        SetKey(Value=0),
-                                        transitions={'done': 'set pitch'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'Key': 'yaw'})
+			# x:100 y:40
+			OperatableStateMachine.add('set yaw',
+										SetKey(Value=0),
+										transitions={'done': 'set pitch'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'yaw'})
 
-            # x:111 y:110
-            OperatableStateMachine.add('set pitch',
-                                        SetKey(Value=0),
-                                        transitions={'done': 'set roll'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'Key': 'pitch'})
+			# x:111 y:110
+			OperatableStateMachine.add('set pitch',
+										SetKey(Value=0),
+										transitions={'done': 'set roll'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'pitch'})
 
-            # x:30 y:175
-            OperatableStateMachine.add('set roll',
-                                        SetKey(Value=0),
-                                        transitions={'done': 'done'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'Key': 'roll'})
+			# x:30 y:175
+			OperatableStateMachine.add('set roll',
+										SetKey(Value=0),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'roll'})
 
-            # x:42 y:105
-            OperatableStateMachine.add('set y',
-                                        SetKey(Value=0),
-                                        transitions={'done': 'set yaw'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'Key': 'y'})
-
-
-        # x:1094 y:102, x:1090 y:336
-        _sm_gen_vector_1 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'], output_keys=['pose'])
-
-        with _sm_gen_vector_1:
-            # x:30 y:124
-            OperatableStateMachine.add('get distanceString',
-                                        CalculationState(calculation=lambda x: x[3]),
-                                        transitions={'done': 'get Distance'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'input_value': 'Action', 'output_value': 'distance_string'})
-
-            # x:888 y:165
-            OperatableStateMachine.add('gen pose ',
-                                        GenPoseEulerKey(),
-                                        transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.High},
-                                        remapping={'xpos': 'distance', 'ypos': 'y', 'zpos': 'z', 'yaw': 'yaw', 'pitch': 'pitch', 'roll': 'roll', 'pose': 'pose'})
-
-            # x:653 y:119
-            OperatableStateMachine.add('initialize vars',
-                                        _sm_initialize_vars_0,
-                                        transitions={'done': 'log distance'},
-                                        autonomy={'done': Autonomy.Inherit},
-                                        remapping={'y': 'y', 'z': 'z', 'yaw': 'yaw', 'pitch': 'pitch', 'roll': 'roll'})
-
-            # x:361 y:152
-            OperatableStateMachine.add('Parse If forward',
-                                        RegexTester(regex=".*forward"),
-                                        transitions={'true': 'initialize vars', 'false': 'Parse if Backward'},
-                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-                                        remapping={'text': 'Action', 'result': 'result'})
-
-            # x:161 y:278
-            OperatableStateMachine.add('get Distance',
-                                        GetNumberFromText(min=0, max=100),
-                                        transitions={'done': 'Parse If forward', 'failed': 'failed'},
-                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-                                        remapping={'text': 'distance_string', 'value': 'distance', 'unit': 'unit'})
-
-            # x:765 y:199
-            OperatableStateMachine.add('log distance',
-                                        LogKeyState(text="distance:{}", severity=Logger.REPORT_HINT),
-                                        transitions={'done': 'gen pose '},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'data': 'distance'})
-
-            # x:356 y:237
-            OperatableStateMachine.add('Parse if Backward',
-                                        RegexTester(regex=".*back"),
-                                        transitions={'true': 'reverse distance', 'false': 'failed'},
-                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-                                        remapping={'text': 'Action', 'result': 'result'})
-
-            # x:580 y:210
-            OperatableStateMachine.add('reverse distance',
-                                        CalculationState(calculation=lambda x: x*-1),
-                                        transitions={'done': 'initialize vars'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'input_value': 'distance', 'output_value': 'distance'})
+			# x:42 y:105
+			OperatableStateMachine.add('set y',
+										SetKey(Value=0),
+										transitions={'done': 'set yaw'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'y'})
 
 
-        # x:652 y:66, x:655 y:247
-        _sm_get_location_2 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['Action'], output_keys=['room_pose'])
+		# x:1094 y:102, x:1090 y:336
+		_sm_gen_vector_1 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'], output_keys=['pose'])
 
-        with _sm_get_location_2:
-            # x:30 y:40
-            OperatableStateMachine.add('Get name of location',
-                                        CalculationState(calculation=lambda x: x[1]),
-                                        transitions={'done': 'Set id'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'input_value': 'Action', 'output_value': 'name'})
+		with _sm_gen_vector_1:
+			# x:30 y:124
+			OperatableStateMachine.add('get distanceString',
+										CalculationState(calculation=lambda x: x[3]),
+										transitions={'done': 'get Distance'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'Action', 'output_value': 'distance_string'})
 
-            # x:282 y:177
-            OperatableStateMachine.add('Get Room',
-                                        WonderlandGetRoom(),
-                                        transitions={'found': 'done', 'unknown': 'failed', 'error': 'failed'},
-                                        autonomy={'found': Autonomy.Off, 'unknown': Autonomy.Off, 'error': Autonomy.Off},
-                                        remapping={'id': 'id', 'name': 'name', 'type': 'type', 'expected_pose': 'pose', 'room_pose': 'room_pose', 'room_name': 'room_name', 'room_type': 'room_type'})
+			# x:888 y:165
+			OperatableStateMachine.add('gen pose ',
+										GenPoseEulerKey(),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.High},
+										remapping={'xpos': 'distance', 'ypos': 'y', 'zpos': 'z', 'yaw': 'yaw', 'pitch': 'pitch', 'roll': 'roll', 'pose': 'pose'})
 
-            # x:279 y:77
-            OperatableStateMachine.add('Get Robot Pose',
-                                        Get_Robot_Pose(),
-                                        transitions={'done': 'Get Room'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'pose': 'pose'})
+			# x:653 y:119
+			OperatableStateMachine.add('initialize vars',
+										_sm_initialize_vars_0,
+										transitions={'done': 'log distance'},
+										autonomy={'done': Autonomy.Inherit},
+										remapping={'y': 'y', 'z': 'z', 'yaw': 'yaw', 'pitch': 'pitch', 'roll': 'roll'})
 
-            # x:180 y:37
-            OperatableStateMachine.add('set type',
-                                        SetKey(Value=None),
-                                        transitions={'done': 'Get Robot Pose'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'Key': 'type'})
+			# x:361 y:152
+			OperatableStateMachine.add('Parse If forward',
+										RegexTester(regex=".*forward"),
+										transitions={'true': 'initialize vars', 'false': 'Parse if Backward'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'text': 'Action', 'result': 'result'})
 
-            # x:52 y:127
-            OperatableStateMachine.add('Set id',
-                                        SetKey(Value=None),
-                                        transitions={'done': 'set type'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'Key': 'id'})
+			# x:161 y:278
+			OperatableStateMachine.add('get Distance',
+										GetNumberFromText(min=0, max=100),
+										transitions={'done': 'Parse If forward', 'failed': 'failed'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'text': 'distance_string', 'value': 'distance', 'unit': 'unit'})
 
+			# x:765 y:199
+			OperatableStateMachine.add('log distance',
+										LogKeyState(text="distance:{}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'gen pose '},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'distance'})
 
+			# x:356 y:237
+			OperatableStateMachine.add('Parse if Backward',
+										RegexTester(regex=".*back"),
+										transitions={'true': 'reverse distance', 'false': 'failed'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'text': 'Action', 'result': 'result'})
 
-        with _state_machine:
-            # x:21 y:122
-            OperatableStateMachine.add('check',
-                                        CheckConditionState(predicate=lambda x: x[1] != ''),
-                                        transitions={'true': 'say area', 'false': 'cond1'},
-                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-                                        remapping={'input_value': 'Action'})
-
-            # x:187 y:328
-            OperatableStateMachine.add('say vector',
-                                        SaraSayKey(Format=lambda x: "I'm now going to move "+x[2]+x[3], emotion=1, block=True),
-                                        transitions={'done': 'gen vector'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'sentence': 'Action'})
-
-            # x:230 y:127
-            OperatableStateMachine.add('say area',
-                                        SaraSayKey(Format=lambda x: "I'm now going to the "+x[1], emotion=1, block=True),
-                                        transitions={'done': 'get location'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'sentence': 'Action'})
-
-            # x:15 y:329
-            OperatableStateMachine.add('cond1',
-                                        CheckConditionState(predicate=lambda x: x[2] != ''),
-                                        transitions={'true': 'say vector', 'false': 'say no info'},
-                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-                                        remapping={'input_value': 'Action'})
-
-            # x:35 y:521
-            OperatableStateMachine.add('say no info',
-                                        SaraSay(sentence="You didn't told me where to go", emotion=1, block=True),
-                                        transitions={'done': 'say no goal given'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:413 y:523
-            OperatableStateMachine.add('say no goal given',
-                                        SaraSay(sentence="I'm lost now because of you", emotion=1, block=True),
-                                        transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:393 y:116
-            OperatableStateMachine.add('get location',
-                                        _sm_get_location_2,
-                                        transitions={'done': 'true', 'failed': 'say no goal given'},
-                                        autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'Action': 'Action', 'room_pose': 'room_pose'})
-
-            # x:327 y:307
-            OperatableStateMachine.add('gen vector',
-                                        _sm_gen_vector_1,
-                                        transitions={'finished': 'false', 'failed': 'say no goal given'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'Action': 'Action', 'pose': 'pose'})
-
-            # x:644 y:130
-            OperatableStateMachine.add('Action_Move',
-                                        self.use_behavior(Action_MoveSM, 'Action_Move'),
-                                        transitions={'finished': 'finished', 'failed': 'failed'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'pose': 'room_pose', 'relative': 'relative'})
-
-            # x:569 y:270
-            OperatableStateMachine.add('Action_Move_2',
-                                        self.use_behavior(Action_MoveSM, 'Action_Move_2'),
-                                        transitions={'finished': 'finished', 'failed': 'failed'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'pose': 'pose', 'relative': 'relative'})
-
-            # x:605 y:31
-            OperatableStateMachine.add('true',
-                                        SetKey(Value=True),
-                                        transitions={'done': 'Action_Move'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'Key': 'relative'})
-
-            # x:495 y:222
-            OperatableStateMachine.add('false',
-                                        SetKey(Value=False),
-                                        transitions={'done': 'Action_Move_2'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'Key': 'relative'})
+			# x:580 y:210
+			OperatableStateMachine.add('reverse distance',
+										CalculationState(calculation=lambda x: x*-1),
+										transitions={'done': 'initialize vars'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'distance', 'output_value': 'distance'})
 
 
-        return _state_machine
+		# x:652 y:66, x:655 y:247
+		_sm_get_location_2 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['Action'], output_keys=['room_pose'])
+
+		with _sm_get_location_2:
+			# x:30 y:40
+			OperatableStateMachine.add('Get name of location',
+										CalculationState(calculation=lambda x: x[1]),
+										transitions={'done': 'Set id'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'Action', 'output_value': 'name'})
+
+			# x:282 y:177
+			OperatableStateMachine.add('Get Room',
+										WonderlandGetRoom(),
+										transitions={'found': 'done', 'unknown': 'failed', 'error': 'failed'},
+										autonomy={'found': Autonomy.Off, 'unknown': Autonomy.Off, 'error': Autonomy.Off},
+										remapping={'id': 'id', 'name': 'name', 'type': 'type', 'expected_pose': 'pose', 'room_pose': 'room_pose', 'room_name': 'room_name', 'room_type': 'room_type'})
+
+			# x:279 y:77
+			OperatableStateMachine.add('Get Robot Pose',
+										Get_Robot_Pose(),
+										transitions={'done': 'Get Room'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'pose': 'pose'})
+
+			# x:180 y:37
+			OperatableStateMachine.add('set type',
+										SetKey(Value=None),
+										transitions={'done': 'Get Robot Pose'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'type'})
+
+			# x:52 y:127
+			OperatableStateMachine.add('Set id',
+										SetKey(Value=None),
+										transitions={'done': 'set type'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'id'})
 
 
-    # Private functions can be added inside the following tags
-    # [MANUAL_FUNC]
+
+		with _state_machine:
+			# x:21 y:122
+			OperatableStateMachine.add('check',
+										CheckConditionState(predicate=lambda x: x[1] != ''),
+										transitions={'true': 'say area', 'false': 'cond1'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'Action'})
+
+			# x:187 y:328
+			OperatableStateMachine.add('say vector',
+										SaraSayKey(Format=lambda x: "I'm now going to move "+x[2]+" "+x[3], emotion=1, block=True),
+										transitions={'done': 'gen vector'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'Action'})
+
+			# x:230 y:127
+			OperatableStateMachine.add('say area',
+										SaraSayKey(Format=lambda x: "I'm now going to the "+x[1], emotion=1, block=True),
+										transitions={'done': 'get location'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'Action'})
+
+			# x:15 y:329
+			OperatableStateMachine.add('cond1',
+										CheckConditionState(predicate=lambda x: x[2] != ''),
+										transitions={'true': 'say vector', 'false': 'say no info'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'Action'})
+
+			# x:35 y:521
+			OperatableStateMachine.add('say no info',
+										SaraSay(sentence="You didn't told me where to go", emotion=1, block=True),
+										transitions={'done': 'say no goal given'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:413 y:523
+			OperatableStateMachine.add('say no goal given',
+										SaraSay(sentence="I'm lost now because of you", emotion=1, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:393 y:116
+			OperatableStateMachine.add('get location',
+										_sm_get_location_2,
+										transitions={'done': 'false rel', 'failed': 'say no goal given'},
+										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'Action': 'Action', 'room_pose': 'room_pose'})
+
+			# x:327 y:307
+			OperatableStateMachine.add('gen vector',
+										_sm_gen_vector_1,
+										transitions={'finished': 'true rel', 'failed': 'say no goal given'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'Action': 'Action', 'pose': 'pose'})
+
+			# x:644 y:130
+			OperatableStateMachine.add('Action_Move',
+										self.use_behavior(Action_MoveSM, 'Action_Move'),
+										transitions={'finished': 'finished', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'pose': 'room_pose', 'relative': 'relative'})
+
+			# x:569 y:270
+			OperatableStateMachine.add('Action_Move_2',
+										self.use_behavior(Action_MoveSM, 'Action_Move_2'),
+										transitions={'finished': 'finished', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'pose': 'pose', 'relative': 'relative'})
+
+			# x:554 y:78
+			OperatableStateMachine.add('false rel',
+										SetKey(Value=False),
+										transitions={'done': 'Action_Move'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'relative'})
+
+			# x:495 y:222
+			OperatableStateMachine.add('true rel',
+										SetKey(Value=True),
+										transitions={'done': 'Action_Move_2'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'relative'})
+
+
+		return _state_machine
+
+
+	# Private functions can be added inside the following tags
+	# [MANUAL_FUNC]
 
     # [/MANUAL_FUNC]
