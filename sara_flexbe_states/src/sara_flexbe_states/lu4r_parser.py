@@ -245,7 +245,7 @@ class LU4R_Parser(EventState):
                         arg.content = self.Subject
                     else:
                         self.Subject = arg.content
-                regex = re.compile('.*(beneficiary).*')
+                regex = re.compile('.*((beneficiary)|(goal)).*')
                 if regex.match(arg.type.lower()):
                     regex = re.compile('.*[^a-z]((him)|(her))[^a-z].*')
                     if regex.match(arg.content.lower()):
