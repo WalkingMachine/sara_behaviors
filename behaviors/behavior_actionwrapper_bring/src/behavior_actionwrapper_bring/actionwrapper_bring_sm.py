@@ -22,6 +22,7 @@ from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
+from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_states.Wonderland_Get_Room import WonderlandGetRoom
 # Additional imports can be added inside the following tags
@@ -67,7 +68,7 @@ class ActionWrapper_BringSM(Behavior):
 	def create(self):
 		# x:868 y:291, x:857 y:562
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
-		_state_machine.userdata.Action = ["Bring","cup", "",""]
+		_state_machine.userdata.Action = ["Bring","cup", "living room",""]
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -87,7 +88,7 @@ class ActionWrapper_BringSM(Behavior):
 			# x:367 y:505
 			OperatableStateMachine.add('open',
 										SetGripperState(width=0.15, effort=0),
-										transitions={'object': 'done', 'no_object': 'done'},
+										transitions={'object': 'pre', 'no_object': 'pre'},
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
@@ -123,6 +124,12 @@ class ActionWrapper_BringSM(Behavior):
 										transitions={'done': 'get'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'name'})
+
+			# x:516 y:549
+			OperatableStateMachine.add('pre',
+										MoveArmNamedPose(pose_name="PreGripPose", wait=True),
+										transitions={'done': 'done', 'failed': 'done'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
 
 		# x:43 y:574
@@ -180,7 +187,7 @@ class ActionWrapper_BringSM(Behavior):
 
 
 		# x:720 y:74, x:608 y:499, x:746 y:288
-		_sm_get_room_2 = OperatableStateMachine(outcomes=['found', 'unknown', 'error'], input_keys=['Action', 'expected_pose'], output_keys=['expected_pose'])
+		_sm_get_room_2 = OperatableStateMachine(outcomes=['found', 'unknown', 'error'], input_keys=['Action', 'expected_pose'], output_keys=['room_pose'])
 
 		with _sm_get_room_2:
 			# x:30 y:40
@@ -204,12 +211,12 @@ class ActionWrapper_BringSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'name'})
 
-			# x:484 y:360
+			# x:438 y:308
 			OperatableStateMachine.add('get room',
 										WonderlandGetRoom(),
 										transitions={'found': 'found', 'unknown': 'say unknown', 'error': 'error'},
 										autonomy={'found': Autonomy.Off, 'unknown': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'id': 'id', 'name': 'name', 'type': 'type', 'expected_pose': 'expected_pose', 'room_pose': 'expected_pose', 'room_name': 'room_name', 'room_type': 'room_type'})
+										remapping={'id': 'id', 'name': 'name', 'type': 'type', 'expected_pose': 'expected_pose', 'room_pose': 'room_pose', 'room_name': 'room_name', 'room_type': 'room_type'})
 
 			# x:471 y:499
 			OperatableStateMachine.add('say unknown',
@@ -226,18 +233,18 @@ class ActionWrapper_BringSM(Behavior):
 			# x:37 y:26
 			OperatableStateMachine.add('Set keys',
 										_sm_set_keys_1,
-										transitions={'done': 'get object'},
+										transitions={'done': 'log pose'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'Action': 'Action', 'id': 'id', 'color': 'color', 'room': 'room', 'type': 'type', 'name': 'name', 'relative': 'relative', 'unrelative': 'unrelative'})
 
-			# x:31 y:312
+			# x:134 y:348
 			OperatableStateMachine.add('Move_to_Object',
 										self.use_behavior(Action_MoveSM, 'Bring/Move_to_Object'),
 										transitions={'finished': 'Action_pick', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'object_pose', 'relative': 'unrelative'})
 
-			# x:85 y:208
+			# x:138 y:251
 			OperatableStateMachine.add('get object',
 										WonderlandGetObject(),
 										transitions={'found': 'Move_to_Object', 'unknown': 'say unknown', 'error': 'failed'},
@@ -272,7 +279,7 @@ class ActionWrapper_BringSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'decal_pose'})
 
-			# x:39 y:438
+			# x:38 y:468
 			OperatableStateMachine.add('Action_pick',
 										self.use_behavior(Action_pickSM, 'Bring/Action_pick'),
 										transitions={'success': 'Move_Back', 'too far': 'for', 'unreachable': 'finished', 'not seen': 'finished', 'critical fail': 'failed', 'missed': 'finished'},
@@ -298,6 +305,13 @@ class ActionWrapper_BringSM(Behavior):
 										transitions={'fail': 'failed', 'done': 'finished'},
 										autonomy={'fail': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'name': 'name'})
+
+			# x:133 y:161
+			OperatableStateMachine.add('log pose',
+										LogKeyState(text="{}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'get object'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'expected_pose'})
 
 
 
@@ -369,7 +383,7 @@ class ActionWrapper_BringSM(Behavior):
 										_sm_get_room_2,
 										transitions={'found': 'Bring', 'unknown': 'get expected pose', 'error': 'failed'},
 										autonomy={'found': Autonomy.Inherit, 'unknown': Autonomy.Inherit, 'error': Autonomy.Inherit},
-										remapping={'Action': 'Action', 'expected_pose': 'robot_pose'})
+										remapping={'Action': 'Action', 'expected_pose': 'robot_pose', 'room_pose': 'expected_pose'})
 
 			# x:224 y:603
 			OperatableStateMachine.add('get expected pose',

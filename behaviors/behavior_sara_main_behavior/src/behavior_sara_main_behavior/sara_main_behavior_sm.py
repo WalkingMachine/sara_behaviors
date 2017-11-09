@@ -19,6 +19,7 @@ from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.sara_set_angle import SaraSetHeadAngle
 from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
 from sara_flexbe_states.sara_set_expression import SetExpression
+from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.regex_tester import RegexTester
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -61,7 +62,7 @@ class Sara_main_behaviorSM(Behavior):
 
 
 	def create(self):
-		# x:137 y:362
+		# x:283 y:267
 		_state_machine = OperatableStateMachine(outcomes=['Shutdown'])
 		_state_machine.userdata.Command = "no nothing"
 		_state_machine.userdata.End = False
@@ -143,10 +144,22 @@ class Sara_main_behaviorSM(Behavior):
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:239 y:47
+			# x:239 y:21
 			OperatableStateMachine.add('set face',
-										SetExpression(emotion=1, brightness=255),
+										SetExpression(emotion=0, brightness=200),
+										transitions={'done': 'www'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:255 y:141
+			OperatableStateMachine.add('on face',
+										SetExpression(emotion=1, brightness=-1),
 										transitions={'done': 'set arm'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:387 y:70
+			OperatableStateMachine.add('www',
+										WaitState(wait_time=2),
+										transitions={'done': 'on face'},
 										autonomy={'done': Autonomy.Off})
 
 
@@ -227,7 +240,7 @@ class Sara_main_behaviorSM(Behavior):
 			# x:43 y:60
 			OperatableStateMachine.add('log',
 										LogState(text="Start Sara", severity=Logger.REPORT_HINT),
-										transitions={'done': 'listen'},
+										transitions={'done': 'low head'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:306 y:365
@@ -240,7 +253,7 @@ class Sara_main_behaviorSM(Behavior):
 			# x:315 y:462
 			OperatableStateMachine.add('Sara shutdown',
 										_sm_sara_shutdown_4,
-										transitions={'finished': 'listen'},
+										transitions={'finished': 'low head'},
 										autonomy={'finished': Autonomy.Inherit})
 
 			# x:328 y:284
@@ -250,7 +263,7 @@ class Sara_main_behaviorSM(Behavior):
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'HighFIFO': 'HighFIFO', 'MedFIFO': 'MedFIFO', 'LowFIFO': 'LowFIFO', 'DoNow': 'DoNow'})
 
-			# x:112 y:249
+			# x:150 y:207
 			OperatableStateMachine.add('listen',
 										GetSpeech(watchdog=10),
 										transitions={'done': 'check hello', 'nothing': 'listen', 'fail': 'Shutdown'},
@@ -263,12 +276,24 @@ class Sara_main_behaviorSM(Behavior):
 										transitions={'done': 'Create_FIFOs'},
 										autonomy={'done': Autonomy.Inherit})
 
-			# x:337 y:74
+			# x:355 y:96
 			OperatableStateMachine.add('check hello',
 										RegexTester(regex=".*((wake up)|(sarah?)|(shut up)|(hello)(robot)|(hi)|(morning)|(greet)).*"),
 										transitions={'true': 'Sara init', 'false': 'listen'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'text': 'words', 'result': 'result'})
+
+			# x:15 y:220
+			OperatableStateMachine.add('close face',
+										SetExpression(emotion=0, brightness=20),
+										transitions={'done': 'listen'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:102 y:115
+			OperatableStateMachine.add('low head',
+										SaraSetHeadAngle(angle=0.8),
+										transitions={'done': 'close face'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine
