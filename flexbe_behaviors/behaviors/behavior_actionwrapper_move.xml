@@ -4,14 +4,15 @@
 
 	<executable package_path="behavior_actionwrapper_move.actionwrapper_move_sm" class="ActionWrapper_MoveSM" />
 	<tagstring>ActionWrapper</tagstring>
-	<author>Philippe La Madeleine</author>
-	<date>Tue Jul 11 2017</date>
+	<author>Raphael Duchaine</author>
+	<date>Sat Oct 28 2017</date>
 	<description>
-		action wrapper pour move_base
+		ActionWrapper for movements
 	</description>
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Action_Move" />
 
 	<!-- Available Parameters -->
 

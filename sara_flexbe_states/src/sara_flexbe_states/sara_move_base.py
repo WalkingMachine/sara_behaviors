@@ -5,6 +5,8 @@ from flexbe_core.proxy import ProxyActionClient
 
 from actionlib_msgs.msg import GoalStatus
 from move_base_msgs.msg import *
+from std_srvs.srv import Empty
+import rospy
 from geometry_msgs.msg import Pose, Point, Quaternion, Pose2D
 from tf import transformations
 
@@ -47,6 +49,9 @@ class SaraMoveBase(EventState):
         if self._arrived:
             return 'arrived'
         if self._failed:
+            rospy.wait_for_service('/move_base/clear costmap')
+            serv = rospy.ServiceProxy('/move_base/clear costmap', Empty)
+            serv(Empty())
             return 'failed'
 
         if self._client.has_result(self._action_topic):
@@ -58,6 +63,9 @@ class SaraMoveBase(EventState):
                             GoalStatus.RECALLED, GoalStatus.ABORTED]:
                 Logger.logwarn('Navigation failed: %s' % str(status))
                 self._failed = True
+                rospy.wait_for_service('/move_base/clear costmap')
+                serv = rospy.ServiceProxy('/move_base/clear costmap', Empty)
+                serv(Empty())
                 return 'failed'
 
 

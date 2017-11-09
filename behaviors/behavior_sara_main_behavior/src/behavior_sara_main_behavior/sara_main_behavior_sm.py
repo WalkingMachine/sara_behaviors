@@ -9,16 +9,18 @@
 import roslib; roslib.load_manifest('behavior_sara_main_behavior')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.log_state import LogState
-from behavior_sara_command_manager.sara_command_manager_sm import sara_command_managerSM
-from sara_flexbe_states.for_loop import ForLoop
-from flexbe_states.calculation_state import CalculationState
-from behavior_go_to_exit.go_to_exit_sm import Go_to_exitSM
 from behavior_sara_action_executor.sara_action_executor_sm import SaraactionexecutorSM
-from flexbe_states.subscriber_state import SubscriberState
+from behavior_sara_command_manager.sara_command_manager_sm import sara_command_managerSM
+from flexbe_states.calculation_state import CalculationState
 from flexbe_states.check_condition_state import CheckConditionState
-from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.FIFO_New import FIFO_New
+from sara_flexbe_states.get_speech import GetSpeech
+from sara_flexbe_states.sara_set_angle import SaraSetHeadAngle
+from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
+from sara_flexbe_states.sara_set_expression import SetExpression
+from flexbe_states.wait_state import WaitState
+from sara_flexbe_states.regex_tester import RegexTester
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -44,9 +46,8 @@ class Sara_main_behaviorSM(Behavior):
 		self.add_parameter('ActionTopic', 'sara_action')
 
 		# references to used behaviors
-		self.add_behavior(sara_command_managerSM, 'Sara parallel Runtime/Sara brain/sara_command_manager')
-		self.add_behavior(Go_to_exitSM, 'Sara parallel Runtime/Sara brain/Go_to_exit')
 		self.add_behavior(SaraactionexecutorSM, 'Sara parallel Runtime/Sara action executor/Sara action executor')
+		self.add_behavior(sara_command_managerSM, 'Sara parallel Runtime/Sara brain/sara_command_manager')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -61,7 +62,7 @@ class Sara_main_behaviorSM(Behavior):
 
 
 	def create(self):
-		# x:914 y:505
+		# x:283 y:267
 		_state_machine = OperatableStateMachine(outcomes=['Shutdown'])
 		_state_machine.userdata.Command = "no nothing"
 		_state_machine.userdata.End = False
@@ -71,66 +72,36 @@ class Sara_main_behaviorSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-		# x:693 y:298
-		_sm_stopped_mode_0 = PriorityContainer(outcomes=['finished'])
+		# x:887 y:420
+		_sm_sara_brain_0 = OperatableStateMachine(outcomes=['error'], input_keys=['HighFIFO', 'LowFIFO', 'MedFIFO', 'DoNow', 'End'])
 
-		with _sm_stopped_mode_0:
-			# x:64 y:117
-			OperatableStateMachine.add('oups',
-										SaraSay(sentence="Oh! You pushed my stop button", emotion=1, block=True),
-										transitions={'done': 'wait for true'},
-										autonomy={'done': Autonomy.Off})
+		with _sm_sara_brain_0:
+			# x:270 y:346
+			OperatableStateMachine.add('sara_command_manager',
+										self.use_behavior(sara_command_managerSM, 'Sara parallel Runtime/Sara brain/sara_command_manager'),
+										transitions={'finished': 'if stop', 'failed': 'set end'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'HighFIFO': 'HighFIFO', 'MedFIFO': 'MedFIFO', 'LowFIFO': 'LowFIFO', 'DoNow': 'DoNow'})
 
-			# x:236 y:179
-			OperatableStateMachine.add('wait for true',
-										SubscriberState(topic="/estop_status", blocking=True, clear=False),
-										transitions={'received': 'condition', 'unavailable': 'wait for true'},
-										autonomy={'received': Autonomy.Off, 'unavailable': Autonomy.Off},
-										remapping={'message': 'message'})
+			# x:725 y:388
+			OperatableStateMachine.add('set end',
+										CalculationState(calculation=lambda x: True),
+										transitions={'done': 'error'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'End', 'output_value': 'End'})
 
-			# x:456 y:242
-			OperatableStateMachine.add('condition',
-										CheckConditionState(predicate=lambda x: x.data),
-										transitions={'true': 'finished', 'false': 'wait for true'},
+			# x:516 y:448
+			OperatableStateMachine.add('if stop',
+										CheckConditionState(predicate=lambda x: x[0][0]=="Stop"),
+										transitions={'true': 'set end', 'false': 'sara_command_manager'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-										remapping={'input_value': 'message'})
-
-
-		# x:212 y:285
-		_sm_estop_1 = OperatableStateMachine(outcomes=['shutdown'])
-
-		with _sm_estop_1:
-			# x:164 y:122
-			OperatableStateMachine.add('EStop Subscriber',
-										SubscriberState(topic="/estop_status", blocking=True, clear=False),
-										transitions={'received': 'EStop State', 'unavailable': 'shutdown'},
-										autonomy={'received': Autonomy.Off, 'unavailable': Autonomy.Off},
-										remapping={'message': 'message'})
-
-			# x:467 y:342
-			OperatableStateMachine.add('EStop State',
-										CheckConditionState(predicate=lambda x: x.data),
-										transitions={'true': 'wait', 'false': 'Stopped mode'},
-										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-										remapping={'input_value': 'message'})
-
-			# x:645 y:57
-			OperatableStateMachine.add('wait',
-										WaitState(wait_time=0.1),
-										transitions={'done': 'EStop Subscriber'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:812 y:242
-			OperatableStateMachine.add('Stopped mode',
-										_sm_stopped_mode_0,
-										transitions={'finished': 'wait'},
-										autonomy={'finished': Autonomy.Inherit})
+										remapping={'input_value': 'DoNow'})
 
 
 		# x:841 y:231
-		_sm_sara_action_executor_2 = OperatableStateMachine(outcomes=['shutdown'], input_keys=['HighFIFO', 'MedFIFO', 'LowFIFO', 'DoNow', 'End'])
+		_sm_sara_action_executor_1 = OperatableStateMachine(outcomes=['shutdown'], input_keys=['HighFIFO', 'MedFIFO', 'LowFIFO', 'DoNow', 'End'])
 
-		with _sm_sara_action_executor_2:
+		with _sm_sara_action_executor_1:
 			# x:128 y:134
 			OperatableStateMachine.add('log',
 										LogState(text="Start action executor", severity=Logger.REPORT_HINT),
@@ -151,42 +122,51 @@ class Sara_main_behaviorSM(Behavior):
 										remapping={'HighFIFO': 'HighFIFO', 'MedFIFO': 'MedFIFO', 'LowFIFO': 'LowFIFO', 'End': 'End'})
 
 
-		# x:887 y:420
-		_sm_sara_brain_3 = OperatableStateMachine(outcomes=['error'], input_keys=['HighFIFO', 'LowFIFO', 'MedFIFO', 'DoNow', 'End'])
+		# x:30 y:365
+		_sm_sara_init_2 = OperatableStateMachine(outcomes=['done'])
 
-		with _sm_sara_brain_3:
-			# x:270 y:346
-			OperatableStateMachine.add('sara_command_manager',
-										self.use_behavior(sara_command_managerSM, 'Sara parallel Runtime/Sara brain/sara_command_manager'),
-										transitions={'finished': 'For loop', 'failed': 'error'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'HighFIFO': 'HighFIFO', 'MedFIFO': 'MedFIFO', 'LowFIFO': 'LowFIFO', 'DoNow': 'DoNow'})
+		with _sm_sara_init_2:
+			# x:30 y:40
+			OperatableStateMachine.add('set head',
+										SaraSetHeadAngle(angle=0.1),
+										transitions={'done': 'set face'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:599 y:251
-			OperatableStateMachine.add('For loop',
-										ForLoop(repeat=3),
-										transitions={'do': 'sara_command_manager', 'end': 'set end'},
-										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
-										remapping={'index': 'index'})
+			# x:47 y:119
+			OperatableStateMachine.add('set arm',
+										MoveArmNamedPose(pose_name="PreGripPose", wait=False),
+										transitions={'done': 'hello', 'failed': 'hello'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
-			# x:725 y:305
-			OperatableStateMachine.add('set end',
-										CalculationState(calculation=lambda x: True),
-										transitions={'done': 'Go_to_exit'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'End', 'output_value': 'End'})
+			# x:242 y:288
+			OperatableStateMachine.add('hello',
+										SaraSay(sentence="Good morning. I am Sara the robot. Please give me orders.", emotion=1, block=True),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:856 y:167
-			OperatableStateMachine.add('Go_to_exit',
-										self.use_behavior(Go_to_exitSM, 'Sara parallel Runtime/Sara brain/Go_to_exit'),
-										transitions={'finished': 'error', 'failed': 'error'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+			# x:239 y:21
+			OperatableStateMachine.add('set face',
+										SetExpression(emotion=0, brightness=200),
+										transitions={'done': 'www'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:255 y:141
+			OperatableStateMachine.add('on face',
+										SetExpression(emotion=1, brightness=-1),
+										transitions={'done': 'set arm'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:387 y:70
+			OperatableStateMachine.add('www',
+										WaitState(wait_time=2),
+										transitions={'done': 'on face'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:55 y:366
-		_sm_create_fifos_4 = OperatableStateMachine(outcomes=['done'], output_keys=['HighFIFO', 'MedFIFO', 'LowFIFO', 'DoNow'])
+		_sm_create_fifos_3 = OperatableStateMachine(outcomes=['done'], output_keys=['HighFIFO', 'MedFIFO', 'LowFIFO', 'DoNow'])
 
-		with _sm_create_fifos_4:
+		with _sm_create_fifos_3:
 			# x:33 y:40
 			OperatableStateMachine.add('Create HighFIFO',
 										FIFO_New(),
@@ -217,9 +197,9 @@ class Sara_main_behaviorSM(Behavior):
 
 
 		# x:30 y:322
-		_sm_sara_shutdown_5 = OperatableStateMachine(outcomes=['finished'])
+		_sm_sara_shutdown_4 = OperatableStateMachine(outcomes=['finished'])
 
-		with _sm_sara_shutdown_5:
+		with _sm_sara_shutdown_4:
 			# x:57 y:86
 			OperatableStateMachine.add('log',
 										LogState(text="shutdown", severity=Logger.REPORT_HINT),
@@ -228,38 +208,31 @@ class Sara_main_behaviorSM(Behavior):
 
 			# x:122 y:228
 			OperatableStateMachine.add('say',
-										SaraSay(sentence="I'm goint to shutdown for safetiy reasons", emotion=1, block=True),
+										SaraSay(sentence="I'm goint to shutdown for safety reasons", emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:291 y:514, x:284 y:353, x:276 y:271, x:286 y:427
-		_sm_sara_parallel_runtime_6 = ConcurrencyContainer(outcomes=['Shutdown'], input_keys=['HighFIFO', 'MedFIFO', 'LowFIFO', 'DoNow', 'End'], conditions=[
-										('Shutdown', [('Estop', 'shutdown')]),
+		# x:336 y:314, x:315 y:433, x:276 y:271
+		_sm_sara_parallel_runtime_5 = ConcurrencyContainer(outcomes=['Shutdown'], input_keys=['HighFIFO', 'MedFIFO', 'LowFIFO', 'DoNow', 'End'], conditions=[
 										('Shutdown', [('Sara brain', 'error')]),
 										('Shutdown', [('Sara action executor', 'shutdown')])
 										])
 
-		with _sm_sara_parallel_runtime_6:
-			# x:57 y:333
-			OperatableStateMachine.add('Sara brain',
-										_sm_sara_brain_3,
-										transitions={'error': 'Shutdown'},
-										autonomy={'error': Autonomy.Inherit},
-										remapping={'HighFIFO': 'HighFIFO', 'LowFIFO': 'LowFIFO', 'MedFIFO': 'MedFIFO', 'DoNow': 'DoNow', 'End': 'End'})
-
+		with _sm_sara_parallel_runtime_5:
 			# x:52 y:416
 			OperatableStateMachine.add('Sara action executor',
-										_sm_sara_action_executor_2,
+										_sm_sara_action_executor_1,
 										transitions={'shutdown': 'Shutdown'},
 										autonomy={'shutdown': Autonomy.Inherit},
 										remapping={'HighFIFO': 'HighFIFO', 'MedFIFO': 'MedFIFO', 'LowFIFO': 'LowFIFO', 'DoNow': 'DoNow', 'End': 'End'})
 
-			# x:50 y:498
-			OperatableStateMachine.add('Estop',
-										_sm_estop_1,
-										transitions={'shutdown': 'Shutdown'},
-										autonomy={'shutdown': Autonomy.Inherit})
+			# x:57 y:333
+			OperatableStateMachine.add('Sara brain',
+										_sm_sara_brain_0,
+										transitions={'error': 'Shutdown'},
+										autonomy={'error': Autonomy.Inherit},
+										remapping={'HighFIFO': 'HighFIFO', 'LowFIFO': 'LowFIFO', 'MedFIFO': 'MedFIFO', 'DoNow': 'DoNow', 'End': 'End'})
 
 
 
@@ -267,28 +240,60 @@ class Sara_main_behaviorSM(Behavior):
 			# x:43 y:60
 			OperatableStateMachine.add('log',
 										LogState(text="Start Sara", severity=Logger.REPORT_HINT),
-										transitions={'done': 'Create_FIFOs'},
+										transitions={'done': 'low head'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:400 y:331
+			# x:306 y:365
 			OperatableStateMachine.add('Sara parallel Runtime',
-										_sm_sara_parallel_runtime_6,
+										_sm_sara_parallel_runtime_5,
 										transitions={'Shutdown': 'Sara shutdown'},
 										autonomy={'Shutdown': Autonomy.Inherit},
 										remapping={'HighFIFO': 'HighFIFO', 'MedFIFO': 'MedFIFO', 'LowFIFO': 'LowFIFO', 'DoNow': 'DoNow', 'End': 'End'})
 
-			# x:701 y:485
+			# x:315 y:462
 			OperatableStateMachine.add('Sara shutdown',
-										_sm_sara_shutdown_5,
-										transitions={'finished': 'Shutdown'},
+										_sm_sara_shutdown_4,
+										transitions={'finished': 'low head'},
 										autonomy={'finished': Autonomy.Inherit})
 
-			# x:187 y:210
+			# x:328 y:284
 			OperatableStateMachine.add('Create_FIFOs',
-										_sm_create_fifos_4,
+										_sm_create_fifos_3,
 										transitions={'done': 'Sara parallel Runtime'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'HighFIFO': 'HighFIFO', 'MedFIFO': 'MedFIFO', 'LowFIFO': 'LowFIFO', 'DoNow': 'DoNow'})
+
+			# x:150 y:207
+			OperatableStateMachine.add('listen',
+										GetSpeech(watchdog=10),
+										transitions={'done': 'check hello', 'nothing': 'listen', 'fail': 'Shutdown'},
+										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'words': 'words'})
+
+			# x:345 y:195
+			OperatableStateMachine.add('Sara init',
+										_sm_sara_init_2,
+										transitions={'done': 'Create_FIFOs'},
+										autonomy={'done': Autonomy.Inherit})
+
+			# x:355 y:96
+			OperatableStateMachine.add('check hello',
+										RegexTester(regex=".*((wake up)|(sarah?)|(shut up)|(hello)(robot)|(hi)|(morning)|(greet)).*"),
+										transitions={'true': 'Sara init', 'false': 'listen'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'text': 'words', 'result': 'result'})
+
+			# x:15 y:220
+			OperatableStateMachine.add('close face',
+										SetExpression(emotion=0, brightness=20),
+										transitions={'done': 'listen'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:102 y:115
+			OperatableStateMachine.add('low head',
+										SaraSetHeadAngle(angle=0.8),
+										transitions={'done': 'close face'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine
