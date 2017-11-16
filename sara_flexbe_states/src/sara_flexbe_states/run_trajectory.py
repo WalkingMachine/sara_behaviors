@@ -2,7 +2,7 @@
 
 from flexbe_core import EventState, Logger
 import rospy
-from wm_trajectory_manager import save_trajectory
+from wm_trajectory_manager.srv import run_trajectory, run_trajectoryRequest
 
 class RunTrajectory(EventState):
     """
@@ -16,12 +16,13 @@ class RunTrajectory(EventState):
         """Constructor"""
 
         super(RunTrajectory, self).__init__(outcomes = ['done'])
-        self.msg = save_trajectory(file)
+        self.msg = run_trajectoryRequest()
+        self.msg.file = file
 
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
-            rospy.wait_for_service('/save_trajectory')
-            serv = rospy.ServiceProxy('/save_trajectory', say_service)
-            serv(self.msg)
+        rospy.wait_for_service('/run_trajectory')
+        serv = rospy.ServiceProxy('/run_trajectory', run_trajectory)
+        serv(self.msg)
 
-return 'done'
+        return 'done'
