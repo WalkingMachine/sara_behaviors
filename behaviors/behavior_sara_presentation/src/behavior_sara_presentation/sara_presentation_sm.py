@@ -673,12 +673,11 @@ class Sara_presentationSM(Behavior):
 
 
 		with _state_machine:
-			# x:45 y:494
-			OperatableStateMachine.add('say goodby',
-										SaraSayKey(Format=lambda x: "Thank you "+x+" for visiting me. I hope we'll see each others again in the future.", emotion=1, block=True),
-										transitions={'done': 'goodbye'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'name'})
+			# x:268 y:53
+			OperatableStateMachine.add('set head angle',
+										SaraSetHeadAngle(angle=0),
+										transitions={'done': 'Get_speech_2'},
+										autonomy={'done': Autonomy.Off})
 
 			# x:43 y:301
 			OperatableStateMachine.add('Greet',
@@ -747,11 +746,12 @@ class Sara_presentationSM(Behavior):
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'words': 'hello'})
 
-			# x:268 y:53
-			OperatableStateMachine.add('set head angle',
-										SaraSetHeadAngle(angle=0),
-										transitions={'done': 'Get_speech_2'},
-										autonomy={'done': Autonomy.Off})
+			# x:45 y:494
+			OperatableStateMachine.add('say goodby',
+										SaraSayKey(Format=lambda x: "Thank you "+x+" for visiting me. I hope we'll see each others again in the future.", emotion=1, block=True),
+										transitions={'done': 'goodbye'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'name'})
 
 
 		return _state_machine
