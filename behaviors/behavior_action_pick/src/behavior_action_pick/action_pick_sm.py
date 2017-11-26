@@ -56,7 +56,7 @@ class Action_pickSM(Behavior):
 	def create(self):
 		# x:1079 y:346, x:572 y:212, x:613 y:428, x:581 y:89, x:717 y:247, x:1210 y:581
 		_state_machine = OperatableStateMachine(outcomes=['success', 'too far', 'unreachable', 'not seen', 'critical fail', 'missed'], input_keys=['object'], output_keys=['grip_pose'])
-		_state_machine.userdata.object = "cup"
+		_state_machine.userdata.object = "bottle"
 		_state_machine.userdata.grip_pose = 0
 
 		# Additional creation code can be added inside the following tags
