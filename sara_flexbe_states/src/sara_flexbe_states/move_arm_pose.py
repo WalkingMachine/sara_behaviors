@@ -28,7 +28,7 @@ class MoveArmPose(EventState):
 
     def execute(self, userdata):
         Logger.loginfo('Moving Arm')
-        curPose = self.group.get_current_pose()
+        curPose = self.group.get_current_pose().pose
         tol = self.group.get_goal_position_tolerance()
         if not self.wait or \
             abs(curPose.position.x-userdata.pose.position.x) < tol and \
@@ -47,7 +47,7 @@ class MoveArmPose(EventState):
 
         Logger.loginfo('Plan done, stating movement')
 
-        if self.group.execute(plan, wait=True):
+        if self.group.execute(plan, wait=False):
             return "done"
         else:
             return "failed"
