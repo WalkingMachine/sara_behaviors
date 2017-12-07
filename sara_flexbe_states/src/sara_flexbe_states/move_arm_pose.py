@@ -24,7 +24,8 @@ class MoveArmPose(EventState):
         self.group = MoveGroupCommander("RightArm")
 
     def execute(self, userdata):
-        if self.thread.__stopped:
+        Logger.loginfo('Moving Arm')
+        if self.thread.outcome:
             return self.thread.outcome
 
     def on_enter(self, userdata):
@@ -46,7 +47,7 @@ class MoveArmPose(EventState):
             self.pose = userdata.pose
             self.error = False
             self.wait = wait
-            self.outcome = "run"
+            self.outcome = None
 
         def run(self):
             Logger.loginfo('Enter Move Arm')
