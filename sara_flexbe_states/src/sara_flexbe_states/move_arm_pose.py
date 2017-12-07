@@ -2,20 +2,6 @@
 from __future__ import print_function
 from flexbe_core import EventState, Logger
 from moveit_commander import MoveGroupCommander
-from multiprocessing import Process
-
-
-def MoveArmRun(group, pose, wait):
-    Logger.loginfo('Enter Move Arm')
-    group.set_pose_target(pose)
-    Logger.loginfo('target defined')
-    plan = group.plan()
-    Logger.loginfo('Plan done, stating movement')
-
-    if group.execute(plan, wait=wait):
-        return "done"
-    else:
-        return "failed"
 
 
 class MoveArmPose(EventState):
@@ -42,12 +28,29 @@ class MoveArmPose(EventState):
 
     def execute(self, userdata):
         Logger.loginfo('Moving Arm')
-        if self.thread.is_alive():
-            return self.thread.exitcode
+        curPose = self.group.get_current_pose()
+        tol = self.group.get_goal_position_tolerance()
+        if not self.wait or \
+            abs(curPose.position.x-userdata.pose.position.x) < tol and \
+            abs(curPose.position.y - userdata.pose.position.y) < tol and \
+            abs(curPose.position.z - userdata.pose.position.z) < tol:
+            return "done"
 
     def on_enter(self, userdata):
-        self.thread = Process(target=MoveArmRun, args=[self.group, userdata.pose, self.wait])
-        self.thread.start()
+        Logger.loginfo('Enter Move Arm')
+        self.group.set_pose_target(userdata.pose)
+        Logger.loginfo('target defined')
+        try:
+            plan = self.group.plan()
+        except:
+            return 'failed'
+
+        Logger.loginfo('Plan done, stating movement')
+
+        if self.group.execute(plan, wait=True):
+            return "done"
+        else:
+            return "failed"
 
     def on_exit(self, userdata):
         self.group.stop()
