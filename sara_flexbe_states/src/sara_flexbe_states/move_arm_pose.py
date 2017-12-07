@@ -25,6 +25,8 @@ class MoveArmPose(EventState):
 
     def execute(self, userdata):
         Logger.loginfo('Moving Arm')
+        nb = threading.activeCount()
+        Logger.loginfo(str(nb))
         if self.thread.outcome:
             return self.thread.outcome
 
