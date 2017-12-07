@@ -31,7 +31,7 @@ class MoveArmPose(EventState):
             return self.outcome
 
     def on_enter(self, userdata):
-        self.thread = Process(target=self.run)
+        self.thread = Process(target=self.run, args=[])
         self.thread.start()
 
 
