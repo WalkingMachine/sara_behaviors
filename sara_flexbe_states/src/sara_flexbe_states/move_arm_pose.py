@@ -31,16 +31,16 @@ class MoveArmPose(EventState):
             return self.outcome
 
     def on_enter(self, userdata):
-        self.thread = Process(target=self.run, args=[])
+        self.thread = Process(target=self.run, args=[userdata])
         self.thread.start()
 
 
     def on_exit(self, userdata):
         self.group.stop()
 
-    def run(self):
+    def run(self, userdata):
         Logger.loginfo('Enter Move Arm')
-        self.group.set_pose_target(self.pose)
+        self.group.set_pose_target(userdata.pose)
         try:
             self.plan = self.group.plan()
         except:
