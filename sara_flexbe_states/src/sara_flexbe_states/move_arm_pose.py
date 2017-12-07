@@ -24,7 +24,7 @@ class MoveArmPose(EventState):
         self.group = MoveGroupCommander("RightArm")
 
     def execute(self, userdata):
-        if not self.thread.is_alive():
+        if self.thread.__stopped:
             return self.thread.outcome
 
     def on_enter(self, userdata):
