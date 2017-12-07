@@ -8,10 +8,8 @@ from multiprocessing import Process
 def MoveArmRun(group, pose, wait):
     Logger.loginfo('Enter Move Arm')
     group.set_pose_target(pose)
-    try:
-        plan = group.plan()
-    except:
-        return "failed"
+    Logger.loginfo('target defined')
+    plan = group.plan()
     Logger.loginfo('Plan done, stating movement')
 
     if group.execute(plan, wait=wait):
