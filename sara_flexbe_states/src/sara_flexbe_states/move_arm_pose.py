@@ -15,10 +15,10 @@ class MoveArmPose(EventState):
     <= failed   Job as failed.
     '''
 
-    def __init__(self, execute=True, wait=True):
+    def __init__(self, move=True, wait=True):
         # See example_state.py for basic explanations.
         super(MoveArmPose, self).__init__(outcomes=['done', 'failed'], input_keys=['pose'])
-        self.execute = execute
+        self.move = move
         self.wait = wait
         self.thread = None
 
