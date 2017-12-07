@@ -21,33 +21,32 @@ class MoveArmPose(EventState):
         self.move = move
         self.wait = wait
         self.thread = None
+        self.group = MoveGroupCommander("RightArm")
 
     def execute(self, userdata):
         if not self.thread.is_alive():
             return self.thread.outcome
 
     def on_enter(self, userdata):
-        self.thread = self.myThread(1, "moving_arm", 1, userdata, self.wait)
+        self.thread = self.myThread(1, "moving_arm", 1, userdata, self.wait, self.group)
         self.thread.start()
 
     def on_exit(self, userdata):
-
         self.group.stop()
 
 
     class myThread(threading.Thread):
-        def __init__(self, threadID, name, counter, userdata, wait):
+        def __init__(self, threadID, name, counter, userdata, wait, group):
             threading.Thread.__init__(self)
             self.threadID = threadID
             self.name = name
             self.counter = counter
-            self.group = MoveGroupCommander("RightArm")
+            self.group = group
             self.plan = None
             self.pose = userdata.pose
             self.error = False
             self.wait = wait
             self.outcome = "run"
-
 
         def run(self):
             Logger.loginfo('Enter Move Arm')
