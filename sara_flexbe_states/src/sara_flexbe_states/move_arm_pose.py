@@ -30,7 +30,7 @@ class MoveArmPose(EventState):
 
     def execute(self, userdata):
         curPose = self.group.get_current_pose().pose
-        diff = comparePose(curPose, userdata.pose.pose)
+        diff = comparePose(curPose, userdata.pose)
         Logger.loginfo("diff = "+str(diff))
         if not self.wait or diff < self.tol:
             return "done"
