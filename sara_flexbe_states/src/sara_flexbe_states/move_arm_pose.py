@@ -25,13 +25,12 @@ class MoveArmPose(EventState):
         self.thread = None
         self.outcome = None
         self.group = MoveGroupCommander("RightArm")
-        self.tol = self.group.get_goal_position_tolerance()**2
+        # self.tol = self.group.get_goal_position_tolerance()**2
+        self.tol = 0.001**2
 
     def execute(self, userdata):
         curPose = self.group.get_current_pose().pose
-        diff = (curPose.position.x - userdata.pose.position.x)**2 \
-            +(curPose.position.y - userdata.pose.position.y)**2 \
-            +(curPose.position.z - userdata.pose.position.z)**2
+        diff = comparePose(curPose, userdata.pose.pose)
         Logger.loginfo("diff = "+str(diff))
         if not self.wait or diff < self.tol:
             return "done"
@@ -55,4 +54,12 @@ class MoveArmPose(EventState):
     def on_exit(self, userdata):
         self.group.stop()
 
-
+def comparePose(pose1, pose2):
+    diff =  (pose1.position.x - pose2.position.x) ** 2
+    diff += (pose1.position.y - pose2.position.y) ** 2
+    diff += (pose1.position.z - pose2.position.z) ** 2
+    diff += (pose1.orientation.x - pose2.orientation.x) ** 2
+    diff += (pose1.orientation.y - pose2.orientation.y) ** 2
+    diff += (pose1.orientation.z - pose2.orientation.z) ** 2
+    diff += (pose1.orientation.w - pose2.orientation.w) ** 2
+    return diff
