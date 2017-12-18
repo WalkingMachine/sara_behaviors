@@ -26,7 +26,7 @@ class MoveArmPose(EventState):
         self.outcome = None
         self.group = MoveGroupCommander("RightArm")
         # self.tol = self.group.get_goal_position_tolerance()**2
-        self.tol = 0.001**2
+        self.tol = 0.0001
 
     def execute(self, userdata):
         curPose = self.group.get_current_pose().pose
