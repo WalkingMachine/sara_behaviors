@@ -18,15 +18,12 @@ class MoveArmPose(EventState):
 
 
 
-    def __init__(self, move=True, waitForExecution=True, ):
+    def __init__(self, move=True, waitForExecution=True, group="RightArm"):
         # See example_state.py for basic explanations.
         super(MoveArmPose, self).__init__(outcomes=['done', 'failed'], input_keys=['target'])
         self.move = move
         self.waitForExecution = waitForExecution
-        self.thread = None
-        self.outcome = None
-        self.group = MoveGroupCommander("RightArm")
-        # self.tol = self.group.get_goal_position_tolerance()**2
+        self.group = MoveGroupCommander(group)
         self.tol = 0.0001
 
     def execute(self, userdata):
