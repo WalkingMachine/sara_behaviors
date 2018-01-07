@@ -38,8 +38,8 @@ class MoveArmPose(EventState):
                 diff = comparePose(curPose, userdata.target)
             else:
                 diff = comparePos(curPose.position, userdata.target)
-            # Logger.loginfo("diff = " + str(diff))
             if diff < self.tol:
+                Logger.loginfo('Target reached :)')
                 return "done"
         else:
             return "done"
@@ -73,13 +73,14 @@ class MoveArmPose(EventState):
         if self.move:
             Logger.loginfo('Initiating movement')
             self.group.execute(plan, wait=False)
-            if self.waitForExecution:
+            if not self.waitForExecution:
                 self.result = "done"
         else:
             Logger.loginfo('The target is reachable')
             self.result = "done"
 
     def on_exit(self, userdata):
+        Logger.loginfo('Stoping movement')
         self.group.stop()
 
 def comparePose(pose1, pose2):
@@ -93,7 +94,7 @@ def comparePose(pose1, pose2):
     return diff
 
 def comparePos(pos1, pos2):
-    diff =  (pos1.position.x - pos2.position.x) ** 2
-    diff += (pos1.position.y - pos2.position.y) ** 2
-    diff += (pos1.position.z - pos2.position.z) ** 2
+    diff =  (pos1.x - pos2.x) ** 2
+    diff += (pos1.y - pos2.y) ** 2
+    diff += (pos1.z - pos2.z) ** 2
     return diff
