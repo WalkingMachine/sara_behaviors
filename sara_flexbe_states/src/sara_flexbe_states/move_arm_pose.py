@@ -2,6 +2,7 @@
 from __future__ import print_function
 from flexbe_core import EventState, Logger
 from moveit_commander import MoveGroupCommander
+from geometry_msgs.msg import Point, Pose
 
 
 class MoveArmPose(EventState):
@@ -17,11 +18,11 @@ class MoveArmPose(EventState):
 
 
 
-    def __init__(self, move=True, wait=True):
+    def __init__(self, move=True, waitForExecution=True, ):
         # See example_state.py for basic explanations.
-        super(MoveArmPose, self).__init__(outcomes=['done', 'failed'], input_keys=['pose'])
+        super(MoveArmPose, self).__init__(outcomes=['done', 'failed'], input_keys=['target'])
         self.move = move
-        self.wait = wait
+        self.waitForExecution = waitForExecution
         self.thread = None
         self.outcome = None
         self.group = MoveGroupCommander("RightArm")
@@ -29,24 +30,41 @@ class MoveArmPose(EventState):
         self.tol = 0.0001
 
     def execute(self, userdata):
-        curPose = self.group.get_current_pose().pose
-        diff = comparePose(curPose, userdata.pose)
-        Logger.loginfo("diff = "+str(diff))
-        if not self.wait or diff < self.tol:
+        if self.waitForExecution:
+            curPose = self.group.get_current_pose().pose
+            diff = comparePose(curPose, userdata.pose)
+            # Logger.loginfo("diff = " + str(diff))
+            if diff < self.tol:
+                return "done"
+        else:
             return "done"
 
     def on_enter(self, userdata):
         Logger.loginfo('Enter Move Arm')
-        self.group.set_pose_target(userdata.pose)
+
+        if type(userdata.target) is Pose:
+            Logger.loginfo('the target is a pose')
+            self.group.set_pose_target(userdata.target)
+        elif type(userdata.target) is Point:
+            Logger.loginfo('the target is a point')
+            self.group.set_position_target(userdata.target)
+        elif type(userdata.target) is str:
+            Logger.loginfo('the target is a named_target')
+            self.group.set_named_target(self.pose_name)
+        else:
+            Logger.loginfo('ERROR in ' + str(self.name) + ' : target is not a Pose() nor a Point() nor a string')
+            return 'failed'
+
         Logger.loginfo('target defined')
         try:
             plan = self.group.plan()
         except:
+            Logger.loginfo('Planning failed')
             return 'failed'
 
         Logger.loginfo('Plan done, stating movement')
 
-        if self.group.execute(plan, wait=False):
+        if not self.move or self.group.execute(plan, wait=False):
             return "done"
         else:
             return "failed"
