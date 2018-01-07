@@ -25,11 +25,19 @@ class MoveArmPose(EventState):
         self.waitForExecution = waitForExecution
         self.group = MoveGroupCommander(group)
         self.tol = 0.0001
+        self.result = None
 
     def execute(self, userdata):
+
+        if self.result:
+            return self.result
+
         if self.waitForExecution:
             curPose = self.group.get_current_pose().pose
-            diff = comparePose(curPose, userdata.pose)
+            if type(userdata.target) is Pose:
+                diff = comparePose(curPose, userdata.target)
+            else:
+                diff = comparePos(curPose.position, userdata.target)
             # Logger.loginfo("diff = " + str(diff))
             if diff < self.tol:
                 return "done"
@@ -44,27 +52,32 @@ class MoveArmPose(EventState):
             self.group.set_pose_target(userdata.target)
         elif type(userdata.target) is Point:
             Logger.loginfo('the target is a point')
-            self.group.set_position_target(userdata.target)
+            xyz = [userdata.target.x, userdata.target.y, userdata.target.z]
+            self.group.set_position_target(xyz)
         elif type(userdata.target) is str:
             Logger.loginfo('the target is a named_target')
-            self.group.set_named_target(self.pose_name)
+            self.group.set_named_target(userdata.target)
         else:
             Logger.loginfo('ERROR in ' + str(self.name) + ' : target is not a Pose() nor a Point() nor a string')
-            return 'failed'
+            self.result = 'failed'
 
         Logger.loginfo('target defined')
         try:
             plan = self.group.plan()
         except:
             Logger.loginfo('Planning failed')
-            return 'failed'
+            self.result = 'failed'
+            return
 
-        Logger.loginfo('Plan done, stating movement')
-
-        if not self.move or self.group.execute(plan, wait=False):
-            return "done"
+        Logger.loginfo('Plan done successfully')
+        if self.move:
+            Logger.loginfo('Initiating movement')
+            self.group.execute(plan, wait=False)
+            if self.waitForExecution:
+                self.result = "done"
         else:
-            return "failed"
+            Logger.loginfo('The target is reachable')
+            self.result = "done"
 
     def on_exit(self, userdata):
         self.group.stop()
@@ -77,4 +90,10 @@ def comparePose(pose1, pose2):
     diff += (pose1.orientation.y - pose2.orientation.y) ** 2
     diff += (pose1.orientation.z - pose2.orientation.z) ** 2
     diff += (pose1.orientation.w - pose2.orientation.w) ** 2
+    return diff
+
+def comparePos(pos1, pos2):
+    diff =  (pos1.position.x - pos2.position.x) ** 2
+    diff += (pos1.position.y - pos2.position.y) ** 2
+    diff += (pos1.position.z - pos2.position.z) ** 2
     return diff
