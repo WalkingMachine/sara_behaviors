@@ -5,20 +5,21 @@ from moveit_commander import MoveGroupCommander
 from geometry_msgs.msg import Point, Pose
 
 
-class MoveArmPose(EventState):
+class MoveitMove(EventState):
     '''
-    MoveArmPose move the arm to a specific pose
-    -- wait     wait for execution
+    Move the arm to a specific pose or point or named_target
+    -- move                    wetter or not the arm should move or simply check if the move is possible
+    -- waitForExecution     wait for execution to end before continuing
 
     ># pose     Pose      Targetpose.
 
-    <= done     Finish job.
-    <= failed   Job as failed.
+    <= done     No error occurred.
+    <= failed   The plan could't be done.
     '''
 
     def __init__(self, move=True, waitForExecution=True, group="RightArm"):
         # See example_state.py for basic explanations.
-        super(MoveArmPose, self).__init__(outcomes=['done', 'failed'], input_keys=['target'])
+        super(MoveitMove, self).__init__(outcomes=['done', 'failed'], input_keys=['target'])
         self.move = move
         self.waitForExecution = waitForExecution
         self.group = MoveGroupCommander(group)
@@ -91,7 +92,7 @@ class MoveArmPose(EventState):
 
 
 def compareStates(state1, state2):
-    diff = 0
+    diff = 0.0
     for i in range(len(state1)):
         diff = (state1[i] - state2[i]) ** 2
     return diff

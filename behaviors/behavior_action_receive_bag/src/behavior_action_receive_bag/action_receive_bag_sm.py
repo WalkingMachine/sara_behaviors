@@ -8,7 +8,7 @@
 
 import roslib; roslib.load_manifest('behavior_action_receive_bag')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
+from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.torque_reader import ReadTorque
 # Additional imports can be added inside the following tags
@@ -60,13 +60,13 @@ class Action_Receive_BagSM(Behavior):
 		with _state_machine:
 			# x:132 y:109
 			OperatableStateMachine.add('Go_to_receive_bag_pose',
-										MoveArmNamedPose(pose_name="Help_me_carry"),
+										MoveitMove(pose_name="Help_me_carry"),
 										transitions={'done': 'Torque_Reader', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
 			# x:865 y:112
 			OperatableStateMachine.add('Go_to_IdlePose',
-										MoveArmNamedPose(pose_name="IdlePose"),
+										MoveitMove(pose_name="IdlePose"),
 										transitions={'done': 'finished', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 

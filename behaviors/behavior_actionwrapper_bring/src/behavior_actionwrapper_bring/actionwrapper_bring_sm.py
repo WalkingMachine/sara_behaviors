@@ -21,7 +21,7 @@ from behavior_action_pick.action_pick_sm import Action_pickSM
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.regex_tester import RegexTester
-from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
+from sara_flexbe_states.moveit_move import MoveitMove
 from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_states.Wonderland_Get_Room import WonderlandGetRoom
@@ -114,7 +114,7 @@ class ActionWrapper_BringSM(Behavior):
 
 			# x:138 y:40
 			OperatableStateMachine.add('give',
-										MoveArmNamedPose(pose_name="ShowGripper", wait=True),
+										MoveitMove(pose_name="ShowGripper", wait=True),
 										transitions={'done': 'say here', 'failed': 'say here'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
@@ -127,7 +127,7 @@ class ActionWrapper_BringSM(Behavior):
 
 			# x:516 y:549
 			OperatableStateMachine.add('pre',
-										MoveArmNamedPose(pose_name="PreGripPose", wait=True),
+										MoveitMove(pose_name="PreGripPose", wait=True),
 										transitions={'done': 'done', 'failed': 'done'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 

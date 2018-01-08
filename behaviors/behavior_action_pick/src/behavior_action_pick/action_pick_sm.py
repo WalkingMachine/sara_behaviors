@@ -10,9 +10,8 @@ import roslib; roslib.load_manifest('behavior_action_pick')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.sara_set_expression import SetExpression
 from sara_flexbe_states.gen_gripper_pose import GenGripperPose
-from sara_flexbe_states.move_arm_pose import MoveArmPose
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
+from sara_flexbe_states.moveit_move import MoveitMove
 from behavior_check_reachability.check_reachability_sm import Check_reachabilitySM
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.sara_say_key import SaraSayKey
@@ -84,21 +83,21 @@ class Action_pickSM(Behavior):
 
 			# x:519 y:135
 			OperatableStateMachine.add('move1',
-										MoveArmPose(wait=True),
+										MoveitMove(wait=True),
 										transitions={'done': 'finished', 'failed': 'gen2'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'pose_out'})
 
 			# x:524 y:306
 			OperatableStateMachine.add('move2',
-										MoveArmPose(wait=True),
+										MoveitMove(wait=True),
 										transitions={'done': 'finished', 'failed': 'gen3'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'pose_out'})
 
 			# x:528 y:462
 			OperatableStateMachine.add('move3',
-										MoveArmPose(wait=True),
+										MoveitMove(wait=True),
 										transitions={'done': 'finished', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'pose_out'})
@@ -124,7 +123,7 @@ class Action_pickSM(Behavior):
 
 			# x:542 y:197
 			OperatableStateMachine.add('move1',
-										MoveArmPose(wait=True),
+										MoveitMove(wait=True),
 										transitions={'done': 'finished', 'failed': 'say2'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'pose_out'})
@@ -138,7 +137,7 @@ class Action_pickSM(Behavior):
 
 			# x:543 y:364
 			OperatableStateMachine.add('move2',
-										MoveArmPose(wait=True),
+										MoveitMove(wait=True),
 										transitions={'done': 'finished', 'failed': 'say3'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'pose_out'})
@@ -152,7 +151,7 @@ class Action_pickSM(Behavior):
 
 			# x:543 y:494
 			OperatableStateMachine.add('move3',
-										MoveArmPose(wait=True),
+										MoveitMove(wait=True),
 										transitions={'done': 'finished', 'failed': 'say4'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'pose_out'})
@@ -199,7 +198,7 @@ class Action_pickSM(Behavior):
 
 			# x:47 y:109
 			OperatableStateMachine.add('PreGripPose',
-										MoveArmNamedPose(pose_name="PreGripPose", wait=True),
+										MoveitMove(pose_name="PreGripPose", wait=True),
 										transitions={'done': 'get_pose', 'failed': 'sad'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
@@ -226,14 +225,14 @@ class Action_pickSM(Behavior):
 
 			# x:559 y:519
 			OperatableStateMachine.add('move up',
-										MoveArmPose(wait=True),
+										MoveitMove(wait=True),
 										transitions={'done': 'move back', 'failed': 'move back'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'pose_out'})
 
 			# x:729 y:519
 			OperatableStateMachine.add('move back',
-										MoveArmNamedPose(pose_name="PostGripPose", wait=True),
+										MoveitMove(pose_name="PostGripPose", wait=True),
 										transitions={'done': 'success', 'failed': 'critical fail'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
@@ -246,13 +245,13 @@ class Action_pickSM(Behavior):
 
 			# x:232 y:380
 			OperatableStateMachine.add('back',
-										MoveArmNamedPose(pose_name="PreGripPose", wait=False),
+										MoveitMove(pose_name="PreGripPose", wait=False),
 										transitions={'done': 'open gripper', 'failed': 'open gripper'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
 			# x:229 y:447
 			OperatableStateMachine.add('back2',
-										MoveArmNamedPose(pose_name="PreGripPose", wait=False),
+										MoveitMove(pose_name="PreGripPose", wait=False),
 										transitions={'done': 'open gripper', 'failed': 'sad'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
@@ -316,7 +315,7 @@ class Action_pickSM(Behavior):
 
 			# x:1032 y:568
 			OperatableStateMachine.add('move back 2',
-										MoveArmNamedPose(pose_name="PreGripPose", wait=True),
+										MoveitMove(pose_name="PreGripPose", wait=True),
 										transitions={'done': 'missed', 'failed': 'missed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 

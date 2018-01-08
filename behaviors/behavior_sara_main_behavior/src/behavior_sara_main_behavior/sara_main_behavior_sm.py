@@ -17,7 +17,7 @@ from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.FIFO_New import FIFO_New
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.sara_set_angle import SaraSetHeadAngle
-from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
+from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.sara_set_expression import SetExpression
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.regex_tester import RegexTester
@@ -134,7 +134,7 @@ class Sara_main_behaviorSM(Behavior):
 
 			# x:47 y:119
 			OperatableStateMachine.add('set arm',
-										MoveArmNamedPose(pose_name="PreGripPose", wait=False),
+										MoveitMove(pose_name="PreGripPose", wait=False),
 										transitions={'done': 'hello', 'failed': 'hello'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
