@@ -16,8 +16,6 @@ class MoveArmPose(EventState):
     <= failed   Job as failed.
     '''
 
-
-
     def __init__(self, move=True, waitForExecution=True, group="RightArm"):
         # See example_state.py for basic explanations.
         super(MoveArmPose, self).__init__(outcomes=['done', 'failed'], input_keys=['target'])
@@ -33,11 +31,8 @@ class MoveArmPose(EventState):
             return self.result
 
         if self.waitForExecution:
-            curPose = self.group.get_current_pose().pose
-            if type(userdata.target) is Pose:
-                diff = comparePose(curPose, userdata.target)
-            else:
-                diff = comparePos(curPose.position, userdata.target)
+            curState = self.group.get_current_joint_values()
+            diff = compareStates(curState, self.endState)
             if diff < self.tol:
                 Logger.loginfo('Target reached :)')
                 return "done"
@@ -64,6 +59,10 @@ class MoveArmPose(EventState):
         Logger.loginfo('target defined')
         try:
             plan = self.group.plan()
+            Logger.loginfo(str(plan))
+            # Logger.loginfo(str(plan.joint_trajectory.points))
+            self.endState = plan.joint_trajectory.points[len(plan.joint_trajectory.points)-1].positions
+            Logger.loginfo(str(self.endState))
         except:
             Logger.loginfo('Planning failed')
             self.result = 'failed'
@@ -83,18 +82,16 @@ class MoveArmPose(EventState):
         Logger.loginfo('Stoping movement')
         self.group.stop()
 
-def comparePose(pose1, pose2):
-    diff =  (pose1.position.x - pose2.position.x) ** 2
-    diff += (pose1.position.y - pose2.position.y) ** 2
-    diff += (pose1.position.z - pose2.position.z) ** 2
-    diff += (pose1.orientation.x - pose2.orientation.x) ** 2
-    diff += (pose1.orientation.y - pose2.orientation.y) ** 2
-    diff += (pose1.orientation.z - pose2.orientation.z) ** 2
-    diff += (pose1.orientation.w - pose2.orientation.w) ** 2
-    return diff
+    def on_pause(self):
+        Logger.loginfo('Pausing movement')
+        self.group.stop()
 
-def comparePos(pos1, pos2):
-    diff =  (pos1.x - pos2.x) ** 2
-    diff += (pos1.y - pos2.y) ** 2
-    diff += (pos1.z - pos2.z) ** 2
+    def on_resume(self, userdata):
+        self.on_enter(userdata)
+
+
+def compareStates(state1, state2):
+    diff = 0
+    for i in range(len(state1)):
+        diff = (state1[i] - state2[i]) ** 2
     return diff
