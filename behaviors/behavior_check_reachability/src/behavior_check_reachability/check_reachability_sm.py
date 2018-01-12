@@ -10,6 +10,7 @@ import roslib; roslib.load_manifest('behavior_check_reachability')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.gen_gripper_pose import GenGripperPose
 from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.moveit_move import MoveitMove
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -65,7 +66,7 @@ class Check_reachabilitySM(Behavior):
 			# x:68 y:411
 			OperatableStateMachine.add('third check',
 										CheckConditionState(predicate=lambda x: (x.position.x**2+x.position.y**2+(x.position.z-1))**0.5 < 1.5),
-										transitions={'true': 'ok', 'false': 'too_far'},
+										transitions={'true': 'kinematic test', 'false': 'too_far'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'pose_out'})
 
@@ -82,6 +83,13 @@ class Check_reachabilitySM(Behavior):
 										transitions={'true': 'third check', 'false': 'too_far'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'pose_out'})
+
+			# x:99 y:520
+			OperatableStateMachine.add('kinematic test',
+										MoveitMove(move=False, waitForExecution=True, group="RightArm"),
+										transitions={'done': 'ok', 'failed': 'too_far'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'pose_out'})
 
 
 		return _state_machine
