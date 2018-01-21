@@ -11,6 +11,7 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.SetKey import SetKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -57,24 +58,32 @@ class Action_Give_Back_BagSM(Behavior):
 
 
 		with _state_machine:
-			# x:262 y:96
-			OperatableStateMachine.add('Give_back',
-										MoveitMove(pose_name="Help_me_carry"),
-										transitions={'done': 'Open_gripper', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
+			# x:112 y:56
+			OperatableStateMachine.add('setTarget',
+										SetKey(Value="Help_me_carry"),
+										transitions={'done': 'Give_back'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'target'})
 
 			# x:502 y:155
 			OperatableStateMachine.add('Open_gripper',
-										SetGripperState(),
-										transitions={'no_object': 'Say_to take_bag'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'width': 'Open_gripper', 'effort': 'effort'})
+										SetGripperState(width=0.1, effort=1),
+										transitions={'object': 'Say_to take_bag', 'no_object': 'Say_to take_bag'},
+										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
+										remapping={'object_size': 'object_size'})
 
 			# x:767 y:162
 			OperatableStateMachine.add('Say_to take_bag',
-										SaraSay(sentence="Here is your bag. It was a pleasure helping you", emotion=1),
+										SaraSay(sentence="Here is your bag. It was a pleasure helping you", emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:262 y:96
+			OperatableStateMachine.add('Give_back',
+										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										transitions={'done': 'Open_gripper', 'failed': 'failed'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'target'})
 
 
 		return _state_machine

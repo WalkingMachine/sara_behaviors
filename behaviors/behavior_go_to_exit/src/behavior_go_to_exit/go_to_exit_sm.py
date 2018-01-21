@@ -9,7 +9,6 @@
 import roslib; roslib.load_manifest('behavior_go_to_exit')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.sara_say import SaraSay
-from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -47,6 +46,7 @@ class Go_to_exitSM(Behavior):
 	def create(self):
 		# x:533 y:359, x:680 y:371
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
+		_state_machine.userdata.exit_pose = ""
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -57,10 +57,9 @@ class Go_to_exitSM(Behavior):
 		with _state_machine:
 			# x:163 y:78
 			OperatableStateMachine.add('say exiting',
-										SaraSay(sentence="I'am going to exit the arena now", emotion=1),
-										transitions={'done': 'wait'},
+										SaraSay(sentence="I'am going to exit the arena now", emotion=1, block=True),
+										transitions={'done': 'move'},
 										autonomy={'done': Autonomy.Off})
-
 
 			# x:725 y:127
 			OperatableStateMachine.add('move',
@@ -68,6 +67,7 @@ class Go_to_exitSM(Behavior):
 										transitions={'arrived': 'finished', 'failed': 'failed'},
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'exit_pose'})
+
 
 		return _state_machine
 
