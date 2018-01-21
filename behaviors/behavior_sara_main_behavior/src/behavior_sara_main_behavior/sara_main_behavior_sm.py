@@ -17,9 +17,10 @@ from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.FIFO_New import FIFO_New
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.sara_set_angle import SaraSetHeadAngle
-from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
+from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.sara_set_expression import SetExpression
 from flexbe_states.wait_state import WaitState
+from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.regex_tester import RegexTester
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -134,9 +135,10 @@ class Sara_main_behaviorSM(Behavior):
 
 			# x:47 y:119
 			OperatableStateMachine.add('set arm',
-										MoveArmNamedPose(pose_name="PreGripPose", wait=False),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
 										transitions={'done': 'hello', 'failed': 'hello'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'target'})
 
 			# x:242 y:288
 			OperatableStateMachine.add('hello',
@@ -150,17 +152,24 @@ class Sara_main_behaviorSM(Behavior):
 										transitions={'done': 'www'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:255 y:141
+			# x:339 y:116
 			OperatableStateMachine.add('on face',
 										SetExpression(emotion=1, brightness=-1),
-										transitions={'done': 'set arm'},
+										transitions={'done': 'setTarget'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:387 y:70
+			# x:484 y:41
 			OperatableStateMachine.add('www',
 										WaitState(wait_time=2),
 										transitions={'done': 'on face'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:197 y:113
+			OperatableStateMachine.add('setTarget',
+										SetKey(Value="IdlePose"),
+										transitions={'done': 'set arm'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'target'})
 
 
 		# x:55 y:366

@@ -21,7 +21,7 @@ from behavior_action_pick.action_pick_sm import Action_pickSM
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.regex_tester import RegexTester
-from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
+from sara_flexbe_states.moveit_move import MoveitMove
 from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_states.Wonderland_Get_Room import WonderlandGetRoom
@@ -79,11 +79,12 @@ class ActionWrapper_BringSM(Behavior):
 		_sm_giving_back_0 = OperatableStateMachine(outcomes=['fail', 'done'], input_keys=['name'])
 
 		with _sm_giving_back_0:
-			# x:30 y:40
-			OperatableStateMachine.add('say back',
-										SaraSay(sentence="I'm back", emotion=1, block=False),
-										transitions={'done': 'give'},
-										autonomy={'done': Autonomy.Off})
+			# x:42 y:31
+			OperatableStateMachine.add('setTarget',
+										SetKey(Value="PreGripPose"),
+										transitions={'done': 'say back'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'target'})
 
 			# x:367 y:505
 			OperatableStateMachine.add('open',
@@ -92,7 +93,7 @@ class ActionWrapper_BringSM(Behavior):
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
-			# x:158 y:205
+			# x:254 y:218
 			OperatableStateMachine.add('get',
 										GetSpeech(watchdog=10),
 										transitions={'done': 'thanks', 'nothing': 'open', 'fail': 'fail'},
@@ -112,13 +113,14 @@ class ActionWrapper_BringSM(Behavior):
 										transitions={'done': 'open'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:138 y:40
+			# x:271 y:42
 			OperatableStateMachine.add('give',
-										MoveArmNamedPose(pose_name="ShowGripper", wait=True),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
 										transitions={'done': 'say here', 'failed': 'say here'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'target'})
 
-			# x:161 y:134
+			# x:266 y:132
 			OperatableStateMachine.add('say here',
 										SaraSayKey(Format=lambda x: "Here is the "+x+" you asked for.", emotion=1, block=True),
 										transitions={'done': 'get'},
@@ -127,9 +129,16 @@ class ActionWrapper_BringSM(Behavior):
 
 			# x:516 y:549
 			OperatableStateMachine.add('pre',
-										MoveArmNamedPose(pose_name="PreGripPose", wait=True),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
 										transitions={'done': 'done', 'failed': 'done'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'target'})
+
+			# x:150 y:39
+			OperatableStateMachine.add('say back',
+										SaraSay(sentence="I'm back", emotion=1, block=False),
+										transitions={'done': 'give'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:43 y:574
