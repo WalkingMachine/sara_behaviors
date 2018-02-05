@@ -18,7 +18,7 @@ class ContinueButton(EventState):
         '''
         Constructor
         '''
-        super(ContinueButton, self).__init__(outcomes=['done'])
+        super(ContinueButton, self).__init__(outcomes=['true', 'false'])
         self._topic = "/ui/continue"
         self._connected = False
 
@@ -38,7 +38,12 @@ class ContinueButton(EventState):
 
         Logger.loginfo('looking for voice command ')
         if self._connected and self._sub.has_msg(self._topic):
-            return 'done'
+            message = self._sub.get_last_msg(self._topic)
+            if message.data:
+                return 'true'
+            else:
+                return 'false'
+
 
     def on_enter(self, userdata):
         Logger.loginfo('entering marker state')
