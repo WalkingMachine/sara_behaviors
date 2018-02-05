@@ -18,7 +18,7 @@ class ReadTorque(EventState):
 
     def __init__(self, watchdog, Joint, Threshold, min_time):
 
-        super(ReadTorque, self).__init__(outcomes=['threshold', 'watchdog', 'fail'])
+        super(ReadTorque, self).__init__(outcomes=['threshold', 'watchdog', 'fail'], output_keys=['torque'])
         self.watchdog = watchdog
         self.Threshold = Threshold
         self.Joint = Joint
@@ -48,6 +48,7 @@ class ReadTorque(EventState):
                 if abs(self.initialTorque - self.torque) >= self.Threshold:
                     Logger.loginfo('Reading torque :'+str(abs(self.initialTorque - self.torque)))
                     if self.timer < get_time():
+                        userdata.torque = self.torque
                         return 'threshold'
                 else:
                     self.timer = get_time() + self.min_time
