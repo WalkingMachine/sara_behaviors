@@ -23,7 +23,7 @@ class MoveitMove(EventState):
         self.move = move
         self.waitForExecution = waitForExecution
         self.group = MoveGroupCommander(group)
-        self.tol = 0.0001
+        self.tol = 0.0012
         self.result = None
 
     def execute(self, userdata):
