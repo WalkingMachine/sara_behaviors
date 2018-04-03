@@ -1,5 +1,5 @@
 from flexbe_core import EventState, Logger
-from wm_direction_to_point.srv import get_direction
+from wm_direction_to_point.srv import get_direction, get_directionRequest
 import rospy
 
 class Get_direction_to_point(EventState):
@@ -27,8 +27,8 @@ class Get_direction_to_point(EventState):
         '''
         Constructor
         '''
-        super(Get_direction_to_point, self).__init__(outcomes=['done','fail'], input_keys=['point'], output_keys=['yaw','pitch']
-        self.service = get_direction()
+        super(Get_direction_to_point, self).__init__(outcomes=['done','fail'], input_keys=['targetPoint'], output_keys=['yaw','pitch'])
+        self.service = get_directionRequest()
         self.service.reference = frame_reference
         self.service.origine = frame_origin
 
@@ -41,10 +41,10 @@ class Get_direction_to_point(EventState):
         #rospy.wait_for_service('/get_direction')
         serv = rospy.ServiceProxy('/get_direction', get_direction)
         self.service.point = userdata.targetPoint
-        serv(self.service)
+        resp = serv(self.service)
 
-        userdata.yaw = self.service.yaw
-        userdata.pitch = self.service.pitch
+        userdata.yaw = resp.yaw
+        userdata.pitch = resp.pitch
 
         Logger.loginfo('Angle retrieved')
 
