@@ -9,7 +9,8 @@
 import roslib; roslib.load_manifest('behavior_test_continue')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_states.sara_set_expression import SetExpression
+from flexbe_states.calculation_state import CalculationState
+from sara_flexbe_states.list_person import list_person
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -44,7 +45,7 @@ class Test_continueSM(Behavior):
 
 
 	def create(self):
-		# x:649 y:285, x:641 y:194
+		# x:828 y:190, x:382 y:420
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.id = None
 		_state_machine.userdata.name = "living room"
@@ -57,29 +58,31 @@ class Test_continueSM(Behavior):
 
 
 		with _state_machine:
-			# x:30 y:40
-			OperatableStateMachine.add('starting test',
-										SaraSay(sentence="Starting test", emotion=1, block=True),
-										transitions={'done': 'set'},
+			# x:82 y:90
+			OperatableStateMachine.add('debut',
+										SaraSay(sentence='Je suis prete', emotion=1, block=True),
+										transitions={'done': 'aguider'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:462 y:357
-			OperatableStateMachine.add('test succeed',
-										SaraSay(sentence="Test succeed", emotion=1, block=True),
+			# x:680 y:274
+			OperatableStateMachine.add('parle',
+										SaraSay(sentence='Destination atteinte', emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:462 y:122
-			OperatableStateMachine.add('test failed',
-										SaraSay(sentence="Test failed", emotion=1, block=True),
-										transitions={'done': 'failed'},
-										autonomy={'done': Autonomy.Off})
+			# x:387 y:208
+			OperatableStateMachine.add('get person position',
+										CalculationState(calculation=lambda x: x[0].position),
+										transitions={'done': 'parle'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'list_person', 'output_value': 'pos'})
 
-			# x:205 y:172
-			OperatableStateMachine.add('set',
-										SetExpression(emotion=6, brightness=-1),
-										transitions={'done': 'test succeed'},
-										autonomy={'done': Autonomy.Off})
+			# x:247 y:174
+			OperatableStateMachine.add('aguider',
+										list_person(),
+										transitions={'found': 'get person position', 'not_found': 'failed'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'list_person': 'list_person', 'number': 'number'})
 
 
 		return _state_machine
