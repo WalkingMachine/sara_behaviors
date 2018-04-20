@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Get_operator">
+
+	<executable package_path="behavior_get_operator.get_operator_sm" class="Get_operatorSM" />
+	<tagstring></tagstring>
+	<author>PLM et H-A</author>
+	<date>Mon Apr 02 2018</date>
+	<description>
+		demande a loperateur de se presenter devant le robot
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
