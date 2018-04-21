@@ -24,8 +24,8 @@ class SaraSetHeadAngleKey(EventState):
     def execute(self, userdata):
 
         ms = Float64()
-        Logger.loginfo('Setting head pitch to '+str(self.pitch))
-        Logger.loginfo('Setting head yaw to '+str(self.yaw))
+        Logger.loginfo('Setting head pitch to '+str(userdata.pitch))
+        Logger.loginfo('Setting head yaw to '+str(userdata.yaw))
         pub = rospy.Publisher("/sara_head_pitch_controller/command", Float64, queue_size=1)
         ms.data = userdata.pitch
         pub.publish(ms)

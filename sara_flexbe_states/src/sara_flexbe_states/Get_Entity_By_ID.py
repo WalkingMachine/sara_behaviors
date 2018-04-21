@@ -25,15 +25,12 @@ class GetEntityByID(EventState):
         '''
         Constructor
         '''
-        super(GetEntityByID, self).__init__(outcomes=['found', 'not_found'], input_key=['ID'], output_keys=['Entity'])
+        super(GetEntityByID, self).__init__(outcomes=['found', 'not_found'], input_keys=['ID'], output_keys=['Entity'])
         self._sub = ProxySubscriberCached({'/entities': Entities})
 
         self.message = None
 
     def execute(self, userdata):
-
-        if self._subpos.has_msg(self._topic):
-            self.mypose = userdata.pose = self._subpos.get_last_msg(self._topic)
 
         if self._sub.has_msg('/entities'):
             Logger.loginfo('getting list of entities')
