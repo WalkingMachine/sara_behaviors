@@ -8,9 +8,10 @@
 
 import roslib; roslib.load_manifest('behavior_action_look_at')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.Get_direction_to_point import Get_direction_to_point
-from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
+from flexbe_states.calculation_state import CalculationState
+from sara_flexbe_states.Get_direction_to_point import Get_direction_to_point
+from sara_flexbe_states.sara_set_head_angle_key import SaraSetHeadAngleKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -45,7 +46,7 @@ class action_look_atSM(Behavior):
 
 
     def create(self):
-        # x:647 y:158, x:648 y:65
+        # x:811 y:201, x:801 y:120
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Position', 'ID'])
         _state_machine.userdata.Position = None
         _state_machine.userdata.ID = 0
@@ -74,9 +75,16 @@ class action_look_atSM(Behavior):
             # x:352 y:107
             OperatableStateMachine.add('Direction',
                                         Get_direction_to_point(frame_origin="base_link", frame_reference="head_link"),
-                                        transitions={'done': 'finished', 'fail': 'failed'},
+                                        transitions={'done': 'Tete', 'fail': 'failed'},
                                         autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
                                         remapping={'targetPoint': 'Position', 'yaw': 'yaw', 'pitch': 'pitch'})
+
+            # x:545 y:156
+            OperatableStateMachine.add('Tete',
+                                        SaraSetHeadAngleKey(),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'yaw': 'yaw', 'pitch': 'pitch'})
 
 
         return _state_machine
