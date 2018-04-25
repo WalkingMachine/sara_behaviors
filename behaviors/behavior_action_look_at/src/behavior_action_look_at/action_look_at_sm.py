@@ -46,7 +46,7 @@ class action_look_atSM(Behavior):
 
 
     def create(self):
-        # x:811 y:201, x:801 y:120
+        # x:873 y:200, x:801 y:120
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Position', 'ID'])
         _state_machine.userdata.Position = None
         _state_machine.userdata.ID = 0
@@ -75,16 +75,23 @@ class action_look_atSM(Behavior):
             # x:352 y:107
             OperatableStateMachine.add('Direction',
                                         Get_direction_to_point(frame_origin="base_link", frame_reference="head_link"),
-                                        transitions={'done': 'Tete', 'fail': 'failed'},
+                                        transitions={'done': 'invertPitch', 'fail': 'failed'},
                                         autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
                                         remapping={'targetPoint': 'Position', 'yaw': 'yaw', 'pitch': 'pitch'})
 
-            # x:545 y:156
+            # x:676 y:191
             OperatableStateMachine.add('Tete',
                                         SaraSetHeadAngleKey(),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'yaw': 'yaw', 'pitch': 'pitch'})
+
+            # x:529 y:141
+            OperatableStateMachine.add('invertPitch',
+                                        CalculationState(calculation=lambda x: -x),
+                                        transitions={'done': 'Tete'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'input_value': 'pitch', 'output_value': 'pitch'})
 
 
         return _state_machine
