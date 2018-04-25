@@ -77,5 +77,6 @@
   <run_depend>behavior_action_get_entity_pose</run_depend>
   <run_depend>behavior_check_reachability</run_depend>
   <run_depend>behavior_action_move</run_depend>
+  <run_depend>behavior_get_operator</run_depend>
 
 </package>

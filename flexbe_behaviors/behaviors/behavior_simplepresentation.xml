@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="simplePresentation">
+
+	<executable package_path="behavior_simplepresentation.simplepresentation_sm" class="simplePresentationSM" />
+	<tagstring></tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Thu Jan 25 2018</date>
+	<description>
+		simple presentation pour la conference de presse
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_pick" />
+
+	<!-- Available Parameters -->
+
+</behavior>

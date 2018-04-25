@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="geniale">
+
+	<executable package_path="behavior_geniale.geniale_sm" class="genialeSM" />
+	<tagstring></tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Fri Jan 26 2018</date>
+	<description>
+		servir des boissons
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
