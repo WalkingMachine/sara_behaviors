@@ -19,12 +19,10 @@ class getDistance(EventState):
 
     <= done
     """
-    def __init__(self, point1, point2):
+    def __init__(self):
         """Constructor"""
 
         super(GetNumberFromText, self).__init__(outcomes = ['done'], input_keys = ['point1','point2'], output_keys = ['distance'])
-        self.min=point1
-        self.max=point2
 
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
