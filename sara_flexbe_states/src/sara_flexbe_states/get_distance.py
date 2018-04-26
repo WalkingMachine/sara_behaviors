@@ -4,10 +4,11 @@ from flexbe_core import EventState, Logger
 import rospy
 import re
 import ros
+import math
 
 class getDistance(EventState):
     """
-    Calcul la distance entre deux points donnes.
+    Calcule la distance entre deux points donnes.
 
     ### InputKey
     ># point1
@@ -31,6 +32,5 @@ class getDistance(EventState):
         userdata.distance= calculate_distance(userdata.point1,userdata.point2)
         return 'done'
 
-    def calculate_distance(point1,point2):
-        retour =0
-        return retour
+    def calculate_distance(p1,p2):
+        return math.sqrt(math.pow(p2.x-p1.x,2)+math.pow(p2.y-p1.y,2)+math.pow(p2.z-p1.z,2))
