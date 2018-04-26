@@ -47,10 +47,9 @@ class action_look_at_faceSM(Behavior):
 
     def create(self):
         # x:797 y:212, x:89 y:236
-        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Position', 'Position'])
+        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Position', 'ID'])
         _state_machine.userdata.Position = None
         _state_machine.userdata.ID = 0
-        _state_machine.userdata.input_value = 1
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -64,18 +63,18 @@ class action_look_at_faceSM(Behavior):
                                         GetEntityByID(),
                                         transitions={'found': 'ExtractPos', 'not_found': 'failed'},
                                         autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-                                        remapping={'ID': 'ID', 'Entity': 'Position'})
+                                        remapping={'ID': 'ID', 'Entity': 'Entity'})
 
             # x:174 y:62
             OperatableStateMachine.add('ExtractPos',
                                         CalculationState(calculation=lambda x: x.position),
                                         transitions={'done': 'direction'},
                                         autonomy={'done': Autonomy.Off},
-                                        remapping={'input_value': 'input_value', 'output_value': 'output_value'})
+                                        remapping={'input_value': 'Entity', 'output_value': 'Position'})
 
             # x:310 y:118
             OperatableStateMachine.add('direction',
-                                        Get_direction_to_point(frame_origin='', frame_reference=''),
+                                        Get_direction_to_point(frame_origin="base_link", frame_reference="head_link"),
                                         transitions={'done': 'InvertPitch', 'fail': 'failed'},
                                         autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
                                         remapping={'targetPoint': 'Position', 'yaw': 'yaw', 'pitch': 'pitch'})
@@ -85,7 +84,7 @@ class action_look_at_faceSM(Behavior):
                                         CalculationState(calculation=lambda x: -x),
                                         transitions={'done': 'Head'},
                                         autonomy={'done': Autonomy.Off},
-                                        remapping={'input_value': 'input_value', 'output_value': 'output_value'})
+                                        remapping={'input_value': 'pitch', 'output_value': 'pitch'})
 
             # x:618 y:201
             OperatableStateMachine.add('Head',
