@@ -6,7 +6,7 @@ import re
 import ros
 import math
 
-class getDistance(EventState):
+class getDistance2D(EventState):
     """
     Calcule la distance entre deux points donnes.
 
@@ -22,7 +22,7 @@ class getDistance(EventState):
     def __init__(self):
         """Constructor"""
 
-        super(getDistance, self).__init__(outcomes = ['done'], input_keys = ['point1','point2'], output_keys = ['distance'])
+        super(getDistance2D, self).__init__(outcomes = ['done'], input_keys = ['point1','point2'], output_keys = ['distance'])
 
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
