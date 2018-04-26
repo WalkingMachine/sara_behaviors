@@ -4,7 +4,6 @@ from flexbe_core import EventState, Logger
 import rospy
 import re
 import ros
-import math
 
 class processFollowDistance(EventState):
     """
@@ -28,7 +27,7 @@ class processFollowDistance(EventState):
     def __init__(self, minimum_distance, divisor_distance,threshold):
         """Constructor"""
 
-        super(GetNumberFromText, self).__init__(outcomes = ['move','done'], input_keys = ['distance_of_target'], output_keys = ['distance'])
+        super(processFollowDistance, self).__init__(outcomes = ['move','done'], input_keys = ['distance_of_target'], output_keys = ['distance'])
         self.minimum_distance=minimum_distance
         self.divisor_distance=divisor_distance
         self.threshold=threshold
