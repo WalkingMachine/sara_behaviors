@@ -47,7 +47,7 @@ class list_found_entities(EventState):
             self._sub.remove_last_msg('/entities')
 
         if self.message is not None and self.mypose is not None:
-            found_entities = self.list()
+            found_entities = self.list(userdata.name)
             userdata.list_found_entities = found_entities
             userdata.number = len(found_entities)
 
@@ -56,11 +56,11 @@ class list_found_entities(EventState):
             else:
                 return 'not_found'
 
-    def list(self):
+    def list(self, name):
         found_entities = []
         wraps = []
         for entity in self.message.entities:
-            if entity.name == 'name':
+            if entity.name == name:
                 wrap = wrapper()
                 wrap.init(self.mypose, entity, self.frontality_level)
 
