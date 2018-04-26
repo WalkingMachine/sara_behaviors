@@ -79,5 +79,6 @@
   <run_depend>behavior_action_move</run_depend>
   <run_depend>behavior_get_operator</run_depend>
   <run_depend>behavior_action_look_at</run_depend>
+  <run_depend>behavior_action_look_at_face</run_depend>
 
 </package>
