@@ -15,7 +15,7 @@ from sara_flexbe_states.regex_tester import RegexTester
 from behavior_get_speech.get_speech_sm import Get_speechSM
 from sara_flexbe_states.sara_sound import SaraSound
 from sara_flexbe_states.uint8_topic_publisher import PublishUint8
-from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
+from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
@@ -254,13 +254,13 @@ class Sara_presentationSM(Behavior):
 
 			# x:66 y:127
 			OperatableStateMachine.add('show',
-										MoveArmNamedPose(pose_name="ShowGripper", wait=True),
+										MoveitMove(pose_name="ShowGripper", wait=True),
 										transitions={'done': 'close', 'failed': 'close'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
 			# x:116 y:568
 			OperatableStateMachine.add('lower',
-										MoveArmNamedPose(pose_name="IdlePose", wait=True),
+										MoveitMove(pose_name="IdlePose", wait=True),
 										transitions={'done': 'done', 'failed': 'done'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
@@ -306,7 +306,7 @@ class Sara_presentationSM(Behavior):
 
 			# x:41 y:338
 			OperatableStateMachine.add('move to idle',
-										MoveArmNamedPose(pose_name="IdlePose", wait=True),
+										MoveitMove(pose_name="IdlePose", wait=True),
 										transitions={'done': 'done', 'failed': 'sad'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
@@ -318,7 +318,7 @@ class Sara_presentationSM(Behavior):
 
 			# x:57 y:134
 			OperatableStateMachine.add('show',
-										MoveArmNamedPose(pose_name="ShowGripper", wait=True),
+										MoveitMove(pose_name="ShowGripper", wait=True),
 										transitions={'done': 'say cap', 'failed': 'sad'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
@@ -673,12 +673,11 @@ class Sara_presentationSM(Behavior):
 
 
 		with _state_machine:
-			# x:45 y:494
-			OperatableStateMachine.add('say goodby',
-										SaraSayKey(Format=lambda x: "Thank you "+x+" for visiting me. I hope we'll see each others again in the future.", emotion=1, block=True),
-										transitions={'done': 'goodbye'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'name'})
+			# x:268 y:53
+			OperatableStateMachine.add('set head angle',
+										SaraSetHeadAngle(angle=0),
+										transitions={'done': 'Get_speech_2'},
+										autonomy={'done': Autonomy.Off})
 
 			# x:43 y:301
 			OperatableStateMachine.add('Greet',
@@ -747,11 +746,12 @@ class Sara_presentationSM(Behavior):
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'words': 'hello'})
 
-			# x:268 y:53
-			OperatableStateMachine.add('set head angle',
-										SaraSetHeadAngle(angle=0),
-										transitions={'done': 'Get_speech_2'},
-										autonomy={'done': Autonomy.Off})
+			# x:45 y:494
+			OperatableStateMachine.add('say goodby',
+										SaraSayKey(Format=lambda x: "Thank you "+x+" for visiting me. I hope we'll see each others again in the future.", emotion=1, block=True),
+										transitions={'done': 'goodbye'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'name'})
 
 
 		return _state_machine

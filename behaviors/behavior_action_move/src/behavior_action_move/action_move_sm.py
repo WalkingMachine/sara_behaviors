@@ -9,13 +9,12 @@
 import roslib; roslib.load_manifest('behavior_action_move')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.sara_set_angle import SaraSetHeadAngle
-from flexbe_states.check_condition_state import CheckConditionState
-from sara_flexbe_states.sara_rel_move_base import SaraRelMoveBase
-from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_set_expression import SetExpression
-from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
+from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.sara_rel_move_base import SaraRelMoveBase
+from sara_flexbe_states.sara_move_base import SaraMoveBase
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -88,18 +87,11 @@ class Action_MoveSM(Behavior):
 
 
 		with _state_machine:
-			# x:42 y:21
-			OperatableStateMachine.add('set arm',
-										MoveArmNamedPose(pose_name="PreGripPose", wait=True),
-										transitions={'done': 'set head', 'failed': 'set head'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
-
-			# x:275 y:217
-			OperatableStateMachine.add('Move',
-										_sm_move_0,
-										transitions={'arrived': 'set blink', 'failed': 'set head 2'},
-										autonomy={'arrived': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'relative': 'relative', 'pose': 'pose'})
+			# x:46 y:147
+			OperatableStateMachine.add('set head',
+										SaraSetHeadAngle(angle=0.8),
+										transitions={'done': 'watch out'},
+										autonomy={'done': Autonomy.Off})
 
 			# x:271 y:449
 			OperatableStateMachine.add('for',
@@ -146,7 +138,7 @@ class Action_MoveSM(Behavior):
 
 			# x:741 y:177
 			OperatableStateMachine.add('here',
-										SaraSay(sentence="I'm here", emotion=1, block=True),
+										SaraSay(sentence="Here I am", emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
@@ -168,11 +160,12 @@ class Action_MoveSM(Behavior):
 										transitions={'done': 'here'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:46 y:147
-			OperatableStateMachine.add('set head',
-										SaraSetHeadAngle(angle=0.8),
-										transitions={'done': 'watch out'},
-										autonomy={'done': Autonomy.Off})
+			# x:275 y:217
+			OperatableStateMachine.add('Move',
+										_sm_move_0,
+										transitions={'arrived': 'set blink', 'failed': 'set head 2'},
+										autonomy={'arrived': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'relative': 'relative', 'pose': 'pose'})
 
 
 		return _state_machine

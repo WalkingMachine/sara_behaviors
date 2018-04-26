@@ -8,7 +8,8 @@
 
 import roslib; roslib.load_manifest('behavior_action_receive_bag')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.move_arm_named_pose import MoveArmNamedPose
+from sara_flexbe_states.SetKey import SetKey
+from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.torque_reader import ReadTorque
 # Additional imports can be added inside the following tags
@@ -45,7 +46,7 @@ class Action_Receive_BagSM(Behavior):
 
 
 	def create(self):
-		# x:1076 y:112, x:566 y:14
+		# x:867 y:64, x:469 y:60
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Closed_Gripper_Width', 'Open_Gripper_Width', 'Closed_Gripper_Width'])
 		_state_machine.userdata.Closed_Gripper_Width = 1
 		_state_machine.userdata.Open_Gripper_Width = 255
@@ -58,30 +59,46 @@ class Action_Receive_BagSM(Behavior):
 
 
 		with _state_machine:
-			# x:132 y:109
-			OperatableStateMachine.add('Go_to_receive_bag_pose',
-										MoveArmNamedPose(pose_name="Help_me_carry"),
-										transitions={'done': 'Torque_Reader', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
-
-			# x:865 y:112
-			OperatableStateMachine.add('Go_to_IdlePose',
-										MoveArmNamedPose(pose_name="IdlePose"),
-										transitions={'done': 'finished', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
-
-			# x:599 y:111
-			OperatableStateMachine.add('Close_gripper',
-										SetGripperState(),
-										transitions={'no_object': 'Go_to_IdlePose'},
+			# x:175 y:49
+			OperatableStateMachine.add('setTarget1',
+										SetKey(Value="Help_me_carry"),
+										transitions={'done': 'Go_to_receive_bag_pose'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'width': 'Closed_Gripper_Width', 'effort': 'effort'})
+										remapping={'Key': 'target'})
 
-			# x:392 y:109
+			# x:660 y:57
+			OperatableStateMachine.add('Go_to_IdlePose',
+										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										transitions={'done': 'finished', 'failed': 'failed'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'target'})
+
+			# x:563 y:256
+			OperatableStateMachine.add('Close_gripper',
+										SetGripperState(width=0, effort=1),
+										transitions={'object': 'setTarget2', 'no_object': 'setTarget2'},
+										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
+										remapping={'object_size': 'object_size'})
+
+			# x:362 y:251
 			OperatableStateMachine.add('Torque_Reader',
 										ReadTorque(),
 										transitions={'done': 'Close_gripper'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:664 y:147
+			OperatableStateMachine.add('setTarget2',
+										SetKey(Value="IdlePose"),
+										transitions={'done': 'Go_to_IdlePose'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'target'})
+
+			# x:160 y:163
+			OperatableStateMachine.add('Go_to_receive_bag_pose',
+										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										transitions={'done': 'Torque_Reader', 'failed': 'failed'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'target'})
 
 
 		return _state_machine

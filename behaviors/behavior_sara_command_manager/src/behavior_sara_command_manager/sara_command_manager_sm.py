@@ -65,7 +65,7 @@ class sara_command_managerSM(Behavior):
 			# x:41 y:29
 			OperatableStateMachine.add('get speech',
 										GetSpeech(watchdog=5),
-										transitions={'done': 'is sara', 'nothing': 'get speech', 'fail': 'failed'},
+										transitions={'done': 'if stop', 'nothing': 'get speech', 'fail': 'failed'},
 										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'words': 'sentence'})
 
@@ -88,7 +88,7 @@ class sara_command_managerSM(Behavior):
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:30 y:150
+			# x:26 y:224
 			OperatableStateMachine.add('is sara',
 										RegexTester(regex=".*((sah?a?ra)|(shut up)).*"),
 										transitions={'true': 'yes', 'false': 'get speech'},
@@ -119,6 +119,13 @@ class sara_command_managerSM(Behavior):
 										SaraSay(sentence="What do you want?", emotion=1, block=True),
 										transitions={'done': 'play sound'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:9 y:129
+			OperatableStateMachine.add('if stop',
+										RegexTester(regex=".*stop.*"),
+										transitions={'true': 'failed', 'false': 'is sara'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'text': 'sentence', 'result': 'result'})
 
 
 		return _state_machine

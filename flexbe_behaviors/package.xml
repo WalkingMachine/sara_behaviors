@@ -73,10 +73,10 @@
   <run_depend>behavior_sara_presentation</run_depend>
   <run_depend>behavior_get_speech</run_depend>
   <run_depend>behavior_hello_world</run_depend>
-  <run_depend>behavior_test_set_expression_state</run_depend>
   <run_depend>behavior_action_pick</run_depend>
   <run_depend>behavior_action_get_entity_pose</run_depend>
   <run_depend>behavior_check_reachability</run_depend>
   <run_depend>behavior_action_move</run_depend>
+  <run_depend>behavior_get_operator</run_depend>
 
 </package>

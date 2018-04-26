@@ -11,8 +11,8 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.Wonderland_Get_Object import WonderlandGetObject
 from sara_flexbe_states.SetKey import SetKey
+from sara_flexbe_states.Wonderland_Get_Object import WonderlandGetObject
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from behavior_action_move.action_move_sm import Action_MoveSM
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
@@ -59,7 +59,7 @@ class ActionWrapper_PickSM(Behavior):
 
 
 	def create(self):
-		# x:727 y:189, x:725 y:372
+		# x:885 y:201, x:725 y:372
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action', 'ObjectInGripper'])
 		_state_machine.userdata.Action = ["Pick","cup",""]
 		_state_machine.userdata.ObjectInGripper = False
@@ -100,7 +100,7 @@ class ActionWrapper_PickSM(Behavior):
 
 
 		# x:437 y:171
-		_sm_set_keys_1 = OperatableStateMachine(outcomes=['done'], output_keys=['id', 'color', 'room', 'type', 'expected_pose', 'relative'])
+		_sm_set_keys_1 = OperatableStateMachine(outcomes=['done'], output_keys=['id', 'color', 'expected_pose', 'relative', 'typer'])
 
 		with _sm_set_keys_1:
 			# x:34 y:40
@@ -113,16 +113,9 @@ class ActionWrapper_PickSM(Behavior):
 			# x:34 y:191
 			OperatableStateMachine.add('set type',
 										SetKey(Value=None),
-										transitions={'done': 'set room'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'type'})
-
-			# x:35 y:269
-			OperatableStateMachine.add('set room',
-										SetKey(Value=None),
 										transitions={'done': 'get pose'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'room'})
+										remapping={'Key': 'typer'})
 
 			# x:30 y:112
 			OperatableStateMachine.add('set color',
@@ -131,14 +124,14 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'color'})
 
-			# x:268 y:282
+			# x:413 y:309
 			OperatableStateMachine.add('set rel',
 										SetKey(Value=False),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'relative'})
 
-			# x:108 y:361
+			# x:215 y:327
 			OperatableStateMachine.add('get pose',
 										Get_Robot_Pose(),
 										transitions={'done': 'set rel'},
@@ -146,23 +139,44 @@ class ActionWrapper_PickSM(Behavior):
 										remapping={'pose': 'expected_pose'})
 
 
-		# x:30 y:325
-		_sm_get_informations_2 = OperatableStateMachine(outcomes=['done'], input_keys=['Action'], output_keys=['name'])
+		# x:34 y:527
+		_sm_get_informations_2 = OperatableStateMachine(outcomes=['done'], input_keys=['Action'], output_keys=['name', 'location'])
 
 		with _sm_get_informations_2:
 			# x:62 y:117
 			OperatableStateMachine.add('get name',
 										CalculationState(calculation=lambda x: x[1]),
-										transitions={'done': 'get location'},
+										transitions={'done': 'check location'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'name'})
 
-			# x:60 y:203
+			# x:140 y:194
 			OperatableStateMachine.add('get location',
 										CalculationState(calculation=lambda x: x[2]),
-										transitions={'done': 'done'},
+										transitions={'done': 'say locatiion'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'location'})
+
+			# x:278 y:143
+			OperatableStateMachine.add('check location',
+										CheckConditionState(predicate=lambda x: x[2]!=""),
+										transitions={'true': 'get location', 'false': 'set location'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'Action'})
+
+			# x:421 y:503
+			OperatableStateMachine.add('set location',
+										SetKey(Value=None),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'location'})
+
+			# x:33 y:330
+			OperatableStateMachine.add('say locatiion',
+										SaraSayKey(Format=lambda x: "In the "+x, emotion=1, block=True),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'location'})
 
 
 		# x:778 y:25, x:580 y:518
@@ -174,7 +188,7 @@ class ActionWrapper_PickSM(Behavior):
 										_sm_get_informations_2,
 										transitions={'done': 'Set keys'},
 										autonomy={'done': Autonomy.Inherit},
-										remapping={'Action': 'Action', 'name': 'name'})
+										remapping={'Action': 'Action', 'name': 'name', 'location': 'location'})
 
 			# x:738 y:120
 			OperatableStateMachine.add('say fail',
@@ -188,14 +202,14 @@ class ActionWrapper_PickSM(Behavior):
 										WonderlandGetObject(),
 										transitions={'found': 'Action_Move', 'unknown': 'say unknow', 'error': 'memory'},
 										autonomy={'found': Autonomy.Off, 'unknown': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'id': 'id', 'name': 'name', 'color': 'color', 'room': 'room', 'type': 'type', 'expected_pose': 'expected_pose', 'object_pose': 'object_pose', 'object_name': 'object_name', 'object_color': 'object_color', 'object_room': 'object_room', 'object_type': 'object_type'})
+										remapping={'id': 'id', 'name': 'name', 'color': 'color', 'room': 'location', 'type': 'typer', 'expected_pose': 'expected_pose', 'object_pose': 'object_pose', 'object_name': 'object_name', 'object_color': 'object_color', 'object_room': 'object_room', 'object_type': 'object_type'})
 
 			# x:14 y:216
 			OperatableStateMachine.add('Set keys',
 										_sm_set_keys_1,
 										transitions={'done': 'Get object'},
 										autonomy={'done': Autonomy.Inherit},
-										remapping={'id': 'id', 'color': 'color', 'room': 'room', 'type': 'type', 'expected_pose': 'expected_pose', 'relative': 'relative'})
+										remapping={'id': 'id', 'color': 'color', 'expected_pose': 'expected_pose', 'relative': 'relative', 'typer': 'typer'})
 
 			# x:45 y:585
 			OperatableStateMachine.add('Action_Move',
@@ -273,18 +287,25 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'Action'})
 
-			# x:409 y:181
+			# x:396 y:183
 			OperatableStateMachine.add('pick',
 										_sm_pick_3,
-										transitions={'success': 'finished', 'failed': 'failed'},
+										transitions={'success': 'got it', 'failed': 'failed'},
 										autonomy={'success': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
 
-			# x:49 y:378
+			# x:205 y:321
 			OperatableStateMachine.add('not told',
 										SaraSay(sentence="You didn't told me what to pick", emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:579 y:192
+			OperatableStateMachine.add('got it',
+										SaraSayKey(Format=lambda x: "I have the "+x[1], emotion=1, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'Action'})
 
 
 		return _state_machine

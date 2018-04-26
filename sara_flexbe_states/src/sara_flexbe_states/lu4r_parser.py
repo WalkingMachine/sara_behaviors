@@ -57,7 +57,20 @@ class LU4R_Parser(EventState):
 
 
         HYPO = {'hypotheses':[{"transcription":userdata.sentence,"confidence":"0.9","rank":"1"}]}
-        ENT = {'entities': [{"atom":"cup1","type":"drink","preferredLexicalReference":"cup","alternativeLexicalReferences":["glass","cup","drink"],"coordinate":{"x":"3.0","y":"0.0","z":"0.0","angle":"0"}}]}
+        ENT = {'entities': [
+            {"atom": "table1", "type": "table", "preferredLexicalReference": "table",
+             "alternativeLexicalReferences": ["counter", "desk"],
+             "coordinate": {"x": "16.0", "y": "0.0", "z": "0.0", "angle": "0.671"}},
+            {"atom": "bedroom1", "type": "bedroom", "preferredLexicalReference": "bedroom",
+             "alternativeLexicalReferences": ["chamber", "cubicle", "bedchamber"],
+             "coordinate": {"x": "11.0", "y": "6.0", "z": "0.0", "angle": "0"}},
+            {"atom": "studio1", "type": "studio", "preferredLexicalReference": "studio",
+             "alternativeLexicalReferences": ["library", "office"],
+             "coordinate": {"x": "9.0", "y": "14.0", "z": "0.0", "angle": "0"}},
+            {"atom": "person1", "type": "person", "preferredLexicalReference": "person",
+             "alternativeLexicalReferences": ["body", "character", "guy", "man", "woman"],
+             "coordinate": {"x": "2.0", "y": "2.0", "z": "0.0", "angle": "0"}}]}
+
         r = requests.post(lu4r_url, data={'hypo':str(HYPO) , 'entities':str(ENT)}, headers=HEADERS)
 
         lu4r = Lu4r()
@@ -227,23 +240,23 @@ class LU4R_Parser(EventState):
             for arg in opitem.args:
                 regex = re.compile('.*((theme)|(goal)|(sought_entity)|(phenomenon)).*')
                 if regex.match(arg.type.lower()):
-                    regex = re.compile('.*((this)|(that)|(it)).*')
+                    regex = re.compile('.*[^a-z]((this)|(that)|(it))[^a-z].*')
                     if regex.match(arg.content.lower()):
                         arg.content = self.Subject
                     else:
                         self.Subject = arg.content
-                regex = re.compile('.*(beneficiary).*')
+                regex = re.compile('.*((beneficiary)|(goal)).*')
                 if regex.match(arg.type.lower()):
-                    regex = re.compile('.*((him)|(her)).*')
+                    regex = re.compile('.*[^a-z]((him)|(her))[^a-z].*')
                     if regex.match(arg.content.lower()):
                         arg.content = self.Person
                     else:
                         self.Person = arg.content
-                    regex = re.compile('.*((me)|(myself)).*')
+                    regex = re.compile('.*[^a-z]((me)|(myself))[^a-z].*')
                     if regex.match(arg.content.lower()):
                         arg.content = 'you'
                         continue
-                    regex = re.compile('.*(you)|(sara)|(yourself).*')
+                    regex = re.compile('.*[^a-z](you)|(sarah?)|(shut up)|(yourself)[^a-z].*')
                     if regex.match(arg.content.lower()):
                         arg.content = 'myself'
                         continue
