@@ -12,6 +12,7 @@
 
 
 	<!-- Contained Behaviors -->
+	<contains name="action_look_at" />
 
 	<!-- Available Parameters -->
 

@@ -11,13 +11,13 @@ import math
 
 class list_found_entities(EventState):
     '''
-        will list people seen by the camera
+        will list entities seen by the camera
 
         -- frontality_level        float
         #> found_entities          object
         #< name                    string
 
-        <= found            people are found
+        <= found            entities are found
         <= not_found        no one is found
 
     '''
