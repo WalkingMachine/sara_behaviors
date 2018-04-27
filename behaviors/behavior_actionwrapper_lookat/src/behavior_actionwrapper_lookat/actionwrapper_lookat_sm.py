@@ -9,7 +9,6 @@
 import roslib; roslib.load_manifest('behavior_actionwrapper_lookat')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.check_condition_state import CheckConditionState
-from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_say_key import SaraSayKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -48,7 +47,7 @@ class ActionWrapper_LookAtSM(Behavior):
 
 
     def create(self):
-        # x:885 y:235, x:116 y:381
+        # x:1035 y:129, x:263 y:458
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
         _state_machine.userdata.Action = ["LookAt", "you"]
 
@@ -62,17 +61,11 @@ class ActionWrapper_LookAtSM(Behavior):
             # x:41 y:55
             OperatableStateMachine.add('cond',
                                         CheckConditionState(predicate=lambda x: x[1] != ''),
-                                        transitions={'true': 'get', 'false': 'failed'},
+                                        transitions={'true': 'Object to look at', 'false': 'failed'},
                                         autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
                                         remapping={'input_value': 'Action'})
 
-            # x:239 y:203
-            OperatableStateMachine.add('say look at you',
-                                        SaraSay(sentence="I'm looking at you", emotion=1, block=True),
-                                        transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:455 y:59
+            # x:245 y:176
             OperatableStateMachine.add('say look at thing',
                                         SaraSayKey(Format=lambda x: "I'm looking at "+x[1], emotion=1, block=True),
                                         transitions={'done': 'finished'},
@@ -80,11 +73,18 @@ class ActionWrapper_LookAtSM(Behavior):
                                         remapping={'sentence': 'Action'})
 
             # x:245 y:51
-            OperatableStateMachine.add('get',
-                                        CheckConditionState(predicate=lambda x: x[1] != ''),
-                                        transitions={'true': 'say look at you', 'false': 'say look at thing'},
+            OperatableStateMachine.add('Object to look at',
+                                        CheckConditionState(predicate=lambda x: x[1]),
+                                        transitions={'true': 'Say look at object', 'false': 'say look at thing'},
                                         autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
                                         remapping={'input_value': 'Action'})
+
+            # x:597 y:57
+            OperatableStateMachine.add('Say look at object',
+                                        SaraSayKey(Format=lambda x: "I am looking at "+ x[1], emotion=1, block=True),
+                                        transitions={'done': 'finished'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'sentence': 'Action'})
 
 
         return _state_machine
