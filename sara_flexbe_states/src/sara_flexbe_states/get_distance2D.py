@@ -27,8 +27,8 @@ class getDistance2D(EventState):
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
 
-        userdata.distance= calculate_distance(userdata.point1,userdata.point2)
+        userdata.distance= self.calculate_distance(userdata.point1,userdata.point2)
         return 'done'
 
-    def calculate_distance(p1,p2):
-        return math.sqrt(math.pow(p2.x-p1.x,2)+math.pow(p2.y-p1.y,2))
+    def calculate_distance(self, p1, p2):
+        return ((p2.x-p1.x)**2+(p2.y-p1.y)**2)**.5

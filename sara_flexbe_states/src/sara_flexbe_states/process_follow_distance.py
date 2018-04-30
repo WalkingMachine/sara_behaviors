@@ -36,10 +36,10 @@ class processFollowDistance(EventState):
         """Determine action to perform and return outcome accordingly"""
 
         retour = self.minimum_distance
-        dis =userdata.distance
-        if(dis<self.threshold+self.minimum_distance and dis>minimum_distance):
+        dis =userdata.distance_of_target
+        if(dis<self.threshold+self.minimum_distance and dis>self.minimum_distance):
             return 'done'
         mi_distance = dis/self.divisor_distance
-        if(mi_distance>self.minimum_distance):retour =mi_distance
+        if(mi_distance>self.minimum_distance): retour = mi_distance
         userdata.distance = retour
         return 'move'
