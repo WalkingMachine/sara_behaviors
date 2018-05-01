@@ -14,7 +14,7 @@ class GetNumberFromText(EventState):
     ># text                 string      the input text containing the numeric text. eg: "one, two ..."
 
     #> value                int         the returned value
-    #> unit                 strint      the unit given
+    #> unit                 string      the unit given
     #> distance_in_meters   int         the distance given in meters
 
     <= done                 The number has been found
@@ -35,37 +35,39 @@ class GetNumberFromText(EventState):
 
 
         userdata.unit="meter"
-        for x in units:
+        unit=""
+        for x in self.units:
             regex=".*"+str(x)
             if(re.compile(regex).match(str(userdata.text).lower())):
-                userdata.unit=str(x)
+                unit=str(x)
+                userdata.unit=unit
 
         compteur=0
-        for x in numbers:
+        for x in self.numbers:
             regex=".*"+str(x)
             if(re.compile(regex).match(str(userdata.text).lower())):
                 userdata.value=compteur
-                userdata.distance_in_meters = calculate_distance_in_meters(userdata.value,userdata.unit)
+                userdata.distance_in_meters = self.calculate_distance_in_meters(compteur,unit)
                 return 'done'
             compteur+=1
         userdata.value =0
 
         return 'failed'
 
-    def calculate_distance_in_meters(value,unit):
-        if(unit==units[0]): #kilometer
+    def calculate_distance_in_meters(self,value,unit):
+        if(unit==self.units[0]): #kilometer
             return value*1000
-        elif(unit==units[1]):#centimeter
+        elif(unit==self.units[1]):#centimeter
             return value/100
-        elif(unit==units[2]):#meter
+        elif(unit==self.units[2]):#meter
             return value
-        elif(unit==units[3]):#inch
+        elif(unit==self.units[3]):#inch
             return value*0.0254
-        elif(unit==units[4]):#feet
+        elif(unit==self.units[4]):#feet
             return value*0.3048
-        elif(unit==units[5]):#yard
+        elif(unit==self.units[5]):#yard
             return value*0.9144
-        elif(unit==units[6]):#mile
+        elif(unit==self.units[6]):#mile
             return value*1609.344
         else:
             print("Could understand the unit")
