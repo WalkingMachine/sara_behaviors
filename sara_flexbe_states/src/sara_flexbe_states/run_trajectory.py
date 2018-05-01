@@ -7,9 +7,9 @@ from wm_trajectory_manager.srv import run_trajectory, run_trajectoryRequest
 class RunTrajectory(EventState):
     """
     recois le nom d'un fichier de trajectoire en parametre et appelle le service run_trajectory offert par le trajectory manager
-    -- file
+    -- file     string      The .yaml file containing the trajectory
 
-    <= done
+    <= done     The trajectory has been initiated
     """
 
     def __init__(self, file):
