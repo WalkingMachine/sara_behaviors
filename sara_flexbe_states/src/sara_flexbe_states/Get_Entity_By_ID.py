@@ -13,11 +13,11 @@ class GetEntityByID(EventState):
     '''
         Search for an entity by it's ID number
 
-        ># ID              int
-        #> Entity          object
+        ># ID              int          The ID of the entity
+        #> Entity          object       The entity found
 
-        <= found            people are found
-        <= not_found        no one is found
+        <= found            the entity has been found
+        <= not_found        noting has been found
 
     '''
 

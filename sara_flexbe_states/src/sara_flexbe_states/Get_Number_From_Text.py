@@ -6,22 +6,19 @@ import re
 
 class GetNumberFromText(EventState):
     """
-    genere une valeur numerique a partir d'un nombre nominal.
+    Give the numerical value of a nominal length
 
-    ### parameters
-    -- min
-    -- max
+    -- min                  double      the minimum value
+    -- max                  double      the maximum value
 
-    ### InputKey
-    ># text
+    ># text                 string      the input text containing the numeric text. eg: "one, two ..."
 
-    ### OutputKey
-    #> value
-    #> unit
-    #> distance_in_meters
+    #> value                int         the returned value
+    #> unit                 strint      the unit given
+    #> distance_in_meters   int         the distance given in meters
 
-    <= done
-    <= failed
+    <= done                 The number has been found
+    <= failed               The value is not recognised
     """
     numbers= ["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve"]
     units=['kilometer','centimeter','meter','inch','feet','yard','mile']
