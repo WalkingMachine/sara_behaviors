@@ -8,9 +8,9 @@
 
 import roslib; roslib.load_manifest('behavior_a_test_wonderland')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from behavior_action_point_at2.action_point_at2_sm import Action_point_at2SM
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from flexbe_states.calculation_state import CalculationState
+from behavior_action_point_at2.action_point_at2_sm import Action_point_at2SM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -74,7 +74,7 @@ class A_TEST_WONDERLANDSM(Behavior):
 		with _state_machine:
 			# x:61 y:59
 			OperatableStateMachine.add('genpose',
-										GenPoseEuler(x=7, y=8, z=5, roll=0, pitch=0, yaw=0),
+										GenPoseEuler(x=2, y=2, z=0, roll=0, pitch=0, yaw=0),
 										transitions={'done': 'obtenirpointdanspose'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'pose'})

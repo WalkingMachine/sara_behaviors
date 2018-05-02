@@ -12,6 +12,7 @@ from sara_flexbe_states.Get_direction_to_point import Get_direction_to_point
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.pose_gen_euler_key import GenPoseEulerKey
 from sara_flexbe_states.moveit_move import MoveitMove
+from flexbe_states.calculation_state import CalculationState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -67,7 +68,7 @@ class Action_point_at2SM(Behavior):
 			# x:297 y:337
 			OperatableStateMachine.add('setkey',
 										SetKey(Value=-0.25),
-										transitions={'done': 'genpose'},
+										transitions={'done': 'invert'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'posy'})
 
@@ -81,7 +82,7 @@ class Action_point_at2SM(Behavior):
 			# x:136 y:336
 			OperatableStateMachine.add('setroll',
 										SetKey(Value=0),
-										transitions={'done': 'setkey'},
+										transitions={'done': 'posz'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'setroll'})
 
@@ -90,7 +91,7 @@ class Action_point_at2SM(Behavior):
 										GenPoseEulerKey(),
 										transitions={'done': 'move'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'xpos': 'posx', 'ypos': 'posy', 'zpos': 'posx', 'yaw': 'yaw', 'pitch': 'pitch', 'roll': 'setroll', 'pose': 'pose'})
+										remapping={'xpos': 'posx', 'ypos': 'posy', 'zpos': 'posz', 'yaw': 'yaw', 'pitch': 'pitch', 'roll': 'setroll', 'pose': 'pose'})
 
 			# x:583 y:193
 			OperatableStateMachine.add('move',
@@ -98,6 +99,20 @@ class Action_point_at2SM(Behavior):
 										transitions={'done': 'finished', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'pose'})
+
+			# x:189 y:412
+			OperatableStateMachine.add('posz',
+										SetKey(Value=1.0),
+										transitions={'done': 'setkey'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'posz'})
+
+			# x:441 y:405
+			OperatableStateMachine.add('invert',
+										CalculationState(calculation=lambda x: -x),
+										transitions={'done': 'genpose'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'pitch', 'output_value': 'pitch'})
 
 
 		return _state_machine
