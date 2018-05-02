@@ -30,6 +30,9 @@ class SetRosParam(EventState):
         '''
         Execute this state
         '''
-
-        rospy.set_param(self.ParamName, userdata.Value)
+        if userdata.Value:
+            rospy.set_param(self.ParamName, userdata.Value)
+        else:
+            if rospy.has_param(self.ParamName):
+                rospy.delete_param(self.ParamName)
         return "done"
