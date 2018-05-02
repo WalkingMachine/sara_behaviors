@@ -9,7 +9,7 @@ Created on 21.09.2017
 '''
 
 
-class SetRosParam(EventState):
+class GetRosParam(EventState):
     '''
     Get a value from the ros parameter server.
     -- ParamName    string      The desired value.
@@ -23,7 +23,7 @@ class SetRosParam(EventState):
         '''
         Constructor
         '''
-        super(SetRosParam, self).__init__(outcomes=['done'], output_keys=['Value'])
+        super(GetRosParam, self).__init__(outcomes=['done'], output_keys=['Value'])
         self.ParamName = ParamName
 
     def execute(self, userdata):
