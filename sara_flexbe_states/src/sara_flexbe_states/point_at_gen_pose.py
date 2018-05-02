@@ -26,7 +26,7 @@ class point_at_gen_pose(EventState):
     def __init__(self, offsetx, offsety, offsetz, l):
         """Constructor"""
 
-        super(point_at_gen_pose, self).__init__(input_keys=['yaw', 'pitch'], outcomes=['pose'])
+        super(point_at_gen_pose, self).__init__(input_keys=['yaw', 'pitch'], outcomes=['pose'], output_keys=['pose'])
 
         self.offsety = offsety
         self.offsetx = offsetx
@@ -45,4 +45,6 @@ class point_at_gen_pose(EventState):
         pose.orientation.z = qt[2]
         pose.orientation.w = qt[3]
 
-        return pose
+        userdata.pose=pose
+
+        return "pose"
