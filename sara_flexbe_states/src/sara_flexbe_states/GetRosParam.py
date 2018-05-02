@@ -17,19 +17,21 @@ class GetRosParam(EventState):
     #> Value      object      The rosparam to set.
     
     <= done                 The rosparam is set
+    <= failed               The rosparam didn't exist
     '''
 
     def __init__(self, ParamName):
         '''
         Constructor
         '''
-        super(GetRosParam, self).__init__(outcomes=['done'], output_keys=['Value'])
+        super(GetRosParam, self).__init__(outcomes=['done', 'failed'], output_keys=['Value'])
         self.ParamName = ParamName
 
     def execute(self, userdata):
         '''
         Execute this state
         '''
-
-        userdata.Value = rospy.get_param(self.ParamName)
-        return "done"
+        if rospy.has_param(self.ParamName):
+            userdata.Value = rospy.get_param(self.ParamName)
+            return "done"
+        return "failed"
