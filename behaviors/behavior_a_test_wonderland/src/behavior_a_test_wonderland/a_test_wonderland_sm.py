@@ -8,8 +8,9 @@
 
 import roslib; roslib.load_manifest('behavior_a_test_wonderland')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.Wonderland_Add_Human import Wonderland_Add_Human
-from sara_flexbe_states.test_log import test_log
+from sara_flexbe_states.pose_gen_euler import GenPoseEuler
+from flexbe_states.calculation_state import CalculationState
+from behavior_action_point_at2.action_point_at2_sm import Action_point_at2SM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -33,6 +34,7 @@ class A_TEST_WONDERLANDSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
+		self.add_behavior(Action_point_at2SM, 'Action_point_at2')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -44,7 +46,7 @@ class A_TEST_WONDERLANDSM(Behavior):
 
 
 	def create(self):
-		# x:340 y:478, x:232 y:476, x:498 y:55
+		# x:30 y:365, x:130 y:365, x:230 y:365
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'registered'], input_keys=['x1', 'x2', 'x3', 'x4', 'y1', 'y2', 'y3', 'y4'])
 		_state_machine.userdata.name = "Jean Eude"
 		_state_machine.userdata.x1 = 1
@@ -70,19 +72,26 @@ class A_TEST_WONDERLANDSM(Behavior):
 
 
 		with _state_machine:
-			# x:84 y:538
-			OperatableStateMachine.add('Wonderland_Add_Human',
-										Wonderland_Add_Human(),
-										transitions={'done': 'test_log', 'error': 'failed'},
-										autonomy={'done': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'id': 'id', 'name': 'name', 'roomID': 'roomID', 'x_pos': 'x_pos', 'y_pos': 'y_pos', 'z_pos': 'z_pos', 'gender': 'gender', 'is_operator': 'is_operator'})
-
-			# x:274 y:538
-			OperatableStateMachine.add('test_log',
-										test_log(),
-										transitions={'done': 'finished'},
+			# x:61 y:59
+			OperatableStateMachine.add('genpose',
+										GenPoseEuler(x=0.5, y=0, z=0, roll=0, pitch=0, yaw=0),
+										transitions={'done': 'obtenirpointdanspose'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'text': 'id'})
+										remapping={'pose': 'pose'})
+
+			# x:69 y:151
+			OperatableStateMachine.add('obtenirpointdanspose',
+										CalculationState(calculation=lambda x: x.position),
+										transitions={'done': 'Action_point_at2'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'pose', 'output_value': 'targetPoint'})
+
+			# x:289 y:171
+			OperatableStateMachine.add('Action_point_at2',
+										self.use_behavior(Action_point_at2SM, 'Action_point_at2'),
+										transitions={'finished': 'finished', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'targetPoint': 'targetPoint'})
 
 
 		return _state_machine
