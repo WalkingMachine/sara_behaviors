@@ -37,7 +37,7 @@ class point_at_gen_pose(EventState):
         pose = Pose()
         pose.position.y = math.sin(userdata.yaw) * self.l * math.cos(userdata.pitch) + self.offsety
         pose.position.x = math.cos(userdata.yaw) * self.l * math.cos(userdata.pitch) + self.offsetx
-        pose.position.z = math.sin(userdata.pitch)*self.l + self.offsetz
+        pose.position.z = -math.sin(userdata.pitch)*self.l + self.offsetz
 
         qt = quaternion_from_euler(0, userdata.pitch, userdata.yaw)
         pose.orientation.x = qt[0]
