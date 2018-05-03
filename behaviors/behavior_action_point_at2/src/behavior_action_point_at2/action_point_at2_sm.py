@@ -9,10 +9,9 @@
 import roslib; roslib.load_manifest('behavior_action_point_at2')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.Get_direction_to_point import Get_direction_to_point
-from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_states.pose_gen_euler_key import GenPoseEulerKey
 from sara_flexbe_states.moveit_move import MoveitMove
 from flexbe_states.calculation_state import CalculationState
+from sara_flexbe_states.point_at_gen_pose import point_at_gen_pose
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -47,7 +46,7 @@ class Action_point_at2SM(Behavior):
 
 
 	def create(self):
-		# x:736 y:384, x:61 y:579
+		# x:736 y:384, x:194 y:441
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['targetPoint'])
 		_state_machine.userdata.targetPoint = 0
 
@@ -61,23 +60,9 @@ class Action_point_at2SM(Behavior):
 			# x:113 y:102
 			OperatableStateMachine.add('direction',
 										Get_direction_to_point(frame_origin="base_link", frame_reference="right_upper_arm_upper_link"),
-										transitions={'done': 'y', 'fail': 'failed'},
+										transitions={'done': 'invert', 'fail': 'failed'},
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'targetPoint': 'targetPoint', 'yaw': 'yaw', 'pitch': 'pitch'})
-
-			# x:158 y:370
-			OperatableStateMachine.add('setroll',
-										SetKey(Value=0),
-										transitions={'done': 'posz'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'setroll'})
-
-			# x:371 y:204
-			OperatableStateMachine.add('genpose',
-										GenPoseEulerKey(),
-										transitions={'done': 'move'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'xpos': 'x', 'ypos': 'y', 'zpos': 'posz', 'yaw': 'yaw', 'pitch': 'pitch', 'roll': 'setroll', 'pose': 'pose'})
 
 			# x:547 y:239
 			OperatableStateMachine.add('move',
@@ -86,33 +71,19 @@ class Action_point_at2SM(Behavior):
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'pose'})
 
-			# x:148 y:514
+			# x:126 y:277
 			OperatableStateMachine.add('invert',
 										CalculationState(calculation=lambda x: -x),
-										transitions={'done': 'genpose'},
+										transitions={'done': 'point'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'pitch', 'output_value': 'pitch'})
 
-			# x:153 y:198
-			OperatableStateMachine.add('y',
-										CalculationState(calculation=lambda x:sin(x)*2*x+0.1),
-										transitions={'done': 'x'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'yaw', 'output_value': 'y'})
-
-			# x:153 y:277
-			OperatableStateMachine.add('x',
-										CalculationState(calculation=lambda x:cos(x)*2*x+0.1),
-										transitions={'done': 'setroll'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'pitch', 'output_value': 'x'})
-
-			# x:155 y:450
-			OperatableStateMachine.add('posz',
-										SetKey(Value=1.0),
-										transitions={'done': 'invert'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'posz'})
+			# x:308 y:250
+			OperatableStateMachine.add('point',
+										point_at_gen_pose(offsetx=0.3, offsety=0.25, offsetz=1.0, l=0.5),
+										transitions={'pose': 'move'},
+										autonomy={'pose': Autonomy.Off},
+										remapping={'yaw': 'yaw', 'pitch': 'pitch', 'pose': 'pose'})
 
 
 		return _state_machine
