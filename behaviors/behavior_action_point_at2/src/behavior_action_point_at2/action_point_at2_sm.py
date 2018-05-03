@@ -12,6 +12,7 @@ from sara_flexbe_states.Get_direction_to_point import Get_direction_to_point
 from sara_flexbe_states.moveit_move import MoveitMove
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.point_at_gen_pose import point_at_gen_pose
+from flexbe_states.log_key_state import LogKeyState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -46,7 +47,7 @@ class Action_point_at2SM(Behavior):
 
 
 	def create(self):
-		# x:736 y:384, x:194 y:441
+		# x:736 y:384, x:79 y:422
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['targetPoint'])
 		_state_machine.userdata.targetPoint = 0
 
@@ -57,10 +58,10 @@ class Action_point_at2SM(Behavior):
 
 
 		with _state_machine:
-			# x:113 y:102
+			# x:92 y:41
 			OperatableStateMachine.add('direction',
 										Get_direction_to_point(frame_origin="base_link", frame_reference="right_upper_arm_upper_link"),
-										transitions={'done': 'invert', 'fail': 'failed'},
+										transitions={'done': 'print pitch', 'fail': 'failed'},
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'targetPoint': 'targetPoint', 'yaw': 'yaw', 'pitch': 'pitch'})
 
@@ -80,10 +81,17 @@ class Action_point_at2SM(Behavior):
 
 			# x:308 y:250
 			OperatableStateMachine.add('point',
-										point_at_gen_pose(offsetx=0.3, offsety=0.25, offsetz=1.0, l=0.5),
+										point_at_gen_pose(offsetx=0.4, offsety=-0.3, offsetz=1.0, l=0.5),
 										transitions={'pose': 'move'},
 										autonomy={'pose': Autonomy.Off},
 										remapping={'yaw': 'yaw', 'pitch': 'pitch', 'pose': 'pose'})
+
+			# x:173 y:129
+			OperatableStateMachine.add('print pitch',
+										LogKeyState(text="pitch = {}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'invert'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'pitch'})
 
 
 		return _state_machine

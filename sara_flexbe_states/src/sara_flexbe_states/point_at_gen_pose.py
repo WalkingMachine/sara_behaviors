@@ -35,8 +35,8 @@ class point_at_gen_pose(EventState):
 
     def execute(self, userdata):
         pose = Pose()
-        pose.position.y = math.asin(userdata.yaw) * self.l - self.offsety
-        pose.position.x = math.acos(userdata.pitch) * self.l + self.offsetx
+        pose.position.y = math.sin(userdata.yaw) * self.l + self.offsety
+        pose.position.x = math.cos(userdata.yaw) * self.l + self.offsetx
         pose.position.z = self.offsetz
 
         qt = quaternion_from_euler(0, userdata.pitch, userdata.yaw)
