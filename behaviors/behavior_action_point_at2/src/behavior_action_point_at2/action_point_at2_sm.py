@@ -8,11 +8,12 @@
 
 import roslib; roslib.load_manifest('behavior_action_point_at2')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.Get_direction_to_point import Get_direction_to_point
+from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.moveit_move import MoveitMove
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.point_at_gen_pose import point_at_gen_pose
 from flexbe_states.log_key_state import LogKeyState
+from sara_flexbe_states.Get_direction_to_point import Get_direction_to_point
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -58,40 +59,47 @@ class Action_point_at2SM(Behavior):
 
 
 		with _state_machine:
-			# x:92 y:41
-			OperatableStateMachine.add('direction',
-										Get_direction_to_point(frame_origin="base_link", frame_reference="right_upper_arm_upper_link"),
-										transitions={'done': 'print pitch', 'fail': 'failed'},
-										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
-										remapping={'targetPoint': 'targetPoint', 'yaw': 'yaw', 'pitch': 'pitch'})
+			# x:86 y:32
+			OperatableStateMachine.add('gripper',
+										SetGripperState(width=0, effort=1),
+										transitions={'object': 'direction', 'no_object': 'direction'},
+										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
+										remapping={'object_size': 'object_size'})
 
-			# x:547 y:239
+			# x:503 y:276
 			OperatableStateMachine.add('move',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
 										transitions={'done': 'finished', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'pose'})
 
-			# x:126 y:277
+			# x:114 y:312
 			OperatableStateMachine.add('invert',
 										CalculationState(calculation=lambda x: -x),
 										transitions={'done': 'point'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'pitch', 'output_value': 'pitch'})
 
-			# x:308 y:250
+			# x:269 y:267
 			OperatableStateMachine.add('point',
 										point_at_gen_pose(offsetx=0.4, offsety=-0.3, offsetz=1.0, l=0.5),
 										transitions={'pose': 'move'},
 										autonomy={'pose': Autonomy.Off},
 										remapping={'yaw': 'yaw', 'pitch': 'pitch', 'pose': 'pose'})
 
-			# x:173 y:129
+			# x:99 y:199
 			OperatableStateMachine.add('print pitch',
 										LogKeyState(text="pitch = {}", severity=Logger.REPORT_HINT),
 										transitions={'done': 'invert'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'data': 'pitch'})
+
+			# x:235 y:103
+			OperatableStateMachine.add('direction',
+										Get_direction_to_point(frame_origin="base_link", frame_reference="right_upper_arm_upper_link"),
+										transitions={'done': 'print pitch', 'fail': 'failed'},
+										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'targetPoint': 'targetPoint', 'yaw': 'yaw', 'pitch': 'pitch'})
 
 
 		return _state_machine
