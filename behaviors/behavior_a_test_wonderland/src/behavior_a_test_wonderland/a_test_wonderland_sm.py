@@ -74,7 +74,7 @@ class A_TEST_WONDERLANDSM(Behavior):
 		with _state_machine:
 			# x:61 y:59
 			OperatableStateMachine.add('genpose',
-										GenPoseEuler(x=2, y=2, z=1.4, roll=0, pitch=0, yaw=0),
+										GenPoseEuler(x=0.5, y=0, z=0, roll=0, pitch=0, yaw=0),
 										transitions={'done': 'obtenirpointdanspose'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'pose'})

@@ -81,7 +81,7 @@ class Action_point_at2SM(Behavior):
 
 			# x:308 y:250
 			OperatableStateMachine.add('point',
-										point_at_gen_pose(offsetx=0.4, offsety=-0.3, offsetz=1.0, l=0.5),
+										point_at_gen_pose(offsetx=0.4, offsety=-0.3, offsetz=1.3, l=0.5),
 										transitions={'pose': 'move'},
 										autonomy={'pose': Autonomy.Off},
 										remapping={'yaw': 'yaw', 'pitch': 'pitch', 'pose': 'pose'})
