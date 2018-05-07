@@ -6,14 +6,12 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_action_look_at')
+import roslib; roslib.load_manifest('behavior_action_look_at_face')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.Get_direction_to_point import Get_direction_to_point
 from sara_flexbe_states.sara_set_head_angle_key import SaraSetHeadAngleKey
-
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -21,18 +19,18 @@ from sara_flexbe_states.sara_set_head_angle_key import SaraSetHeadAngleKey
 
 
 '''
-Created on Wed Apr 25 2018
-@author: Veronica
+Created on Thu Apr 26 2018
+@author: Veronica Romero
 '''
-class action_look_atSM(Behavior):
+class action_look_at_faceSM(Behavior):
     '''
-    Makes sara look at a given point
+    Moves Sara's head towards the face recognized by Yolo
     '''
 
 
     def __init__(self):
-        super(action_look_atSM, self).__init__()
-        self.name = 'action_look_at'
+        super(action_look_at_faceSM, self).__init__()
+        self.name = 'action_look_at_face'
 
         # parameters of this behavior
 
@@ -48,7 +46,7 @@ class action_look_atSM(Behavior):
 
 
     def create(self):
-        # x:873 y:200, x:801 y:120
+        # x:797 y:212, x:89 y:236
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Position', 'ID'])
         _state_machine.userdata.Position = None
         _state_machine.userdata.ID = 0
@@ -60,40 +58,40 @@ class action_look_atSM(Behavior):
 
 
         with _state_machine:
-            # x:47 y:53
-            OperatableStateMachine.add('entity',
+            # x:30 y:40
+            OperatableStateMachine.add('Entity',
                                         GetEntityByID(),
                                         transitions={'found': 'ExtractPos', 'not_found': 'failed'},
                                         autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
                                         remapping={'ID': 'ID', 'Entity': 'Entity'})
 
-            # x:187 y:84
+            # x:174 y:62
             OperatableStateMachine.add('ExtractPos',
                                         CalculationState(calculation=lambda x: x.position),
-                                        transitions={'done': 'Direction'},
+                                        transitions={'done': 'direction'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'input_value': 'Entity', 'output_value': 'Position'})
 
-            # x:352 y:107
-            OperatableStateMachine.add('Direction',
+            # x:310 y:118
+            OperatableStateMachine.add('direction',
                                         Get_direction_to_point(frame_origin="base_link", frame_reference="head_link"),
-                                        transitions={'done': 'invertPitch', 'fail': 'failed'},
+                                        transitions={'done': 'InvertPitch', 'fail': 'failed'},
                                         autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
                                         remapping={'targetPoint': 'Position', 'yaw': 'yaw', 'pitch': 'pitch'})
 
-            # x:676 y:191
-            OperatableStateMachine.add('Tete',
+            # x:480 y:159
+            OperatableStateMachine.add('InvertPitch',
+                                        CalculationState(calculation=lambda x: -x),
+                                        transitions={'done': 'Head'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'input_value': 'pitch', 'output_value': 'pitch'})
+
+            # x:618 y:201
+            OperatableStateMachine.add('Head',
                                         SaraSetHeadAngleKey(),
                                         transitions={'done': 'finished'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'yaw': 'yaw', 'pitch': 'pitch'})
-
-            # x:529 y:141
-            OperatableStateMachine.add('invertPitch',
-                                        CalculationState(calculation=lambda x: -x),
-                                        transitions={'done': 'Tete'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'input_value': 'pitch', 'output_value': 'pitch'})
 
 
         return _state_machine
@@ -101,6 +99,5 @@ class action_look_atSM(Behavior):
 
     # Private functions can be added inside the following tags
     # [MANUAL_FUNC]
-
     
     # [/MANUAL_FUNC]

@@ -23,8 +23,9 @@ class MoveitMove(EventState):
         self.move = move
         self.waitForExecution = waitForExecution
         self.group = MoveGroupCommander(group)
-        self.tol = 0.0012
+        self.tol = 0.05
         self.result = None
+        self.count = 0
 
     def execute(self, userdata):
 
@@ -34,9 +35,14 @@ class MoveitMove(EventState):
         if self.waitForExecution:
             curState = self.group.get_current_joint_values()
             diff = compareStates(curState, self.endState)
+            print("diff="+str(diff))
             if diff < self.tol:
-                Logger.loginfo('Target reached :)')
-                return "done"
+                self.count += 1
+                if self.count > 3:
+                    Logger.loginfo('Target reached :)')
+                    return "done"
+            else:
+                self.count = 0
         else:
             return "done"
 
@@ -94,5 +100,5 @@ class MoveitMove(EventState):
 def compareStates(state1, state2):
     diff = 0.0
     for i in range(len(state1)):
-        diff = (state1[i] - state2[i]) ** 2
-    return diff
+        diff += (state1[i] - state2[i]) ** 2
+    return diff**0.5

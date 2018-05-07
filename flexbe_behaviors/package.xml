@@ -43,7 +43,6 @@
   <run_depend>behavior_wonderland_test2</run_depend>
   <run_depend>behavior_wonderland_get_origin</run_depend>
   <run_depend>behavior_return_to_origin</run_depend>
-  <run_depend>behavior_test_continue</run_depend>
 
   <run_depend>behavior_entity_pose_creator</run_depend>
   <run_depend>behavior_wonderland_waypoint_id</run_depend>
@@ -81,5 +80,6 @@
   <run_depend>behavior_action_follow</run_depend>
   <run_depend>behavior_action_look_at</run_depend>
   <run_depend>behavior_action_look_at_face</run_depend>
+  <run_depend>behavior_action_point_at2</run_depend>
 
 </package>
