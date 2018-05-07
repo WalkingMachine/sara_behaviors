@@ -1,20 +1,23 @@
 <package>
-  <name>behavior_sandbox_for_test_purpose</name>
+  <name>behavior_general_test</name>
   <version>1.0.0</version>
   <description>
-     Sandbox for test purpose.
+     made to test stuff
   </description>
   <maintainer email="todo@todo.com">Philippe La Madeleine</maintainer>
   <license>BSD</license>
 
-  <url>http://ros.org/wiki/behavior_sandbox_for_test_purpose</url>
+  <url>http://ros.org/wiki/behavior_general_test</url>
   <author>Philippe La Madeleine</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
   <run_depend>rospy</run_depend>
   <run_depend>flexbe_core</run_depend>
-  <run_depend>flexbe_states</run_depend>
   <run_depend>sara_flexbe_states</run_depend>
+  <run_depend>flexbe_states</run_depend>
+  <run_depend>flexbe_navigation_states</run_depend>
+  <run_depend>flexbe_manipulation_states</run_depend>
+  <run_depend>flexbe_utility_states</run_depend>
 
 </package>

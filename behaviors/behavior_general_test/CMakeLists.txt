@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(behavior_test_continue)
+project(behavior_general_test)
 
 find_package(catkin REQUIRED)
 

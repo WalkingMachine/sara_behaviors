@@ -8,10 +8,12 @@
 
 import roslib; roslib.load_manifest('behavior_action_look_at')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
+
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.Get_direction_to_point import Get_direction_to_point
 from sara_flexbe_states.sara_set_head_angle_key import SaraSetHeadAngleKey
+
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -99,5 +101,6 @@ class action_look_atSM(Behavior):
 
     # Private functions can be added inside the following tags
     # [MANUAL_FUNC]
+
     
     # [/MANUAL_FUNC]

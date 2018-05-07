@@ -8,19 +8,16 @@ class GenPoseEulerKey(EventState):
     ### State
     Generate a pose from xyz and euler angles keys instead of parameters
 
-    ### input keys
-    ># x
-    ># y
-    ># z
-    ># yaw
-    ># pitch
-    ># roll
+    ># x        double      the x coordinate
+    ># y        double      the x coordinate
+    ># z        double      the x coordinate
+    ># yaw      double      the yaw angle
+    ># pitch    double      the pitch angle
+    ># roll     double      the roll angle
 
-    ### output_keys
-    #> pose generated pose
+    #> pose     geometry_msgs/Pose        the generated pose
 
-    ### outcomes
-    <= done
+    <= done     The generation is succesfull
     '''
 
     def __init__(self):
