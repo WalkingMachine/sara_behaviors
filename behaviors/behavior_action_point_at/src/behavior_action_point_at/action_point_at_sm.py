@@ -8,10 +8,12 @@
 
 import roslib; roslib.load_manifest('behavior_action_point_at')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.Get_direction_to_point import Get_direction_to_point
-from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_states.pose_gen_euler_key import GenPoseEulerKey
+from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.moveit_move import MoveitMove
+from flexbe_states.calculation_state import CalculationState
+from sara_flexbe_states.point_at_gen_pose import point_at_gen_pose
+from flexbe_states.log_key_state import LogKeyState
+from sara_flexbe_states.Get_direction_to_point import Get_direction_to_point
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -46,7 +48,7 @@ class Action_point_atSM(Behavior):
 
 
 	def create(self):
-		# x:739 y:301, x:61 y:579
+		# x:736 y:384, x:79 y:422
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['targetPoint'])
 		_state_machine.userdata.targetPoint = 0
 
@@ -57,47 +59,47 @@ class Action_point_atSM(Behavior):
 
 
 		with _state_machine:
-			# x:113 y:102
-			OperatableStateMachine.add('direction',
-										Get_direction_to_point(frame_origin="base_link", frame_reference="right_upper_arm_upper_link"),
-										transitions={'done': 'posx', 'fail': 'failed'},
-										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
-										remapping={'targetPoint': 'targetPoint', 'yaw': 'yaw', 'pitch': 'pitch'})
+			# x:86 y:32
+			OperatableStateMachine.add('gripper',
+										SetGripperState(width=0, effort=1),
+										transitions={'object': 'direction', 'no_object': 'direction'},
+										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
+										remapping={'object_size': 'object_size'})
 
-			# x:297 y:337
-			OperatableStateMachine.add('setkey',
-										SetKey(Value=-0.25),
-										transitions={'done': 'genpose'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'posy'})
-
-			# x:175 y:226
-			OperatableStateMachine.add('posx',
-										SetKey(Value=0.8),
-										transitions={'done': 'setroll'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'posx'})
-
-			# x:136 y:336
-			OperatableStateMachine.add('setroll',
-										SetKey(Value=0),
-										transitions={'done': 'setkey'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'setroll'})
-
-			# x:378 y:187
-			OperatableStateMachine.add('genpose',
-										GenPoseEulerKey(),
-										transitions={'done': 'move'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'xpos': 'posx', 'ypos': 'posy', 'zpos': 'posx', 'yaw': 'yaw', 'pitch': 'pitch', 'roll': 'setroll', 'pose': 'pose'})
-
-			# x:583 y:193
+			# x:503 y:276
 			OperatableStateMachine.add('move',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
 										transitions={'done': 'finished', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'pose'})
+
+			# x:114 y:312
+			OperatableStateMachine.add('invert',
+										CalculationState(calculation=lambda x: -x),
+										transitions={'done': 'point'},
+										autonomy={'done': Autonomy.Off},
+						f				remapping={'input_value': 'pitch', 'output_value': 'pitch'})
+
+			# x:269 y:267
+			OperatableStateMachine.add('point',
+										point_at_gen_pose(offsetx=0.16, offsety=-0.2, offsetz=1.2, l=0.75),
+										transitions={'pose': 'move'},
+										autonomy={'pose': Autonomy.Off},
+										remapping={'yaw': 'yaw', 'pitch': 'pitch', 'pose': 'pose'})
+
+			# x:99 y:199
+			OperatableStateMachine.add('print pitch',
+										LogKeyState(text="pitch = {}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'invert'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'pitch'})
+
+			# x:235 y:103
+			OperatableStateMachine.add('direction',
+										Get_direction_to_point(frame_origin="base_link", frame_reference="right_upper_arm_upper_link"),
+										transitions={'done': 'print pitch', 'fail': 'failed'},
+										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'targetPoint': 'targetPoint', 'yaw': 'yaw', 'pitch': 'pitch'})
 
 
 		return _state_machine
