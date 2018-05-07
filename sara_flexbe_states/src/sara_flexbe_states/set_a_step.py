@@ -8,8 +8,8 @@ from std_msgs.msg import UInt32
 
 class Set_a_step(EventState):
     """
-       set a step
-    -- step   UInt32 
+       set a step. need a story
+    -- step   UInt32  the desired step of the story
 
     <= done  what's suppose to be set was set
     """

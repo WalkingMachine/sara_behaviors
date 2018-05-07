@@ -1,0 +1,23 @@
+<package>
+  <name>behavior_action_point_at</name>
+  <version>1.0.0</version>
+  <description>
+     pointe
+  </description>
+  <maintainer email="todo@todo.com">Huynh-Anh</maintainer>
+  <license>BSD</license>
+
+  <url>http://ros.org/wiki/behavior_action_point_at</url>
+  <author>Huynh-Anh</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>rospy</run_depend>
+  <run_depend>flexbe_core</run_depend>
+  <run_depend>flexbe_states</run_depend>
+  <run_depend>sara_flexbe_states</run_depend>
+  <run_depend>flexbe_navigation_states</run_depend>
+  <run_depend>flexbe_utility_states</run_depend>
+  <run_depend>flexbe_manipulation_states</run_depend>
+
+</package>

@@ -5,15 +5,18 @@ from geometry_msgs.msg import Pose
 class GenPoseQuat(EventState):
     '''
     Generate a pose from xyz and quaternion
-    x       x
-    y       y
-    z       z
-    ox      ox
-    oy      oy
-    oz      oz
-    ow      ow
 
-    <= pose   generated pose
+    ># x        double      the x coordinate
+    ># y        double      the x coordinate
+    ># z        double      the x coordinate
+    ># ox       double      the ox coordinate
+    ># oy       double      the oy coordinate
+    ># oz       double      the oz coordinate
+    ># ow       double      the ow coordinate
+
+    #> pose     geometry_msgs/Pose        the generated pose
+
+    <= done     The generation is succesfull
     '''
 
     def __init__(self, x, y, z, ox, oy, oz, ow):

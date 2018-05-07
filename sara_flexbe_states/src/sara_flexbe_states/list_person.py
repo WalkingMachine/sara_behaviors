@@ -13,11 +13,11 @@ class list_person(EventState):
     '''
         will list people seen by the camera
 
-        -- frontality_level float
-        #> persons          object
+        -- frontality_level     float               The level of frontality. 0.0 is circular, 1.0 is linear
+        #> persons              object              the persons found
 
-        <= found            people are found
-        <= not_found        no one is found
+        <= found                people are found
+        <= not_found            no one is found
 
     '''
 

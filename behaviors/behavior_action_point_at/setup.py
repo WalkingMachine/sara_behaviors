@@ -4,7 +4,7 @@ from distutils.core import setup
 from catkin_pkg.python_setup import generate_distutils_setup
 
 d = generate_distutils_setup(
-    packages = ['behavior_sandbox_for_test_purpose'],
+    packages = ['behavior_action_point_at'],
     package_dir = {'': 'src'}
 )
 
