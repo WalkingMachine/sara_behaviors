@@ -20,7 +20,7 @@ C'est l'engine de nos state machines. C'est une interface graphique qui permet d
 - Insaller chrome ou chromium
 - Importer l'app flexbe_behavior_engine/FlexBE.crx vers le menu des extention du navigateur. (drag and drop)
 - Parametrer l'application depuis le widget ajouté à **Chrome**:
-![alt text](https://raw.githubusercontent.com/WalkingMachine/sara_behaviors/feature/installation_documentation/config_FlexBe.png "Logo Title Text 1")
+![alt text](https://raw.githubusercontent.com/WalkingMachine/sara_behaviors/master/config_FlexBe.png "Logo Title Text 1")
 
 1. Importer les paramètres json fournis ici dans settings en utilisant l'app: `/settings/flexbe_config.json`
 2. Ajouter les dossiers necessaires contenant les states
