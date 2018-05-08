@@ -16,7 +16,7 @@ Ce paquet a de nombreuses dépendances. En voicis quelques unes.
 C'est l'engine de nos state machines. C'est une interface graphique qui permet d'assembler des states pour tracer des behaviors comme on veut. Ça    marche en python et on peut ajouter nos propres states personnalisé selon nos besoins. L'engine produit du code smack.
 
 ### Installation :
-- sudo ./install.sh
+- `./install.sh`
 - Insaller chrome ou chromium
 - Importer l'app flexbe_behavior_engine/FlexBE.crx vers le menu des extention du navigateur. (drag and drop)
 - Importer les paramètres json fournis ici dans settings en utilisant l'app
