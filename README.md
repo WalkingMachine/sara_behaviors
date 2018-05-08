@@ -39,11 +39,11 @@ C'est l'engine de nos state machines. C'est une interface graphique qui permet d
 ### Pour lancer
 Le serveur flexbe:
 ```sh
-    roslaunch flexbe_onboard behavior_onboard.launch
+roslaunch flexbe_onboard behavior_onboard.launch
 ```
 L'interface graphique:
 ```sh
-    roslaunch flexbe_widget behavior_ocs.launch
+roslaunch flexbe_widget behavior_ocs.launch
 ```
 Une behavior en particulié sans l'interface
 ```sh
