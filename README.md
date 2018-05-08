@@ -34,7 +34,7 @@ C'est l'engine de nos state machines. C'est une interface graphique qui permet d
 
 - Compiler le workspace: `cd ~/sara_ws/ && catkin_make`
 
-- Tester les commandes de la section [#Pour lancer](Pour lancer)
+- Tester les commandes de la section [Pour lancer](# Pour lancer)
 
 ### Pour lancer
 Le serveur flexbe:
