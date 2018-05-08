@@ -32,6 +32,9 @@ C'est l'engine de nos state machines. C'est une interface graphique qui permet d
 4. Ajouter les dossiers necessaires contenant les behaviors flexbe de SARA
     - `~/sara_ws/src/sara_behaviors/flexbe_behaviors/behaviors`
 
+- Compiler le workspace: `cd ~/sara_ws/ && catkin_make`
+
+- Tester les commandes de la section [#Pour lancer](Pour lancer)
 
 ### Pour lancer
 Le serveur flexbe:
