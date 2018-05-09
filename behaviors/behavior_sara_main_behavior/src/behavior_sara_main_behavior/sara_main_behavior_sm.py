@@ -16,7 +16,7 @@ from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.FIFO_New import FIFO_New
 from sara_flexbe_states.get_speech import GetSpeech
-from sara_flexbe_states.sara_set_angle import SaraSetHeadAngle
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.sara_set_expression import SetExpression
 from flexbe_states.wait_state import WaitState

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<behavior name="Action_point_at2">
+<behavior name="Action_point_at">
 
-	<executable package_path="behavior_action_point_at2.action_point_at2_sm" class="Action_point_at2SM" />
+	<executable package_path="behavior_action_point_at.action_point_at_sm" class="Action_point_atSM" />
 	<tagstring>Wonderland</tagstring>
 	<author>Huynh-Anh</author>
 	<date>Wed May 02 2018</date>

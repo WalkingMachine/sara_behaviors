@@ -8,7 +8,7 @@
 
 import roslib; roslib.load_manifest('behavior_action_get_entity_pose')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.sara_set_angle import SaraSetHeadAngle
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.get_box_center import GetBoxCenter
 from flexbe_states.wait_state import WaitState
 # Additional imports can be added inside the following tags
