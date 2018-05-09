@@ -11,13 +11,13 @@ class getDistance2D(EventState):
     Calcule la distance entre deux points donnes.
 
     ### InputKey
-    ># point1
-    ># point2
+    ># point1       geometry_msgs/Point     Point1
+    ># point2       geometry_msgs/Point     Point2
 
     ### OutputKey
-    #> distance
+    #> distance     double      Distance
 
-    <= done
+    <= done         distance
     """
     def __init__(self):
         """Constructor"""

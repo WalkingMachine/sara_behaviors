@@ -8,7 +8,7 @@
 
 import roslib; roslib.load_manifest('behavior_action_move')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.sara_set_angle import SaraSetHeadAngle
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_set_expression import SetExpression
