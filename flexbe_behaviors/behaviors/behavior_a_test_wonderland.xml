@@ -12,7 +12,7 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Action_point_at" />
+	<contains name="Get_operator" />
 
 	<!-- Available Parameters -->
 

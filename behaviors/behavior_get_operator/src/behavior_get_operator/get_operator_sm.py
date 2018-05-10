@@ -18,6 +18,8 @@ from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from behavior_action_move.action_move_sm import Action_MoveSM
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.SetRosParam import SetRosParam
+from sara_flexbe_states.regex_tester import RegexTester
+from sara_flexbe_states.get_speech import GetSpeech
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -53,7 +55,7 @@ class Get_operatorSM(Behavior):
 
 
 	def create(self):
-		# x:814 y:45, x:518 y:226
+		# x:814 y:45, x:514 y:274
 		_state_machine = OperatableStateMachine(outcomes=['Found', 'NotFound'], output_keys=['Operator'])
 		_state_machine.userdata.Operator = None
 
@@ -82,7 +84,7 @@ class Get_operatorSM(Behavior):
 
 			# x:47 y:368
 			OperatableStateMachine.add('set not rel',
-										SetKey(Value=false),
+										SetKey(Value=False),
 										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'relative'})
@@ -134,17 +136,17 @@ class Get_operatorSM(Behavior):
 			# x:780 y:517
 			OperatableStateMachine.add('ask if operator',
 										SaraSay(sentence="Are you my operator?", emotion=1, block=True),
-										transitions={'done': 'get ID'},
+										transitions={'done': 'get speech'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:70 y:273
 			OperatableStateMachine.add('for 3',
 										ForLoop(repeat=3),
-										transitions={'do': 'Get persons', 'end': 'set None'},
+										transitions={'do': '2', 'end': 'set None'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
-			# x:262 y:381
+			# x:249 y:357
 			OperatableStateMachine.add('say where are you',
 										SaraSay(sentence="Operator. Where are you?", emotion=1, block=True),
 										transitions={'done': 'for 3'},
@@ -184,6 +186,27 @@ class Get_operatorSM(Behavior):
 										transitions={'done': 'set new ID'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Operator', 'output_value': 'ID'})
+
+			# x:781 y:353
+			OperatableStateMachine.add('yes?',
+										RegexTester(regex="./yes.*"),
+										transitions={'true': 'get ID', 'false': '2'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'text': 'words', 'result': 'result'})
+
+			# x:784 y:433
+			OperatableStateMachine.add('get speech',
+										GetSpeech(watchdog=5),
+										transitions={'done': 'yes?', 'nothing': '2', 'fail': 'NotFound'},
+										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'words': 'words'})
+
+			# x:69 y:402
+			OperatableStateMachine.add('2',
+										ForLoop(repeat=3),
+										transitions={'do': 'Get persons', 'end': 'set None'},
+										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+										remapping={'index': 'index2'})
 
 
 		return _state_machine
