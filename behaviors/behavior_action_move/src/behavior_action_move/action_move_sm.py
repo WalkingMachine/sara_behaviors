@@ -49,7 +49,7 @@ class Action_MoveSM(Behavior):
 
 
 	def create(self):
-		# x:757 y:309, x:767 y:456
+		# x:765 y:155, x:767 y:456
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['pose', 'relative'])
 		_state_machine.userdata.pose = 0
 		_state_machine.userdata.relative = False
@@ -89,8 +89,8 @@ class Action_MoveSM(Behavior):
 		with _state_machine:
 			# x:46 y:147
 			OperatableStateMachine.add('set head',
-										SaraSetHeadAngle(angle=0.8),
-										transitions={'done': 'watch out'},
+										SaraSetHeadAngle(pitch=0.3, yaw=0),
+										transitions={'done': 'Move'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:271 y:449
@@ -106,7 +106,7 @@ class Action_MoveSM(Behavior):
 										transitions={'done': 'for'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:69 y:342
+			# x:58 y:339
 			OperatableStateMachine.add('try again',
 										SaraSay(sentence="Let me try again", emotion=1, block=True),
 										transitions={'done': 'set head'},
@@ -118,52 +118,28 @@ class Action_MoveSM(Behavior):
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:450 y:348
+			# x:260 y:250
 			OperatableStateMachine.add('set sad face',
 										SetExpression(emotion=2, brightness=-1),
 										transitions={'done': 'stuck'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:57 y:448
+			# x:50 y:447
 			OperatableStateMachine.add('set straight face',
 										SetExpression(emotion=3, brightness=-1),
 										transitions={'done': 'try again'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:449 y:178
+			# x:450 y:150
 			OperatableStateMachine.add('set blink',
 										SetExpression(emotion=6, brightness=-1),
-										transitions={'done': 'set head 3'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:741 y:177
-			OperatableStateMachine.add('here',
-										SaraSay(sentence="Here I am", emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:438 y:255
-			OperatableStateMachine.add('set head 2',
-										SaraSetHeadAngle(angle=-0.1),
-										transitions={'done': 'set sad face'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:143 y:218
-			OperatableStateMachine.add('watch out',
-										SaraSay(sentence="Watch out. I'm about to move", emotion=1, block=True),
-										transitions={'done': 'Move'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:587 y:179
-			OperatableStateMachine.add('set head 3',
-										SaraSetHeadAngle(angle=0.1),
-										transitions={'done': 'here'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:275 y:217
+			# x:252 y:146
 			OperatableStateMachine.add('Move',
 										_sm_move_0,
-										transitions={'arrived': 'set blink', 'failed': 'set head 2'},
+										transitions={'arrived': 'set blink', 'failed': 'set sad face'},
 										autonomy={'arrived': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'relative': 'relative', 'pose': 'pose'})
 
