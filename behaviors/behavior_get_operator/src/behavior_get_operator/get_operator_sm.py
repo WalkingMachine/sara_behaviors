@@ -10,16 +10,17 @@ import roslib; roslib.load_manifest('behavior_get_operator')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.GetRosParam import GetRosParam
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
-from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
+from flexbe_states.calculation_state import CalculationState
 from behavior_action_move.action_move_sm import Action_MoveSM
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.get_speech import GetSpeech
+from sara_flexbe_states.binary_calculation_state import BinaryCalculationState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -120,13 +121,6 @@ class Get_operatorSM(Behavior):
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ID': 'ID', 'Entity': 'Operator'})
 
-			# x:269 y:513
-			OperatableStateMachine.add('Get closest person',
-										CalculationState(calculation=lambda x: x[0]),
-										transitions={'done': 'Move to person'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'Entities_list', 'output_value': 'Operator'})
-
 			# x:263 y:155
 			OperatableStateMachine.add('Say lost operator',
 										SaraSay(sentence="I lost my operator", emotion=1, block=True),
@@ -142,7 +136,7 @@ class Get_operatorSM(Behavior):
 			# x:70 y:273
 			OperatableStateMachine.add('for 3',
 										ForLoop(repeat=3),
-										transitions={'do': '2', 'end': 'set None'},
+										transitions={'do': 'for 3_2', 'end': 'set None'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
@@ -162,11 +156,11 @@ class Get_operatorSM(Behavior):
 			# x:49 y:511
 			OperatableStateMachine.add('Get persons',
 										list_entities_by_name(Name="person", frontality_level=0.5),
-										transitions={'found': 'Get closest person', 'not_found': 'say where are you'},
+										transitions={'found': 'Get closest', 'not_found': 'say where are you'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'Entities_list': 'Entities_list', 'number': 'number'})
 
-			# x:462 y:506
+			# x:461 y:475
 			OperatableStateMachine.add('Move to person',
 										_sm_move_to_person_0,
 										transitions={'finished': 'ask if operator', 'failed': 'NotFound'},
@@ -190,23 +184,30 @@ class Get_operatorSM(Behavior):
 			# x:781 y:353
 			OperatableStateMachine.add('yes?',
 										RegexTester(regex="./yes.*"),
-										transitions={'true': 'get ID', 'false': '2'},
+										transitions={'true': 'get ID', 'false': 'for 3_2'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'text': 'words', 'result': 'result'})
 
 			# x:784 y:433
 			OperatableStateMachine.add('get speech',
 										GetSpeech(watchdog=5),
-										transitions={'done': 'yes?', 'nothing': '2', 'fail': 'NotFound'},
+										transitions={'done': 'yes?', 'nothing': 'for 3_2', 'fail': 'NotFound'},
 										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'words': 'words'})
 
 			# x:69 y:402
-			OperatableStateMachine.add('2',
+			OperatableStateMachine.add('for 3_2',
 										ForLoop(repeat=3),
 										transitions={'do': 'Get persons', 'end': 'set None'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index2'})
+
+			# x:254 y:514
+			OperatableStateMachine.add('Get closest',
+										BinaryCalculationState(calculation="X[Y-1]"),
+										transitions={'done': 'ask if operator'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'X': 'Entities_list', 'Y': 'index2', 'Z': 'Operator'})
 
 
 		return _state_machine
