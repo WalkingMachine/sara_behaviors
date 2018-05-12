@@ -14,6 +14,7 @@ class GenGripperPose(EventState):
 
     >= pose_in     Pose/point     input pose
     <= pose_out    Pose     output pose
+
     '''
 
     def __init__(self, l):
