@@ -8,8 +8,10 @@
 
 import roslib; roslib.load_manifest('behavior_a_test_wonderland')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.Wonderland_Add_Human import Wonderland_Add_Human
-from sara_flexbe_states.test_log import test_log
+from behavior_get_operator.get_operator_sm import Get_operatorSM
+from sara_flexbe_states.sara_say_key import SaraSayKey
+from sara_flexbe_states.sara_say import SaraSay
+from flexbe_states.wait_state import WaitState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -33,6 +35,7 @@ class A_TEST_WONDERLANDSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
+		self.add_behavior(Get_operatorSM, 'Get_operator')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -44,7 +47,7 @@ class A_TEST_WONDERLANDSM(Behavior):
 
 
 	def create(self):
-		# x:340 y:478, x:232 y:476, x:498 y:55
+		# x:607 y:186, x:130 y:365, x:230 y:365
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'registered'], input_keys=['x1', 'x2', 'x3', 'x4', 'y1', 'y2', 'y3', 'y4'])
 		_state_machine.userdata.name = "Jean Eude"
 		_state_machine.userdata.x1 = 1
@@ -70,19 +73,31 @@ class A_TEST_WONDERLANDSM(Behavior):
 
 
 		with _state_machine:
-			# x:84 y:538
-			OperatableStateMachine.add('Wonderland_Add_Human',
-										Wonderland_Add_Human(),
-										transitions={'done': 'test_log', 'error': 'failed'},
-										autonomy={'done': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'id': 'id', 'name': 'name', 'roomID': 'roomID', 'x_pos': 'x_pos', 'y_pos': 'y_pos', 'z_pos': 'z_pos', 'gender': 'gender', 'is_operator': 'is_operator'})
+			# x:30 y:40
+			OperatableStateMachine.add('wait',
+										WaitState(wait_time=4),
+										transitions={'done': 'Get_operator'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:274 y:538
-			OperatableStateMachine.add('test_log',
-										test_log(),
+			# x:378 y:169
+			OperatableStateMachine.add('say',
+										SaraSayKey(Format=lambda x: "You are person" + x.ID, emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'text': 'id'})
+										remapping={'sentence': 'Operator'})
+
+			# x:146 y:259
+			OperatableStateMachine.add('say2',
+										SaraSay(sentence="Sorry. I failed", emotion=1, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:150 y:141
+			OperatableStateMachine.add('Get_operator',
+										self.use_behavior(Get_operatorSM, 'Get_operator'),
+										transitions={'Found': 'say', 'NotFound': 'say2'},
+										autonomy={'Found': Autonomy.Inherit, 'NotFound': Autonomy.Inherit},
+										remapping={'Operator': 'Operator'})
 
 
 		return _state_machine

@@ -12,6 +12,7 @@
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Get_operator" />
 
 	<!-- Available Parameters -->
 
