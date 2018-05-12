@@ -80,5 +80,6 @@
   <run_depend>behavior_action_follow</run_depend>
   <run_depend>behavior_action_look_at</run_depend>
   <run_depend>behavior_action_look_at_face</run_depend>
+  <run_depend>behavior_scenario_security_check2</run_depend>
 
 </package>
