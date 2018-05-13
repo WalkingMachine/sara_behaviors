@@ -1,34 +1,39 @@
 #!/usr/bin/env python
 
+from flexbe_core import EventState, Logger
 import rospy
 import tf
+from geometry_msgs.msg import PointStamped
 
-
-class TF_transformation:
+class TF_transformation(EventState):
     """
     Transformation from a referential  to another
 
-    --in_ref    frame_id     first referential
-    --out_ref   frame_id     second referential
+    ###Params
+    --in_ref   string      first referential
+    --out_ref  string      second referential
 
-    ># in_pos   Point        point in in_pos
+    ### InputKey
+    >#in_pos   geometry_msgs/Point       point in first referential
 
-    <= done                  Did all the transformation
-    <= fail                  Failed to transform
+    ### OutputKey
+    #>out_pos  geometry_msgs/Point       point in second referential
+
+    ###Outcomes
+    <= done                 Did all the transformation
+    <= fail                 Failed to transform
 
     """
 
-    def __init__(self,in_ref,out_ref):
-        '''
-        Constructor
-        '''
+    def __init__(self, in_ref, out_ref):
+        '''Constructor'''
         super(TF_transformation,self).__init__(outcomes=['done','fail'], input_keys=['in_pos'], output_keys=['out_pos'])
         self.listener = tf.TransformListener()
         self.in_ref=in_ref
         self.out_ref=out_ref
 
     def execute(self, userdata):
-        point = geometry_msgs.msg.PointStamped()
+        point = PointStamped()
         point.header.frame_id = self.in_ref
         point.point = userdata.in_pos
         self.listener.waitForTransform("map", self.out_ref, rospy.Time(0), rospy.Duration(1))

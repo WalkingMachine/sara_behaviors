@@ -8,7 +8,10 @@
 
 import roslib; roslib.load_manifest('behavior_action_place')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.wait_state import WaitState
+from sara_flexbe_states.TF_transform import TF_transformation
+from sara_flexbe_states.gen_gripper_pose import GenGripperPose
+from sara_flexbe_states.moveit_move import MoveitMove
+from sara_flexbe_states.SetKey import SetKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -17,11 +20,11 @@ from flexbe_states.wait_state import WaitState
 
 '''
 Created on Sat May 12 2018
-@author: Raphaël Duchaîne
+@author: Raphael Duchaine
 '''
 class Action_placeSM(Behavior):
     '''
-    Place un objet à une position
+    Place un objet a une position
     '''
 
 
@@ -40,41 +43,42 @@ class Action_placeSM(Behavior):
 
         # Behavior comments:
 
-        # O 125 32 
+        # O 47 132 
         # TF Transform |nFrame1 Frame2|n
 
-        # O 1029 137 
+        # O 806 75 
         # Gen Grip pose|n|nA
 
-        # O 328 118 
+        # O 185 36 
         # MoveIt move|nmove = false|n|nPos
 
-        # O 541 129 
+        # O 365 42 
         # PreGrip Pose #pre grip
 
-        # O 743 126 
-        # #approche Pose|nGen Grip pose|ndistance = 0.25|nB
+        # O 532 14 
+        # #approach_pos|nGen Grip pose|ndistance = 0.25
 
-        # O 1039 205 
+        # O 826 172 
         # MoveIt move|nmove =True|n|nA
 
-        # O 977 258 
+        # O 730 314 
         # open grip
 
-        # O 868 131 
+        # O 651 33 
         # MoveIt move|nmove =True|n|nB
 
-        # O 858 266 
+        # O 650 399 
         # MoveIt move|n|nB
 
-        # O 759 297 
+        # O 516 441 
         # #preGrip|nMoveIt move
 
 
 
     def create(self):
-        # x:688 y:316, x:546 y:230
-        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
+        # x:221 y:414, x:530 y:205
+        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['pos'])
+        _state_machine.userdata.pos = 0
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -83,11 +87,82 @@ class Action_placeSM(Behavior):
 
 
         with _state_machine:
-            # x:142 y:203
-            OperatableStateMachine.add('WaitState',
-                                        WaitState(wait_time=0),
-                                        transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.Off})
+            # x:102 y:240
+            OperatableStateMachine.add('TF_transformation',
+                                        TF_transformation(in_ref="map", out_ref="base_link"),
+                                        transitions={'done': 'MoveIt_isReachable', 'fail': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
+                                        remapping={'in_pos': 'pos', 'out_pos': 'pos'})
+
+            # x:681 y:193
+            OperatableStateMachine.add('Gen place_pos',
+                                        GenGripperPose(l=0.0),
+                                        transitions={'done': 'setOpened'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'pose_in': 'pos', 'pose_out': 'grip_pose'})
+
+            # x:681 y:106
+            OperatableStateMachine.add('Move_approach',
+                                        MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+                                        transitions={'done': 'Gen place_pos', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'target': 'approach_pose'})
+
+            # x:348 y:82
+            OperatableStateMachine.add('gotoPreGrip',
+                                        MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+                                        transitions={'done': 'Gen approach_pos', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'target': 'PreGripPose'})
+
+            # x:172 y:117
+            OperatableStateMachine.add('MoveIt_isReachable',
+                                        MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+                                        transitions={'done': 'setPreGripPose', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'target': 'pos'})
+
+            # x:260 y:196
+            OperatableStateMachine.add('setPreGripPose',
+                                        SetKey(Value="PreGripPose"),
+                                        transitions={'done': 'gotoPreGrip'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'Key': 'PreGripPose'})
+
+            # x:652 y:257
+            OperatableStateMachine.add('Open_grip',
+                                        MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+                                        transitions={'done': 'ReturnApproachPose', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'target': 'Opened'})
+
+            # x:827 y:246
+            OperatableStateMachine.add('setOpened',
+                                        SetKey(Value="Opened"),
+                                        transitions={'done': 'Open_grip'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'Key': 'Opened'})
+
+            # x:485 y:85
+            OperatableStateMachine.add('Gen approach_pos',
+                                        GenGripperPose(l=0.25),
+                                        transitions={'done': 'Move_approach'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'pose_in': 'pos', 'pose_out': 'approach_pose'})
+
+            # x:512 y:315
+            OperatableStateMachine.add('ReturnApproachPose',
+                                        MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+                                        transitions={'done': 'ReturnPreGrip', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'target': 'approach_pose'})
+
+            # x:326 y:337
+            OperatableStateMachine.add('ReturnPreGrip',
+                                        MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+                                        transitions={'done': 'finished', 'failed': 'failed'},
+                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+                                        remapping={'target': 'PreGripPose'})
 
 
         return _state_machine

@@ -4,10 +4,10 @@
 
 	<executable package_path="behavior_action_place.action_place_sm" class="Action_placeSM" />
 	<tagstring>ActionWrapper</tagstring>
-	<author>Raphaël Duchaîne</author>
+	<author>Raphael Duchaine</author>
 	<date>Sat May 12 2018</date>
 	<description>
-		Place un objet à une position
+		Place un objet a une position
 	</description>
 
 
