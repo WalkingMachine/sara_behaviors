@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Action_Guiding_Person">
+
+	<executable package_path="behavior_action_guiding_person.action_guiding_person_sm" class="Action_Guiding_PersonSM" />
+	<tagstring>Guiding</tagstring>
+	<author>Huynh-Anh Le</author>
+	<date>Sat May 12 2018</date>
+	<description>
+		Sara will guide someone
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Get_operator" />
+
+	<!-- Available Parameters -->
+
+</behavior>
