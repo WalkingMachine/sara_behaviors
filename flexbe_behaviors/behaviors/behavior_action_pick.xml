@@ -4,16 +4,14 @@
 
 	<executable package_path="behavior_action_pick.action_pick_sm" class="Action_pickSM" />
 	<tagstring>Action</tagstring>
-	<author>Philippe La Madeleine</author>
-	<date>Fri Oct 20 2017</date>
+	<author>Huynh-Anh Le</author>
+	<date>May 12 2018</date>
 	<description>
 		Try to pick an object
 	</description>
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Check_reachability" />
-	<contains name="Action_get_entity_pose" />
 
 	<!-- Available Parameters -->
 
