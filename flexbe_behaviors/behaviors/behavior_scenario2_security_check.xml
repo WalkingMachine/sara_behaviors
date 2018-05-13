@@ -4,7 +4,7 @@
 
 	<executable package_path="behavior_scenario2_security_check.scenario2_security_check_sm" class="Scenario2_Security_CheckSM" />
 	<tagstring>Scenario</tagstring>
-	<author>Véronica Romero</author>
+	<author>Veronica Romero</author>
 	<date>12 mai 2018</date>
 	<description>
 		englobe le scenario du test de securite.
