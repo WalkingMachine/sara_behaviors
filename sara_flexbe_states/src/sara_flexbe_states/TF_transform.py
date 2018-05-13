@@ -6,10 +6,10 @@ import tf
 
 class TF_transformation:
     """
-    Transformation from a reference  to another
+    Transformation from a referential  to another
 
-    --in_ref    frame_id     first reference
-    --out_ref   frame_id     second reference
+    --in_ref    frame_id     first referential
+    --out_ref   frame_id     second referential
 
     ># in_pos   Point        point in in_pos
 
