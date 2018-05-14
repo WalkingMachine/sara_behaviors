@@ -5,8 +5,7 @@ import json
 
 import requests
 from flexbe_core import EventState
-from rospy import logerr
-from rospy import logwarn
+from rospy import logerr, logwarn, loginfo
 from sara_msgs.msg import Entity
 
 
@@ -51,12 +50,16 @@ class WonderlandEntityNameByID(EventState):
         entity = Entity()
 
         entity.wonderlandId = data['entityId']
-        entity.aliases.append(data['entityName'])
+        if 'entityName' in data:
+            entity.aliases.append(data['entityName'].encode('ascii', 'ignore'))
 
         # Description of the object:
-        entity.name = data['entityClass']
-        entity.category = data['entityCategory']
-        entity.color = data['entityColor']
+        if 'entityClass' in data and data['entityClass'] is not None:
+            entity.name = data['entityClass'].encode('ascii', 'ignore')
+        if 'entityCategory' in data and data['entityCategory'] is not None:
+            entity.category = data['entityCategory'].encode('ascii', 'ignore')
+        if 'entityColor' in data and data['entityColor'] is not None:
+            entity.color = data['entityColor'].encode('ascii', 'ignore')
 
         # Physical description of the object:
         entity.weight = data['entityWeight']
@@ -73,6 +76,8 @@ class WonderlandEntityNameByID(EventState):
         entity.waypoint.theta = data['entityWaypointYaw']
 
         entity.containerId = data['entityContainer']
+
+        loginfo(entity)
 
         userdata.entity = entity
         userdata.depth_position = data['depth_position']
