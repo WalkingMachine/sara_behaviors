@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # encoding=utf8
 
-from flexbe_core import EventState, Logger
 import json
-import requests
 
+import requests
+from flexbe_core import EventState
 
 
 class WonderlandEntityNameByID(EventState):
@@ -71,7 +71,8 @@ class WonderlandEntityNameByID(EventState):
         data = json.loads(response.content)
 
         if not 'entityClass' in data:
-            return 'none'
+            self.none = 'none'
+            return self.none
 
         # write return data
         userdata.entityClass = data['entityClass']
