@@ -5,6 +5,8 @@ import json
 
 import requests
 from flexbe_core import EventState
+from rospy import logerr
+from rospy import logwarn
 from sara_msgs.msg import Entity
 
 
@@ -36,13 +38,14 @@ class WonderlandEntityNameByID(EventState):
             response = requests.get(url)
             print(response)
         except requests.exceptions.RequestException as e:
-            print(e)
+            logerr(e)
             return 'error'
 
         # parse parameter json data
         data = json.loads(response.content)
 
         if 'entityId' not in data:
+            logwarn("Object %i do not exist in Wonderland", userdata.id)
             return 'not_found'
 
         entity = Entity()
@@ -75,4 +78,4 @@ class WonderlandEntityNameByID(EventState):
         userdata.depth_position = data['depth_position']
         userdata.depth_waypoint = data['depth_waypoint']
 
-        return 'done'
+        return 'found'
