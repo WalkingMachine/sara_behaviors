@@ -9,11 +9,12 @@ from tf.transformations import euler_from_quaternion
 import math
 
 
-class list_person(EventState):
+class list_entities_by_name(EventState):
     '''
         will list people seen by the camera
 
-        -- frontality_level     float               The level of frontality. 0.0 is circular, 1.0 is linear
+        -- Name                 string              name of the entities
+        -- frontality_level     float               The level of frontality. 0.0 is circular, 1 is linear 0 is circular
         #> persons              object              the persons found
 
         <= found                people are found
@@ -21,11 +22,12 @@ class list_person(EventState):
 
     '''
 
-    def __init__(self, frontality_level):
+    def __init__(self, Name, frontality_level):
         '''
         Constructor
         '''
-        super(list_person, self).__init__(outcomes=['found', 'not_found'], output_keys=['list_person', 'number'])
+        super(list_entities_by_name, self).__init__(outcomes=['found', 'not_found'],
+                                                    output_keys=['Entities_list', 'number'])
         self._sub = ProxySubscriberCached({'/entities': Entities})
 
         self._topic = "/robot_pose"
@@ -33,7 +35,7 @@ class list_person(EventState):
         self.frontality_level = frontality_level
         self.mypose = None
         self.message = None
-
+        self.Name = Name
 
     def execute(self, userdata):
 
@@ -41,13 +43,13 @@ class list_person(EventState):
             self.mypose = userdata.pose = self._subpos.get_last_msg(self._topic)
 
         if self._sub.has_msg('/entities'):
-            Logger.loginfo('getting message')
+            Logger.loginfo('getting list of entities')
             self.message = self._sub.get_last_msg('/entities')
             self._sub.remove_last_msg('/entities')
 
         if self.message is not None and self.mypose is not None:
             persons = self.list()
-            userdata.list_person = persons
+            userdata.Entities_list = persons
             userdata.number = len(persons)
 
             if len(persons) != 0:
@@ -56,10 +58,10 @@ class list_person(EventState):
                 return 'not_found'
 
     def list(self):
-        persons = []
+        Entities = []
         wraps = []
         for entity in self.message.entities:
-            if entity.name == 'person':
+            if entity.name == self.Name:
                 wrap = wrapper()
                 wrap.init(self.mypose, entity, self.frontality_level)
 
@@ -68,14 +70,13 @@ class list_person(EventState):
         wraps.sort(key=wrapper.key)
 
         for wrap in wraps:
-            persons.append(wrap.entity)
+            Entities.append(wrap.entity)
 
-        return persons
+        return Entities
 
 
 class wrapper():
     def init(self, mypose, entity, frontality_level):
-
         self.entity = entity
 
         x = entity.position.x - mypose.position.x
@@ -91,8 +92,7 @@ class wrapper():
         self.dist = (abs(y - a * x - b) / (1 + b ** 2) ** 0.5) * frontality_level
         self.dist += (((entity.position.x - mypose.position.x) ** 2 + (
                 entity.position.y - mypose.position.y) ** 2) ** 0.5) * (1 - frontality_level)
-        self.dist /= entity.probability**2
+        self.dist /= entity.probability ** 2
 
     def key(self):
-
         return self.dist
