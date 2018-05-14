@@ -5,59 +5,31 @@ import json
 
 import requests
 from flexbe_core import EventState
+from sara_msgs.msg import Entity
 
 
 class WonderlandEntityNameByID(EventState):
     '''
     Read the position of a room in a json string
-    ># id                int     id of the room
+    ># id               int     The id of the entity in the database
+    #> entity           Entity  The entity following the `sara_msgs/entity.msg` structure
+    #> depth_position   int     The accuracy of the position (Number of chained container for have value)
+    #> depth_waypoint   int     The accuracy of the waypoint (Number of chained container for have value)
 
-    #> entityClass       string   of the entity
-    #> entityName        string   of the entity
-    #> entityCategory    string   of the entity
-    #> entityColor       string   of the entity
-    #> entityWeight      string   of the entity
-    #> entitySize        string   of the entity
-    #> entityContainer   string   of the entity
-
-    #> entityPosX        float   position of the entity
-    #> entityPosY        float   position of the entity
-    #> entityPosZ        float   position of the entity
-    #> entityPosYaw      float   position of the entity
-    #> entityPosPitch    float   position of the entity
-    #> entityPosRoll     float   position of the entity
-
-    #> entityWaypointX   float   position of the position to reach for have the object
-    #> entityWaypointY   float   position of the position to reach for have the object
-    #> entityWaypointYaw float   position of the position to reach for have the object
-
-    #> depth_waypoint    float   position of the room
-    #> depth_position    float   position of the room
-
-    <= done              return when at least one entity exist
-    <= none              return when no entity have the selected name
-    <= error             return when error reading data
+    <= found            returned when at least one entity exist
+    <= not_found        returned when no entity have the selected name
+    <= error            returned when am error happen during the HTTP request
     '''
 
     def __init__(self):
         # See example_state.py for basic explanations.
-        super(WonderlandEntityNameByID, self).__init__(outcomes=['done', 'none', 'error'],
+        super(WonderlandEntityNameByID, self).__init__(outcomes=['found', 'not_found', 'error'],
                                                        input_keys=['id'],
-                                                       output_keys=['entityClass', 'entityName', 'entityCategory',
-                                                                    'entityColor', 'entityWeight', 'entitySize',
-                                                                    'entityContainer', 'entityPosX', 'entityPosY',
-                                                                    'entityPosZ', 'entityPosYaw', 'entityPosPitch',
-                                                                    'entityPosRoll', 'entityWaypointX',
-                                                                    'entityWaypointY', 'entityWaypointYaw'])
+                                                       output_keys=['entity', 'depth_position', 'depth_waypoint'])
 
     def execute(self, userdata):
         # Generate URL to contact
-        url = "http://wonderland:8000/api/entity?entityId="+str(userdata.id)
-
-        print("This")
-        print("Is")
-        print("A")
-        print("Test")
+        url = "http://wonderland:8000/api/entity?entityId=" + str(userdata.id)
 
         # try the request
         try:
@@ -70,31 +42,37 @@ class WonderlandEntityNameByID(EventState):
         # parse parameter json data
         data = json.loads(response.content)
 
-        if not 'entityClass' in data:
-            self.none = 'none'
-            return self.none
+        if 'entityId' not in data:
+            return 'not_found'
 
-        # write return data
-        userdata.entityClass = data['entityClass']
-        userdata.entityName = data['entityName']
-        userdata.entityCategory = data['entityCategory']
-        userdata.entityColor = data['entityColor']
-        userdata.entityWeight = data['entityWeight']
-        userdata.entitySize = data['entitySize']
-        userdata.entityContainer = data['entityContainer']
+        entity = Entity()
 
-        userdata.entityPosX = data['entityPosX']
-        userdata.entityPosY = data['entityPosY']
-        userdata.entityPosZ = data['entityPosZ']
-        userdata.entityPosYaw = data['entityPosYaw']
-        userdata.entityPosPitch = data['entityPosPitch']
-        userdata.entityPosRoll = data['entityPosRoll']
+        entity.wonderlandId = data['entityId']
+        entity.aliases.append(data['entityName'])
 
-        userdata.entityWaypointX = data['entityWaypointX']
-        userdata.entityWaypointY = data['entityWaypointY']
-        userdata.entityWaypointYaw = data['entityWaypointYaw']
+        # Description of the object:
+        entity.name = data['entityClass']
+        entity.category = data['entityCategory']
+        entity.color = data['entityColor']
 
-        userdata.depth_waypoint = data['depth_waypoint']
+        # Physical description of the object:
+        entity.weight = data['entityWeight']
+        entity.size = data['entitySize']
+
+        # Location of the object
+        entity.position.x = data['entityPosX']
+        entity.position.y = data['entityPosY']
+        entity.position.z = data['entityPosZ']
+        # Add if needed: 'entityPosYaw' ; 'entityPosPitch' ; 'entityPosRoll'
+
+        entity.waypoint.x = data['entityWaypointX']
+        entity.waypoint.y = data['entityWaypointY']
+        entity.waypoint.theta = data['entityWaypointYaw']
+
+        entity.containerId = data['entityContainer']
+
+        userdata.entity = entity
         userdata.depth_position = data['depth_position']
+        userdata.depth_waypoint = data['depth_waypoint']
 
         return 'done'
