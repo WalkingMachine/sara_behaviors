@@ -88,6 +88,11 @@ class SaraRelMoveBase(EventState):
         self.setGoal(self._pose)
 
     def setGoal(self, pose):
+
+        rospy.wait_for_service('/move_base/clear_costmaps')
+        serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
+        serv()
+
         goal = MoveBaseGoal()
 
         goal.target_pose.pose = pose

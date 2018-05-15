@@ -49,9 +49,6 @@ class SaraMoveBase(EventState):
         if self._arrived:
             return 'arrived'
         if self._failed:
-            rospy.wait_for_service('/move_base/clear_costmaps')
-            serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
-            serv()
             return 'failed'
 
         if self._client.has_result(self._action_topic):
@@ -69,9 +66,6 @@ class SaraMoveBase(EventState):
     def on_enter(self, userdata):
         """Create and send action goal"""
 
-        rospy.wait_for_service('/move_base/clear_costmaps')
-        serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
-        serv()
         self._arrived = False
         self._failed = False
 
@@ -96,6 +90,10 @@ class SaraMoveBase(EventState):
         self.setGoal(self._pose)
 
     def setGoal(self, pose):
+
+        rospy.wait_for_service('/move_base/clear_costmaps')
+        serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
+        serv()
         goal = MoveBaseGoal()
 
         goal.target_pose.pose = pose
