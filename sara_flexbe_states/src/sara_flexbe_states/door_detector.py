@@ -74,7 +74,7 @@ class DoorDetector(EventState):
             rospy.loginfo("No door found")
             door_pub.publish("no_door")
             Logger.loginfo('Fail sub to laser')
-            return 'failed'
+            return 'done'
 
         if opened_before_timeout:
             rospy.loginfo("Door is open")

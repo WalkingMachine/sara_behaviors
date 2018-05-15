@@ -63,15 +63,15 @@ class SaraMoveBase(EventState):
                             GoalStatus.RECALLED, GoalStatus.ABORTED]:
                 Logger.logwarn('Navigation failed: %s' % str(status))
                 self._failed = True
-                rospy.wait_for_service('/move_base/clear_costmaps')
-                serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
-                serv()
                 return 'failed'
 
 
     def on_enter(self, userdata):
         """Create and send action goal"""
 
+        rospy.wait_for_service('/move_base/clear_costmaps')
+        serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
+        serv()
         self._arrived = False
         self._failed = False
 
