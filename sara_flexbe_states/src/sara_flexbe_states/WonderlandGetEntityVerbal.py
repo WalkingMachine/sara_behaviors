@@ -42,7 +42,7 @@ class WonderlandGetEntityVerbal(EventState):
 
         elif type(userdata.containers) is list:
             for container in userdata.containers:
-                if type(container) == "str":
+                if type(container) is str:
                     url += "&entityContainer=" + container
 
         logwarn(url)
