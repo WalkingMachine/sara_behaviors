@@ -22,7 +22,7 @@ class LogEntity(EventState):
             self.print_entity(userdata.entity)
 
         elif type(userdata.entity) is Entities:
-            for entity in userdata.entity:
+            for entity in userdata.entity.entities:
                 self.print_entity(entity)
 
         return 'done'
