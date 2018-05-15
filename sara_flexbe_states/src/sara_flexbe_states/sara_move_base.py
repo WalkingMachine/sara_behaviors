@@ -49,9 +49,6 @@ class SaraMoveBase(EventState):
         if self._arrived:
             return 'arrived'
         if self._failed:
-            rospy.wait_for_service('/move_base/clear_costmaps')
-            serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
-            serv()
             return 'failed'
 
         if self._client.has_result(self._action_topic):
@@ -63,9 +60,6 @@ class SaraMoveBase(EventState):
                             GoalStatus.RECALLED, GoalStatus.ABORTED]:
                 Logger.logwarn('Navigation failed: %s' % str(status))
                 self._failed = True
-                rospy.wait_for_service('/move_base/clear_costmaps')
-                serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
-                serv()
                 return 'failed'
 
 
@@ -96,6 +90,10 @@ class SaraMoveBase(EventState):
         self.setGoal(self._pose)
 
     def setGoal(self, pose):
+
+        rospy.wait_for_service('/move_base/clear_costmaps')
+        serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
+        serv()
         goal = MoveBaseGoal()
 
         goal.target_pose.pose = pose

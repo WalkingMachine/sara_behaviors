@@ -6,9 +6,9 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_door_detector')
+import roslib; roslib.load_manifest('behavior_a_test_sandbox')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.door_detector import DoorDetector
+from flexbe_states.log_state import LogState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -16,18 +16,18 @@ from sara_flexbe_states.door_detector import DoorDetector
 
 
 '''
-Created on Thu Jul 20 2017
-@author: Nicolas Nadeau
+Created on Thu May 10 2018
+@author: TestMan
 '''
-class DoorDetectorSM(Behavior):
+class ATestSandboxSM(Behavior):
 	'''
-	Door Detector
+	Une behavior pour faire des tests rapidement.
 	'''
 
 
 	def __init__(self):
-		super(DoorDetectorSM, self).__init__()
-		self.name = 'Door Detector'
+		super(ATestSandboxSM, self).__init__()
+		self.name = 'A Test Sandbox'
 
 		# parameters of this behavior
 
@@ -43,7 +43,7 @@ class DoorDetectorSM(Behavior):
 
 
 	def create(self):
-		# x:30 y:458, x:1108 y:369
+		# x:824 y:62, x:824 y:212
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 
 		# Additional creation code can be added inside the following tags
@@ -53,11 +53,17 @@ class DoorDetectorSM(Behavior):
 
 
 		with _state_machine:
-			# x:579 y:152
-			OperatableStateMachine.add('Door',
-										DoorDetector(timeout=10),
-										transitions={'done': 'finished', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
+			# x:725 y:32
+			OperatableStateMachine.add('success',
+										LogState(text="The test is a success", severity=Logger.REPORT_HINT),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:718 y:180
+			OperatableStateMachine.add('Failure',
+										LogState(text="The test is a failure", severity=Logger.REPORT_HINT),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

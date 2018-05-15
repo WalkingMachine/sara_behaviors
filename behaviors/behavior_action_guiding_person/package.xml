@@ -1,23 +1,23 @@
 <package>
-  <name>behavior_door_detector</name>
+  <name>behavior_action_guiding_person</name>
   <version>1.0.0</version>
   <description>
-     Door Detector
+     Sara will guide someone
   </description>
-  <maintainer email="todo@todo.com">Nicolas Nadeau</maintainer>
+  <maintainer email="todo@todo.com">Huynh-Anh Le</maintainer>
   <license>BSD</license>
 
-  <url>http://ros.org/wiki/behavior_door_detector</url>
-  <author>Nicolas Nadeau</author>
+  <url>http://ros.org/wiki/behavior_action_guiding_person</url>
+  <author>Huynh-Anh Le</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
   <run_depend>rospy</run_depend>
   <run_depend>flexbe_core</run_depend>
-  <run_depend>sara_flexbe_states</run_depend>
   <run_depend>flexbe_states</run_depend>
-  <run_depend>flexbe_utility_states</run_depend>
+  <run_depend>sara_flexbe_states</run_depend>
   <run_depend>flexbe_navigation_states</run_depend>
+  <run_depend>flexbe_utility_states</run_depend>
   <run_depend>flexbe_manipulation_states</run_depend>
 
 </package>

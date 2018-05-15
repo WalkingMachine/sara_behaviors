@@ -60,7 +60,6 @@ class DoorDetector(EventState):
     def execute(self, userdata):
         rospy.loginfo("Waiting for door...")
         laser_sub = rospy.Subscriber("/scan", LaserScan, self.process_scan)
-        door_pub = rospy.Publisher('/door', String, queue_size=10)
 
         opened_before_timeout = self.door_open.wait(timeout=self.timeout)
 
@@ -71,14 +70,11 @@ class DoorDetector(EventState):
         self.door_open.clear()
 
         if self.no_door_found:
-            rospy.loginfo("No door found")
-            door_pub.publish("no_door")
-            Logger.loginfo('Fail sub to laser')
-            return 'failed'
+            rospy.loginfo("Door is already open")
+            return 'done'
 
         if opened_before_timeout:
             rospy.loginfo("Door is open")
-            door_pub.publish("open")
             return 'done'
 
         rospy.loginfo("timed out with door still closed")
