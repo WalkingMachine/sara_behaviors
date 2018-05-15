@@ -9,7 +9,7 @@ from rospy import logerr, logwarn, loginfo
 from sara_msgs.msg import Entity
 
 
-class WonderlandEntityNameByID(EventState):
+class WonderlandGetEntityByID(EventState):
     '''
     Read the position of a room in a json string
     ># id               int     The id of the entity in the database
@@ -24,9 +24,9 @@ class WonderlandEntityNameByID(EventState):
 
     def __init__(self):
         # See example_state.py for basic explanations.
-        super(WonderlandEntityNameByID, self).__init__(outcomes=['found', 'not_found', 'error'],
-                                                       input_keys=['id'],
-                                                       output_keys=['entity', 'depth_position', 'depth_waypoint'])
+        super(WonderlandGetEntityByID, self).__init__(outcomes=['found', 'not_found', 'error'],
+                                                      input_keys=['id'],
+                                                      output_keys=['entity', 'depth_position', 'depth_waypoint'])
 
     def execute(self, userdata):
         # Generate URL to contact
