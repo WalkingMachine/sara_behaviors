@@ -70,3 +70,38 @@ class WonderlandGetEntityVerbal(EventState):
             entities = Entities()
             userdata.entities = entities
             return 'multiple'
+
+    def generateEntity(self, data):
+        entity = Entity()
+
+        entity.wonderlandId = data['entityId']
+        if 'entityName' in data:
+            entity.aliases.append(data['entityName'].encode('ascii', 'ignore'))
+
+        # Description of the object:
+        if 'entityClass' in data and data['entityClass'] is not None:
+            entity.name = data['entityClass'].encode('ascii', 'ignore')
+        if 'entityCategory' in data and data['entityCategory'] is not None:
+            entity.category = data['entityCategory'].encode('ascii', 'ignore')
+        if 'entityColor' in data and data['entityColor'] is not None:
+            entity.color = data['entityColor'].encode('ascii', 'ignore')
+
+        # Physical description of the object:
+        entity.weight = data['entityWeight']
+        entity.size = data['entitySize']
+
+        # Location of the object
+        entity.position.x = data['entityPosX']
+        entity.position.y = data['entityPosY']
+        entity.position.z = data['entityPosZ']
+        # Add if needed: 'entityPosYaw' ; 'entityPosPitch' ; 'entityPosRoll'
+
+        entity.waypoint.x = data['entityWaypointX']
+        entity.waypoint.y = data['entityWaypointY']
+        entity.waypoint.theta = data['entityWaypointYaw']
+
+        entity.containerId = data['entityContainer']
+
+        loginfo(entity)
+
+        return entity
