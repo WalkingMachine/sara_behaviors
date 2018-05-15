@@ -31,7 +31,6 @@
   <run_depend>behavior_actionwrapper_stop</run_depend>
   <run_depend>behavior_actionwrapper_turn</run_depend>
   <run_depend>behavior_actionwrapper_waitfordoor</run_depend>
-  <run_depend>behavior_door_detector</run_depend>
   <run_depend>behavior_wonderland_entity_in_room</run_depend>
   <run_depend>behavior_wonderland_list_entities_in_room</run_depend>
   <run_depend>behavior_wonderland_list_rooms</run_depend>
@@ -43,12 +42,10 @@
   <run_depend>behavior_wonderland_test2</run_depend>
   <run_depend>behavior_wonderland_get_origin</run_depend>
   <run_depend>behavior_return_to_origin</run_depend>
-
   <run_depend>behavior_entity_pose_creator</run_depend>
   <run_depend>behavior_wonderland_waypoint_id</run_depend>
   <run_depend>behavior_wonderland_get_waypoint_from_id</run_depend>
   <run_depend>behavior_get_waypoint_pose</run_depend>
-
   <run_depend>behavior_wonderland_goto_exit</run_depend>
   <run_depend>behavior_action_sarapick</run_depend>
   <run_depend>behavior_new_qualif</run_depend>
@@ -69,6 +66,7 @@
   <run_depend>behavior_go_to_room</run_depend>
   <run_depend>behavior_go_to_exit</run_depend>
   <run_depend>behavior_action_receive_bag</run_depend>
+  <run_depend>behavior_action_receive_bag</run_depend>
   <run_depend>behavior_sara_presentation</run_depend>
   <run_depend>behavior_get_speech</run_depend>
   <run_depend>behavior_hello_world</run_depend>
@@ -84,5 +82,7 @@
   <run_depend>behavior_scenario2_security_check</run_depend>
   <run_depend>behavior_a_test_sandbox</run_depend>
   <run_depend>behavior_action_guiding_person</run_depend>
+  <run_depend>behavior_action_pass_door</run_depend>
+  <run_depend>behavior_a_go_home</run_depend>
 
 </package>
