@@ -61,13 +61,22 @@ class WonderlandGetEntityVerbal(EventState):
 
         if len(data) == 0:
             return 'none'
-        elif len(data) == 1:
-            entity = Entity()
-            userdata.entities = entity
+
+        elif len(data) == 1 and 'entityId' in data[0]:
+            userdata.entities = self.generateEntity(data[0])
+            return 'one'
+
+        elif 'entityId' in data:
+            userdata.entities = self.generateEntity(data)
             return 'one'
 
         else:
             entities = Entities()
+
+            for entityData in data:
+                if 'entityId' in entityData:
+                    entities.entities.append(self.generateEntity(entityData))
+
             userdata.entities = entities
             return 'multiple'
 
