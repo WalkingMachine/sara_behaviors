@@ -20,7 +20,7 @@ from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from sara_flexbe_states.for_loop import ForLoop
-from sara_flexbe_states.sara_set_angle import SaraSetHeadAngle
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 

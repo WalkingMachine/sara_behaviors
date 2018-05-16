@@ -10,10 +10,10 @@ Created on 21.09.2017
 '''
 
 
-class GetRosParam(EventState):
+class GetRosParamKey(EventState):
     '''
     Get a value from the ros parameter server.
-    -- ParamName    string      The desired value.
+    ># ParamName    string      The desired value. Can also be a phrase with $ in it. e.g. "give me the $object"
     
     #> Value      object      The rosparam to set.
     
@@ -21,20 +21,19 @@ class GetRosParam(EventState):
     <= failed               The rosparam didn't exist
     '''
 
-    def __init__(self, ParamName):
+    def __init__(self):
         '''
         Constructor
         '''
-        super(GetRosParam, self).__init__(outcomes=['done', 'failed'], output_keys=['Value'])
-        self.ParamName = ParamName
+        super(GetRosParamKey, self).__init__(outcomes=['done', 'failed'], input_keys=['ParamName'], output_keys=['Value'])
         self.test = re.compile("\$[A-z0-9]*")
 
     def execute(self, userdata):
         '''
         Execute this state
         '''
-        text = self.ParamName
-        if rospy.has_param(self.ParamName):
+        text = userdata.ParamName
+        if rospy.has_param(userdata.ParamName):
             userdata.Value = rospy.get_param(text)
             return "done"
 

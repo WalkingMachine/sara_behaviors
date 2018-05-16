@@ -10,19 +10,19 @@ class processFollowDistance(EventState):
     Calcule la distance  entre deux points donnes.
 
     ###Params
-    --minimum_distance
-    --divisor_distance
-    --threshold
+    --minimum_distance      double      minimum_distance
+    --divisor_distance      double      divisor_distance
+    --threshold             double      threshold
 
     ### InputKey
-    >#distance_of_target
+    >#distance_of_target    double      distance_of_target
 
     ### OutputKey
-    #> distance
+    #> distance             double      distance
 
     ###Outcomes
-    <= move
-    <= done
+    <= move                 the robot will move
+    <= done                 the robot won't move
     """
     def __init__(self, minimum_distance, divisor_distance,threshold):
         """Constructor"""

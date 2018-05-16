@@ -8,9 +8,10 @@
 
 import roslib; roslib.load_manifest('behavior_a_test_wonderland')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.pose_gen_euler import GenPoseEuler
-from flexbe_states.calculation_state import CalculationState
-from behavior_action_point_at2.action_point_at2_sm import Action_point_at2SM
+from behavior_get_operator.get_operator_sm import Get_operatorSM
+from sara_flexbe_states.sara_say_key import SaraSayKey
+from sara_flexbe_states.sara_say import SaraSay
+from flexbe_states.wait_state import WaitState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -34,7 +35,7 @@ class A_TEST_WONDERLANDSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_point_at2SM, 'Action_point_at2')
+		self.add_behavior(Get_operatorSM, 'Get_operator')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -46,7 +47,7 @@ class A_TEST_WONDERLANDSM(Behavior):
 
 
 	def create(self):
-		# x:30 y:365, x:130 y:365, x:230 y:365
+		# x:607 y:186, x:130 y:365, x:230 y:365
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'registered'], input_keys=['x1', 'x2', 'x3', 'x4', 'y1', 'y2', 'y3', 'y4'])
 		_state_machine.userdata.name = "Jean Eude"
 		_state_machine.userdata.x1 = 1
@@ -72,26 +73,31 @@ class A_TEST_WONDERLANDSM(Behavior):
 
 
 		with _state_machine:
-			# x:61 y:59
-			OperatableStateMachine.add('genpose',
-										GenPoseEuler(x=0.5, y=0, z=0, roll=0, pitch=0, yaw=0),
-										transitions={'done': 'obtenirpointdanspose'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose': 'pose'})
+			# x:30 y:40
+			OperatableStateMachine.add('wait',
+										WaitState(wait_time=4),
+										transitions={'done': 'Get_operator'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:69 y:151
-			OperatableStateMachine.add('obtenirpointdanspose',
-										CalculationState(calculation=lambda x: x.position),
-										transitions={'done': 'Action_point_at2'},
+			# x:378 y:169
+			OperatableStateMachine.add('say',
+										SaraSayKey(Format=lambda x: "You are person" + x.ID, emotion=1, block=True),
+										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'pose', 'output_value': 'targetPoint'})
+										remapping={'sentence': 'Operator'})
 
-			# x:289 y:171
-			OperatableStateMachine.add('Action_point_at2',
-										self.use_behavior(Action_point_at2SM, 'Action_point_at2'),
-										transitions={'finished': 'finished', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'targetPoint': 'targetPoint'})
+			# x:146 y:259
+			OperatableStateMachine.add('say2',
+										SaraSay(sentence="Sorry. I failed", emotion=1, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:150 y:141
+			OperatableStateMachine.add('Get_operator',
+										self.use_behavior(Get_operatorSM, 'Get_operator'),
+										transitions={'Found': 'say', 'NotFound': 'say2'},
+										autonomy={'Found': Autonomy.Inherit, 'NotFound': Autonomy.Inherit},
+										remapping={'Operator': 'Operator'})
 
 
 		return _state_machine
