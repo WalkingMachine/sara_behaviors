@@ -4,7 +4,7 @@ from distutils.core import setup
 from catkin_pkg.python_setup import generate_distutils_setup
 
 d = generate_distutils_setup(
-    packages = ['behavior_door_detector'],
+    packages = ['behavior_a_test_sandbox'],
     package_dir = {'': 'src'}
 )
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(behavior_door_detector)
+project(behavior_action_guiding_person)
 
 find_package(catkin REQUIRED)
 

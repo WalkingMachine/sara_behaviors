@@ -8,7 +8,7 @@ class RegexTester(EventState):
     """
     test a regular expression
 
-    -- regex     string      regular expression
+    -- regex     string      regular expression. e.g. ".*hello my ((brother)|(sister))s?"
     
 
 
