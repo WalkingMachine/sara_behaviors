@@ -5,9 +5,9 @@ from flexbe_core.proxy import ProxyActionClient
 
 from actionlib_msgs.msg import GoalStatus
 from move_base_msgs.msg import *
+from std_srvs.srv import Empty
 from geometry_msgs.msg import Pose, Pose2D, Quaternion, Point
 from tf import transformations
-
 import rospy
 
 """
@@ -96,7 +96,6 @@ class SaraRelMoveBase(EventState):
         rospy.wait_for_service('/move_base/clear_costmaps')
         serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
         serv()
-
         goal = MoveBaseGoal()
 
         goal.target_pose.pose = pose
