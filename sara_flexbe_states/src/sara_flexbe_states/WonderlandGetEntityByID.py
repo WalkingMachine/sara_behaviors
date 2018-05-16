@@ -14,6 +14,7 @@ Created on 15/05/2018
 @author: Lucas Maurice
 """
 
+
 class WonderlandGetEntityByID(EventState):
     '''
     Read the position of a room in a json string
