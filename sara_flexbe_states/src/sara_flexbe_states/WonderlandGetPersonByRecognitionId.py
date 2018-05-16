@@ -76,6 +76,10 @@ class WonderlandGetPersonByRecognitionId(EventState):
             entity.face.gender = data['peopleGender'].encode('ascii', 'ignore')
         entity.face.genderProbability = data['peopleGenderAccuracy']
 
+        if 'peopleEmotion' in data and data['peopleEmotion'] is not None:
+            entity.face.emotion = data['peopleEmotion'].encode('ascii', 'ignore')
+        entity.face.emotionProbability = data['peopleEmotionAccuracy']
+
         entity.isOperator = data['peopleIsOperator']
 
         loginfo(entity)
