@@ -4,6 +4,11 @@
 from flexbe_core import EventState, Logger
 from sara_msgs.msg import Entity, Entities
 
+"""
+Created on 15/05/2018
+
+@author: Lucas Maurice
+"""
 
 class LogEntity(EventState):
     '''
@@ -29,6 +34,7 @@ class LogEntity(EventState):
 
     @staticmethod
     def print_entity(entity):
+        entity = Entity()
         Logger.loginfo("===== ===== This is an entity. ===== =====")
         Logger.loginfo("ID: " + str(entity.ID))
         Logger.loginfo("Wonderland ID: " + str(entity.wonderlandId))
@@ -43,8 +49,11 @@ class LogEntity(EventState):
         Logger.loginfo("Weight: " + str(entity.weight))
         Logger.loginfo("Size: " + str(entity.size))
 
-        Logger.loginfo("Gender: " + entity.gender)
-        Logger.loginfo("Emotion: " + entity.emotion)
+        Logger.loginfo("Gender: " + entity.face.gender)
+        Logger.loginfo("Gender probability" + str(entity.face.genderProbability) + "%")
+        Logger.loginfo("Emotion: " + entity.face.emotion)
+        Logger.loginfo("Face ID: " + entity.face.id)
+        Logger.loginfo("Face Name: " + entity.face.id)
 
         Logger.loginfo("Container ID: " + str(entity.containerId))
 

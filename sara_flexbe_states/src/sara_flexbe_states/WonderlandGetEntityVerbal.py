@@ -8,6 +8,12 @@ from flexbe_core import EventState
 from rospy import logerr, logwarn, loginfo
 from sara_msgs.msg import Entity, Entities
 
+"""
+Created on 15/05/2018
+
+@author: Lucas Maurice
+"""
+
 
 class WonderlandGetEntityVerbal(EventState):
     '''
