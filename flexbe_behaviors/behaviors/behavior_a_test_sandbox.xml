@@ -4,7 +4,7 @@
 
 	<executable package_path="behavior_a_test_sandbox.a_test_sandbox_sm" class="ATestSandboxSM" />
 	<tagstring>Test</tagstring>
-	<author>TestMan</author>
+	<author>Philippe La Madeleine</author>
 	<date>Thu May 10 2018</date>
 	<description>
 		Une behavior pour faire des tests rapidement.

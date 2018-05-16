@@ -4,9 +4,9 @@ import rospy
 from flexbe_core import EventState, Logger
 
 '''
-Created on 29.08.2013
+Created on 9.05.2018
 
-@author: Philipp Schillinger
+@author: Philippe La Madeleine
 '''
 
 
@@ -14,7 +14,7 @@ class BinaryCalculationState(EventState):
     '''
 	Implements a state that can perform a binary calculation based on userdata.
 	calculation is a function which takes exactly two parameter, X and Y from userdata,
-	and its return value is stored in output_value after leaving the state.
+	and its return value is stored in output_value after leaving the state. e.g. "X+Y" will return the sum of X and Y into the output Z.
 	
 	-- calculation  string	The function that performs the desired calculation.
 								It could be a private function (self.foo) manually defined in a behavior's source code
