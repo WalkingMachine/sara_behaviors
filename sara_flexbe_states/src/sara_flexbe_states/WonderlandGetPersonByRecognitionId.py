@@ -62,6 +62,9 @@ class WonderlandGetPersonByRecognitionId(EventState):
         entity.wonderlandId = data['peopleId']
         entity.face.id = data['peopleRecognitionId']
 
+        entity.name = 'person'
+        entity.category = 'person'
+
         if 'peopleColor' in data and data['peopleColor'] is not None:
             entity.color = data['peopleColor'].encode('ascii', 'ignore')
 
