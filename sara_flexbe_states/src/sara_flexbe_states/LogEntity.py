@@ -53,9 +53,9 @@ class LogEntity(EventState):
         Logger.loginfo("Size: " + str(entity.size))
 
         Logger.loginfo("Gender: " + entity.face.gender)
-        Logger.loginfo("Gender probability" + str(entity.face.genderProbability) + "%")
+        Logger.loginfo("Gender probability: " + str(entity.face.genderProbability))
         Logger.loginfo("Emotion: " + entity.face.emotion)
-        Logger.loginfo("Emotion probability: " + entity.face.emotionProbability)
+        Logger.loginfo("Emotion probability: " + str(entity.face.emotionProbability))
         Logger.loginfo("Face ID: " + str(entity.face.id))
 
         Logger.loginfo("Person Pose: " + entity.pose)
