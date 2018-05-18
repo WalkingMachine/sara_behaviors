@@ -36,6 +36,10 @@ class WonderlandAddPerson(EventState):
 
         entity = userdata.entity
 
+        if entity.wonderlandId is None and entity.face.id is None:
+            Logger.logwarn('Need wonderland ID or face ID !')
+            return 'bad_request'
+
         data = {'peopleRecognitionId': entity.face.id}
 
         if entity.color is not None:
@@ -70,21 +74,21 @@ class WonderlandAddPerson(EventState):
         # try the request
         try:
             response = requests.post(url, data=data)
-            if response.status_code == 400:
+            if response.status_code == 201:
+                return 'done'
+
+            elif 400 <= response.status_code < 500:
+                Logger.logwarn(response.status_code)
                 data = json.loads(response.content)
                 if 'peopleRecognitionId' in data and data['peopleRecognitionId'][
                     0] == u'people with this peopleRecognitionId already exists.':
                     return 'already_exit'
                 else:
                     return 'bad_request'
-
-            elif response.status_code == 500:
+            else:
+                Logger.logerr(response.status_code)
                 return 'error'
-            Logger.logwarn(response.status_code)
-            Logger.loginfo(response.content)
 
         except requests.exceptions.RequestException as e:
             Logger.logerr(e)
             return 'error'
-
-        return 'done'
