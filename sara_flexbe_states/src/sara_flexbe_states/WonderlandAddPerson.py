@@ -63,10 +63,10 @@ class WonderlandAddPerson(EventState):
         if entity.face.emotionProbability is not None:
             data.update({'peopleEmotionAccuracy': entity.face.emotionProbability})
 
-        if entity.face.emotionProbability:
-            data.update({'peopleIsOperator': True})
-        else:
+        if entity.isOperator is None:
             data.update({'peopleIsOperator': False})
+        else:
+            data.update({'peopleIsOperator': entity.isOperator})
 
         if len(entity.aliases) > 0:
             data.update({'peopleName': entity.aliases[0]})
