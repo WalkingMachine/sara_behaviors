@@ -28,8 +28,8 @@ class WonderlandPatchPerson(EventState):
                                                     outcomes=['done', 'dont_exist', 'bad_request', 'error'])
 
     def execute(self, userdata):
-        # Generate URL to contact
 
+        # Generate URL to contact
         url = "http://wonderland:8000/api/people/"
 
         entity = userdata.entity

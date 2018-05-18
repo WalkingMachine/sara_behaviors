@@ -31,10 +31,13 @@ class WonderlandAddPerson(EventState):
 
     def execute(self, userdata):
         # Generate URL to contact
-
         url = "http://wonderland:8000/api/people/"
 
         entity = userdata.entity
+
+        if entity.face.id is None:
+            Logger.logwarn('Need face ID !')
+            return 'bad_request'
 
         if entity.wonderlandId is None and entity.face.id is None:
             Logger.logwarn('Need wonderland ID or face ID !')
