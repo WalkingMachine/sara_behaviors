@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Action_Give">
+
+	<executable package_path="behavior_action_give.action_give_sm" class="Action_GiveSM" />
+	<tagstring>Action</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Thu May 10 2018</date>
+	<description>
+		give the content of the gripper to a person.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_Move" />
+
+	<!-- Available Parameters -->
+
+</behavior>
