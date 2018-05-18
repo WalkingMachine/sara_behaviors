@@ -41,24 +41,24 @@ class LogEntity(EventState):
         Logger.loginfo("ID: " + str(entity.ID))
 
         Logger.loginfo("Wonderland ID: " + str(entity.wonderlandId))
-        Logger.loginfo("Name: " + entity.name)
+        Logger.loginfo("Name: " + str(entity.name))
 
         for alias in entity.aliases:
-            Logger.loginfo("Alias: " + alias)
+            Logger.loginfo("Alias: " + str(alias))
 
-        Logger.loginfo("Category: " + entity.category)
-        Logger.loginfo("Color: " + entity.color)
+        Logger.loginfo("Category: " + str(entity.category))
+        Logger.loginfo("Color: " + str(entity.color))
 
         Logger.loginfo("Weight: " + str(entity.weight))
         Logger.loginfo("Size: " + str(entity.size))
 
-        Logger.loginfo("Gender: " + entity.face.gender)
+        Logger.loginfo("Gender: " + str(entity.face.gender))
         Logger.loginfo("Gender probability: " + str(entity.face.genderProbability))
-        Logger.loginfo("Emotion: " + entity.face.emotion)
+        Logger.loginfo("Emotion: " + str(entity.face.emotion))
         Logger.loginfo("Emotion probability: " + str(entity.face.emotionProbability))
         Logger.loginfo("Face ID: " + str(entity.face.id))
 
-        Logger.loginfo("Person Pose: " + entity.pose)
+        Logger.loginfo("Person Pose: " + str(entity.pose))
         Logger.loginfo("Person Pose Probability: " + str(entity.poseProbability))
         Logger.loginfo("Person is Operator: " + str(entity.isOperator))
 
