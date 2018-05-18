@@ -73,7 +73,7 @@ class WonderlandGetPersonById(EventState):
 
         if 'peoplePose' in data and data['peoplePose'] is not None:
             entity.pose = data['peoplePose'].encode('ascii', 'ignore')
-        entity.poseProbability = data['peopleGenderAccuracy']
+        entity.poseProbability = data['peoplePoseAccuracy']
 
         if 'peopleGender' in data and data['peopleGender'] is not None:
             entity.face.gender = data['peopleGender'].encode('ascii', 'ignore')
