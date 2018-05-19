@@ -25,15 +25,13 @@ class ReadTorque(EventState):
         self.min_time = min_time
         self.timer = 0
         self._topic = "/joint_states"
-        self._connected = False
+        self.watchdogTime = None
 
         self._sub = ProxySubscriberCached({self._topic: JointState})
+        self.initialTorque = None
 
     def execute(self, userdata):
-        if not self._connected:
-            return 'fail'
-
-        if self.initialTorque == None:
+        if self.initialTorque is None:
             self.watchdogTime = get_time()+self.watchdog
             if self._sub.has_msg(self._topic):
                 message = self._sub.get_last_msg(self._topic)
@@ -42,14 +40,15 @@ class ReadTorque(EventState):
                         self.Joint = i
                         break
                 self.initialTorque = message.effort[self.Joint]
+                print("Initial torque is:"+str(self.initialTorque))
         else:
 
             if self._sub.has_msg(self._topic):
-                self.torque = self._sub.get_last_msg(self._topic).effort[self.Joint]
-                if abs(self.initialTorque - self.torque) >= self.Threshold:
-                    Logger.loginfo('Reading torque :'+str(abs(self.initialTorque - self.torque)))
+                torque = self._sub.get_last_msg(self._topic).effort[self.Joint]
+                if abs(self.initialTorque - torque) >= self.Threshold:
+                    Logger.loginfo('Reading torque :'+str(abs(self.initialTorque - torque)))
                     if self.timer < get_time():
-                        userdata.torque = self.torque
+                        userdata.torque = torque
                         return 'threshold'
                 else:
                     self.timer = get_time() + self.min_time
@@ -57,4 +56,5 @@ class ReadTorque(EventState):
             if (self.watchdogTime-get_time() <= 0):
                 return "watchdog"
 
+    def on_enter(self, userdata):
         self.initialTorque = None
