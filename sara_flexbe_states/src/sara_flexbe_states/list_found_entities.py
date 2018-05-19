@@ -76,7 +76,6 @@ class list_found_entities(EventState):
 
 class wrapper():
     def init(self, mypose, entity, frontality_level):
-
         self.entity = entity
 
         x = entity.position.x - mypose.position.x
@@ -92,8 +91,7 @@ class wrapper():
         self.dist = (abs(y - a * x - b) / (1 + b ** 2) ** 0.5) * frontality_level
         self.dist += (((entity.position.x - mypose.position.x) ** 2 + (
                 entity.position.y - mypose.position.y) ** 2) ** 0.5) * (1 - frontality_level)
-        self.dist /= entity.probability**2
+        self.dist /= entity.probability ** 2
 
     def key(self):
-
         return self.dist
