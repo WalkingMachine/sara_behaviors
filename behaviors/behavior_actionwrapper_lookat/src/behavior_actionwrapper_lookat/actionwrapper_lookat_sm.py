@@ -11,7 +11,6 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
-from sara_flexbe_states.list_found_entities import list_found_entities
 from flexbe_states.check_condition_state import CheckConditionState
 from behavior_action_look_at.action_look_at_sm import action_look_atSM
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
@@ -22,8 +21,8 @@ from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 
 
 '''
-Created on Tue Jul 11 2017
-@author: Philippe La Madeleine
+Created on 19 mai 2018
+@author: Veronica R
 '''
 class ActionWrapper_LookAtSM(Behavior):
     '''
@@ -57,6 +56,7 @@ class ActionWrapper_LookAtSM(Behavior):
         _state_machine = OperatableStateMachine(outcomes=['finished'], input_keys=['Action'])
         _state_machine.userdata.Action = ["LookAt", "you"]
         _state_machine.userdata.ID = 0
+        _state_machine.userdata.name = ["bottle"]
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]
@@ -92,20 +92,20 @@ class ActionWrapper_LookAtSM(Behavior):
                                         transitions={'done': 'Looking'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:557 y:291
+            # x:563 y:288
             OperatableStateMachine.add('Look the other side',
                                         SaraSetHeadAngle(pitch=-0.2, yaw=-1.5),
-                                        transitions={'done': 'look_again'},
+                                        transitions={'done': 'look again'},
                                         autonomy={'done': Autonomy.Off})
 
             # x:402 y:207
             OperatableStateMachine.add('Looking',
                                         SaraSayKey(Format=lambda x: "I am looking for "+ x[1], emotion=1, block=True),
-                                        transitions={'done': 'look for '},
+                                        transitions={'done': 'look for'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'sentence': 'Action'})
 
-            # x:955 y:292
+            # x:958 y:289
             OperatableStateMachine.add('not found',
                                         SaraSayKey(Format=lambda x: "I couldn't find the " +x[1], emotion=1, block=True),
                                         transitions={'done': 'finished'},
@@ -118,20 +118,6 @@ class ActionWrapper_LookAtSM(Behavior):
                                         transitions={'done': 'action_look_at'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'input_value': 'list_entities_by_name', 'output_value': 'Position'})
-
-            # x:391 y:289
-            OperatableStateMachine.add('look for ',
-                                        list_found_entities(frontality_level=0.5),
-                                        transitions={'found': 'GetPosition', 'not_found': 'Look the other side'},
-                                        autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-                                        remapping={'name': 'Action', 'list_found_entities': 'list_found_entities', 'number': 'number'})
-
-            # x:742 y:287
-            OperatableStateMachine.add('look_again',
-                                        list_found_entities(frontality_level=0.5),
-                                        transitions={'found': 'GetPosition', 'not_found': 'not found'},
-                                        autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-                                        remapping={'name': 'name', 'list_found_entities': 'list_found_entities', 'number': 'number'})
 
             # x:219 y:43
             OperatableStateMachine.add('cond',
@@ -151,6 +137,20 @@ class ActionWrapper_LookAtSM(Behavior):
             OperatableStateMachine.add('Entity',
                                         list_entities_by_name(frontality_level=0.5),
                                         transitions={'found': 'GetPosition', 'not_found': 'Look for object'},
+                                        autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+                                        remapping={'name': 'name', 'list_entities_by_name': 'list_entities_by_name', 'number': 'number'})
+
+            # x:384 y:287
+            OperatableStateMachine.add('look for',
+                                        list_entities_by_name(frontality_level=0.5),
+                                        transitions={'found': 'GetPosition', 'not_found': 'Look the other side'},
+                                        autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+                                        remapping={'name': 'name', 'list_entities_by_name': 'list_entities_by_name', 'number': 'number'})
+
+            # x:738 y:288
+            OperatableStateMachine.add('look again',
+                                        list_entities_by_name(frontality_level=0.5),
+                                        transitions={'found': 'GetPosition', 'not_found': 'not found'},
                                         autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
                                         remapping={'name': 'name', 'list_entities_by_name': 'list_entities_by_name', 'number': 'number'})
 
