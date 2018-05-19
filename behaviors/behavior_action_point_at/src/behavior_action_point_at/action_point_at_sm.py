@@ -78,7 +78,7 @@ class Action_point_atSM(Behavior):
 										CalculationState(calculation=lambda x: -x),
 										transitions={'done': 'point'},
 										autonomy={'done': Autonomy.Off},
-						f				remapping={'input_value': 'pitch', 'output_value': 'pitch'})
+										remapping={'input_value': 'pitch', 'output_value': 'pitch'})
 
 			# x:269 y:267
 			OperatableStateMachine.add('point',

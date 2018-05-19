@@ -85,5 +85,7 @@
   <run_depend>behavior_action_pass_door</run_depend>
   <run_depend>behavior_a_go_home</run_depend>
     <run_depend>behavior_wonderlandaddupdateperson</run_depend>
+  <run_depend>behavior_action_give</run_depend>
+  <run_depend>behavior_action_point_at</run_depend>
 
 </package>
