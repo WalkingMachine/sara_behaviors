@@ -9,7 +9,7 @@ from tf.transformations import euler_from_quaternion
 import math
 
 
-class list_found_entities(EventState):
+class list_entities_by_name(EventState):
     '''
         will list entities seen by the camera
 
@@ -26,7 +26,7 @@ class list_found_entities(EventState):
         '''
         Constructor
         '''
-        super(list_found_entities, self).__init__(outcomes=['found', 'not_found'], output_keys=['list_found_entities', 'number'], input_keys=['name'])
+        super(list_entities_by_name, self).__init__(outcomes=['found', 'not_found'], output_keys=['list_entities_by_name', 'number'], input_keys=['name'])
         self._sub = ProxySubscriberCached({'/entities': Entities})
 
         self._topic = "/robot_pose"
@@ -48,7 +48,7 @@ class list_found_entities(EventState):
 
         if self.message is not None and self.mypose is not None:
             found_entities = self.list(userdata.name)
-            userdata.list_found_entities = found_entities
+            userdata.list_entities_by_name = found_entities
             userdata.number = len(found_entities)
 
             if len(found_entities) != 0:
