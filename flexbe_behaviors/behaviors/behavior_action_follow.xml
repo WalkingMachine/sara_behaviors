@@ -3,7 +3,7 @@
 <behavior name="Action_follow">
 
 	<executable package_path="behavior_action_follow.action_follow_sm" class="Action_followSM" />
-	<tagstring></tagstring>
+	<tagstring>Action</tagstring>
 	<author>Raphael Duchaine</author>
 	<date>Mon Apr 30 2018</date>
 	<description>

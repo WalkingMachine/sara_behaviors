@@ -12,8 +12,7 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Action_Move" />
-	<contains name="Action_point_at" />
+	<contains name="Action_follow" />
 
 	<!-- Available Parameters -->
 
