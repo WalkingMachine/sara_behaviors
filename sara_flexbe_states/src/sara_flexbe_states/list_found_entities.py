@@ -9,7 +9,7 @@ from tf.transformations import euler_from_quaternion
 import math
 
 
-class list_entities_by_name(EventState):
+class list_found_entities(EventState):
     '''
         will list entities seen by the camera
 
@@ -26,7 +26,7 @@ class list_entities_by_name(EventState):
         '''
         Constructor
         '''
-        super(list_entities_by_name, self).__init__(outcomes=['found', 'not_found'], output_keys=['list_entities_by_name', 'number'], input_keys=['name'])
+        super(list_found_entities, self).__init__(outcomes=['found', 'not_found'], output_keys=['list_found_entities', 'number'], input_keys=['name'])
         self._sub = ProxySubscriberCached({'/entities': Entities})
 
         self._topic = "/robot_pose"
@@ -48,7 +48,7 @@ class list_entities_by_name(EventState):
 
         if self.message is not None and self.mypose is not None:
             found_entities = self.list(userdata.name)
-            userdata.list_entities_by_name = found_entities
+            userdata.list_found_entities = found_entities
             userdata.number = len(found_entities)
 
             if len(found_entities) != 0:
@@ -76,7 +76,6 @@ class list_entities_by_name(EventState):
 
 class wrapper():
     def init(self, mypose, entity, frontality_level):
-
         self.entity = entity
 
         x = entity.position.x - mypose.position.x
@@ -92,8 +91,7 @@ class wrapper():
         self.dist = (abs(y - a * x - b) / (1 + b ** 2) ** 0.5) * frontality_level
         self.dist += (((entity.position.x - mypose.position.x) ** 2 + (
                 entity.position.y - mypose.position.y) ** 2) ** 0.5) * (1 - frontality_level)
-        self.dist /= entity.probability**2
+        self.dist /= entity.probability ** 2
 
     def key(self):
-
         return self.dist
