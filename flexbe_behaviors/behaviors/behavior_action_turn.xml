@@ -10,11 +10,13 @@
 		Quality of life action
 
 Ask for a rotation in degree with forward as 0deg
-Right = -90deg , Left = 90deg
+
+Verify which rotation is positive
 	</description>
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Action_Move" />
 
 	<!-- Available Parameters -->
 
