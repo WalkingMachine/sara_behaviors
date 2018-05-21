@@ -77,8 +77,7 @@
   <run_depend>behavior_action_follow</run_depend>
   <run_depend>behavior_action_look_at</run_depend>
   <run_depend>behavior_action_look_at_face</run_depend>
-  <run_depend>behavior_scenario_security_check2</run_depend>
-  <run_depend>behavior_scenario2_security_check</run_depend>
+  <run_depend>behavior_action_place</run_depend>
   <run_depend>behavior_a_test_sandbox</run_depend>
   <run_depend>behavior_action_guiding_person</run_depend>
   <run_depend>behavior_action_pass_door</run_depend>
