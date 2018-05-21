@@ -55,24 +55,24 @@ class HelpmecarrySM(Behavior):
 
 		# Behavior comments:
 
-		# O 274 35 /Getting ready and ID Operator
-		# Attend que l'opérateur s'identifie. Le robot mémorise l'identifiant. Le robot suit l'opérateur.
+		# O 274 34 /Getting ready and ID Operator
+		# Attend que l'operateur s'identifie. Le robot memorise l'identifiant. Le robot suit l'operateur.
 
 		# O 138 655 
-		# Une fois que le robot arrive à destination, il informe quil laissera le sac sur le sol.
+		# Une fois que le robot arrive a destination, il informe quil laissera le sac sur le sol.
 
 		# O 296 64 
-		# retourne à la position initiale
+		# retourne a la position initiale
 
 		# O 440 415 
-		# lorsquil arrive à destination, il baisse le bras, ouvre la pince ,attend et ferme sa pince.
+		# lorsquil arrive a destination, il baisse le bras, ouvre la pince ,attend et ferme sa pince.
 
 
 
 	def create(self):
 		# x:1153 y:389, x:712 y:94, x:980 y:176
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'not_found'], input_keys=['ID'])
-		_state_machine.userdata.ID = ID
+		_state_machine.userdata.ID = 0
 		_state_machine.userdata.Closed_Gripper_Width = 1
 		_state_machine.userdata.Open_Gripper_Width = 255
 
@@ -141,7 +141,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:101 y:170
 			OperatableStateMachine.add('UnderstandingOpe',
-										RegexTester(regex=".*Follow me.*"),
+										RegexTester(regex=".*follow *me.*"),
 										transitions={'true': 'start', 'false': 'false'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'text': 'words', 'result': 'result'})
@@ -163,7 +163,7 @@ class HelpmecarrySM(Behavior):
 			# x:555 y:365
 			OperatableStateMachine.add('Follow',
 										_sm_follow_1,
-										transitions={'done': 'done', 'failed': 'failed'},
+										transitions={'done': 'done', 'failed': 'say fail'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
@@ -173,6 +173,12 @@ class HelpmecarrySM(Behavior):
 										transitions={'done': 'Follow'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'ID'})
+
+			# x:539 y:267
+			OperatableStateMachine.add('say fail',
+										SaraSay(sentence="Sorry, I lost you.", emotion=1, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
 
 
 
