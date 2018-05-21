@@ -66,7 +66,6 @@
   <run_depend>behavior_go_to_room</run_depend>
   <run_depend>behavior_go_to_exit</run_depend>
   <run_depend>behavior_action_receive_bag</run_depend>
-  <run_depend>behavior_action_receive_bag</run_depend>
   <run_depend>behavior_sara_presentation</run_depend>
   <run_depend>behavior_get_speech</run_depend>
   <run_depend>behavior_hello_world</run_depend>
@@ -88,5 +87,6 @@
   <run_depend>behavior_action_give</run_depend>
   <run_depend>behavior_action_point_at</run_depend>
   <run_depend>behavior_help_me_carry</run_depend>
+  <run_depend>behavior_action_find</run_depend>
 
 </package>
