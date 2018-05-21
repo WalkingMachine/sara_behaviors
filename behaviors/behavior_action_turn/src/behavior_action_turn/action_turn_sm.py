@@ -8,9 +8,9 @@
 
 import roslib; roslib.load_manifest('behavior_action_turn')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from behavior_action_move.action_move_sm import Action_MoveSM
 from sara_flexbe_states.SetKey import SetKey
+from sara_flexbe_states.pose_gen_euler_key import GenPoseEulerKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -50,7 +50,7 @@ Verify which rotation is positive
 
 
     def create(self):
-        # x:445 y:258, x:241 y:301
+        # x:445 y:258, x:313 y:323
         _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['rotation'])
         _state_machine.userdata.rotation = 0
 
@@ -61,26 +61,33 @@ Verify which rotation is positive
 
 
         with _state_machine:
-            # x:38 y:33
-            OperatableStateMachine.add('GenPoseEuler',
-                                        GenPoseEuler(x=0, y=0, z=0, roll=0, pitch=0, yaw=rotation),
-                                        transitions={'done': 'SetRelative'},
+            # x:46 y:34
+            OperatableStateMachine.add('setValue0',
+                                        SetKey(Value=0),
+                                        transitions={'done': 'GenPoseEulerKey'},
                                         autonomy={'done': Autonomy.Off},
-                                        remapping={'pose': 'pose'})
+                                        remapping={'Key': 'value0'})
 
-            # x:126 y:142
-            OperatableStateMachine.add('Action_Move',
-                                        self.use_behavior(Action_MoveSM, 'Action_Move'),
-                                        transitions={'finished': 'finished', 'failed': 'failed'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'pose': 'pose', 'relative': 'relative'})
-
-            # x:185 y:27
+            # x:213 y:65
             OperatableStateMachine.add('SetRelative',
                                         SetKey(Value=True),
                                         transitions={'done': 'Action_Move'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'Key': 'relative'})
+
+            # x:32 y:158
+            OperatableStateMachine.add('GenPoseEulerKey',
+                                        GenPoseEulerKey(),
+                                        transitions={'done': 'SetRelative'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'xpos': 'value0', 'ypos': 'value0', 'zpos': 'value0', 'yaw': 'value0', 'pitch': 'value0', 'roll': 'rotation', 'pose': 'pose'})
+
+            # x:263 y:144
+            OperatableStateMachine.add('Action_Move',
+                                        self.use_behavior(Action_MoveSM, 'Action_Move'),
+                                        transitions={'finished': 'finished', 'failed': 'failed'},
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'pose': 'pose', 'relative': 'relative'})
 
 
         return _state_machine
