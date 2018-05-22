@@ -74,7 +74,7 @@ class SaraRelMoveBase(EventState):
             self._pose = userdata.pose
         elif type(userdata.pose)==Pose2D:
             pt = Point(x=userdata.pose.x, y=userdata.pose.y)
-            qt = transformations.quaternion_from_euler(0, 0, userdata.waypoint.theta)
+            qt = transformations.quaternion_from_euler(0, 0, userdata.pose.theta)
             self._pose = Pose(position=pt, orientation=Quaternion(*qt))
 
         self.setGoal(self._pose)
