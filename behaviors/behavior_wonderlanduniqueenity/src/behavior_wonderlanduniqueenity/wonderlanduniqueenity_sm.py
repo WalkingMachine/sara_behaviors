@@ -56,9 +56,10 @@ class WonderlandUniqueEnitySM(Behavior):
 
 	def create(self):
 		# x:395 y:74, x:403 y:154
-		_state_machine = OperatableStateMachine(outcomes=['found', 'not_found'], input_keys=['name', 'containers'])
+		_state_machine = OperatableStateMachine(outcomes=['found', 'not_found'], input_keys=['name', 'containers'], output_keys=['entity'])
 		_state_machine.userdata.containers = ['dining']
 		_state_machine.userdata.name = 'table'
+		_state_machine.userdata.entity = None
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
