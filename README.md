@@ -24,13 +24,11 @@ C'est l'engine de nos state machines. C'est une interface graphique qui permet d
 
 1. Importer les paramètres json fournis ici dans settings en utilisant l'app: `/settings/flexbe_config.json`
 2. Ajouter les dossiers necessaires contenant les states
-    - `~/sara_ws/src/sara_behaviors/sara_flexbe_states/src/sara_flexbe_states`
-    - `~/sara_ws/src/generic_flexbe_states`
-    - `~/sara_ws/src/flexbe_behavior_engine/flexbe_states`
+    - `~/sara_ws/`
 3. Ajouter les dossiers necessaires contenant les behaviors de SARA
     - `~/sara_ws/src/sara_behaviors/behaviors`
 4. Ajouter les dossiers necessaires contenant les behaviors flexbe de SARA
-    - `~/sara_ws/src/sara_behaviors/flexbe_behaviors/behaviors`
+    - `~/sara_ws/src/sara_behaviors/flexbe_behaviors`
 
 - Compiler le workspace: `cd ~/sara_ws/ && catkin_make`
 
