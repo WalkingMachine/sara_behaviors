@@ -12,6 +12,8 @@
 
 
 	<!-- Contained Behaviors -->
+	<contains name="WonderlandUniqueEnity" />
+	<contains name="Action_Move" />
 
 	<!-- Available Parameters -->
 
