@@ -27,8 +27,8 @@ from behavior_action_move.action_move_sm import Action_MoveSM
 
 
 '''
-Created on Tue Jul 11 2017
-@author: Philippe La Madeleine
+Created on 22/05/2018
+@author: Lucas Maurice
 '''
 class ActionWrapper_FollowSM(Behavior):
 	'''
