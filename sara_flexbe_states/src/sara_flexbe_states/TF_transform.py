@@ -3,7 +3,7 @@
 from flexbe_core import EventState, Logger
 import rospy
 import tf
-from geometry_msgs.msg import PointStamped
+from geometry_msgs.msg import PointStamped, Point, Pose
 
 class TF_transformation(EventState):
     """
@@ -33,15 +33,23 @@ class TF_transformation(EventState):
         self.out_ref=out_ref
 
     def execute(self, userdata):
+
         point = PointStamped()
+        if type(userdata.in_pos) is Point:
+            print("this is a point")
+            point.point = userdata.in_pos
+        elif type(userdata.in_pos) is Pose:
+            print("this is a pose")
+            point.point = userdata.in_pos.position
+        else:
+            Logger.loginfo('ERROR in ' + str(self.name) + ' : in_pos is not a Pose() nor a Point()')
+            return 'fail'
+
         point.header.frame_id = self.in_ref
-        point.point = userdata.in_pos
         self.listener.waitForTransform("map", self.out_ref, rospy.Time(0), rospy.Duration(1))
         print("Frame : map")
         print(" point : "+str(point.point))
-        try:
-            point = self.listener.transformPoint(self.out_ref, point)
-            userdata.out_pos = point.point
-            return 'done'
-        except:
-            return 'fail'
+
+        point = self.listener.transformPoint(self.out_ref, point)
+        userdata.out_pos = point.point
+        return 'done'
