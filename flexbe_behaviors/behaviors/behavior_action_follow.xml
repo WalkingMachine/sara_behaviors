@@ -13,6 +13,7 @@ Demande le id de la personne a suivre
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Get_operator" />
 
 	<!-- Available Parameters -->
 

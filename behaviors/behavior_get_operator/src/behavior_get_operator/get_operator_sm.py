@@ -13,14 +13,14 @@ from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
 from behavior_action_move.action_move_sm import Action_MoveSM
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.get_speech import GetSpeech
-from sara_flexbe_states.binary_calculation_state import BinaryCalculationState
+from sara_flexbe_states.list_entities_by_name import list_entities_by_name
+from behavior_action_turn.action_turn_sm import action_turnSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -45,6 +45,7 @@ class Get_operatorSM(Behavior):
 
 		# references to used behaviors
 		self.add_behavior(Action_MoveSM, 'Move to person/Action_Move')
+		self.add_behavior(action_turnSM, 'turn_N_search/Turn/action_turn')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -65,10 +66,76 @@ class Get_operatorSM(Behavior):
 		
 		# [/MANUAL_CREATE]
 
-		# x:506 y:393, x:515 y:462
-		_sm_move_to_person_0 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Operator'])
+		# 
+		_sm_turn_0 = OperatableStateMachine(outcomes=[''])
 
-		with _sm_move_to_person_0:
+		with _sm_turn_0:
+			# x:164 y:66
+			OperatableStateMachine.add('set angle',
+										SetKey(Value=50),
+										transitions={'done': 'action_turn'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'rotation'})
+
+			# x:157 y:179
+			OperatableStateMachine.add('action_turn',
+										self.use_behavior(action_turnSM, 'turn_N_search/Turn/action_turn'),
+										transitions={'finished': 'action_turn', 'failed': 'action_turn'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'rotation': 'rotation'})
+
+
+		# x:379 y:379, x:131 y:380
+		_sm_search_1 = OperatableStateMachine(outcomes=['done', 'not_found'], input_keys=['index2'], output_keys=['Operator'])
+
+		with _sm_search_1:
+			# x:120 y:107
+			OperatableStateMachine.add('for 5',
+										ForLoop(repeat=100),
+										transitions={'do': 'name', 'end': 'not_found'},
+										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+										remapping={'index': 'index'})
+
+			# x:327 y:97
+			OperatableStateMachine.add('name',
+										SetKey(Value="person"),
+										transitions={'done': 'Get persons'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'name'})
+
+			# x:351 y:227
+			OperatableStateMachine.add('Get persons',
+										list_entities_by_name(frontality_level=0.5),
+										transitions={'found': 'done', 'not_found': 'for 5'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'name': 'name', 'list_entities_by_name': 'Entities_list', 'number': 'number'})
+
+
+		# x:30 y:458, x:130 y:458, x:230 y:458, x:330 y:458
+		_sm_turn_n_search_2 = ConcurrencyContainer(outcomes=['not_found', 'done'], input_keys=['index2'], output_keys=['Operator'], conditions=[
+										('done', [('Search', 'done')]),
+										('not_found', [('Search', 'not_found')])
+										])
+
+		with _sm_turn_n_search_2:
+			# x:69 y:167
+			OperatableStateMachine.add('Search',
+										_sm_search_1,
+										transitions={'done': 'done', 'not_found': 'not_found'},
+										autonomy={'done': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
+										remapping={'index2': 'index2', 'Operator': 'Operator'})
+
+			# x:262 y:163
+			OperatableStateMachine.add('Turn',
+										_sm_turn_0,
+										transitions={},
+										autonomy={})
+
+
+		# x:506 y:393, x:515 y:462
+		_sm_move_to_person_3 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Operator'])
+
+		with _sm_move_to_person_3:
 			# x:30 y:83
 			OperatableStateMachine.add('Getpos',
 										CalculationState(calculation=lambda x: x.position),
@@ -127,7 +194,7 @@ class Get_operatorSM(Behavior):
 										transitions={'done': 'for 3'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:780 y:517
+			# x:785 y:605
 			OperatableStateMachine.add('ask if operator',
 										SaraSay(sentence="Are you my operator?", emotion=1, block=True),
 										transitions={'done': 'get speech'},
@@ -153,16 +220,9 @@ class Get_operatorSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Operator'})
 
-			# x:49 y:511
-			OperatableStateMachine.add('Get persons',
-										list_entities_by_name(Name="person", frontality_level=0.5),
-										transitions={'found': 'Get closest', 'not_found': 'say where are you'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'Entities_list': 'Entities_list', 'number': 'number'})
-
 			# x:461 y:475
 			OperatableStateMachine.add('Move to person',
-										_sm_move_to_person_0,
+										_sm_move_to_person_3,
 										transitions={'finished': 'ask if operator', 'failed': 'NotFound'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Operator': 'Operator'})
@@ -195,19 +255,19 @@ class Get_operatorSM(Behavior):
 										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'words': 'words'})
 
-			# x:69 y:402
+			# x:70 y:400
 			OperatableStateMachine.add('for 3_2',
 										ForLoop(repeat=3),
-										transitions={'do': 'Get persons', 'end': 'set None'},
+										transitions={'do': 'turn_N_search', 'end': 'set None'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index2'})
 
-			# x:254 y:514
-			OperatableStateMachine.add('Get closest',
-										BinaryCalculationState(calculation="X[Y-1]"),
-										transitions={'done': 'ask if operator'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'X': 'Entities_list', 'Y': 'index2', 'Z': 'Operator'})
+			# x:87 y:634
+			OperatableStateMachine.add('turn_N_search',
+										_sm_turn_n_search_2,
+										transitions={'not_found': 'say where are you', 'done': 'ask if operator'},
+										autonomy={'not_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
+										remapping={'index2': 'index2', 'Operator': 'Operator'})
 
 
 		return _state_machine

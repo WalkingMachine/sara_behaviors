@@ -59,7 +59,7 @@ class Action_GiveSM(Behavior):
 
 
 	def create(self):
-		# x:1195 y:433, x:122 y:501, x:366 y:140, x:1118 y:593
+		# x:1195 y:433, x:121 y:572, x:572 y:82, x:1118 y:593
 		_state_machine = OperatableStateMachine(outcomes=['Given', 'Person_not_found', 'No_object_in_hand', 'fail'])
 
 		# Additional creation code can be added inside the following tags
@@ -195,27 +195,27 @@ class Action_GiveSM(Behavior):
 			# x:77 y:29
 			OperatableStateMachine.add('Get hand contaent',
 										GetRosParam(ParamName="GripperContent"),
-										transitions={'done': 'is object in hand?', 'failed': 'log empty hand'},
+										transitions={'done': 'is object in hand?', 'failed': 'say empty'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'Object'})
 
 			# x:75 y:113
 			OperatableStateMachine.add('is object in hand?',
 										CheckConditionState(predicate=lambda x: x),
-										transitions={'true': 'list persons', 'false': 'log empty hand'},
+										transitions={'true': 'set person', 'false': 'say empty'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'Object'})
 
-			# x:76 y:202
+			# x:75 y:291
 			OperatableStateMachine.add('list persons',
-										list_entities_by_name(Name="person", frontality_level=0.5),
-										transitions={'found': 'get id', 'not_found': 'Person_not_found'},
+										list_entities_by_name(frontality_level=0.5),
+										transitions={'found': 'get id', 'not_found': 'say nobody'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'Entities_list': 'People_list', 'number': 'number'})
+										remapping={'name': 'name', 'list_entities_by_name': 'People_list', 'number': 'number'})
 
-			# x:290 y:56
+			# x:434 y:62
 			OperatableStateMachine.add('log empty hand',
-										LogState(text="The hand is empty. Set the GripperContent rosParma", severity=Logger.REPORT_HINT),
+										LogState(text="The hand is empty. Set the GripperContent rosParam", severity=Logger.REPORT_HINT),
 										transitions={'done': 'No_object_in_hand'},
 										autonomy={'done': Autonomy.Off})
 
@@ -280,12 +280,32 @@ class Action_GiveSM(Behavior):
 										autonomy={'failed': Autonomy.Inherit, 'given': Autonomy.Inherit, 'continue': Autonomy.Inherit},
 										remapping={'ID': 'ID', 'Object': 'Object'})
 
-			# x:251 y:205
+			# x:275 y:280
 			OperatableStateMachine.add('get id',
 										CalculationState(calculation=lambda x: x[0].ID),
 										transitions={'done': 'give'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'People_list', 'output_value': 'ID'})
+
+			# x:91 y:209
+			OperatableStateMachine.add('set person',
+										SetKey(Value="person"),
+										transitions={'done': 'list persons'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'name'})
+
+			# x:300 y:58
+			OperatableStateMachine.add('say empty',
+										SaraSay(sentence="Hum. I got nothing to give.", emotion=1, block=True),
+										transitions={'done': 'log empty hand'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:89 y:416
+			OperatableStateMachine.add('say nobody',
+										SaraSayKey(Format=lambda x: "Strange. I got an "+ x +" to give. But there is nobody around to take it.", emotion=1, block=True),
+										transitions={'done': 'Person_not_found'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'Object'})
 
 
 		return _state_machine
