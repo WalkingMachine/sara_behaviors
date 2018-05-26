@@ -18,10 +18,10 @@ from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
 from behavior_action_follow.action_follow_sm import Action_followSM
 from sara_flexbe_states.SetRosParam import SetRosParam
+from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from flexbe_states.wait_state import WaitState
-from sara_flexbe_states.SetKey import SetKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -55,7 +55,7 @@ class HelpmecarrySM(Behavior):
 
 		# Behavior comments:
 
-		# O 274 34 /Getting ready and ID Operator
+		# O 303 89 /Getting ready and ID Operator
 		# Attend que l'operateur s'identifie. Le robot memorise l'identifiant. Le robot suit l'operateur.
 
 		# O 138 655 
@@ -101,7 +101,7 @@ class HelpmecarrySM(Behavior):
 
 
 		# x:346 y:367, x:130 y:365, x:230 y:365, x:178 y:422, x:430 y:365
-		_sm_follow_1 = ConcurrencyContainer(outcomes=['done', 'failed'], input_keys=['ID'], conditions=[
+		_sm_follow_1 = ConcurrencyContainer(outcomes=['done', 'failed'], input_keys=['ID', 'distance'], conditions=[
 										('failed', [('Action_follow', 'failed')]),
 										('done', [('Ecoute', 'arrete')]),
 										('failed', [('Ecoute', 'fail')])
@@ -113,7 +113,7 @@ class HelpmecarrySM(Behavior):
 										self.use_behavior(Action_followSM, 'Getting ready and ID Operator/Follow/Action_follow'),
 										transitions={'failed': 'failed'},
 										autonomy={'failed': Autonomy.Inherit},
-										remapping={'ID': 'ID'})
+										remapping={'ID': 'ID', 'distance': 'distance'})
 
 			# x:294 y:146
 			OperatableStateMachine.add('Ecoute',
@@ -122,7 +122,7 @@ class HelpmecarrySM(Behavior):
 										autonomy={'arrete': Autonomy.Inherit, 'fail': Autonomy.Inherit})
 
 
-		# x:16 y:393, x:306 y:259, x:367 y:97, x:434 y:502
+		# x:14 y:304, x:345 y:320, x:369 y:177, x:803 y:205
 		_sm_getting_ready_and_id_operator_2 = OperatableStateMachine(outcomes=['false', 'failed', 'fail', 'done'])
 
 		with _sm_getting_ready_and_id_operator_2:
@@ -133,52 +133,66 @@ class HelpmecarrySM(Behavior):
 										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'words': 'words'})
 
-			# x:153 y:263
+			# x:133 y:308
 			OperatableStateMachine.add('start',
 										SaraSay(sentence="I am ready", emotion=1, block=True),
-										transitions={'done': 'FindId'},
+										transitions={'done': 'person'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:101 y:170
+			# x:79 y:199
 			OperatableStateMachine.add('UnderstandingOpe',
 										RegexTester(regex=".*follow *me.*"),
 										transitions={'true': 'start', 'false': 'false'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'text': 'words', 'result': 'result'})
 
-			# x:81 y:344
+			# x:181 y:511
 			OperatableStateMachine.add('FindId',
-										list_entities_by_name(Name="person", frontality_level=0.5),
+										list_entities_by_name(frontality_level=0.5),
 										transitions={'found': 'GetID', 'not_found': 'failed'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'Entities_list': 'Entities_list', 'number': 'number'})
+										remapping={'name': 'person', 'list_entities_by_name': 'Entities_list', 'number': 'number'})
 
-			# x:191 y:433
+			# x:368 y:541
 			OperatableStateMachine.add('GetID',
 										CalculationState(calculation=lambda x: x[0].ID),
 										transitions={'done': 'setID'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Entities_list', 'output_value': 'ID'})
 
-			# x:555 y:365
+			# x:582 y:323
 			OperatableStateMachine.add('Follow',
 										_sm_follow_1,
 										transitions={'done': 'done', 'failed': 'say fail'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'ID': 'ID'})
+										remapping={'ID': 'ID', 'distance': 'distance'})
 
-			# x:375 y:386
+			# x:499 y:492
 			OperatableStateMachine.add('setID',
 										SetRosParam(ParamName="OperatorID"),
-										transitions={'done': 'Follow'},
+										transitions={'done': 'distance'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'ID'})
 
-			# x:539 y:267
+			# x:464 y:296
 			OperatableStateMachine.add('say fail',
 										SaraSay(sentence="Sorry, I lost you.", emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:37 y:456
+			OperatableStateMachine.add('person',
+										SetKey(Value="person"),
+										transitions={'done': 'FindId'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'person'})
+
+			# x:659 y:462
+			OperatableStateMachine.add('distance',
+										SetKey(Value=1.25),
+										transitions={'done': 'Follow'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'distance'})
 
 
 
@@ -196,7 +210,7 @@ class HelpmecarrySM(Behavior):
 										transitions={'done': 'Action_Receive_Bag'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:74 y:443
+			# x:161 y:430
 			OperatableStateMachine.add('Action_Receive_Bag',
 										self.use_behavior(Action_Receive_BagSM, 'Action_Receive_Bag'),
 										transitions={'finished': 'bringit', 'failed': 'failed'},
@@ -216,7 +230,7 @@ class HelpmecarrySM(Behavior):
 										transitions={'done': 'levelDrop'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:31 y:106
+			# x:236 y:169
 			OperatableStateMachine.add('Getting ready and ID Operator',
 										_sm_getting_ready_and_id_operator_2,
 										transitions={'false': 'Getting ready and ID Operator', 'failed': 'failed', 'fail': 'failed', 'done': 'sac'},
