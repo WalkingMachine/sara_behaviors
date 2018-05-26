@@ -8,8 +8,9 @@
 
 import roslib; roslib.load_manifest('behavior_a_test_sandbox')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.moveit_move import MoveitMove
+from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from flexbe_states.log_state import LogState
+from behavior_action_place.action_place_sm import Action_placeSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -33,6 +34,7 @@ class ATestSandboxSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
+		self.add_behavior(Action_placeSM, 'Action_place')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -56,30 +58,30 @@ class ATestSandboxSM(Behavior):
 
 
 		with _state_machine:
-			# x:284 y:202
-			OperatableStateMachine.add('1',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': '2', 'failed': 'Failure'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'Pose1'})
-
-			# x:718 y:180
-			OperatableStateMachine.add('Failure',
-										LogState(text="The test is a failure", severity=Logger.REPORT_HINT),
-										transitions={'done': 'failed'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:400 y:98
-			OperatableStateMachine.add('2',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'success', 'failed': 'Failure'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'Pose2'})
+			# x:137 y:66
+			OperatableStateMachine.add('POSE',
+										GenPoseEuler(x=0.7, y=-0.3, z=1, roll=0, pitch=0, yaw=0),
+										transitions={'done': 'Action_place'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'pose': 'pos'})
 
 			# x:725 y:32
 			OperatableStateMachine.add('success',
 										LogState(text="The test is a success", severity=Logger.REPORT_HINT),
 										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:371 y:89
+			OperatableStateMachine.add('Action_place',
+										self.use_behavior(Action_placeSM, 'Action_place'),
+										transitions={'finished': 'success', 'failed': 'Failure'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'pos': 'pos'})
+
+			# x:718 y:180
+			OperatableStateMachine.add('Failure',
+										LogState(text="The test is a failure", severity=Logger.REPORT_HINT),
+										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
 
