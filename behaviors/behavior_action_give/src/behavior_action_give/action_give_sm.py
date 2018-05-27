@@ -211,7 +211,7 @@ class Action_GiveSM(Behavior):
 										list_entities_by_name(Name="person", frontality_level=0.5),
 										transitions={'found': 'get id', 'not_found': 'Person_not_found'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'Entities_list': 'People_list', 'number': 'number'})
+										remapping={'entity_list': 'People_list', 'number': 'number'})
 
 			# x:290 y:56
 			OperatableStateMachine.add('log empty hand',
