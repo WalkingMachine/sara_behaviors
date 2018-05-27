@@ -88,5 +88,6 @@
   <run_depend>behavior_help_me_carry</run_depend>
   <run_depend>behavior_action_find</run_depend>
   <run_depend>behavior_action_turn</run_depend>
+  <run_depend>behavior_wonderlanduniqueenity</run_depend>
 
 </package>
