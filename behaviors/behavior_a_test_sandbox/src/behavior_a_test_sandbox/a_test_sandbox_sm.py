@@ -11,6 +11,7 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from flexbe_states.log_state import LogState
 from behavior_action_place.action_place_sm import Action_placeSM
+from sara_flexbe_states.moveit_move import MoveitMove
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -49,7 +50,7 @@ class ATestSandboxSM(Behavior):
 		# x:824 y:62, x:824 y:212
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.Pose1 = "PreGripPose"
-		_state_machine.userdata.Pose2 = "PostGripPose"
+		_state_machine.userdata.Pose2 = "IdlePose"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -58,9 +59,9 @@ class ATestSandboxSM(Behavior):
 
 
 		with _state_machine:
-			# x:137 y:66
+			# x:80 y:50
 			OperatableStateMachine.add('POSE',
-										GenPoseEuler(x=0.7, y=-0.3, z=1, roll=0, pitch=0, yaw=0),
+										GenPoseEuler(x=0.75, y=-0.25, z=0.8, roll=0, pitch=0, yaw=0),
 										transitions={'done': 'Action_place'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'pos'})
@@ -71,10 +72,10 @@ class ATestSandboxSM(Behavior):
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:371 y:89
+			# x:266 y:65
 			OperatableStateMachine.add('Action_place',
 										self.use_behavior(Action_placeSM, 'Action_place'),
-										transitions={'finished': 'success', 'failed': 'Failure'},
+										transitions={'finished': 'back', 'failed': 'Failure'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pos': 'pos'})
 
@@ -83,6 +84,13 @@ class ATestSandboxSM(Behavior):
 										LogState(text="The test is a failure", severity=Logger.REPORT_HINT),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:542 y:17
+			OperatableStateMachine.add('back',
+										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										transitions={'done': 'success', 'failed': 'success'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'Pose2'})
 
 
 		return _state_machine
