@@ -62,6 +62,19 @@
   <run_depend>behavior_test_for</run_depend>
   <run_depend>behavior_test_gripper</run_depend>
   <run_depend>behavior_test_lu4r</run_depend>
+  <run_depend>behavior_wonderland_entity_in_room_name</run_depend>
+  <run_depend>behavior_wonderland_entity_in_room</run_depend>
+  <run_depend>behavior_wonderland_get_doors</run_depend>
+  <run_depend>behavior_wonderland_get_origin</run_depend>
+  <run_depend>behavior_wonderland_get_waypoint_from_id</run_depend>
+  <run_depend>behavior_wonderland_get_waypoint</run_depend>
+  <run_depend>behavior_wonderland_goto_exit</run_depend>
+  <run_depend>behavior_wonderland_list_entities_in_room</run_depend>
+  <run_depend>behavior_wonderland_list_rooms</run_depend>
+  <run_depend>behavior_wonderland_test2</run_depend>
+  <run_depend>behavior_wonderland_waypoint_id</run_depend>
+  <run_depend>behavior_testgenderage</run_depend>
+  <run_depend>behavior_age_statistics</run_depend>
   <run_depend>behavior_init_sequence</run_depend>
   <run_depend>behavior_go_to_room</run_depend>
   <run_depend>behavior_go_to_exit</run_depend>
@@ -82,7 +95,7 @@
   <run_depend>behavior_action_guiding_person</run_depend>
   <run_depend>behavior_action_pass_door</run_depend>
   <run_depend>behavior_a_go_home</run_depend>
-    <run_depend>behavior_wonderlandaddupdateperson</run_depend>
+  <run_depend>behavior_wonderlandaddupdateperson</run_depend>
   <run_depend>behavior_action_give</run_depend>
   <run_depend>behavior_action_point_at</run_depend>
   <run_depend>behavior_help_me_carry</run_depend>
