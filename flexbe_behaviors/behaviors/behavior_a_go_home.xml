@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="A Go Home">
+
+	<executable package_path="behavior_a_go_home.a_go_home_sm" class="AGoHomeSM" />
+	<tagstring></tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Mon May 14 2018</date>
+	<description>
+		sara will go to her docking port
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_Move" />
+
+	<!-- Available Parameters -->
+
+</behavior>

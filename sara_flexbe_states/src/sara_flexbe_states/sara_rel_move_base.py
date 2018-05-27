@@ -5,8 +5,10 @@ from flexbe_core.proxy import ProxyActionClient
 
 from actionlib_msgs.msg import GoalStatus
 from move_base_msgs.msg import *
-from geometry_msgs.msg import Pose, Point, Quaternion, Pose2D
+from std_srvs.srv import Empty
+from geometry_msgs.msg import Pose, Pose2D, Quaternion, Point
 from tf import transformations
+import rospy
 
 """
 Created on 11/19/2015
@@ -68,11 +70,13 @@ class SaraRelMoveBase(EventState):
         self._failed = False
 
         # Create and populate action goal
+        if type(userdata.pose)==Pose:
+            self._pose = userdata.pose
+        elif type(userdata.pose)==Pose2D:
+            pt = Point(x=userdata.pose.x, y=userdata.pose.y)
+            qt = transformations.quaternion_from_euler(0, 0, userdata.pose.theta)
+            self._pose = Pose(position=pt, orientation=Quaternion(*qt))
 
-        # pt = Point(x=userdata.waypoint.x, y=userdata.waypoint.y)
-        # qt = transformations.quaternion_from_euler(0, 0, userdata.waypoint.theta)
-        # self._pose = Pose(position=pt, orientation=Quaternion(*qt))
-        self._pose = userdata.pose
         self.setGoal(self._pose)
 
     def on_exit(self, userdata):
@@ -88,6 +92,10 @@ class SaraRelMoveBase(EventState):
         self.setGoal(self._pose)
 
     def setGoal(self, pose):
+
+        rospy.wait_for_service('/move_base/clear_costmaps')
+        serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
+        serv()
         goal = MoveBaseGoal()
 
         goal.target_pose.pose = pose

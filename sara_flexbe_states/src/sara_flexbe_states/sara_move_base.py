@@ -49,9 +49,6 @@ class SaraMoveBase(EventState):
         if self._arrived:
             return 'arrived'
         if self._failed:
-            rospy.wait_for_service('/move_base/clear_costmaps')
-            serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
-            serv()
             return 'failed'
 
         if self._client.has_result(self._action_topic):
@@ -63,9 +60,6 @@ class SaraMoveBase(EventState):
                             GoalStatus.RECALLED, GoalStatus.ABORTED]:
                 Logger.logwarn('Navigation failed: %s' % str(status))
                 self._failed = True
-                rospy.wait_for_service('/move_base/clear_costmaps')
-                serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
-                serv()
                 return 'failed'
 
 
@@ -76,11 +70,13 @@ class SaraMoveBase(EventState):
         self._failed = False
 
         # Create and populate action goal
+        if type(userdata.pose)==Pose:
+            self._pose = userdata.pose
+        elif type(userdata.pose)==Pose2D:
+            pt = Point(x=userdata.pose.x, y=userdata.pose.y)
+            qt = transformations.quaternion_from_euler(0, 0, userdata.pose.theta)
+            self._pose = Pose(position=pt, orientation=Quaternion(*qt))
 
-        # pt = Point(x=userdata.waypoint.x, y=userdata.waypoint.y)
-        # qt = transformations.quaternion_from_euler(0, 0, userdata.waypoint.theta)
-        # self._pose = Pose(position=pt, orientation=Quaternion(*qt))
-        self._pose = userdata.pose
         self.setGoal(self._pose)
 
     def on_exit(self, userdata):
@@ -96,6 +92,10 @@ class SaraMoveBase(EventState):
         self.setGoal(self._pose)
 
     def setGoal(self, pose):
+
+        rospy.wait_for_service('/move_base/clear_costmaps')
+        serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
+        serv()
         goal = MoveBaseGoal()
 
         goal.target_pose.pose = pose

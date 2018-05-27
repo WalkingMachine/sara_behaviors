@@ -25,14 +25,13 @@ class ReadTorque(EventState):
         self.min_time = min_time
         self.timer = 0
         self._topic = "/joint_states"
-        self._connected = False
+        self.watchdogTime = None
 
+        self._sub = ProxySubscriberCached({self._topic: JointState})
+        self.initialTorque = None
 
     def execute(self, userdata):
-        if not self._connected:
-            return 'fail'
-
-        if self.initialTorque == None:
+        if self.initialTorque is None:
             self.watchdogTime = get_time()+self.watchdog
             if self._sub.has_msg(self._topic):
                 message = self._sub.get_last_msg(self._topic)
@@ -41,14 +40,15 @@ class ReadTorque(EventState):
                         self.Joint = i
                         break
                 self.initialTorque = message.effort[self.Joint]
+                print("Initial torque is:"+str(self.initialTorque))
         else:
 
             if self._sub.has_msg(self._topic):
-                self.torque = self._sub.get_last_msg(self._topic).effort[self.Joint]
-                if abs(self.initialTorque - self.torque) >= self.Threshold:
-                    Logger.loginfo('Reading torque :'+str(abs(self.initialTorque - self.torque)))
+                torque = self._sub.get_last_msg(self._topic).effort[self.Joint]
+                if abs(self.initialTorque - torque) >= self.Threshold:
+                    Logger.loginfo('Reading torque :'+str(abs(self.initialTorque - torque)))
                     if self.timer < get_time():
-                        userdata.torque = self.torque
+                        userdata.torque = torque
                         return 'threshold'
                 else:
                     self.timer = get_time() + self.min_time
@@ -57,34 +57,4 @@ class ReadTorque(EventState):
                 return "watchdog"
 
     def on_enter(self, userdata):
-        Logger.loginfo('Entering torque reader')
-
-        if not self._connected:
-            (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic)
-            if msg_topic == self._topic:
-                msg_type = self._get_msg_from_path(msg_path)
-                self._sub = ProxySubscriberCached({self._topic: msg_type})
-                self._connected = True
-                Logger.loginfo('Successfully subscribed to previously unavailable topic %s' % self._topic)
-            else:
-                Logger.logwarn('Topic %s still not available, giving up.' % self._topic)
-
-        (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic)
-        if msg_topic == self._topic:
-            msg_type = self._get_msg_from_path(msg_path)
-            self._sub = ProxySubscriberCached({self._topic: msg_type})
-            self._connected = True
-            Logger.loginfo('connecting marker state to '+self._topic)
-        else:
-            Logger.logwarn('Topic %s for state %s not yet available.\nFound: %s\nWill try again when entering the state...' % (self._topic, self.name, str(msg_topic)))
-
         self.initialTorque = None
-
-
-
-    def _get_msg_from_path(self, msg_path):
-        msg_import = msg_path.split('/')
-        msg_module = '%s.msg' % (msg_import[0])
-        package = __import__(msg_module, fromlist=[msg_module])
-        clsmembers = inspect.getmembers(package, lambda member: inspect.isclass(member) and member.__module__.endswith(msg_import[1]))
-        return clsmembers[0][1]

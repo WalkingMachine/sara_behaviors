@@ -7,9 +7,13 @@
 ###########################################################
 
 import roslib; roslib.load_manifest('behavior_a_test_wonderland')
-from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.Wonderland_Add_Human import Wonderland_Add_Human
-from sara_flexbe_states.test_log import test_log
+from flexbe_core import Behavior, Autonomy, OperatableStateMachine, Logger
+from flexbe_states.log_state import LogState
+from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerbal
+from sara_flexbe_states.LogEntity import LogEntity
+from sara_flexbe_states.WonderlandGetPersonById import WonderlandGetPersonById
+from sara_flexbe_states.WonderlandGetEntityByID import WonderlandGetEntityByID
+from sara_flexbe_states.WonderlandGetPersonByRecognitionId import WonderlandGetPersonByRecognitionId
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -44,24 +48,13 @@ class A_TEST_WONDERLANDSM(Behavior):
 
 
 	def create(self):
-		# x:340 y:478, x:232 y:476, x:498 y:55
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'registered'], input_keys=['x1', 'x2', 'x3', 'x4', 'y1', 'y2', 'y3', 'y4'])
-		_state_machine.userdata.name = "Jean Eude"
-		_state_machine.userdata.x1 = 1
-		_state_machine.userdata.x2 = 2
-		_state_machine.userdata.x3 = 3
-		_state_machine.userdata.x4 = 4
-		_state_machine.userdata.y1 = 5
-		_state_machine.userdata.y2 = 6
-		_state_machine.userdata.y3 = 7
-		_state_machine.userdata.y4 = 8
-		_state_machine.userdata.x_pos = 100
-		_state_machine.userdata.y_pos = 200
-		_state_machine.userdata.z_pos = 300
-		_state_machine.userdata.roomID = 2
-		_state_machine.userdata.id = 5
-		_state_machine.userdata.is_operator = None
-		_state_machine.userdata.gender = "M"
+		# x:1157 y:92
+		_state_machine = OperatableStateMachine(outcomes=['finished'],
+												input_keys=['name', 'containers', 'id', 'faceId'])
+		_state_machine.userdata.name = "apple"
+		_state_machine.userdata.containers = ["dining", "tray"]
+		_state_machine.userdata.id = 2
+		_state_machine.userdata.faceId = 45
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -70,19 +63,74 @@ class A_TEST_WONDERLANDSM(Behavior):
 
 
 		with _state_machine:
-			# x:84 y:538
-			OperatableStateMachine.add('Wonderland_Add_Human',
-										Wonderland_Add_Human(),
-										transitions={'done': 'test_log', 'error': 'failed'},
-										autonomy={'done': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'id': 'id', 'name': 'name', 'roomID': 'roomID', 'x_pos': 'x_pos', 'y_pos': 'y_pos', 'z_pos': 'z_pos', 'gender': 'gender', 'is_operator': 'is_operator'})
+			# x:36 y:233
+			OperatableStateMachine.add('LogState',
+									   LogState(text="RUNING", severity=Logger.REPORT_HINT),
+									   transitions={'done': 'WonderlandGetPersonByRecognitionId'},
+									   autonomy={'done': Autonomy.Off})
 
-			# x:274 y:538
-			OperatableStateMachine.add('test_log',
-										test_log(),
+			# x:333 y:72
+			OperatableStateMachine.add('WonderlandGetEntityVerbal',
+									   WonderlandGetEntityVerbal(),
+									   transitions={'one': 'one', 'multiple': 'multiple', 'none': 'none',
+													'error': 'error'},
+									   autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off,
+												 'error': Autonomy.Off},
+									   remapping={'name': 'name', 'containers': 'containers', 'entities': 'entities'})
+
+			# x:718 y:115
+			OperatableStateMachine.add('one',
+									   LogState(text="One entity found.", severity=Logger.REPORT_HINT),
+									   transitions={'done': 'LogEntity'},
+									   autonomy={'done': Autonomy.Off})
+
+			# x:718 y:165
+			OperatableStateMachine.add('multiple',
+									   LogState(text="Multiple entity found.", severity=Logger.REPORT_HINT),
+									   transitions={'done': 'LogEntity'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:717 y:63
+			OperatableStateMachine.add('none',
+									   LogState(text="None entity found.", severity=Logger.REPORT_HINT),
 										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'text': 'id'})
+										autonomy={'done': Autonomy.Off})
+
+			# x:717 y:11
+			OperatableStateMachine.add('error',
+									   LogState(text="Error in Wonderland.", severity=Logger.REPORT_HINT),
+									   transitions={'done': 'finished'},
+									   autonomy={'done': Autonomy.Off})
+
+			# x:902 y:149
+			OperatableStateMachine.add('LogEntity',
+									   LogEntity(),
+									   transitions={'done': 'finished'},
+									   autonomy={'done': Autonomy.Off},
+									   remapping={'entity': 'entities'})
+
+			# x:335 y:123
+			OperatableStateMachine.add('WonderlandGetPersonById',
+									   WonderlandGetPersonById(),
+									   transitions={'done': 'one', 'none': 'none', 'error': 'error'},
+									   autonomy={'done': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
+									   remapping={'id': 'id', 'entity': 'entities'})
+
+			# x:339 y:19
+			OperatableStateMachine.add('WonderlandGetEntityByID',
+									   WonderlandGetEntityByID(),
+									   transitions={'found': 'one', 'not_found': 'none', 'error': 'error'},
+									   autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off,
+												 'error': Autonomy.Off},
+									   remapping={'id': 'id', 'entity': 'entities', 'depth_position': 'depth_position',
+												  'depth_waypoint': 'depth_waypoint'})
+
+			# x:311 y:177
+			OperatableStateMachine.add('WonderlandGetPersonByRecognitionId',
+									   WonderlandGetPersonByRecognitionId(),
+									   transitions={'done': 'one', 'none': 'none', 'error': 'error'},
+									   autonomy={'done': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
+									   remapping={'id': 'faceId', 'entity': 'entities'})
 
 
 		return _state_machine

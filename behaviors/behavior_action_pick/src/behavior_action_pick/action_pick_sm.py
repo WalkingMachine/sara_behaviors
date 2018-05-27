@@ -8,15 +8,14 @@
 
 import roslib; roslib.load_manifest('behavior_action_pick')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.sara_set_expression import SetExpression
+from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from sara_flexbe_states.gen_gripper_pose import GenGripperPose
 from sara_flexbe_states.moveit_move import MoveitMove
-from sara_flexbe_states.sara_say import SaraSay
-from behavior_check_reachability.check_reachability_sm import Check_reachabilitySM
 from sara_flexbe_states.set_gripper_state import SetGripperState
+from flexbe_states.calculation_state import CalculationState
+from behavior_action_look_at.action_look_at_sm import action_look_atSM
+from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_say_key import SaraSayKey
-from sara_flexbe_states.for_loop import ForLoop
-from behavior_action_get_entity_pose.action_get_entity_pose_sm import Action_get_entity_poseSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -24,8 +23,8 @@ from behavior_action_get_entity_pose.action_get_entity_pose_sm import Action_get
 
 
 '''
-Created on Fri Oct 20 2017
-@author: Philippe La Madeleine
+Created on May 12 2018
+@author: Huynh-Anh Le
 '''
 class Action_pickSM(Behavior):
 	'''
@@ -40,8 +39,7 @@ class Action_pickSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Check_reachabilitySM, 'Check_reachability')
-		self.add_behavior(Action_get_entity_poseSM, 'get_pose')
+		self.add_behavior(action_look_atSM, 'action_look_at')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -50,13 +48,18 @@ class Action_pickSM(Behavior):
 
 		# Behavior comments:
 
+		# O 396 28 
+		# prend ID de objet, on verifie sil est accessible ou non en calculant sa position
+
+		# O 587 288 
+		# avec la position de objet connu, bouge le gripper, ouvre et ferme sur objet
+
 
 
 	def create(self):
-		# x:1079 y:346, x:572 y:212, x:613 y:428, x:581 y:89, x:717 y:247, x:1210 y:581
-		_state_machine = OperatableStateMachine(outcomes=['success', 'too far', 'unreachable', 'not seen', 'critical fail', 'missed'], input_keys=['object'], output_keys=['grip_pose'])
-		_state_machine.userdata.object = "minion"
-		_state_machine.userdata.grip_pose = 0
+		# x:1475 y:650, x:563 y:437, x:295 y:42, x:1405 y:842
+		_state_machine = OperatableStateMachine(outcomes=['success', 'unreachable', 'not found', 'dropped'], input_keys=['objectID'])
+		_state_machine.userdata.objectID = 28
 		_state_machine.userdata.PreGripPose = "PreGripPose"
 		_state_machine.userdata.PostGripPose = "PostGripPose"
 
@@ -65,291 +68,170 @@ class Action_pickSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-		# x:795 y:320, x:293 y:566
-		_sm_get_0 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['pose'], output_keys=['pose'])
-
-		with _sm_get_0:
-			# x:293 y:116
-			OperatableStateMachine.add('gen1',
-										GenGripperPose(x=0.04, y=0, z=-0.05, t=0),
-										transitions={'done': 'move1'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose_in': 'pose', 'pose_out': 'pose_out'})
-
-			# x:297 y:441
-			OperatableStateMachine.add('gen3',
-										GenGripperPose(x=0.04, y=0, z=-0.05, t=-0.5),
-										transitions={'done': 'move3'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose_in': 'pose', 'pose_out': 'pose_out'})
-
-			# x:519 y:135
-			OperatableStateMachine.add('move1',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'finished', 'failed': 'gen2'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'pose_out'})
-
-			# x:524 y:306
-			OperatableStateMachine.add('move2',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'finished', 'failed': 'gen3'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'pose_out'})
-
-			# x:528 y:462
-			OperatableStateMachine.add('move3',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'finished', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'pose_out'})
-
-			# x:296 y:282
-			OperatableStateMachine.add('gen2',
-										GenGripperPose(x=0.04, y=0, z=-0.05, t=0.5),
-										transitions={'done': 'move2'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose_in': 'pose', 'pose_out': 'pose_out'})
-
-
-		# x:855 y:303, x:334 y:582
-		_sm_approach_1 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['pose'], output_keys=['pose'])
-
-		with _sm_approach_1:
-			# x:301 y:83
-			OperatableStateMachine.add('gen1',
-										GenGripperPose(x=-0.1, y=0, z=0, t=0),
-										transitions={'done': 'say1'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose_in': 'pose', 'pose_out': 'pose_out'})
-
-			# x:542 y:197
-			OperatableStateMachine.add('move1',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'finished', 'failed': 'say2'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'pose_out'})
-
-			# x:334 y:294
-			OperatableStateMachine.add('gen2',
-										GenGripperPose(x=-0.1, y=-0.15, z=0, t=0.5),
-										transitions={'done': 'move2'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose_in': 'pose', 'pose_out': 'pose_out'})
-
-			# x:543 y:364
-			OperatableStateMachine.add('move2',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'finished', 'failed': 'say3'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'pose_out'})
-
-			# x:333 y:452
-			OperatableStateMachine.add('gen3',
-										GenGripperPose(x=-0.1, y=0.15, z=0, t=-0.5),
-										transitions={'done': 'move3'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose_in': 'pose', 'pose_out': 'pose_out'})
-
-			# x:543 y:494
-			OperatableStateMachine.add('move3',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'finished', 'failed': 'say4'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'pose_out'})
-
-			# x:464 y:120
-			OperatableStateMachine.add('say1',
-										SaraSay(sentence="I will try to take it", emotion=1, block=False),
-										transitions={'done': 'move1'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:161 y:204
-			OperatableStateMachine.add('say2',
-										SaraSay(sentence="This is hard for me. Just wait a bit longer.", emotion=1, block=False),
-										transitions={'done': 'gen2'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:158 y:381
-			OperatableStateMachine.add('say3',
-										SaraSay(sentence="Almost there", emotion=1, block=False),
-										transitions={'done': 'gen3'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:448 y:554
-			OperatableStateMachine.add('say4',
-										SaraSay(sentence="Well, I didn't make it. Sorry.", emotion=1, block=False),
-										transitions={'done': 'failed'},
-										autonomy={'done': Autonomy.Off})
-
-
 
 		with _state_machine:
-			# x:438 y:64
-			OperatableStateMachine.add('smile',
-										SetExpression(emotion=1, brightness=999),
-										transitions={'done': 'open gripper'},
-										autonomy={'done': Autonomy.Off})
+			# x:77 y:23
+			OperatableStateMachine.add('getobject',
+										GetEntityByID(),
+										transitions={'found': 'say see it', 'not_found': 'not found'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'ID': 'objectID', 'Entity': 'Entity'})
 
-			# x:50 y:414
-			OperatableStateMachine.add('approach',
-										_sm_approach_1,
-										transitions={'finished': 'Get', 'failed': 'back'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'pose'})
+			# x:81 y:331
+			OperatableStateMachine.add('gen_gripPose',
+										GenGripperPose(l=0.0, z=-0.15, planar=True),
+										transitions={'done': 'checkifposeaccess', 'fail': 'cant reach'},
+										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'pose_in': 'posobjet', 'pose_out': 'grippose'})
 
-			# x:47 y:109
-			OperatableStateMachine.add('PreGripPose',
+			# x:68 y:405
+			OperatableStateMachine.add('checkifposeaccess',
+										MoveitMove(move=False, waitForExecution=True, group="RightArm"),
+										transitions={'done': 'say can reach', 'failed': 'cant reach'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'grippose'})
+
+			# x:396 y:834
+			OperatableStateMachine.add('gripperopen',
+										SetGripperState(width=0.15, effort=1),
+										transitions={'object': 'almost have it', 'no_object': 'almost have it'},
+										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
+										remapping={'object_size': 'object_size'})
+
+			# x:58 y:568
+			OperatableStateMachine.add('move_PreGrip',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'get_pose', 'failed': 'sad'},
+										transitions={'done': 'gen_returnPose', 'failed': 'cant reach'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'PreGripPose'})
 
-			# x:31 y:326
-			OperatableStateMachine.add('Check_reachability',
-										self.use_behavior(Check_reachabilitySM, 'Check_reachability'),
-										transitions={'ok': 'approach', 'too_far': 'humm2'},
-										autonomy={'ok': Autonomy.Inherit, 'too_far': Autonomy.Inherit},
-										remapping={'pose': 'pose'})
+			# x:788 y:841
+			OperatableStateMachine.add('gripclose',
+										SetGripperState(width=0, effort=250),
+										transitions={'object': 'say picked', 'no_object': 'open 2'},
+										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
+										remapping={'object_size': 'object_size'})
 
-			# x:52 y:503
-			OperatableStateMachine.add('Get',
-										_sm_get_0,
-										transitions={'finished': 'gen up', 'failed': 'back2'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'pose'})
-
-			# x:59 y:590
-			OperatableStateMachine.add('gen up',
-										GenGripperPose(x=0, y=0, z=0.05, t=0),
-										transitions={'done': 'close'},
+			# x:72 y:169
+			OperatableStateMachine.add('getpose',
+										CalculationState(calculation=lambda x: x.position),
+										transitions={'done': 'action_look_at'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'pose_in': 'pose', 'pose_out': 'pose_out'})
+										remapping={'input_value': 'Entity', 'output_value': 'posobjet'})
 
-			# x:559 y:519
-			OperatableStateMachine.add('move up',
+			# x:231 y:819
+			OperatableStateMachine.add('move_approach',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'move back', 'failed': 'move back'},
+										transitions={'done': 'gripperopen', 'failed': 'cant reach'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'pose_out'})
+										remapping={'target': 'pose_app'})
 
-			# x:729 y:519
+			# x:64 y:720
+			OperatableStateMachine.add('gen_approachPose',
+										GenGripperPose(l=0.15, z=-0.12, planar=True),
+										transitions={'done': 'gen_liftPose', 'fail': 'cant reach'},
+										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'pose_in': 'posobjet', 'pose_out': 'pose_app'})
+
+			# x:594 y:842
+			OperatableStateMachine.add('move_on_object',
+										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										transitions={'done': 'gripclose', 'failed': 'cant reach'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'grippose'})
+
+			# x:926 y:721
+			OperatableStateMachine.add('move_lift_object',
+										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										transitions={'done': 'move_Return', 'failed': 'move_Return'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'pose_lift'})
+
+			# x:80 y:806
+			OperatableStateMachine.add('gen_liftPose',
+										GenGripperPose(l=0, z=0.1, planar=True),
+										transitions={'done': 'move_approach', 'fail': 'cant reach'},
+										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'pose_in': 'posobjet', 'pose_out': 'pose_lift'})
+
+			# x:1226 y:669
+			OperatableStateMachine.add('move_PostGrip',
+										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										transitions={'done': 'welcome', 'failed': 'unreachable'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'PostGripPose'})
+
+			# x:1087 y:706
+			OperatableStateMachine.add('move_Return',
+										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										transitions={'done': 'move_PostGrip', 'failed': 'move_PostGrip'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'pose_ret'})
+
+			# x:75 y:648
+			OperatableStateMachine.add('gen_returnPose',
+										GenGripperPose(l=0.2, z=0.1, planar=True),
+										transitions={'done': 'gen_approachPose', 'fail': 'cant reach'},
+										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'pose_in': 'posobjet', 'pose_out': 'pose_ret'})
+
+			# x:52 y:246
+			OperatableStateMachine.add('action_look_at',
+										self.use_behavior(action_look_atSM, 'action_look_at'),
+										transitions={'finished': 'gen_gripPose'},
+										autonomy={'finished': Autonomy.Inherit},
+										remapping={'Position': 'posobjet'})
+
+			# x:1169 y:837
 			OperatableStateMachine.add('move back',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'success', 'failed': 'critical fail'},
+										transitions={'done': 'dropped', 'failed': 'dropped'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'pose_out'})
+										remapping={'target': 'PostGripPose'})
 
-			# x:233 y:520
-			OperatableStateMachine.add('close',
-										SetGripperState(width=0, effort=0.00001),
-										transitions={'object': 'got it', 'no_object': 'say fail 2'},
-										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
-										remapping={'object_size': 'object_size'})
-
-			# x:232 y:380
-			OperatableStateMachine.add('back',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'open gripper', 'failed': 'open gripper'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'PreGripPose'})
-
-			# x:229 y:447
-			OperatableStateMachine.add('back2',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'open gripper', 'failed': 'sad'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'PreGripPose'})
-
-			# x:52 y:255
-			OperatableStateMachine.add('see it',
-										SaraSay(sentence="I see it", emotion=1, block=True),
-										transitions={'done': 'Check_reachability'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:407 y:266
-			OperatableStateMachine.add('too far s',
-										SaraSay(sentence="But it is too far", emotion=1, block=True),
-										transitions={'done': 'too far'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:282 y:117
-			OperatableStateMachine.add('say not seen',
-										SaraSayKey(Format=lambda x: "I can't see the "+x, emotion=1, block=True),
-										transitions={'done': 'smile'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'object'})
-
-			# x:245 y:591
-			OperatableStateMachine.add('say fail 2',
-										SaraSay(sentence="Oops, I missed it.", emotion=1, block=False),
-										transitions={'done': 'open 2'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:913 y:573
-			OperatableStateMachine.add('for',
-										ForLoop(repeat=1),
-										transitions={'do': 'again', 'end': 'move back 2'},
-										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
-										remapping={'index': 'index'})
-
-			# x:939 y:28
-			OperatableStateMachine.add('again',
-										SaraSay(sentence="Let me try again.", emotion=1, block=False),
-										transitions={'done': 'open gripper'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:411 y:519
-			OperatableStateMachine.add('got it',
-										SaraSay(sentence="I got it", emotion=1, block=False),
-										transitions={'done': 'move up'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:28 y:175
-			OperatableStateMachine.add('get_pose',
-										self.use_behavior(Action_get_entity_poseSM, 'get_pose'),
-										transitions={'found': 'see it', 'not found': 'humm'},
-										autonomy={'found': Autonomy.Inherit, 'not found': Autonomy.Inherit},
-										remapping={'name': 'object', 'pose': 'pose'})
-
-			# x:386 y:570
+			# x:993 y:835
 			OperatableStateMachine.add('open 2',
-										SetGripperState(width=0.15, effort=0),
-										transitions={'object': 'for', 'no_object': 'for'},
+										SetGripperState(width=0.1, effort=1),
+										transitions={'object': 'move back', 'no_object': 'move back'},
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
-			# x:789 y:354
-			OperatableStateMachine.add('sad',
-										SetExpression(emotion=2, brightness=999),
-										transitions={'done': 'open gripper'},
+			# x:399 y:426
+			OperatableStateMachine.add('cant reach',
+										SaraSay(sentence="Hum. I can't reach it.", emotion=1, block=True),
+										transitions={'done': 'unreachable'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:53 y:26
-			OperatableStateMachine.add('open gripper',
-										SetGripperState(width=0.14, effort=0),
-										transitions={'object': 'PreGripPose', 'no_object': 'PreGripPose'},
-										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
-										remapping={'object_size': 'object_size'})
-
-			# x:668 y:138
-			OperatableStateMachine.add('humm',
-										SetExpression(emotion=3, brightness=999),
-										transitions={'done': 'say not seen'},
+			# x:794 y:763
+			OperatableStateMachine.add('say picked',
+										SaraSay(sentence="I think I got it", emotion=1, block=False),
+										transitions={'done': 'move_lift_object'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:242 y:287
-			OperatableStateMachine.add('humm2',
-										SetExpression(emotion=3, brightness=999),
-										transitions={'done': 'too far s'},
+			# x:543 y:754
+			OperatableStateMachine.add('almost have it',
+										SaraSay(sentence="I am close", emotion=1, block=True),
+										transitions={'done': 'move_on_object'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:1032 y:568
-			OperatableStateMachine.add('move back 2',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'missed', 'failed': 'missed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'pose_out'})
+			# x:57 y:493
+			OperatableStateMachine.add('say can reach',
+										SaraSay(sentence="I will grab it", emotion=1, block=False),
+										transitions={'done': 'move_PreGrip'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:68 y:93
+			OperatableStateMachine.add('say see it',
+										SaraSayKey(Format=lambda x: "I see the " + x.name, emotion=1, block=False),
+										transitions={'done': 'getpose'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'Entity'})
+
+			# x:1361 y:655
+			OperatableStateMachine.add('welcome',
+										SaraSay(sentence="you are welcome", emotion=1, block=True),
+										transitions={'done': 'success'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

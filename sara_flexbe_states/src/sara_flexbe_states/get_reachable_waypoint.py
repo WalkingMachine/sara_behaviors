@@ -12,7 +12,7 @@ class Get_Reacheable_Waypoint(EventState):
     '''
     Get a position close enough to reach a point without stepping on it
 
-    -- Distance     float                           decalage distance to point
+    #> Distance     float                           decalage distance to point
 
     #> pose_in      geometry_msgs.Pose/Point        Position to reach
     #< pose_out     geometry_msgs.Pose              Output position
@@ -21,15 +21,14 @@ class Get_Reacheable_Waypoint(EventState):
 
     '''
 
-    def __init__(self, Distance):
+    def __init__(self):
         '''
         Constructor
         '''
-        super(Get_Reacheable_Waypoint, self).__init__(outcomes=['done'], input_keys=['pose_in'], output_keys=['pose_out'])
+        super(Get_Reacheable_Waypoint, self).__init__(outcomes=['done'], input_keys=['pose_in','distance'], output_keys=['pose_out'])
 
         self._topic = "/robot_pose"
         self._sub = ProxySubscriberCached({self._topic: Pose})
-        self.Distance = Distance
 
     def execute(self, userdata):
         '''
@@ -51,8 +50,8 @@ class Get_Reacheable_Waypoint(EventState):
             targetPose.position = userdata.pose_in
 
         length = ((targetPose.position.x-mypose.position.x)**2 + (targetPose.position.y-mypose.position.y)**2 )**0.5
-        Out.position.x = targetPose.position.x - (targetPose.position.x-mypose.position.x)/length*self.Distance
-        Out.position.y = targetPose.position.y - (targetPose.position.y-mypose.position.y)/length*self.Distance
+        Out.position.x = targetPose.position.x - (targetPose.position.x-mypose.position.x)/length*userdata.distance
+        Out.position.y = targetPose.position.y - (targetPose.position.y-mypose.position.y)/length*userdata.distance
 
         angle = math.atan2((targetPose.position.y - mypose.position.y), (targetPose.position.x - mypose.position.x))
         qt = quaternion_from_euler(0, 0, angle)
