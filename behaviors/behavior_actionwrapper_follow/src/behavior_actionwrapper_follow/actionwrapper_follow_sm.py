@@ -8,15 +8,18 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_follow')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.calculation_state import CalculationState
-from flexbe_states.log_key_state import LogKeyState
-from sara_flexbe_states.SetKey import SetKey
+from sara_flexbe_states.story import Set_Story
+from sara_flexbe_states.set_a_step import Set_a_step
 from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerbal
+from sara_flexbe_states.SetKey import SetKey
+from flexbe_states.calculation_state import CalculationState
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
+from flexbe_states.log_key_state import LogKeyState
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.sara_say import SaraSay
+from behavior_action_move.action_move_sm import Action_MoveSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -24,8 +27,8 @@ from sara_flexbe_states.sara_say import SaraSay
 
 
 '''
-Created on Tue Jul 11 2017
-@author: Philippe La Madeleine
+Created on 22/05/2018
+@author: Lucas Maurice
 '''
 class ActionWrapper_FollowSM(Behavior):
 	'''
@@ -40,6 +43,7 @@ class ActionWrapper_FollowSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
+		self.add_behavior(Action_MoveSM, 'Action_Move')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -51,12 +55,16 @@ class ActionWrapper_FollowSM(Behavior):
 		# O 1262 27 
 		# Follow|n1- person|n2- area where the person is|n3- path (unused)
 
+		# O 1260 94 
+		# Story|n0- Decompose Command|n1- Find Area|n2- Join Area|n3- Find Person|n4- Follow Person|n5- END
+
 
 
 	def create(self):
-		# x:30 y:458, x:27 y:577
+		# x:470 y:280, x:618 y:290
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Follow", "rachel", "bedroom", ""]
+		_state_machine.userdata.relative = False
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -64,28 +72,9 @@ class ActionWrapper_FollowSM(Behavior):
         # [/MANUAL_CREATE]
 
 		# x:30 y:458
-		_sm_export_no_waypoint_0 = OperatableStateMachine(outcomes=['done'], output_keys=['waipoint', 'area_name'])
+		_sm_export_waypoint_0 = OperatableStateMachine(outcomes=['done'], input_keys=['entities'], output_keys=['waipoint', 'area_name'])
 
-		with _sm_export_no_waypoint_0:
-			# x:30 y:40
-			OperatableStateMachine.add('noWaypoint',
-										SetKey(Value=None),
-										transitions={'done': 'NoName'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'waipoint'})
-
-			# x:127 y:44
-			OperatableStateMachine.add('NoName',
-										SetKey(Value=None),
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'area_name'})
-
-
-		# x:30 y:458
-		_sm_export_waypoint_1 = OperatableStateMachine(outcomes=['done'], input_keys=['entities'], output_keys=['waipoint', 'area_name'])
-
-		with _sm_export_waypoint_1:
+		with _sm_export_waypoint_0:
 			# x:30 y:56
 			OperatableStateMachine.add('Extract Wayppoint',
 										CalculationState(calculation=lambda x: x.waypoint),
@@ -113,6 +102,25 @@ class ActionWrapper_FollowSM(Behavior):
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'data': 'area_name'})
+
+
+		# x:30 y:458
+		_sm_export_no_waypoint_1 = OperatableStateMachine(outcomes=['done'], output_keys=['waipoint', 'area_name'])
+
+		with _sm_export_no_waypoint_1:
+			# x:30 y:40
+			OperatableStateMachine.add('noWaypoint',
+										SetKey(Value=None),
+										transitions={'done': 'NoName'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'waipoint'})
+
+			# x:127 y:44
+			OperatableStateMachine.add('NoName',
+										SetKey(Value=None),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'area_name'})
 
 
 		# x:77 y:738
@@ -197,102 +205,15 @@ class ActionWrapper_FollowSM(Behavior):
 										remapping={'input_value': 'areaName', 'output_value': 'areaName'})
 
 
-		# x:1620 y:109, x:1648 y:375
-		_sm_try_to_find_area_3 = OperatableStateMachine(outcomes=['found', 'not_found'], input_keys=['area_to_search'], output_keys=['waipoint', 'area_name'])
-
-		with _sm_try_to_find_area_3:
-			# x:177 y:74
-			OperatableStateMachine.add('noneKey',
-										SetKey(Value=None),
-										transitions={'done': 'GetEntityLocation'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'none_key'})
-
-			# x:152 y:219
-			OperatableStateMachine.add('GetEntityLocation',
-										WonderlandGetEntityVerbal(),
-										transitions={'one': 'Export Waypoint', 'multiple': 'List areas', 'none': 'Say No Area', 'error': 'Say Error'},
-										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'name': 'area_to_search', 'containers': 'none_key', 'entities': 'entities'})
-
-			# x:438 y:204
-			OperatableStateMachine.add('List areas',
-										_sm_list_areas_2,
-										transitions={'done': 'Say More Than One'},
-										autonomy={'done': Autonomy.Inherit},
-										remapping={'entities': 'entities', 'sentence': 'sentence'})
-
-			# x:764 y:210
-			OperatableStateMachine.add('Say Room List',
-										SaraSayKey(Format=lambda x: "There is :" + x, emotion=1, block=True),
-										transitions={'done': 'Say Be More Precise'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'sentence'})
-
-			# x:600 y:209
-			OperatableStateMachine.add('Say More Than One',
-										SaraSayKey(Format=lambda x: "There is more than one " + str(x), emotion=1, block=True),
-										transitions={'done': 'Say Room List'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'area_to_search'})
-
-			# x:930 y:211
-			OperatableStateMachine.add('Say Be More Precise',
-										SaraSay(sentence="Can you repeat and be more precise please ?", emotion=1, block=True),
-										transitions={'done': 'Export No Waypoint'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:429 y:116
-			OperatableStateMachine.add('Export Waypoint',
-										_sm_export_waypoint_1,
-										transitions={'done': 'Say going'},
-										autonomy={'done': Autonomy.Inherit},
-										remapping={'entities': 'entities', 'waipoint': 'waipoint', 'area_name': 'area_name'})
-
-			# x:1262 y:313
-			OperatableStateMachine.add('Export No Waypoint',
-										_sm_export_no_waypoint_0,
-										transitions={'done': 'not_found'},
-										autonomy={'done': Autonomy.Inherit},
-										remapping={'waipoint': 'waipoint', 'area_name': 'area_name'})
-
-			# x:619 y:303
-			OperatableStateMachine.add('Say No Area',
-										SaraSayKey(Format=lambda x: "There is no " + str(x), emotion=1, block=True),
-										transitions={'done': 'Export No Waypoint'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'area_to_search'})
-
-			# x:630 y:392
-			OperatableStateMachine.add('Say Error',
-										SaraSay(sentence="I experience memory problem", emotion=1, block=True),
-										transitions={'done': 'Say Error 2'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:804 y:383
-			OperatableStateMachine.add('Say Error 2',
-										SaraSay(sentence="Can you try again please ?", emotion=1, block=True),
-										transitions={'done': 'Export No Waypoint'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:623 y:115
-			OperatableStateMachine.add('Say going',
-										SaraSayKey(Format=lambda x: "I'm going to the " + x, emotion=1, block=True),
-										transitions={'done': 'found'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'area_name'})
-
-
 		# x:1007 y:466
-		_sm_decomposecommand_4 = OperatableStateMachine(outcomes=['done'], input_keys=['command'], output_keys=['person', 'area'])
+		_sm_decomposecommand_3 = OperatableStateMachine(outcomes=['done'], input_keys=['command'], output_keys=['person', 'area'])
 
-		with _sm_decomposecommand_4:
-			# x:423 y:114
-			OperatableStateMachine.add('getPerson',
-										CalculationState(calculation=lambda x: x[1]),
-										transitions={'done': 'getArea'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'command', 'output_value': 'person'})
+		with _sm_decomposecommand_3:
+			# x:209 y:42
+			OperatableStateMachine.add('Set State Command',
+										Set_a_step(step=0),
+										transitions={'done': 'getPerson'},
+										autonomy={'done': Autonomy.Off})
 
 			# x:424 y:227
 			OperatableStateMachine.add('getArea',
@@ -315,22 +236,146 @@ class ActionWrapper_FollowSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'data': 'area'})
 
+			# x:423 y:114
+			OperatableStateMachine.add('getPerson',
+										CalculationState(calculation=lambda x: x[1]),
+										transitions={'done': 'getArea'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'command', 'output_value': 'person'})
+
+
+		# x:1620 y:109, x:1648 y:375
+		_sm_try_to_find_area_4 = OperatableStateMachine(outcomes=['found', 'not_found'], input_keys=['area_to_search'], output_keys=['area_name', 'waypoint'])
+
+		with _sm_try_to_find_area_4:
+			# x:49 y:40
+			OperatableStateMachine.add('Set state Find Area',
+										Set_a_step(step=1),
+										transitions={'done': 'noneKey'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:152 y:219
+			OperatableStateMachine.add('GetEntityLocation',
+										WonderlandGetEntityVerbal(),
+										transitions={'one': 'Export Waypoint', 'multiple': 'List areas', 'none': 'Say No Area', 'error': 'Say Error'},
+										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
+										remapping={'name': 'area_to_search', 'containers': 'none_key', 'entities': 'entities'})
+
+			# x:431 y:200
+			OperatableStateMachine.add('List areas',
+										_sm_list_areas_2,
+										transitions={'done': 'Say More Than One'},
+										autonomy={'done': Autonomy.Inherit},
+										remapping={'entities': 'entities', 'sentence': 'sentence'})
+
+			# x:781 y:210
+			OperatableStateMachine.add('Say Room List',
+										SaraSayKey(Format=lambda x: "There is :" + x, emotion=1, block=True),
+										transitions={'done': 'Say Be More Precise'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'sentence'})
+
+			# x:600 y:209
+			OperatableStateMachine.add('Say More Than One',
+										SaraSayKey(Format=lambda x: "There is more than one " + str(x), emotion=1, block=True),
+										transitions={'done': 'Say Room List'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'area_to_search'})
+
+			# x:930 y:211
+			OperatableStateMachine.add('Say Be More Precise',
+										SaraSay(sentence="Can you repeat and be more precise please ?", emotion=1, block=True),
+										transitions={'done': 'Export No Waypoint'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:1246 y:294
+			OperatableStateMachine.add('Export No Waypoint',
+										_sm_export_no_waypoint_1,
+										transitions={'done': 'not_found'},
+										autonomy={'done': Autonomy.Inherit},
+										remapping={'waipoint': 'waypoint', 'area_name': 'area_name'})
+
+			# x:619 y:303
+			OperatableStateMachine.add('Say No Area',
+										SaraSayKey(Format=lambda x: "There is no " + str(x), emotion=1, block=True),
+										transitions={'done': 'Export No Waypoint'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'area_to_search'})
+
+			# x:628 y:383
+			OperatableStateMachine.add('Say Error',
+										SaraSay(sentence="I experience memory problem", emotion=1, block=True),
+										transitions={'done': 'Say Error 2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:813 y:385
+			OperatableStateMachine.add('Say Error 2',
+										SaraSay(sentence="Can you try again please ?", emotion=1, block=True),
+										transitions={'done': 'Export No Waypoint'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:623 y:115
+			OperatableStateMachine.add('Say going',
+										SaraSayKey(Format=lambda x: "I'm going to the " + x, emotion=1, block=True),
+										transitions={'done': 'found'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'area_name'})
+
+			# x:429 y:116
+			OperatableStateMachine.add('Export Waypoint',
+										_sm_export_waypoint_0,
+										transitions={'done': 'Say going'},
+										autonomy={'done': Autonomy.Inherit},
+										remapping={'entities': 'entities', 'waipoint': 'waypoint', 'area_name': 'area_name'})
+
+			# x:163 y:133
+			OperatableStateMachine.add('noneKey',
+										SetKey(Value=None),
+										transitions={'done': 'GetEntityLocation'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'none_key'})
+
 
 
 		with _state_machine:
-			# x:165 y:42
+			# x:44 y:27
+			OperatableStateMachine.add('Set Wrapper Story',
+										Set_Story(titre="Follow Person", storyline=["Decompose Command","Find Area","Join Area","Find Person","Follow Person", "Finished"]),
+										transitions={'done': 'DecomposeCommand'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:39 y:330
+			OperatableStateMachine.add('Set step Join Area',
+										Set_a_step(step=2),
+										transitions={'done': 'Action_Move'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:35 y:224
+			OperatableStateMachine.add('Try_to_find_area',
+										_sm_try_to_find_area_4,
+										transitions={'found': 'Set step Join Area', 'not_found': 'Set Finished'},
+										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
+										remapping={'area_to_search': 'area', 'area_name': 'area_name', 'waypoint': 'waypoint'})
+
+			# x:30 y:117
 			OperatableStateMachine.add('DecomposeCommand',
-										_sm_decomposecommand_4,
+										_sm_decomposecommand_3,
 										transitions={'done': 'Try_to_find_area'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'command': 'Action', 'person': 'person', 'area': 'area'})
 
-			# x:451 y:45
-			OperatableStateMachine.add('Try_to_find_area',
-										_sm_try_to_find_area_3,
-										transitions={'found': 'finished', 'not_found': 'finished'},
-										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'area_to_search': 'area', 'waipoint': 'waipoint', 'area_name': 'area_name'})
+			# x:325 y:269
+			OperatableStateMachine.add('Set Finished',
+										Set_a_step(step=5),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:33 y:420
+			OperatableStateMachine.add('Action_Move',
+										self.use_behavior(Action_MoveSM, 'Action_Move'),
+										transitions={'finished': 'Set Finished', 'failed': 'Set Finished'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'pose': 'waypoint', 'relative': 'relative'})
 
 
 		return _state_machine

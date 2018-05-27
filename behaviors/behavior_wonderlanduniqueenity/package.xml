@@ -1,13 +1,13 @@
 <package>
-  <name>behavior_actionwrapper_move</name>
+  <name>behavior_wonderlanduniqueenity</name>
   <version>1.0.0</version>
   <description>
-     action wrapper pour move
+     Will try to fin an entity verbally selected. Will give a vocal feedback of the action and return done or failed.
   </description>
   <maintainer email="todo@todo.com">Lucas Maurice</maintainer>
   <license>BSD</license>
 
-  <url>http://ros.org/wiki/behavior_actionwrapper_move</url>
+  <url>http://ros.org/wiki/behavior_wonderlanduniqueenity</url>
   <author>Lucas Maurice</author>
 
   <buildtool_depend>catkin</buildtool_depend>
