@@ -67,6 +67,8 @@
   <run_depend>behavior_wonderland_list_rooms</run_depend>
   <run_depend>behavior_wonderland_test2</run_depend>
   <run_depend>behavior_wonderland_waypoint_id</run_depend>
+  <run_depend>behavior_testgenderage</run_depend>
+  <run_depend>behavior_age_statistics</run_depend>
 
 
 </package>
