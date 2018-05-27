@@ -5,7 +5,7 @@ from flexbe_core import EventState, Logger
 import rospy
 import re
 from wm_nlu.srv import GPSRReceiveAction, GPSRReceiveActionResponse
-
+from std_msgs.msg import String
 
 class SaraNLU(EventState):
     '''
@@ -28,6 +28,9 @@ class SaraNLU(EventState):
         self.Person = None
         self.serviceName = "/gpsr_receive_action"
 
+        Logger.loginfo("waiting forservice: " + self.serviceName)
+        rospy.wait_for_service(self.serviceName)
+
     def execute(self, userdata):
 
         # Special case for STOP
@@ -37,18 +40,9 @@ class SaraNLU(EventState):
             userdata.ActionForms = [["Stop"]]
             return "understood"
 
-        # Assuring the availability of the NLU service
-        if not rospy.wait_for_service(self.serviceName, 1):
-            Logger.logerr(self.name + ": " + self.serviceName + " service not found. Will wait 10s before giving up")
-            if not rospy.wait_for_service(self.serviceName, 10):
-                Logger.logerr(self.name + ": " + self.serviceName + " waited 9s but service not found.")
-                userdata.ActionForms = []
-                return "fail"
-            Logger.logwarn(self.name + ": " + self.serviceName + ". The service has been found!")
-
         # Call the NLU service
         serv = rospy.ServiceProxy(self.serviceName, GPSRReceiveAction)
-        Resp = serv(userdata.sentence)
+        Resp = serv(String(userdata.sentence))
 
         # Checking the validity of the responce
         count = len(Resp.actions.actions)
