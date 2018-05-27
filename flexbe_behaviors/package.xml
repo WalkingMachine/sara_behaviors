@@ -89,5 +89,10 @@
   <run_depend>behavior_action_find</run_depend>
   <run_depend>behavior_action_turn</run_depend>
   <run_depend>behavior_wonderlanduniqueenity</run_depend>
+  <run_depend>behavior_actionwrappersay</run_depend>
+  <run_depend>behavior_actionwrapperask</run_depend>
+  <run_depend>behavior_actionwrapper_confirm</run_depend>
+  <run_depend>behavior_actionwrapper_count</run_depend>
+  <run_depend>behavior_actionwrapper_answer</run_depend>
 
 </package>

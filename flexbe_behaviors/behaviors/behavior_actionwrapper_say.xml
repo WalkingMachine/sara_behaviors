@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="ActionWrapperSay">
+
+	<executable package_path="behavior_actionwrappersay.actionwrappersay_sm" class="ActionWrapperSaySM" />
+	<tagstring>ActionWrapper</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Sun May 27 2018</date>
+	<description>
+		Say something
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
