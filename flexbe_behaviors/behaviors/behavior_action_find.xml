@@ -4,14 +4,15 @@
 
 	<executable package_path="behavior_action_find.action_find_sm" class="Action_findSM" />
 	<tagstring></tagstring>
-	<author>Raphaël Duchaîne</author>
+	<author>Lucas Maurice</author>
 	<date>Sat May 12 2018</date>
 	<description>
-		Cherche et trouve quelque chose. (personne ou objet) en étant souscrit au topic /entities
+		Find an entity arround sara, identified by entity class.
 	</description>
 
 
 	<!-- Contained Behaviors -->
+	<contains name="action_turn" />
 
 	<!-- Available Parameters -->
 
