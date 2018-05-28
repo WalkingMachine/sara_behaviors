@@ -1,5 +1,5 @@
 <package>
-  <name>behavior_actionwrappersay</name>
+  <name>behavior_actionwrapper_say</name>
   <version>1.0.0</version>
   <description>
      Say something
@@ -7,7 +7,7 @@
   <maintainer email="todo@todo.com">Philippe La Madeleine</maintainer>
   <license>BSD</license>
 
-  <url>http://ros.org/wiki/behavior_actionwrappersay</url>
+  <url>http://ros.org/wiki/behavior_actionwrapper_say</url>
   <author>Philippe La Madeleine</author>
 
   <buildtool_depend>catkin</buildtool_depend>

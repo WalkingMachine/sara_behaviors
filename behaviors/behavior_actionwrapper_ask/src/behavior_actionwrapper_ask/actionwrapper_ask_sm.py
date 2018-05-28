@@ -19,15 +19,15 @@ from flexbe_states.wait_state import WaitState
 Created on Sun May 27 2018
 @author: Philippe La Madeleine
 '''
-class ActionWrapperAskSM(Behavior):
+class ActionWrapper_AskSM(Behavior):
 	'''
 	Ask something
 	'''
 
 
 	def __init__(self):
-		super(ActionWrapperAskSM, self).__init__()
-		self.name = 'ActionWrapperAsk'
+		super(ActionWrapper_AskSM, self).__init__()
+		self.name = 'ActionWrapper_Ask'
 
 		# parameters of this behavior
 

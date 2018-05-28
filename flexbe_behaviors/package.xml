@@ -42,7 +42,6 @@
 <run_depend>behavior_actionwrapper_move</run_depend>
 <run_depend>behavior_actionwrapper_pick</run_depend>
 <run_depend>behavior_actionwrapper_place</run_depend>
-<run_depend>behavior_actionwrapper_say</run_depend>
 <run_depend>behavior_actionwrapper_stop</run_depend>
 <run_depend>behavior_actionwrapper_turn</run_depend>
 <run_depend>behavior_actionwrapper_waitfordoor</run_depend>
@@ -70,5 +69,6 @@
 <run_depend>behavior_testgenderage</run_depend>
 <run_depend>behavior_wonderlandaddupdateperson</run_depend>
 <run_depend>behavior_wonderlanduniqueenity</run_depend>
+  <run_depend>behavior_actionwrapper_say</run_depend>
 
 </package>
