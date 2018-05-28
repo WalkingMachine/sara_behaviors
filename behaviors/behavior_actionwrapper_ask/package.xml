@@ -1,5 +1,5 @@
 <package>
-  <name>behavior_actionwrapperask</name>
+  <name>behavior_actionwrapper_ask</name>
   <version>1.0.0</version>
   <description>
      Ask something
@@ -7,7 +7,7 @@
   <maintainer email="todo@todo.com">Philippe La Madeleine</maintainer>
   <license>BSD</license>
 
-  <url>http://ros.org/wiki/behavior_actionwrapperask</url>
+  <url>http://ros.org/wiki/behavior_actionwrapper_ask</url>
   <author>Philippe La Madeleine</author>
 
   <buildtool_depend>catkin</buildtool_depend>

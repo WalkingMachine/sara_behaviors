@@ -2,7 +2,7 @@
 
 <behavior name="ActionWrapperAsk">
 
-	<executable package_path="behavior_actionwrapperask.actionwrapperask_sm" class="ActionWrapperAskSM" />
+	<executable package_path="behavior_actionwrapper_ask.actionwrapperask_sm" class="ActionWrapperAskSM" />
 	<tagstring>ActionWrapper</tagstring>
 	<author>Philippe La Madeleine</author>
 	<date>Sun May 27 2018</date>
