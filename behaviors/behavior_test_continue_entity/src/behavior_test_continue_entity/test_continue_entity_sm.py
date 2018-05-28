@@ -10,7 +10,7 @@ import roslib; roslib.load_manifest('behavior_test_continue_entity')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.List_Entities_By_Name import list_found_entities
+from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -80,10 +80,10 @@ class Test_continue_entitySM(Behavior):
 
             # x:200 y:167
             OperatableStateMachine.add('entity_name',
-                                        list_found_entities(frontality_level=lambda x: x[1]='bottle'),
+                                        list_entities_by_name(frontality_level=lambda x: x[1]='bottle'),
                                         transitions={'found': 'get person position', 'not_found': 'failed'},
                                         autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-                                        remapping={'name': 'name', 'list_found_entities': 'list_found_entities', 'number': 'number'})
+                                        remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
 
 
         return _state_machine

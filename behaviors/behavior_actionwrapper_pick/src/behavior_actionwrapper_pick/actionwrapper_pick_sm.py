@@ -12,7 +12,6 @@ from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_states.Wonderland_Get_Object import WonderlandGetObject
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from behavior_action_move.action_move_sm import Action_MoveSM
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
@@ -196,13 +195,6 @@ class ActionWrapper_PickSM(Behavior):
 										transitions={'done': 'success'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'name'})
-
-			# x:35 y:381
-			OperatableStateMachine.add('Get object',
-										WonderlandGetObject(),
-										transitions={'found': 'Action_Move', 'unknown': 'say unknow', 'error': 'memory'},
-										autonomy={'found': Autonomy.Off, 'unknown': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'id': 'id', 'name': 'name', 'color': 'color', 'room': 'location', 'type': 'typer', 'expected_pose': 'expected_pose', 'object_pose': 'object_pose', 'object_name': 'object_name', 'object_color': 'object_color', 'object_room': 'object_room', 'object_type': 'object_type'})
 
 			# x:14 y:216
 			OperatableStateMachine.add('Set keys',
