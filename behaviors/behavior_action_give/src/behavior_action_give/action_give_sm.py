@@ -202,16 +202,16 @@ class Action_GiveSM(Behavior):
 			# x:75 y:113
 			OperatableStateMachine.add('is object in hand?',
 										CheckConditionState(predicate=lambda x: x),
-										transitions={'true': 'list persons', 'false': 'log empty hand'},
+										transitions={'true': 'name', 'false': 'log empty hand'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'Object'})
 
-			# x:76 y:202
+			# x:70 y:277
 			OperatableStateMachine.add('list persons',
-										list_entities_by_name(Name="person", frontality_level=0.5),
+										list_entities_by_name(frontality_level=0.5),
 										transitions={'found': 'get id', 'not_found': 'Person_not_found'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'Entities_list': 'People_list', 'number': 'number'})
+										remapping={'name': 'name', 'entity_list': 'People_list', 'number': 'number'})
 
 			# x:290 y:56
 			OperatableStateMachine.add('log empty hand',
@@ -280,12 +280,19 @@ class Action_GiveSM(Behavior):
 										autonomy={'failed': Autonomy.Inherit, 'given': Autonomy.Inherit, 'continue': Autonomy.Inherit},
 										remapping={'ID': 'ID', 'Object': 'Object'})
 
-			# x:251 y:205
+			# x:256 y:278
 			OperatableStateMachine.add('get id',
 										CalculationState(calculation=lambda x: x[0].ID),
 										transitions={'done': 'give'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'People_list', 'output_value': 'ID'})
+
+			# x:95 y:195
+			OperatableStateMachine.add('name',
+										SetKey(Value="person"),
+										transitions={'done': 'list persons'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'name'})
 
 
 		return _state_machine

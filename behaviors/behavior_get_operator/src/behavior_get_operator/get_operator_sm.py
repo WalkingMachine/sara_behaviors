@@ -158,7 +158,7 @@ class Get_operatorSM(Behavior):
 										list_entities_by_name(Name="person", frontality_level=0.5),
 										transitions={'found': 'Get closest', 'not_found': 'say where are you'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'Entities_list': 'Entities_list', 'number': 'number'})
+										remapping={'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:461 y:475
 			OperatableStateMachine.add('Move to person',
@@ -207,7 +207,7 @@ class Get_operatorSM(Behavior):
 										BinaryCalculationState(calculation="X[Y-1]"),
 										transitions={'done': 'ask if operator'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'X': 'Entities_list', 'Y': 'index2', 'Z': 'Operator'})
+										remapping={'X': 'entity_list', 'Y': 'index2', 'Z': 'Operator'})
 
 
 		return _state_machine

@@ -14,34 +14,34 @@ Created on 15/05/2018
 class GenerateEntity(EventState):
     '''
     Add a person.
-    --  ID                      The
-    --  wonderlandId            The
-    --  aliases                 The
-    --  name                    The
-    --  category                The
-    --  color                   The
-    --  weight                  The
-    --  size                    The
-    --  position_x              The
-    --  position_y              The
-    --  position_z              The
-    --  waypoint_x              The
-    --  waypoint_y              The
-    --  waypoint_theta          The
-    --  velocity_x              The
-    --  velocity_y              The
-    --  velocity_z              The
-    --  containerId             The
-    --  face_id                 The
-    --  face_gender             The
-    --  face_genderProbability  The
-    --  face_emotion            The
-    --  face_emotionProbability The
-    --  pose                    The
-    --  poseProbability         The
-    --  isOperator              The
+    --  ID                      Object    The ID
+    --  wonderlandId            Object    The wonderlandId
+    --  aliases                 Object    The aliases
+    --  name                    Object    The name
+    --  category                Object    The category
+    --  color                   Object    The color
+    --  weight                  Object    The weight
+    --  size                    Object    The size
+    --  position_x              Object    The position_x
+    --  position_y              Object    The position_y
+    --  position_z              Object    The position_z
+    --  waypoint_x              Object    The waypoint_x
+    --  waypoint_y              Object    The waypoint_y
+    --  waypoint_theta          Object    The waypoint_theta
+    --  velocity_x              Object    The velocity_x
+    --  velocity_y              Object    The velocity_y
+    --  velocity_z              Object    The velocity_z
+    --  containerId             Object    The containerId
+    --  face_id                 Object    The face_id
+    --  face_gender             Object    The face_gender
+    --  face_genderProbability  Object    The face_genderProbability
+    --  face_emotion            Object    The face_emotion
+    --  face_emotionProbability Object    The face_emotionProbability
+    --  pose                    Object    The pose
+    --  poseProbability         Object    The poseProbability
+    --  isOperator              Object    The isOperator
 
-    #>  entity                  sara_msgs/Entity
+    #>  entity                  sara_msgs/Entity   the resulted entity
 
     <= done                     return when the add correctly append
     '''

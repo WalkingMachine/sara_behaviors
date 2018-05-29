@@ -16,7 +16,7 @@ Created on 17/05/2018
 class WonderlandAddPerson(EventState):
     '''
     Add a person.
-    >#  entity                  sara_msgs/Entity
+    >#  entity                  sara_msgs/Entity    an entity
 
     <= done                     return when the add correctly append
     <= already_exit             return when the entity already exist
