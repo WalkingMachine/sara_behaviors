@@ -50,7 +50,7 @@ class ActionWrapper_FindSM(Behavior):
 
     def create(self):
         # x:846 y:287, x:842 y:366
-        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
+        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
         _state_machine.userdata.Action = ["Find","power","universe"]
 
         # Additional creation code can be added inside the following tags

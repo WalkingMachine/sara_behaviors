@@ -50,7 +50,7 @@ class ActionWrapper_PlaceSM(Behavior):
 
     def create(self):
         # x:808 y:274, x:728 y:377
-        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
+        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
         _state_machine.userdata.Action = ["Place", "table"]
 
         # Additional creation code can be added inside the following tags
@@ -59,7 +59,7 @@ class ActionWrapper_PlaceSM(Behavior):
         # [/MANUAL_CREATE]
 
         # x:30 y:322, x:130 y:322
-        _sm_place_object_0 = OperatableStateMachine(outcomes=['finished', 'failed'])
+        _sm_place_object_0 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'])
 
         with _sm_place_object_0:
             # x:52 y:108

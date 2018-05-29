@@ -61,7 +61,7 @@ class ActionWrapper_MoveSM(Behavior):
 
 	def create(self):
 		# x:470 y:280, x:618 y:290
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Move",'table','lobby']
 		_state_machine.userdata.relative = False
 
@@ -163,7 +163,7 @@ class ActionWrapper_MoveSM(Behavior):
 
 
 		# x:38 y:481, x:447 y:470
-		_sm_try_to_reach_3 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['waypoint', 'relative', 'areaName'])
+		_sm_try_to_reach_3 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['waypoint', 'relative', 'areaName'])
 
 		with _sm_try_to_reach_3:
 			# x:34 y:40

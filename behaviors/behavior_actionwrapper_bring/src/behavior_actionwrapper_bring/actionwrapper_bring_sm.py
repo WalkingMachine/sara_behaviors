@@ -65,7 +65,7 @@ class ActionWrapper_BringSM(Behavior):
 
 	def create(self):
 		# x:868 y:291, x:857 y:562
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Bring","cup", "living room",""]
 
 		# Additional creation code can be added inside the following tags
@@ -227,7 +227,7 @@ class ActionWrapper_BringSM(Behavior):
 
 
 		# x:816 y:646, x:854 y:48
-		_sm_bring_3 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['expected_pose', 'Action', 'robot_pose'])
+		_sm_bring_3 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['expected_pose', 'Action', 'robot_pose'])
 
 		with _sm_bring_3:
 			# x:37 y:26

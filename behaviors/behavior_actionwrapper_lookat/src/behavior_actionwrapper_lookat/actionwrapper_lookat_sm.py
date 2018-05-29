@@ -53,7 +53,7 @@ class ActionWrapper_LookAtSM(Behavior):
 
     def create(self):
         # x:1213 y:438
-        _state_machine = OperatableStateMachine(outcomes=['finished'], input_keys=['Action'])
+        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
         _state_machine.userdata.Action = ["LookAt", "you"]
         _state_machine.userdata.ID = 0
         _state_machine.userdata.name = ["bottle"]
