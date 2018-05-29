@@ -52,7 +52,7 @@ class Action_findSM(Behavior):
 	def create(self):
 		# x:1068 y:92, x:1114 y:336
 		_state_machine = OperatableStateMachine(outcomes=['found', 'not_found'], input_keys=['className'], output_keys=['entity'])
-		_state_machine.userdata.className = "bottle"
+		_state_machine.userdata.className = "person"
 		_state_machine.userdata.entity = None
 
 		# Additional creation code can be added inside the following tags
@@ -80,43 +80,43 @@ class Action_findSM(Behavior):
 
 			# x:421 y:54
 			OperatableStateMachine.add('Look Right',
-										SaraSetHeadAngle(pitch=0.3, yaw=-1),
+										SaraSetHeadAngle(pitch=0.5, yaw=-1.5),
 										transitions={'done': 'Rotate Right'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:265 y:56
 			OperatableStateMachine.add('Rotate Left',
-										WaitState(wait_time=4),
+										WaitState(wait_time=8),
 										transitions={'done': 'Look Right'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:630 y:56
 			OperatableStateMachine.add('Rotate Right',
-										WaitState(wait_time=8),
+										WaitState(wait_time=12),
 										transitions={'done': 'action_turn'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:77 y:128
 			OperatableStateMachine.add('Look Left',
-										SaraSetHeadAngle(pitch=0.3, yaw=1),
+										SaraSetHeadAngle(pitch=0.5, yaw=1.5),
 										transitions={'done': 'Rotate Left'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:426 y:240
 			OperatableStateMachine.add('Look Left 2',
-										SaraSetHeadAngle(pitch=0.3, yaw=1),
+										SaraSetHeadAngle(pitch=0.5, yaw=1.5),
 										transitions={'done': 'Rotate Left 2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:805 y:226
 			OperatableStateMachine.add('Look Right 2',
-										SaraSetHeadAngle(pitch=0.3, yaw=-1),
+										SaraSetHeadAngle(pitch=0.5, yaw=-1.5),
 										transitions={'done': 'Rotate Right 2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:152 y:234
 			OperatableStateMachine.add('Rotate Left 2',
-										WaitState(wait_time=4),
+										WaitState(wait_time=12),
 										transitions={'done': 'end'},
 										autonomy={'done': Autonomy.Off})
 
@@ -178,19 +178,19 @@ class Action_findSM(Behavior):
 		with _state_machine:
 			# x:148 y:101
 			OperatableStateMachine.add('Look Center',
-										SaraSetHeadAngle(pitch=0.3, yaw=0),
+										SaraSetHeadAngle(pitch=0.5, yaw=0),
 										transitions={'done': 'Container'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:678 y:69
 			OperatableStateMachine.add('Look Center Found',
-										SaraSetHeadAngle(pitch=0.3, yaw=0),
+										SaraSetHeadAngle(pitch=0.5, yaw=0),
 										transitions={'done': 'Log Entity'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:670 y:218
 			OperatableStateMachine.add('Look Center Not Found',
-										SaraSetHeadAngle(pitch=0.3, yaw=0),
+										SaraSetHeadAngle(pitch=0.5, yaw=0),
 										transitions={'done': 'not_found'},
 										autonomy={'done': Autonomy.Off})
 
