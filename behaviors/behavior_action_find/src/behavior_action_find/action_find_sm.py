@@ -8,6 +8,8 @@
 
 import roslib; roslib.load_manifest('behavior_action_find')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
+from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.wait_state import WaitState
 from flexbe_states.calculation_state import CalculationState
@@ -48,7 +50,7 @@ class Action_findSM(Behavior):
 
 
 	def create(self):
-		# x:1068 y:92, x:998 y:309
+		# x:1068 y:92, x:1114 y:336
 		_state_machine = OperatableStateMachine(outcomes=['found', 'not_found'], input_keys=['className'], output_keys=['entity'])
 		_state_machine.userdata.className = "person"
 		_state_machine.userdata.entity = None
@@ -58,23 +60,59 @@ class Action_findSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-		# x:854 y:150
+		# x:1144 y:178
 		_sm_rotation_0 = OperatableStateMachine(outcomes=['end'])
 
 		with _sm_rotation_0:
-			# x:191 y:89
+			# x:83 y:39
 			OperatableStateMachine.add('Set 180 degres',
-										SetKey(Value=3),
-										transitions={'done': 'action_turn'},
+										SetKey(Value=3.1416),
+										transitions={'done': 'Look Left'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'rotation'})
 
-			# x:419 y:97
+			# x:834 y:48
 			OperatableStateMachine.add('action_turn',
 										self.use_behavior(action_turnSM, 'Container/Rotation/action_turn'),
-										transitions={'finished': 'end', 'failed': 'end'},
+										transitions={'finished': 'Look Left 2', 'failed': 'end'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
+
+			# x:421 y:54
+			OperatableStateMachine.add('Look Right',
+										SaraSetHeadAngle(pitch=0, yaw=-1),
+										transitions={'done': 'Rotate Right'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:265 y:56
+			OperatableStateMachine.add('Rotate Left',
+										WaitState(wait_time=4),
+										transitions={'done': 'Look Right'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:630 y:56
+			OperatableStateMachine.add('Rotate Right',
+										WaitState(wait_time=8),
+										transitions={'done': 'action_turn'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:77 y:128
+			OperatableStateMachine.add('Look Left',
+										SaraSetHeadAngle(pitch=0, yaw=1),
+										transitions={'done': 'Rotate Left'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:829 y:186
+			OperatableStateMachine.add('Look Left 2',
+										SaraSetHeadAngle(pitch=0, yaw=1),
+										transitions={'done': 'Rotate Left 2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:856 y:322
+			OperatableStateMachine.add('Rotate Left 2',
+										WaitState(wait_time=8),
+										transitions={'done': 'end'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:683 y:188, x:473 y:345
@@ -126,10 +164,35 @@ class Action_findSM(Behavior):
 
 
 		with _state_machine:
-			# x:465 y:137
+			# x:148 y:101
+			OperatableStateMachine.add('Look Center',
+										SaraSetHeadAngle(pitch=0, yaw=0),
+										transitions={'done': 'Container'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:678 y:69
+			OperatableStateMachine.add('Look Center Found',
+										SaraSetHeadAngle(pitch=0, yaw=0),
+										transitions={'done': 'Log Entity'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:670 y:218
+			OperatableStateMachine.add('Look Center Not Found',
+										SaraSetHeadAngle(pitch=0, yaw=0),
+										transitions={'done': 'not_found'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:904 y:64
+			OperatableStateMachine.add('Log Entity',
+										LogKeyState(text="Found entity: {}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'found'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'entity'})
+
+			# x:394 y:130
 			OperatableStateMachine.add('Container',
 										_sm_container_2,
-										transitions={'found': 'found', 'not_found': 'not_found'},
+										transitions={'found': 'Look Center Found', 'not_found': 'Look Center Not Found'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'className': 'className', 'entity': 'entity'})
 
