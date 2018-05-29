@@ -124,7 +124,7 @@ class Action_findSM(Behavior):
 										list_entities_by_name(frontality_level=0.5),
 										transitions={'found': 'Get Entity', 'not_found': 'WaitState'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'name': 'className', 'list_entities_by_name': 'list_entities_by_name', 'number': 'number'})
+										remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:194 y:40
 			OperatableStateMachine.add('WaitState',
@@ -137,7 +137,7 @@ class Action_findSM(Behavior):
 										CalculationState(calculation=lambda x: x[0]),
 										transitions={'done': 'found'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'list_entities_by_name', 'output_value': 'entity'})
+										remapping={'input_value': 'entity_list', 'output_value': 'entity'})
 
 
 		# x:372 y:27, x:370 y:220, x:368 y:100, x:330 y:458, x:460 y:465
