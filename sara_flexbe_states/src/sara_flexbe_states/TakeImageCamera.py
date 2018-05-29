@@ -19,11 +19,11 @@ class TakeImageCamera(EventState):
     '''
     Return the image from the topic.
 
-    >= topic
-    <= image
+    >= topic    String  the topic
+    <= image    Image   the image
 
-    <= received
-    <= unavailable
+    <= received         the image is receivec
+    <= unavailable      can't subscribe
 
     '''
 
