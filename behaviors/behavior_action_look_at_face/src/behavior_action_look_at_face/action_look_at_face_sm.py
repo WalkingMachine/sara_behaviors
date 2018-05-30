@@ -52,6 +52,8 @@ class action_look_at_faceSM(Behavior):
 		# x:721 y:497, x:513 y:416
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Entity'])
 		_state_machine.userdata.Entity = 0
+		_state_machine.userdata.yaw = 0
+		_state_machine.userdata.pitch = 0
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -70,18 +72,18 @@ class action_look_at_faceSM(Behavior):
 			# x:471 y:323
 			OperatableStateMachine.add('direction',
 										Get_direction_to_point(frame_origin="base_link", frame_reference="head_link"),
-										transitions={'done': 'InvertPitch', 'fail': 'failed'},
+										transitions={'done': 'limit yaw', 'fail': 'failed'},
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'targetPoint': 'Position', 'yaw': 'yaw', 'pitch': 'pitch'})
 
-			# x:675 y:322
+			# x:791 y:325
 			OperatableStateMachine.add('InvertPitch',
-										CalculationState(calculation=lambda x: -x),
+										CalculationState(calculation=lambda x: max(min(-x, 0.7), -0.7)),
 										transitions={'done': 'Head'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'pitch', 'output_value': 'pitch'})
 
-			# x:665 y:406
+			# x:971 y:350
 			OperatableStateMachine.add('Head',
 										SaraSetHeadAngleKey(),
 										transitions={'done': 'finished'},
@@ -105,56 +107,77 @@ class action_look_at_faceSM(Behavior):
 			# x:63 y:280
 			OperatableStateMachine.add('calc y',
 										CalculationState(calculation=lambda x: x.position.y),
-										transitions={'done': 'calc z'},
+										transitions={'done': 'if face'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Entity', 'output_value': 'Y'})
 
-			# x:63 y:362
+			# x:58 y:514
 			OperatableStateMachine.add('calc z',
 										CalculationState(calculation=lambda x: x.face.boundingBox.Center.z),
 										transitions={'done': 'set zero'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Entity', 'output_value': 'Z'})
 
-			# x:50 y:522
+			# x:57 y:751
 			OperatableStateMachine.add('gen pose',
 										GenPoseEulerKey(),
 										transitions={'done': 'get pos'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'xpos': 'X', 'ypos': 'Y', 'zpos': 'Z', 'yaw': 'zero', 'pitch': 'zero', 'roll': 'zero', 'pose': 'pose'})
 
-			# x:76 y:441
+			# x:75 y:650
 			OperatableStateMachine.add('set zero',
 										SetKey(Value=0),
 										transitions={'done': 'gen pose'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'zero'})
 
-			# x:231 y:519
+			# x:293 y:752
 			OperatableStateMachine.add('get pos',
 										CalculationState(calculation=lambda x: x.position),
 										transitions={'done': 'Look Head'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'pose', 'output_value': 'Position'})
 
-			# x:261 y:151
+			# x:263 y:119
 			OperatableStateMachine.add('get pos obj',
 										CalculationState(calculation=lambda x: x.position),
 										transitions={'done': 'Look Entity'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Entity', 'output_value': 'Position'})
 
-			# x:446 y:183
+			# x:428 y:127
 			OperatableStateMachine.add('Look Entity',
 										LogState(text="Look Entity", severity=Logger.REPORT_HINT),
 										transitions={'done': 'direction'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:297 y:340
+			# x:478 y:758
 			OperatableStateMachine.add('Look Head',
 										LogState(text="Look Head", severity=Logger.REPORT_HINT),
 										transitions={'done': 'direction'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:651 y:324
+			OperatableStateMachine.add('limit yaw',
+										CalculationState(calculation=lambda x: max(min(x, 1.5), -1.5)),
+										transitions={'done': 'InvertPitch'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'yaw', 'output_value': 'yaw'})
+
+			# x:53 y:389
+			OperatableStateMachine.add('if face',
+										CheckConditionState(predicate=lambda x: x.face.id != ""),
+										transitions={'true': 'calc z', 'false': 'set z'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'Entity'})
+
+			# x:244 y:405
+			OperatableStateMachine.add('set z',
+										SetKey(Value=1.4),
+										transitions={'done': 'set zero'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Z'})
 
 
 		return _state_machine
