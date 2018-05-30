@@ -14,6 +14,7 @@ from sara_flexbe_states.sara_set_head_angle_key import SaraSetHeadAngleKey
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.pose_gen_euler_key import GenPoseEulerKey
 from sara_flexbe_states.SetKey import SetKey
+from flexbe_states.log_state import LogState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -132,16 +133,28 @@ class action_look_at_faceSM(Behavior):
 			# x:231 y:519
 			OperatableStateMachine.add('get pos',
 										CalculationState(calculation=lambda x: x.position),
-										transitions={'done': 'direction'},
+										transitions={'done': 'Look Head'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'pose', 'output_value': 'Position'})
 
 			# x:261 y:151
 			OperatableStateMachine.add('get pos obj',
 										CalculationState(calculation=lambda x: x.position),
-										transitions={'done': 'direction'},
+										transitions={'done': 'Look Entity'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Entity', 'output_value': 'Position'})
+
+			# x:446 y:183
+			OperatableStateMachine.add('Look Entity',
+										LogState(text="Look Entity", severity=Logger.REPORT_HINT),
+										transitions={'done': 'direction'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:297 y:340
+			OperatableStateMachine.add('Look Head',
+										LogState(text="Look Head", severity=Logger.REPORT_HINT),
+										transitions={'done': 'direction'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine
