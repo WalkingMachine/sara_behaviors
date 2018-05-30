@@ -12,6 +12,7 @@
   <run_depend>rospy</run_depend>
 
   <!-- Add here all ROS packages that contain behaviors -->
+
 <run_depend>behavior_a_go_home</run_depend>
 <run_depend>behavior_a_test_sandbox</run_depend>
 <run_depend>behavior_a_test_wonderland</run_depend>
@@ -70,5 +71,6 @@
 <run_depend>behavior_wonderlandaddupdateperson</run_depend>
 <run_depend>behavior_wonderlanduniqueenity</run_depend>
   <run_depend>behavior_actionwrapper_say</run_depend>
+
 
 </package>
