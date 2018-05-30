@@ -21,19 +21,17 @@ class SaraSetHeadAngle(EventState):
         super(SaraSetHeadAngle, self).__init__(outcomes = ['done'])
         self.pitch = pitch
         self.yaw = yaw
+        self.pubp = rospy.Publisher("/sara_head_pitch_controller/command", Float64, queue_size=1)
+        self.puby = rospy.Publisher("/sara_head_yaw_controller/command", Float64, queue_size=1)
 
     def execute(self, userdata):
 
         ms = Float64()
         Logger.loginfo('Setting head pitch to '+str(self.pitch))
         Logger.loginfo('Setting head yaw to '+str(self.yaw))
-        pub = rospy.Publisher("/sara_head_pitch_controller/command", Float64, queue_size=1)
-        ms.data = self.pitch
-        pub.publish(ms)
-        pub = rospy.Publisher("/sara_head_yaw_controller/command", Float64, queue_size=1)
-        ms.data = self.yaw
-        pub.publish(ms)
-
+        self.pubp.publish(ms)
+        ms.data = userdata.yaw
+        self.puby.publish(ms)
         Logger.loginfo('Publishing done')
 
         return 'done'
