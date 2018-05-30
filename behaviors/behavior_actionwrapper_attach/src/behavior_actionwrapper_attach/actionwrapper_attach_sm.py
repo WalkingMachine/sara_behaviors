@@ -50,7 +50,7 @@ class ActionWrapper_AttachSM(Behavior):
 
     def create(self):
         # x:905 y:379, x:639 y:385
-        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
+        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
         _state_machine.userdata.Action = ["Atach",'tail','dunky']
 
         # Additional creation code can be added inside the following tags
@@ -59,7 +59,7 @@ class ActionWrapper_AttachSM(Behavior):
         # [/MANUAL_CREATE]
 
         # x:30 y:322, x:130 y:322
-        _sm_attach_0 = OperatableStateMachine(outcomes=['finished', 'failed'])
+        _sm_attach_0 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'])
 
         with _sm_attach_0:
             # x:52 y:131

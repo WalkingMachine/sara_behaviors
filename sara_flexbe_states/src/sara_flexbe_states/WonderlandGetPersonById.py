@@ -20,7 +20,7 @@ class WonderlandGetPersonById(EventState):
     Find a person by ID.
     ># id               int         Recognition name of the object
 
-    #> entity           sara_msgs/Entity
+    #> entity           sara_msgs/Entity        the entity
 
     <= done             return when one entity exist
     <= none             return when no entity exist

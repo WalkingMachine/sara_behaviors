@@ -6,9 +6,9 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_actionwrapper_stop')
+import roslib; roslib.load_manifest('behavior_actionwrapper_say')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from behavior_stop.stop_sm import StopSM
+from flexbe_states.wait_state import WaitState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -16,23 +16,22 @@ from behavior_stop.stop_sm import StopSM
 
 
 '''
-Created on Sat Jul 15 2017
-@author: Lucas Maurice
+Created on Sun May 27 2018
+@author: Philippe La Madeleine
 '''
-class ActionWrapper_StopSM(Behavior):
+class ActionWrapper_SaySM(Behavior):
 	'''
-	Enveloppe de l'action Stop
+	Say something
 	'''
 
 
 	def __init__(self):
-		super(ActionWrapper_StopSM, self).__init__()
-		self.name = 'ActionWrapper_Stop'
+		super(ActionWrapper_SaySM, self).__init__()
+		self.name = 'ActionWrapper_Say'
 
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(StopSM, 'Stop')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -41,12 +40,14 @@ class ActionWrapper_StopSM(Behavior):
 
 		# Behavior comments:
 
+		# O 160 33 
+		# ["Say", "sentence"]
+
 
 
 	def create(self):
-		# x:30 y:365, x:130 y:365
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
-		_state_machine.userdata.Action = ['Stop']
+		# x:30 y:324, x:130 y:324
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'])
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -55,12 +56,11 @@ class ActionWrapper_StopSM(Behavior):
 
 
 		with _state_machine:
-			# x:55 y:116
-			OperatableStateMachine.add('Stop',
-										self.use_behavior(StopSM, 'Stop'),
-										transitions={'finished': 'finished'},
-										autonomy={'finished': Autonomy.Inherit},
-										remapping={'high_fifo': 'high_fifo', 'med_fifo': 'med_fifo', 'low_fifo': 'low_fifo'})
+			# x:89 y:97
+			OperatableStateMachine.add('dummy wait',
+										WaitState(wait_time=1),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

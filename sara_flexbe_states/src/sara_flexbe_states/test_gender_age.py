@@ -11,7 +11,7 @@ class TestGenderAge(EventState):
     Finding the gender and an age range of a person
 
 
-    #> image      image
+    #> image      image     the image
     <= done       done
     '''
 
