@@ -59,7 +59,7 @@ class ActionWrapper_PickSM(Behavior):
 
 	def create(self):
 		# x:885 y:201, x:725 y:372
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action', 'ObjectInGripper'])
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action', 'ObjectInGripper'])
 		_state_machine.userdata.Action = ["Pick","cup",""]
 		_state_machine.userdata.ObjectInGripper = False
 		_state_machine.userdata.room = 1
@@ -73,7 +73,7 @@ class ActionWrapper_PickSM(Behavior):
         # [/MANUAL_CREATE]
 
 		# x:516 y:297, x:455 y:109
-		_sm_forward_0 = OperatableStateMachine(outcomes=['finished', 'failed'])
+		_sm_forward_0 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'])
 
 		with _sm_forward_0:
 			# x:47 y:28

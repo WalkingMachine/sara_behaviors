@@ -47,7 +47,7 @@ class ActionWrapper_AnswerSM(Behavior):
 
 	def create(self):
 		# x:30 y:324, x:130 y:324
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'])
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]

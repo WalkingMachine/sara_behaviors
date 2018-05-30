@@ -80,7 +80,7 @@ class Test_continue_entitySM(Behavior):
 
             # x:200 y:167
             OperatableStateMachine.add('entity_name',
-                                        list_entities_by_name(frontality_level=lambda x: x[1]='bottle'),
+                                        list_entities_by_name(frontality_level=0 ),
                                         transitions={'found': 'get person position', 'not_found': 'failed'},
                                         autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
                                         remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})

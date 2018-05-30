@@ -62,7 +62,7 @@ class ActionWrapper_FollowSM(Behavior):
 
 	def create(self):
 		# x:470 y:280, x:618 y:290
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Follow", "rachel", "bedroom", ""]
 		_state_machine.userdata.relative = False
 
