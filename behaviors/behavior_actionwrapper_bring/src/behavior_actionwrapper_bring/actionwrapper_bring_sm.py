@@ -14,7 +14,6 @@ from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.calculation_state import CalculationState
 from behavior_action_move.action_move_sm import Action_MoveSM
-from sara_flexbe_states.Wonderland_Get_Object import WonderlandGetObject
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from behavior_action_pick.action_pick_sm import Action_pickSM
@@ -24,7 +23,6 @@ from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.moveit_move import MoveitMove
 from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
-from sara_flexbe_states.Wonderland_Get_Room import WonderlandGetRoom
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -67,7 +65,7 @@ class ActionWrapper_BringSM(Behavior):
 
 	def create(self):
 		# x:868 y:291, x:857 y:562
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Bring","cup", "living room",""]
 
 		# Additional creation code can be added inside the following tags
@@ -220,13 +218,6 @@ class ActionWrapper_BringSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'name'})
 
-			# x:438 y:308
-			OperatableStateMachine.add('get room',
-										WonderlandGetRoom(),
-										transitions={'found': 'found', 'unknown': 'say unknown', 'error': 'error'},
-										autonomy={'found': Autonomy.Off, 'unknown': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'id': 'id', 'name': 'name', 'type': 'type', 'expected_pose': 'expected_pose', 'room_pose': 'room_pose', 'room_name': 'room_name', 'room_type': 'room_type'})
-
 			# x:471 y:499
 			OperatableStateMachine.add('say unknown',
 										SaraSayKey(Format=lambda x: "I don't know where is the "+x, emotion=1, block=True),
@@ -236,7 +227,7 @@ class ActionWrapper_BringSM(Behavior):
 
 
 		# x:816 y:646, x:854 y:48
-		_sm_bring_3 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['expected_pose', 'Action', 'robot_pose'])
+		_sm_bring_3 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['expected_pose', 'Action', 'robot_pose'])
 
 		with _sm_bring_3:
 			# x:37 y:26
@@ -252,13 +243,6 @@ class ActionWrapper_BringSM(Behavior):
 										transitions={'finished': 'Action_pick', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'object_pose', 'relative': 'unrelative'})
-
-			# x:138 y:251
-			OperatableStateMachine.add('get object',
-										WonderlandGetObject(),
-										transitions={'found': 'Move_to_Object', 'unknown': 'say unknown', 'error': 'failed'},
-										autonomy={'found': Autonomy.Off, 'unknown': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'id': 'id', 'name': 'name', 'color': 'color', 'room': 'room', 'type': 'type', 'expected_pose': 'expected_pose', 'object_pose': 'object_pose', 'object_name': 'object_name', 'object_color': 'object_color', 'object_room': 'object_room', 'object_type': 'object_type'})
 
 			# x:807 y:238
 			OperatableStateMachine.add('Move_Back',

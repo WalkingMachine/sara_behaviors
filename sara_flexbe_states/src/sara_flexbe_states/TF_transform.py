@@ -10,14 +10,14 @@ class TF_transformation(EventState):
     Transformation from a referential  to another
 
     ###Params
-    --in_ref   string      first referential
-    --out_ref  string      second referential
+    -- in_ref   String      first referential
+    -- out_ref  String      second referential
 
     ### InputKey
-    >#in_pos   geometry_msgs/Point       point in first referential
+    ># in_pos   geometry_msgs/Point       point in first referential
 
     ### OutputKey
-    #>out_pos  geometry_msgs/Point       point in second referential
+    #> out_pos  geometry_msgs/Point       point in second referential
 
     ###Outcomes
     <= done                 Did all the transformation

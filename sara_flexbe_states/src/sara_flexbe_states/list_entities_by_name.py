@@ -13,9 +13,9 @@ class list_entities_by_name(EventState):
     '''
         will list entities seen by the camera
 
-        -- frontality_level        float
-        #> found_entities          object
-        #< name                    string
+        -- frontality_level        float        How much we should priorise the normal ovel the distance when calculating proximity. 1 is only normal and 0 is only distance. e.g.  0.5 is a good value.
+        #< name                    string       name to compare entities with
+        #> found_entities          object       list of founf entities
 
         <= found            entities are found
         <= not_found        no one is found
@@ -26,7 +26,7 @@ class list_entities_by_name(EventState):
         '''
         Constructor
         '''
-        super(list_entities_by_name, self).__init__(outcomes=['found', 'not_found'], output_keys=['list_entities_by_name', 'number'], input_keys=['name'])
+        super(list_entities_by_name, self).__init__(outcomes=['found', 'not_found'], output_keys=['entity_list', 'number'], input_keys=['name'])
         self._sub = ProxySubscriberCached({'/entities': Entities})
 
         self._topic = "/robot_pose"
@@ -48,7 +48,7 @@ class list_entities_by_name(EventState):
 
         if self.message is not None and self.mypose is not None:
             found_entities = self.list(userdata.name)
-            userdata.list_entities_by_name = found_entities
+            userdata.entity_list = found_entities
             userdata.number = len(found_entities)
 
             if len(found_entities) != 0:

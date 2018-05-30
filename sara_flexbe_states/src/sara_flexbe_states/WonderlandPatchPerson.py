@@ -14,7 +14,7 @@ Created on 17/05/2018
 class WonderlandPatchPerson(EventState):
     '''
     Patch (update) a person.
-    >#  entity                  sara_msgs/Entity
+    >#  entity                  sara_msgs/Entity    the entity
 
     <= done                     return when the add correctly append
     <= dont_exist                return when the entity already exist
