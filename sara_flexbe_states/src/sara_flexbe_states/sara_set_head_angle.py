@@ -29,8 +29,9 @@ class SaraSetHeadAngle(EventState):
         ms = Float64()
         Logger.loginfo('Setting head pitch to '+str(self.pitch))
         Logger.loginfo('Setting head yaw to '+str(self.yaw))
+        ms.data = self.pitch
         self.pubp.publish(ms)
-        ms.data = userdata.yaw
+        ms.data = self.yaw
         self.puby.publish(ms)
         Logger.loginfo('Publishing done')
 
