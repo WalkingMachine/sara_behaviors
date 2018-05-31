@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="ActionWrapper_Find_Person">
+
+	<executable package_path="behavior_actionwrapper_find_person.actionwrapper_find_person_sm" class="ActionWrapper_Find_PersonSM" />
+	<tagstring>ActionWrapper</tagstring>
+	<author>Lucas Maurice</author>
+	<date>30/05/2018</date>
+	<description>
+		Action Wrapper for find a person visually arround the robot.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_find" />
+
+	<!-- Available Parameters -->
+
+</behavior>
