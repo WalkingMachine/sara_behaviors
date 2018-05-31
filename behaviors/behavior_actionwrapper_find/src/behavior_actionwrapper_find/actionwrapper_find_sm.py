@@ -11,6 +11,7 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_say_key import SaraSayKey
+from behavior_action_find.action_find_sm import Action_findSM
 from flexbe_states.calculation_state import CalculationState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -19,105 +20,100 @@ from flexbe_states.calculation_state import CalculationState
 
 
 '''
-Created on Tue Jul 11 2017
-@author: Philippe La Madeleine
+Created on 30/05/2018
+@author: Lucas Maurice
 '''
 class ActionWrapper_FindSM(Behavior):
-    '''
-    action wrapper pour find
-    '''
+	'''
+	Action Wrapper for find an object visually arround the robot.
+	'''
 
 
-    def __init__(self):
-        super(ActionWrapper_FindSM, self).__init__()
-        self.name = 'ActionWrapper_Find'
+	def __init__(self):
+		super(ActionWrapper_FindSM, self).__init__()
+		self.name = 'ActionWrapper_Find'
 
-        # parameters of this behavior
+		# parameters of this behavior
 
-        # references to used behaviors
+		# references to used behaviors
+		self.add_behavior(Action_findSM, 'Action_find')
 
-        # Additional initialization code can be added inside the following tags
-        # [MANUAL_INIT]
+		# Additional initialization code can be added inside the following tags
+		# [MANUAL_INIT]
         
         # [/MANUAL_INIT]
 
-        # Behavior comments:
+		# Behavior comments:
 
-        # O 308 15 
-        # Find|n1- what to find|n2- where to look for
+		# O 1498 67 
+		# Find|n1- what to find|n2- where to look for
 
 
 
-    def create(self):
-        # x:846 y:287, x:842 y:366
-        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
-        _state_machine.userdata.Action = ["Find","power","universe"]
+	def create(self):
+		# x:711 y:84, x:691 y:375, x:709 y:633
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
+		_state_machine.userdata.Action = ["Find","bottle"]
 
-        # Additional creation code can be added inside the following tags
-        # [MANUAL_CREATE]
+		# Additional creation code can be added inside the following tags
+		# [MANUAL_CREATE]
         
         # [/MANUAL_CREATE]
 
-        # x:30 y:325
-        _sm_look_at_location_0 = OperatableStateMachine(outcomes=['done'], input_keys=['Action'])
 
-        with _sm_look_at_location_0:
-            # x:30 y:40
-            OperatableStateMachine.add('get location name',
-                                        CalculationState(calculation=lambda x: x[1]),
-                                        transitions={'done': 'done'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'input_value': 'Action', 'output_value': 'name'})
+		with _state_machine:
+			# x:67 y:70
+			OperatableStateMachine.add('cond',
+										CheckConditionState(predicate=lambda x: x[1] is not None and x[1] != ''),
+										transitions={'true': 'ReadParameters', 'false': 'say no object given'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'Action'})
 
+			# x:325 y:70
+			OperatableStateMachine.add('say no object given',
+										SaraSay(sentence="You didn't told me what to find.", emotion=1, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
 
+			# x:75 y:253
+			OperatableStateMachine.add('say find object',
+										SaraSayKey(Format=lambda x: "I'm now looking for the " + x, emotion=1, block=True),
+										transitions={'done': 'Action_find'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'name'})
 
-        with _state_machine:
-            # x:24 y:18
-            OperatableStateMachine.add('cond',
-                                        CheckConditionState(predicate=lambda x: x[1] != ''),
-                                        transitions={'true': 'cond2', 'false': 'say no object given'},
-                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-                                        remapping={'input_value': 'Action'})
+			# x:68 y:363
+			OperatableStateMachine.add('Action_find',
+										self.use_behavior(Action_findSM, 'Action_find'),
+										transitions={'done': 'Say Finded Object', 'pas_done': 'Do not find object'},
+										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
+										remapping={'className': 'name', 'entity': 'entity'})
 
-            # x:243 y:76
-            OperatableStateMachine.add('say no object given',
-                                        SaraSay(sentence="You didn't told me what to find.", emotion=1),
-                                        transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.Off})
+			# x:77 y:159
+			OperatableStateMachine.add('ReadParameters',
+										CalculationState(calculation=lambda x: x[1]),
+										transitions={'done': 'say find object'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'Action', 'output_value': 'name'})
 
-            # x:33 y:289
-            OperatableStateMachine.add('cond2',
-                                        CheckConditionState(predicate=lambda x: x[2] != ''),
-                                        transitions={'true': 'say find object in area', 'false': 'say find object'},
-                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-                                        remapping={'input_value': 'Action'})
+			# x:331 y:215
+			OperatableStateMachine.add('Say Finded Object',
+										SaraSayKey(Format=lambda x: "I just find the " + x.name, emotion=1, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'entity'})
 
-            # x:241 y:290
-            OperatableStateMachine.add('say find object',
-                                        SaraSayKey(Format=lambda x: "I'm now looking for the "+x[1], emotion=1),
-                                        transitions={'done': 'Look at location'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'sentence': 'Action'})
-
-            # x:223 y:532
-            OperatableStateMachine.add('say find object in area',
-                                        SaraSayKey(Format=lambda x: "I'm now looking for the "+x[1]+" in the "+x[2], emotion=1),
-                                        transitions={'done': 'Look at location'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'sentence': 'Action'})
-
-            # x:445 y:300
-            OperatableStateMachine.add('Look at location',
-                                        _sm_look_at_location_0,
-                                        transitions={'done': 'finished'},
-                                        autonomy={'done': Autonomy.Inherit},
-                                        remapping={'Action': 'Action'})
+			# x:335 y:369
+			OperatableStateMachine.add('Do not find object',
+										SaraSay(sentence="I did not find the object to find.", emotion=1, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
 
 
-        return _state_machine
+		return _state_machine
 
 
-    # Private functions can be added inside the following tags
-    # [MANUAL_FUNC]
+	# Private functions can be added inside the following tags
+	# [MANUAL_FUNC]
     
     # [/MANUAL_FUNC]
