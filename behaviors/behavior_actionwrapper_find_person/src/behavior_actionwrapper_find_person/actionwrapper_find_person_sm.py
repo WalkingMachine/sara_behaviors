@@ -13,6 +13,9 @@ from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from behavior_action_find.action_find_sm import Action_findSM
 from flexbe_states.calculation_state import CalculationState
+from sara_flexbe_states.SetKey import SetKey
+from sara_flexbe_states.get_speech import GetSpeech
+from sara_flexbe_states.for_loop import ForLoop
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -51,9 +54,9 @@ class ActionWrapper_Find_PersonSM(Behavior):
 
 
 	def create(self):
-		# x:711 y:84, x:691 y:375, x:709 y:633
+		# x:518 y:549, x:358 y:753, x:1004 y:649
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
-		_state_machine.userdata.Action = ["Find","bottle"]
+		_state_machine.userdata.Action = ["FindPerson","Rachel"]
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -69,45 +72,94 @@ class ActionWrapper_Find_PersonSM(Behavior):
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'Action'})
 
-			# x:345 y:72
+			# x:70 y:746
 			OperatableStateMachine.add('say no object given',
 										SaraSay(sentence="You didn't told me what to find.", emotion=1, block=True),
-										transitions={'done': 'finished'},
+										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:75 y:253
+			# x:139 y:251
 			OperatableStateMachine.add('say find object',
-										SaraSayKey(Format=lambda x: "I'm now looking for the " + x, emotion=1, block=True),
-										transitions={'done': 'Action_find'},
+										SaraSayKey(Format=lambda x: "I'm now looking for " + x, emotion=1, block=True),
+										transitions={'done': 'set person'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'name'})
 
-			# x:68 y:363
+			# x:165 y:446
 			OperatableStateMachine.add('Action_find',
 										self.use_behavior(Action_findSM, 'Action_find'),
-										transitions={'done': 'Say Finded Object', 'pas_done': 'Do not find object'},
+										transitions={'done': 'Repeat the question', 'pas_done': 'Do not find person'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
-										remapping={'className': 'name', 'entity': 'entity'})
+										remapping={'className': '_person', 'entity': 'entity'})
 
-			# x:77 y:159
+			# x:132 y:159
 			OperatableStateMachine.add('ReadParameters',
 										CalculationState(calculation=lambda x: x[1]),
 										transitions={'done': 'say find object'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'name'})
 
-			# x:346 y:219
-			OperatableStateMachine.add('Say Finded Object',
-										SaraSayKey(Format=lambda x: "I just find the " + x.name, emotion=1, block=True),
-										transitions={'done': 'failed'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'entity'})
-
-			# x:350 y:375
-			OperatableStateMachine.add('Do not find object',
-										SaraSay(sentence="I did not find the object to find.", emotion=1, block=True),
+			# x:165 y:570
+			OperatableStateMachine.add('Do not find person',
+										SaraSay(sentence="I did not find a person.", emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:159 y:327
+			OperatableStateMachine.add('set person',
+										SetKey(Value='person'),
+										transitions={'done': 'Action_find'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': '_person'})
+
+			# x:477 y:295
+			OperatableStateMachine.add('Get Yes or No',
+										GetSpeech(watchdog=5),
+										transitions={'done': 'Check Yes', 'nothing': 'Say Not understand', 'fail': 'Say Not understand'},
+										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'words': 'words'})
+
+			# x:466 y:136
+			OperatableStateMachine.add('Repeat the question',
+										ForLoop(repeat=5),
+										transitions={'do': 'Ask Person', 'end': 'Do not find person'},
+										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+										remapping={'index': 'index'})
+
+			# x:469 y:376
+			OperatableStateMachine.add('Check Yes',
+										CheckConditionState(predicate=lambda x: "yes" in x[0]),
+										transitions={'true': 'Say found', 'false': 'Check No'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'words'})
+
+			# x:700 y:149
+			OperatableStateMachine.add('Say Not understand',
+										SaraSayKey(Format=lambda x: "I did not understand.", emotion=1, block=True),
+										transitions={'done': 'Repeat the question'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'name'})
+
+			# x:488 y:206
+			OperatableStateMachine.add('Ask Person',
+										SaraSayKey(Format=lambda x: "Are you " x "?", emotion=1, block=True),
+										transitions={'done': 'Get Yes or No'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'name'})
+
+			# x:493 y:461
+			OperatableStateMachine.add('Say found',
+										SaraSayKey(Format=lambda x: "I have found " x "!", emotion=1, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'name'})
+
+			# x:684 y:624
+			OperatableStateMachine.add('Check No',
+										CheckConditionState(predicate=lambda x: "yes" in x[0]),
+										transitions={'true': 'Do not find person', 'false': 'Say Not understand'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'words'})
 
 
 		return _state_machine
