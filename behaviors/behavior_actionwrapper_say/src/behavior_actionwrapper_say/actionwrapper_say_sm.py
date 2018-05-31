@@ -50,7 +50,7 @@ class ActionWrapper_SaySM(Behavior):
 	def create(self):
 		# x:783 y:268, x:448 y:352, x:564 y:354
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
-		_state_machine.userdata.Action = ["say","coucou"]
+		_state_machine.userdata.Action = ["say","coucou Philippe commit ca va"]
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
