@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<behavior name="action_look_at_face">
+<behavior name="action_lookAtFaceBase">
 
-	<executable package_path="behavior_action_look_at_face.action_look_at_face_sm" class="action_look_at_faceSM" />
+	<executable package_path="behavior_action_lookatfacebase.action_lookatfacebase_sm" class="action_lookAtFaceBaseSM" />
 	<tagstring>Action</tagstring>
 	<author>Veronica Romero</author>
 	<date>Thu Apr 26 2018</date>
@@ -12,6 +12,7 @@
 
 
 	<!-- Contained Behaviors -->
+	<contains name="action_turn" />
 
 	<!-- Available Parameters -->
 

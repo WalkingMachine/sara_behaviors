@@ -6,7 +6,7 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_action_find')
+import roslib; roslib.load_manifest('behavior_action_findperson')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.log_key_state import LogKeyState
@@ -26,15 +26,15 @@ from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_f
 Created on Sat May 12 2018
 @author: Lucas Maurice
 '''
-class Action_findSM(Behavior):
+class Action_findPersonSM(Behavior):
 	'''
 	Find an entity arround sara, identified by entity class.
 	'''
 
 
 	def __init__(self):
-		super(Action_findSM, self).__init__()
-		self.name = 'Action_find'
+		super(Action_findPersonSM, self).__init__()
+		self.name = 'Action_findPerson'
 
 		# parameters of this behavior
 
@@ -83,7 +83,7 @@ class Action_findSM(Behavior):
 
 			# x:421 y:54
 			OperatableStateMachine.add('Look Right',
-										SaraSetHeadAngle(pitch=0.5, yaw=-1.5),
+										SaraSetHeadAngle(pitch=0.1, yaw=-1.5),
 										transitions={'done': 'Rotate Right'},
 										autonomy={'done': Autonomy.Off})
 
@@ -101,19 +101,19 @@ class Action_findSM(Behavior):
 
 			# x:77 y:128
 			OperatableStateMachine.add('Look Left',
-										SaraSetHeadAngle(pitch=0.5, yaw=1.5),
+										SaraSetHeadAngle(pitch=0.1, yaw=1.5),
 										transitions={'done': 'Rotate Left'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:426 y:240
 			OperatableStateMachine.add('Look Left 2',
-										SaraSetHeadAngle(pitch=0.5, yaw=1.5),
+										SaraSetHeadAngle(pitch=0.1, yaw=1.5),
 										transitions={'done': 'Rotate Left 2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:805 y:226
 			OperatableStateMachine.add('Look Right 2',
-										SaraSetHeadAngle(pitch=0.5, yaw=-1.5),
+										SaraSetHeadAngle(pitch=0.1, yaw=-1.5),
 										transitions={'done': 'Rotate Right 2'},
 										autonomy={'done': Autonomy.Off})
 
@@ -181,19 +181,19 @@ class Action_findSM(Behavior):
 		with _state_machine:
 			# x:148 y:101
 			OperatableStateMachine.add('Look Center',
-										SaraSetHeadAngle(pitch=0.5, yaw=0),
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
 										transitions={'done': 'Container'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:574 y:63
 			OperatableStateMachine.add('Look Center Found',
-										SaraSetHeadAngle(pitch=0.5, yaw=0),
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
 										transitions={'done': 'Log Entity'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:573 y:223
 			OperatableStateMachine.add('Look Center Not Found',
-										SaraSetHeadAngle(pitch=0.5, yaw=0),
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
 										transitions={'done': 'pas_done'},
 										autonomy={'done': Autonomy.Off})
 
