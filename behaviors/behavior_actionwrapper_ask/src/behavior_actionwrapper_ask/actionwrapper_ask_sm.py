@@ -8,9 +8,11 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_ask')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.sara_say_key import SaraSayKey
+from flexbe_states.calculation_state import CalculationState
+from sara_flexbe_states.get_speech import GetSpeech
+from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -65,10 +67,10 @@ class ActionWrapper_AskSM(Behavior):
 										transitions={'done': 'trouveLaQuestion'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:387 y:166
+			# x:364 y:136
 			OperatableStateMachine.add('AskTheQuestion',
 										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
-										transitions={'done': 'AskTheQuestion'},
+										transitions={'done': 'GetTheResponse'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'question'})
 
@@ -78,6 +80,26 @@ class ActionWrapper_AskSM(Behavior):
 										transitions={'done': 'AskTheQuestion'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'question'})
+
+			# x:526 y:150
+			OperatableStateMachine.add('GetTheResponse',
+										GetSpeech(watchdog=7),
+										transitions={'done': 'StoreRosParamResponse', 'nothing': 'NotUnderstand', 'fail': 'NotUnderstand'},
+										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'words': 'response'})
+
+			# x:389 y:251
+			OperatableStateMachine.add('NotUnderstand',
+										SaraSay(sentence="Soory, I did not understand.", emotion=1, block=True),
+										transitions={'done': 'AskTheQuestion'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:711 y:145
+			OperatableStateMachine.add('StoreRosParamResponse',
+										SetRosParam(ParamName=ResponseOfQuestion),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'response'})
 
 
 		return _state_machine
