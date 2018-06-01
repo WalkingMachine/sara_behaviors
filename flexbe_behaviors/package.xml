@@ -72,6 +72,7 @@
 <run_depend>behavior_wonderlanduniqueenity</run_depend>
 <run_depend>behavior_actionwrapper_say</run_depend>
 <run_depend>behavior_scenario_gpsr</run_depend>
+<run_depend>behavior_actionwrapper_find_person</run_depend>
 
 
 </package>
