@@ -70,7 +70,8 @@
 <run_depend>behavior_testgenderage</run_depend>
 <run_depend>behavior_wonderlandaddupdateperson</run_depend>
 <run_depend>behavior_wonderlanduniqueenity</run_depend>
-  <run_depend>behavior_actionwrapper_say</run_depend>
+<run_depend>behavior_actionwrapper_say</run_depend>
+<run_depend>behavior_scenario_gpsr</run_depend>
 
 
 </package>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Scenario_GPSR">
+
+	<executable package_path="behavior_scenario_gpsr.scenario_gpsr_sm" class="Scenario_GPSRSM" />
+	<tagstring>Scenario</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Wed May 30 2018</date>
+	<description>
+		Implementation du scenario GPSR.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="ActionWrapper_Answer" />
+	<contains name="ActionWrapper_Ask" />
+	<contains name="ActionWrapper_Bring" />
+	<contains name="ActionWrapper_Confirm" />
+	<contains name="ActionWrapper_Count" />
+	<contains name="ActionWrapper_Find" />
+	<contains name="ActionWrapper_Follow" />
+	<contains name="ActionWrapper_Give" />
+	<contains name="ActionWrapper_Move" />
+	<contains name="ActionWrapper_Pick" />
+	<contains name="ActionWrapper_Place" />
+	<contains name="ActionWrapper_Say" />
+	<contains name="Action_Move" />
+
+	<!-- Available Parameters -->
+
+</behavior>
