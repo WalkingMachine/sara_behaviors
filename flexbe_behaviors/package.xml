@@ -70,8 +70,10 @@
 <run_depend>behavior_testgenderage</run_depend>
 <run_depend>behavior_wonderlandaddupdateperson</run_depend>
 <run_depend>behavior_wonderlanduniqueenity</run_depend>
-  <run_depend>behavior_actionwrapper_say</run_depend>
-  <run_depend>behavior_actionwrapper_find_person</run_depend>
-
+<run_depend>behavior_actionwrapper_say</run_depend>
+<run_depend>behavior_action_findperson</run_depend>
+<run_depend>behavior_actionwrapper_find_person</run_depend>
+  <run_depend>behavior_action_lookatbase</run_depend>
+  <run_depend>behavior_action_lookatfacebase</run_depend>
 
 </package>
