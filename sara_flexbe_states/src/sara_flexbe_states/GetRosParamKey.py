@@ -41,9 +41,14 @@ class GetRosParamKey(EventState):
         matches = self.test.findall(text)
         if matches:
             for match in matches:
-                text = text.replace(str(match), str(rospy.get_param(match[+1:])))
-                print("\t"+str(match[+1:]))
-                ok = True
+                if rospy.has_param(str(match[+1:])):
+                    text = text.replace(str(match), str(rospy.get_param(match[+1:])))
+                    print("\t"+str(match[+1:]))
+                    ok = True
+                else:
+                    text = text.replace(str(match), str(match[+1:]))
+                    print("\t" + str(match[+1:]))
+                    ok = False
             print("by \"" + text + "\"")
             userdata.Value = text
             return "done"
