@@ -4,14 +4,16 @@
 
 	<executable package_path="behavior_actionwrapper_give.actionwrapper_give_sm" class="ActionWrapper_GiveSM" />
 	<tagstring>ActionWrapper</tagstring>
-	<author>Philippe La Madeleine</author>
-	<date>Tue Jul 11 2017</date>
+	<author>Veronica</author>
+	<date>2018-June-2</date>
 	<description>
 		action wrapper pour give
 	</description>
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Action_findPerson" />
+	<contains name="Action_Give" />
 
 	<!-- Available Parameters -->
 
