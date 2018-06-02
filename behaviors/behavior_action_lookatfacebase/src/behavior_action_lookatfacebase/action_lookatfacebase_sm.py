@@ -6,7 +6,7 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_action_look_at_face')
+import roslib; roslib.load_manifest('behavior_action_lookatfacebase')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.Get_direction_to_point import Get_direction_to_point
@@ -15,6 +15,7 @@ from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.pose_gen_euler_key import GenPoseEulerKey
 from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.log_state import LogState
+from behavior_action_turn.action_turn_sm import action_turnSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -25,19 +26,20 @@ from flexbe_states.log_state import LogState
 Created on Thu Apr 26 2018
 @author: Veronica Romero
 '''
-class action_look_at_faceSM(Behavior):
+class action_lookAtFaceBaseSM(Behavior):
 	'''
 	Moves Sara's head towards the face of an entity
 	'''
 
 
 	def __init__(self):
-		super(action_look_at_faceSM, self).__init__()
-		self.name = 'action_look_at_face'
+		super(action_lookAtFaceBaseSM, self).__init__()
+		self.name = 'action_lookAtFaceBase'
 
 		# parameters of this behavior
 
 		# references to used behaviors
+		self.add_behavior(action_turnSM, 'action_turn')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -49,7 +51,7 @@ class action_look_at_faceSM(Behavior):
 
 
 	def create(self):
-		# x:721 y:497, x:513 y:416
+		# x:846 y:681, x:513 y:416
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Entity'])
 		_state_machine.userdata.Entity = 0
 		_state_machine.userdata.yaw = 0
@@ -65,7 +67,7 @@ class action_look_at_faceSM(Behavior):
 			# x:54 y:28
 			OperatableStateMachine.add('ExtractPos',
 										CalculationState(calculation=lambda x: x.position),
-										transitions={'done': 'if person'},
+										transitions={'done': 'set zero'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Entity', 'output_value': 'Position'})
 
@@ -83,12 +85,12 @@ class action_look_at_faceSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'pitch', 'output_value': 'pitch'})
 
-			# x:971 y:350
+			# x:795 y:478
 			OperatableStateMachine.add('Head',
 										SaraSetHeadAngleKey(),
-										transitions={'done': 'finished'},
+										transitions={'done': 'action_turn'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'yaw': 'yaw', 'pitch': 'pitch'})
+										remapping={'yaw': 'zero', 'pitch': 'pitch'})
 
 			# x:65 y:113
 			OperatableStateMachine.add('if person',
@@ -114,7 +116,7 @@ class action_look_at_faceSM(Behavior):
 			# x:58 y:514
 			OperatableStateMachine.add('calc z',
 										CalculationState(calculation=lambda x: x.face.boundingBox.Center.z),
-										transitions={'done': 'set zero'},
+										transitions={'done': 'gen pose'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Entity', 'output_value': 'Z'})
 
@@ -125,10 +127,10 @@ class action_look_at_faceSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'xpos': 'X', 'ypos': 'Y', 'zpos': 'Z', 'yaw': 'zero', 'pitch': 'zero', 'roll': 'zero', 'pose': 'pose'})
 
-			# x:75 y:650
+			# x:208 y:31
 			OperatableStateMachine.add('set zero',
 										SetKey(Value=0),
-										transitions={'done': 'gen pose'},
+										transitions={'done': 'if person'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'zero'})
 
@@ -175,9 +177,16 @@ class action_look_at_faceSM(Behavior):
 			# x:244 y:405
 			OperatableStateMachine.add('set z',
 										SetKey(Value=1.4),
-										transitions={'done': 'set zero'},
+										transitions={'done': 'gen pose'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Z'})
+
+			# x:797 y:563
+			OperatableStateMachine.add('action_turn',
+										self.use_behavior(action_turnSM, 'action_turn'),
+										transitions={'finished': 'finished', 'failed': 'finished'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'rotation': 'yaw'})
 
 
 		return _state_machine
