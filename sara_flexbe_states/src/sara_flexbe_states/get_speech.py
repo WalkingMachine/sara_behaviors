@@ -47,3 +47,4 @@ class GetSpeech(EventState):
 
     def on_enter(self, userdata):
         self.time = get_time()+self.watchdog
+        self._sub.remove_last_msg(self._topic)
