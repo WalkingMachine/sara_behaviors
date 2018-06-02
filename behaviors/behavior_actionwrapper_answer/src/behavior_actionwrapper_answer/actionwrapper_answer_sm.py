@@ -52,7 +52,7 @@ class ActionWrapper_AnswerSM(Behavior):
 		# Behavior comments:
 
 		# O 161 5 
-		# ["Answer"]|nIl faut demander à se faire poser la question.
+		# ["Answer"]|nIl faut demander a se faire poser la question.
 
 
 
@@ -123,7 +123,7 @@ class ActionWrapper_AnswerSM(Behavior):
 
 			# x:273 y:94
 			OperatableStateMachine.add('sayRepeat2',
-										SaraSay(sentence="I did'nt understand. Can you repeat please?", emotion=1, block=True),
+										SaraSay(sentence="I didn't understand. Can you repeat please?", emotion=1, block=True),
 										transitions={'done': 'getQuestion'},
 										autonomy={'done': Autonomy.Off})
 
@@ -154,7 +154,7 @@ class ActionWrapper_AnswerSM(Behavior):
 
 			# x:254 y:63
 			OperatableStateMachine.add('sayRepeat',
-										SaraSay(sentence="I did'nt understand. Do you have a question for me?", emotion=1, block=True),
+										SaraSay(sentence="I didn't understand. Do you have a question for me?", emotion=1, block=True),
 										transitions={'done': 'getResponse'},
 										autonomy={'done': Autonomy.Off})
 
@@ -199,7 +199,7 @@ class ActionWrapper_AnswerSM(Behavior):
 										SaraNLUspr(),
 										transitions={'understood': 'findResponseString', 'not_understood': 'CannotAnswer', 'fail': 'CannotAnswer'},
 										autonomy={'understood': Autonomy.Off, 'not_understood': Autonomy.Off, 'fail': Autonomy.Off},
-										remapping={'sentence': 'operatorQuestion', 'ActionForms': 'ActionForms'})
+										remapping={'sentence': 'operatorQuestion', 'answer': 'answer'})
 
 			# x:353 y:454
 			OperatableStateMachine.add('CannotAnswer',
@@ -212,7 +212,7 @@ class ActionWrapper_AnswerSM(Behavior):
 										CalculationState(calculation=lambda x: x.data),
 										transitions={'done': 'sayAnswer'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'ActionForms', 'output_value': 'stringAnswer'})
+										remapping={'input_value': 'answer', 'output_value': 'stringAnswer'})
 
 			# x:38 y:546
 			OperatableStateMachine.add('sayAnswer',

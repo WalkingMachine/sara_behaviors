@@ -4,7 +4,7 @@ from __future__ import print_function
 from flexbe_core import EventState, Logger
 import rospy
 import re
-from wm_nlu.srv import GPSRReceiveAction, GPSRReceiveActionResponse
+from wm_nlu.srv import AnswerQuestion
 from std_msgs.msg import String
 
 
@@ -24,7 +24,7 @@ class SaraNLUspr(EventState):
     def __init__(self):
         # See example_state.py for basic explanations.
         super(SaraNLUspr, self).__init__(outcomes=['understood', 'not_understood', 'fail'], input_keys=['sentence'],
-                                      output_keys=['ActionForms'])
+                                      output_keys=['answer'])
         self.RecurentSubject = None
         self.Person = None
         self.serviceName = "/answer_question"
@@ -34,38 +34,16 @@ class SaraNLUspr(EventState):
 
     def execute(self, userdata):
 
-        # Special case for STOP
-        regex = re.compile('.*(stop).*')
-        if regex.match(userdata.sentence.lower()):
-            Logger.loginfo("Stop now!")
-            userdata.ActionForms = [["Stop"]]
-            return "understood"
-
         # Call the NLU service
-        serv = rospy.ServiceProxy(self.serviceName, GPSRReceiveAction)
+        serv = rospy.ServiceProxy(self.serviceName, AnswerQuestion)
         Resp = serv(String(userdata.sentence))
 
         # Checking the validity of the responce
-        count = len(Resp.actions.actions)
-        Logger.loginfo("Action list - count : " + str(count))
-        if count == 0:
-            userdata.ActionForms = []
-            return "not_understood"
+        if Resp.str.data is "":
+            userdata.answer = Resp.str
+            return "fail"
 
-        # Convert the ActionMsgArray into ActionForms
-        ActionForms = []
-        for Action in Resp.actions.actions:
-            # create an ActionForm
-            ActionForm = []
-            ActionForm.append(Action.Action)
-            for arg in Action.args:
-                ActionForm.append(arg)
-
-            # Add it to the list
-            ActionForms.append(ActionForm)
-
-        userdata.ActionForms = ActionForms
-
+        userdata.answer = Resp.str
         return "understood"
 
     def on_enter(self, userdata):
