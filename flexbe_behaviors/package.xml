@@ -73,6 +73,7 @@
 <run_depend>behavior_actionwrapper_say</run_depend>
 <run_depend>behavior_scenario_gpsr</run_depend>
 <run_depend>behavior_actionwrapper_find_person</run_depend>
+  <run_depend>behavior_action_executor</run_depend>
 
 
 </package>

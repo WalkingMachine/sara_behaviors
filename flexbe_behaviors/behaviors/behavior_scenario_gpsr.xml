@@ -12,20 +12,7 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="ActionWrapper_Answer" />
-	<contains name="ActionWrapper_Ask" />
-	<contains name="ActionWrapper_Bring" />
-	<contains name="ActionWrapper_Confirm" />
-	<contains name="ActionWrapper_Count" />
-	<contains name="ActionWrapper_Find" />
-	<contains name="ActionWrapper_Follow" />
-	<contains name="ActionWrapper_Give" />
-	<contains name="ActionWrapper_Move" />
-	<contains name="ActionWrapper_Pick" />
-	<contains name="ActionWrapper_Place" />
-	<contains name="ActionWrapper_Say" />
-	<contains name="Action_Move" />
-	<contains name="action_look_at_face" />
+	<contains name="Action_Executor" />
 
 	<!-- Available Parameters -->
 
