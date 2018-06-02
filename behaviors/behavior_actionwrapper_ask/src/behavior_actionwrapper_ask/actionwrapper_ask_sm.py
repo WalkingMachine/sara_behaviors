@@ -13,9 +13,10 @@ from sara_flexbe_states.sara_say_key import SaraSayKey
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_states.SetRosParam import SetRosParam
 from behavior_action_findperson.action_findperson_sm import Action_findPersonSM
 from sara_flexbe_states.for_loop import ForLoop
+from sara_flexbe_states.SetRosParamKey import SetRosParamKey
+from flexbe_states.log_key_state import LogKeyState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -49,14 +50,14 @@ class ActionWrapper_AskSM(Behavior):
 		# Behavior comments:
 
 		# O 160 33 
-		# ["Ask", "Question"]
+		# ["Ask", "Question", "RosParamName"]
 
 
 
 	def create(self):
-		# x:793 y:463, x:215 y:476, x:458 y:463
+		# x:790 y:531, x:242 y:489, x:477 y:525
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
-		_state_machine.userdata.Action = "Default question"
+		_state_machine.userdata.Action = ["Ask", "How are you today?", "Answer"]
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -89,7 +90,7 @@ class ActionWrapper_AskSM(Behavior):
 			# x:526 y:150
 			OperatableStateMachine.add('GetTheResponse',
 										GetSpeech(watchdog=7),
-										transitions={'done': 'StoreRosParamResponse', 'nothing': 'looping', 'fail': 'looping'},
+										transitions={'done': 'getRosparmName', 'nothing': 'looping', 'fail': 'looping'},
 										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'words': 'response'})
 
@@ -98,13 +99,6 @@ class ActionWrapper_AskSM(Behavior):
 										SaraSay(sentence="Soory, I did not understand.", emotion=1, block=True),
 										transitions={'done': 'AskTheQuestion'},
 										autonomy={'done': Autonomy.Off})
-
-			# x:711 y:145
-			OperatableStateMachine.add('StoreRosParamResponse',
-										SetRosParam(ParamName="ResponseOfQuestion"),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Value': 'response'})
 
 			# x:30 y:275
 			OperatableStateMachine.add('Action_findPerson',
@@ -125,18 +119,45 @@ class ActionWrapper_AskSM(Behavior):
 										transitions={'done': 'trouveLaQuestion'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:541 y:257
+			# x:540 y:300
 			OperatableStateMachine.add('looping',
 										ForLoop(repeat=2),
 										transitions={'do': 'NotUnderstand', 'end': 'saraSorry'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
-			# x:606 y:395
+			# x:533 y:462
 			OperatableStateMachine.add('saraSorry',
 										SaraSay(sentence="Sorry, I can't understand your response.", emotion=1, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:694 y:144
+			OperatableStateMachine.add('getRosparmName',
+										CalculationState(calculation=lambda x: x[2]),
+										transitions={'done': 'SetRosParamKey'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'Action', 'output_value': 'RosParamName'})
+
+			# x:702 y:241
+			OperatableStateMachine.add('SetRosParamKey',
+										SetRosParamKey(),
+										transitions={'done': 'log'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'response', 'ParamName': 'RosParamName'})
+
+			# x:764 y:437
+			OperatableStateMachine.add('thank you',
+										SaraSay(sentence="Thank you for your answer.", emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:755 y:343
+			OperatableStateMachine.add('log',
+										LogKeyState(text="{}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'thank you'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'response'})
 
 
 		return _state_machine
