@@ -15,6 +15,7 @@ from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.SetRosParam import SetRosParam
 from behavior_action_findperson.action_findperson_sm import Action_findPersonSM
+from sara_flexbe_states.for_loop import ForLoop
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -88,11 +89,11 @@ class ActionWrapper_AskSM(Behavior):
 			# x:526 y:150
 			OperatableStateMachine.add('GetTheResponse',
 										GetSpeech(watchdog=7),
-										transitions={'done': 'StoreRosParamResponse', 'nothing': 'NotUnderstand', 'fail': 'NotUnderstand'},
+										transitions={'done': 'StoreRosParamResponse', 'nothing': 'looping', 'fail': 'looping'},
 										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'words': 'response'})
 
-			# x:389 y:251
+			# x:379 y:307
 			OperatableStateMachine.add('NotUnderstand',
 										SaraSay(sentence="Soory, I did not understand.", emotion=1, block=True),
 										transitions={'done': 'AskTheQuestion'},
@@ -100,7 +101,7 @@ class ActionWrapper_AskSM(Behavior):
 
 			# x:711 y:145
 			OperatableStateMachine.add('StoreRosParamResponse',
-										SetRosParam(ParamName=ResponseOfQuestion),
+										SetRosParam(ParamName="ResponseOfQuestion"),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'response'})
@@ -122,6 +123,19 @@ class ActionWrapper_AskSM(Behavior):
 			OperatableStateMachine.add('fisrtSentence',
 										SaraSay(sentence="Hello, I have a question for you.", emotion=1, block=True),
 										transitions={'done': 'trouveLaQuestion'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:541 y:257
+			OperatableStateMachine.add('looping',
+										ForLoop(repeat=2),
+										transitions={'do': 'NotUnderstand', 'end': 'saraSorry'},
+										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+										remapping={'index': 'index'})
+
+			# x:606 y:395
+			OperatableStateMachine.add('saraSorry',
+										SaraSay(sentence="Sorry, I can't understand your response.", emotion=1, block=True),
+										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
 
