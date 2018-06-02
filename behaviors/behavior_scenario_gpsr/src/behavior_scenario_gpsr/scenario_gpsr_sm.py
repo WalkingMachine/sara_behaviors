@@ -27,7 +27,10 @@ from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.sara_say_key import SaraSayKey
+from sara_flexbe_states.GetRosParam import GetRosParam
+from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from behavior_action_move.action_move_sm import Action_MoveSM
+from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.sara_nlu import SaraNLU
 from sara_flexbe_states.sara_say import SaraSay
@@ -66,7 +69,8 @@ class Scenario_GPSRSM(Behavior):
 		self.add_behavior(ActionWrapper_PickSM, 'Do the actions/Do TheAction/ActionWrapper_Pick')
 		self.add_behavior(ActionWrapper_PlaceSM, 'Do the actions/Do TheAction/ActionWrapper_Place')
 		self.add_behavior(ActionWrapper_SaySM, 'Do the actions/Do TheAction/ActionWrapper_Say')
-		self.add_behavior(Action_MoveSM, 'Do the actions/FailedAction/Action_Move')
+		self.add_behavior(Action_MoveSM, 'Do the actions/FailedAction/Find operator/Move back/Action_Move')
+		self.add_behavior(action_look_at_faceSM, 'Do the actions/FailedAction/action_look_at_face')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -86,36 +90,96 @@ class Scenario_GPSRSM(Behavior):
 		
 		# [/MANUAL_CREATE]
 
-		# x:852 y:421
-		_sm_failedaction_0 = OperatableStateMachine(outcomes=['finished'], input_keys=['Action', 'OriginalPose'])
+		# x:621 y:198
+		_sm_move_back_0 = OperatableStateMachine(outcomes=['done'], input_keys=['OriginalPose'])
 
-		with _sm_failedaction_0:
-			# x:76 y:55
-			OperatableStateMachine.add('say',
-										SaraSayKey(Format=lambda x: "Hum, I failed to "+str(x[0])+" the "+str(x[1])+". I need to tell my master.", emotion=1, block=True),
-										transitions={'done': 'not rel'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'Action'})
-
-			# x:376 y:62
-			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(Action_MoveSM, 'Do the actions/FailedAction/Action_Move'),
-										transitions={'finished': 'finished', 'failed': 'finished'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'OriginalPose', 'relative': 'relative'})
-
-			# x:235 y:60
+		with _sm_move_back_0:
+			# x:143 y:141
 			OperatableStateMachine.add('not rel',
 										SetKey(Value=False),
 										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'relative'})
 
+			# x:340 y:130
+			OperatableStateMachine.add('Action_Move',
+										self.use_behavior(Action_MoveSM, 'Do the actions/FailedAction/Find operator/Move back/Action_Move'),
+										transitions={'finished': 'done', 'failed': 'Action_Move'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'pose': 'OriginalPose', 'relative': 'relative'})
+
+
+		# x:30 y:324
+		_sm_find_operator_1 = OperatableStateMachine(outcomes=['done'], output_keys=['Operator'])
+
+		with _sm_find_operator_1:
+			# x:94 y:55
+			OperatableStateMachine.add('getOPID',
+										GetRosParam(ParamName="OperatorID"),
+										transitions={'done': 'getOp', 'failed': 'getOPID'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'Value': 'ID'})
+
+			# x:280 y:88
+			OperatableStateMachine.add('getOp',
+										GetEntityByID(),
+										transitions={'found': 'done', 'not_found': 'getOPID'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'ID': 'ID', 'Entity': 'Operator'})
+
+
+		# x:422 y:251, x:438 y:190, x:230 y:324
+		_sm_find_operator_2 = ConcurrencyContainer(outcomes=['done'], input_keys=['OriginalPose'], output_keys=['Operator'], conditions=[
+										('done', [('Find operator', 'done')]),
+										('done', [('Move back', 'done')])
+										])
+
+		with _sm_find_operator_2:
+			# x:229 y:177
+			OperatableStateMachine.add('Find operator',
+										_sm_find_operator_1,
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Inherit},
+										remapping={'Operator': 'Operator'})
+
+			# x:232 y:98
+			OperatableStateMachine.add('Move back',
+										_sm_move_back_0,
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Inherit},
+										remapping={'OriginalPose': 'OriginalPose'})
+
+
+		# x:852 y:421
+		_sm_failedaction_3 = OperatableStateMachine(outcomes=['finished'], input_keys=['Action', 'OriginalPose'])
+
+		with _sm_failedaction_3:
+			# x:76 y:55
+			OperatableStateMachine.add('say',
+										SaraSayKey(Format=lambda x: "Hum, I failed to "+str(x[0])+" the "+str(x[1])+". I need to tell my master.", emotion=1, block=True),
+										transitions={'done': 'Find operator'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'Action'})
+
+			# x:250 y:56
+			OperatableStateMachine.add('Find operator',
+										_sm_find_operator_2,
+										transitions={'done': 'action_look_at_face'},
+										autonomy={'done': Autonomy.Inherit},
+										remapping={'OriginalPose': 'OriginalPose', 'Operator': 'Operator'})
+
+			# x:508 y:78
+			OperatableStateMachine.add('action_look_at_face',
+										self.use_behavior(action_look_at_faceSM, 'Do the actions/FailedAction/action_look_at_face'),
+										transitions={'finished': 'finished', 'failed': 'finished'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'Entity': 'Operator'})
+
 
 		# x:887 y:149, x:1172 y:362, x:1040 y:305
-		_sm_do_theaction_1 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
+		_sm_do_theaction_4 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 
-		with _sm_do_theaction_1:
+		with _sm_do_theaction_4:
 			# x:28 y:298
 			OperatableStateMachine.add('decideAction',
 										DecisionState(outcomes=["Answer", "Ask", "Bring", "Confirm", "Count", "Find", "Follow", "Give", "Move", "Pick", "Place", "Say"], conditions=lambda x: x[0]),
@@ -200,13 +264,14 @@ class Scenario_GPSRSM(Behavior):
 			OperatableStateMachine.add('ActionWrapper_Say',
 										self.use_behavior(ActionWrapper_SaySM, 'Do the actions/Do TheAction/ActionWrapper_Say'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit})
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
+										remapping={'Action': 'Action'})
 
 
 		# x:30 y:324, x:130 y:324
-		_sm_get_commands_2 = OperatableStateMachine(outcomes=['fail', 'understood'], output_keys=['ActionForms'])
+		_sm_get_commands_5 = OperatableStateMachine(outcomes=['fail', 'understood'], output_keys=['ActionForms'])
 
-		with _sm_get_commands_2:
+		with _sm_get_commands_5:
 			# x:33 y:40
 			OperatableStateMachine.add('GetSpeech',
 										GetSpeech(watchdog=5),
@@ -229,9 +294,9 @@ class Scenario_GPSRSM(Behavior):
 
 
 		# x:588 y:141, x:590 y:545, x:642 y:410
-		_sm_do_the_actions_3 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical fail'], input_keys=['ActionForms', 'OriginalPose'])
+		_sm_do_the_actions_6 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical fail'], input_keys=['ActionForms', 'OriginalPose'])
 
-		with _sm_do_the_actions_3:
+		with _sm_do_the_actions_6:
 			# x:85 y:33
 			OperatableStateMachine.add('set i',
 										SetKey(Value=0),
@@ -241,7 +306,7 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:27 y:352
 			OperatableStateMachine.add('Do TheAction',
-										_sm_do_theaction_1,
+										_sm_do_theaction_4,
 										transitions={'finished': '++i', 'failed': 'FailedAction', 'critical_fail': 'critical fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
@@ -269,7 +334,7 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:27 y:522
 			OperatableStateMachine.add('FailedAction',
-										_sm_failedaction_0,
+										_sm_failedaction_3,
 										transitions={'finished': 'failed'},
 										autonomy={'finished': Autonomy.Inherit},
 										remapping={'Action': 'Action', 'OriginalPose': 'OriginalPose'})
@@ -286,14 +351,14 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:436 y:339
 			OperatableStateMachine.add('Do the actions',
-										_sm_do_the_actions_3,
+										_sm_do_the_actions_6,
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical fail': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical fail': Autonomy.Inherit},
 										remapping={'ActionForms': 'ActionForms', 'OriginalPose': 'OriginalPose'})
 
 			# x:76 y:134
 			OperatableStateMachine.add('Get Commands',
-										_sm_get_commands_2,
+										_sm_get_commands_5,
 										transitions={'fail': 'failed', 'understood': 'Do the actions'},
 										autonomy={'fail': Autonomy.Inherit, 'understood': Autonomy.Inherit},
 										remapping={'ActionForms': 'ActionForms'})

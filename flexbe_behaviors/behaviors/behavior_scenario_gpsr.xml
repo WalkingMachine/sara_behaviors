@@ -25,6 +25,7 @@
 	<contains name="ActionWrapper_Place" />
 	<contains name="ActionWrapper_Say" />
 	<contains name="Action_Move" />
+	<contains name="action_look_at_face" />
 
 	<!-- Available Parameters -->
 
