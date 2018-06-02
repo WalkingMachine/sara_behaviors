@@ -54,7 +54,7 @@ class ActionWrapper_FindSM(Behavior):
 	def create(self):
 		# x:711 y:84, x:698 y:419, x:709 y:633
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
-		_state_machine.userdata.Action = ["Find","bottle"]
+		_state_machine.userdata.Action = ["Find","Shlububu"]
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -86,8 +86,8 @@ class ActionWrapper_FindSM(Behavior):
 			# x:68 y:363
 			OperatableStateMachine.add('Action_find',
 										self.use_behavior(Action_findSM, 'Action_find'),
-										transitions={'done': 'Say Finded Object', 'pas_done': 'Do not find object'},
-										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
+										transitions={'done': 'Say Finded Object', 'failed': 'SayNotFound'},
+										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'className': 'name', 'entity': 'entity'})
 
 			# x:77 y:159
@@ -103,12 +103,6 @@ class ActionWrapper_FindSM(Behavior):
 										transitions={'done': 'Get Time'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'entity'})
-
-			# x:335 y:369
-			OperatableStateMachine.add('Do not find object',
-										SaraSay(sentence="I did not find the object to find.", emotion=1, block=True),
-										transitions={'done': 'failed'},
-										autonomy={'done': Autonomy.Off})
 
 			# x:357 y:269
 			OperatableStateMachine.add('Get Time',
@@ -137,6 +131,13 @@ class ActionWrapper_FindSM(Behavior):
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'id'})
+
+			# x:267 y:369
+			OperatableStateMachine.add('SayNotFound',
+										SaraSayKey(Format=lambda x: "I did not find the " + x + ".", emotion=1, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'name'})
 
 
 		return _state_machine
