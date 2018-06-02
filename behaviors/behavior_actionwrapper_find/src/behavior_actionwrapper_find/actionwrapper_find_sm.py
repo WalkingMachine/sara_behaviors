@@ -13,6 +13,7 @@ from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from behavior_action_find.action_find_sm import Action_findSM
 from flexbe_states.calculation_state import CalculationState
+from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -51,7 +52,7 @@ class ActionWrapper_FindSM(Behavior):
 
 
 	def create(self):
-		# x:711 y:84, x:691 y:375, x:709 y:633
+		# x:711 y:84, x:698 y:419, x:709 y:633
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Find","bottle"]
 
@@ -96,10 +97,10 @@ class ActionWrapper_FindSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'name'})
 
-			# x:331 y:215
+			# x:235 y:150
 			OperatableStateMachine.add('Say Finded Object',
 										SaraSayKey(Format=lambda x: "I just find the " + x.name, emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'Get Time'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'entity'})
 
@@ -108,6 +109,34 @@ class ActionWrapper_FindSM(Behavior):
 										SaraSay(sentence="I did not find the object to find.", emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:357 y:269
+			OperatableStateMachine.add('Get Time',
+										CalculationState(calculation=lambda x: x.lastUpdateTime.secs),
+										transitions={'done': 'Get Id'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'entity', 'output_value': 'currentTime'})
+
+			# x:405 y:146
+			OperatableStateMachine.add('Get Id',
+										CalculationState(calculation=lambda x: x.ID),
+										transitions={'done': 'Set Time'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'entity', 'output_value': 'id'})
+
+			# x:511 y:316
+			OperatableStateMachine.add('Set Time',
+										SetRosParam(ParamName="/behavior/FoundEntity/lastUpdate"),
+										transitions={'done': 'Set Id'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'currentTime'})
+
+			# x:645 y:323
+			OperatableStateMachine.add('Set Id',
+										SetRosParam(ParamName="/behavior/FoundEntity/Id"),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'id'})
 
 
 		return _state_machine
