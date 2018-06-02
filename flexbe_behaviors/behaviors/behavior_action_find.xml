@@ -7,7 +7,7 @@
 	<author>Lucas Maurice</author>
 	<date>Sat May 12 2018</date>
 	<description>
-		Find an entity arround sara, identified by entity class.
+		Find an entity around sara (will only rotate, won't move), identified by entity class.
 	</description>
 
 

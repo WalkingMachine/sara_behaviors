@@ -26,7 +26,7 @@ class GetRosParamKey(EventState):
         Constructor
         '''
         super(GetRosParamKey, self).__init__(outcomes=['done', 'failed'], input_keys=['ParamName'], output_keys=['Value'])
-        self.test = re.compile("\$[A-z0-9]*")
+        self.test = re.compile("\$[A-z0-9/\-_]*")
 
     def execute(self, userdata):
         '''
