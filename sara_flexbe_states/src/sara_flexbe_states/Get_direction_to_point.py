@@ -32,7 +32,7 @@ class Get_direction_to_point(EventState):
         self.service.reference = frame_reference
         self.service.origine = frame_origin
 
-        Logger.loginfo('waiting for service')
+        Logger.loginfo('waiting for service /get_direction')
         rospy.wait_for_service('/get_direction')    #Attend que le service soit disopnible
 
     def execute(self, userdata):
