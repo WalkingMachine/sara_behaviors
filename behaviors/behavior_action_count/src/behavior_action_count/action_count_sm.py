@@ -69,7 +69,7 @@ class Action_countSM(Behavior):
 		with _sm_move_head_0:
 			# x:19 y:95
 			OperatableStateMachine.add('set left',
-										SaraSetHeadAngle(pitch=0.6, yaw=1.05),
+										SaraSetHeadAngle(pitch=0.6, yaw=1.2),
 										transitions={'done': 'wait1'},
 										autonomy={'done': Autonomy.Off})
 
@@ -121,7 +121,7 @@ class Action_countSM(Behavior):
 
 			# x:445 y:90
 			OperatableStateMachine.add('set right',
-										SaraSetHeadAngle(pitch=0.6, yaw=-1.05),
+										SaraSetHeadAngle(pitch=0.6, yaw=-1.2),
 										transitions={'done': 'wait 3'},
 										autonomy={'done': Autonomy.Off})
 
@@ -220,7 +220,7 @@ class Action_countSM(Behavior):
 			# x:234 y:227
 			OperatableStateMachine.add('for 1',
 										ForLoop(repeat=0),
-										transitions={'do': 'action_turn', 'end': 'store count'},
+										transitions={'do': 'action_turn', 'end': 'Log Count'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
