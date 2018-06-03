@@ -60,9 +60,9 @@ class ActionWrapper_MoveSM(Behavior):
 
 
 	def create(self):
-		# x:470 y:280, x:618 y:290
+		# x:470 y:280, x:618 y:290, x:408 y:396
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
-		_state_machine.userdata.Action = ["Move",'table','lobby']
+		_state_machine.userdata.Action = ["Move",'table','kitchen']
 		_state_machine.userdata.relative = False
 
 		# Additional creation code can be added inside the following tags
@@ -162,7 +162,7 @@ class ActionWrapper_MoveSM(Behavior):
 										remapping={'input_value': 'entity', 'output_value': 'area_name'})
 
 
-		# x:38 y:481, x:447 y:470
+		# x:38 y:481, x:447 y:470, x:230 y:365
 		_sm_try_to_reach_3 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['waypoint', 'relative', 'areaName'])
 
 		with _sm_try_to_reach_3:
@@ -289,8 +289,8 @@ class ActionWrapper_MoveSM(Behavior):
 			# x:76 y:355
 			OperatableStateMachine.add('Try to reach',
 										_sm_try_to_reach_3,
-										transitions={'finished': 'Set Finished', 'failed': 'Set Finished'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										transitions={'finished': 'Set Finished', 'failed': 'Set Finished', 'critical_fail': 'critical_fail'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'waypoint': 'waypoint', 'relative': 'relative', 'areaName': 'area_name'})
 
 
