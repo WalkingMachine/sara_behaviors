@@ -45,7 +45,7 @@ class ActionWrapper_StopSM(Behavior):
 
 	def create(self):
 		# x:30 y:365, x:130 y:365
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ['Stop']
 
 		# Additional creation code can be added inside the following tags

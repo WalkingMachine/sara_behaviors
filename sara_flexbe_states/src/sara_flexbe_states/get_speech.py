@@ -25,15 +25,14 @@ class GetSpeech(EventState):
         Constructor
         '''
         super(GetSpeech, self).__init__(outcomes=['done', 'nothing', 'fail'], output_keys=['words'])
-        self.watchdog = watchdog
         self._topic = "/sara_command"
         self._connected = False
+        self.watchdog = watchdog
 
         self._sub = ProxySubscriberCached({self._topic: String})
+        self.time = 0
 
     def execute(self, userdata):
-
-        Logger.loginfo('looking for voice command ')
         if self._sub.has_msg(self._topic):
             Logger.loginfo('getting message')
             message = self._sub.get_last_msg(self._topic)
@@ -41,4 +40,9 @@ class GetSpeech(EventState):
             self._sub.remove_last_msg(self._topic)
             return 'done'
         if (self.time-get_time() <= 0):
+            Logger.loginfo('no speech detected')
             return 'nothing'
+
+    def on_enter(self, userdata):
+        self.time = get_time()+self.watchdog
+        self._sub.remove_last_msg(self._topic)

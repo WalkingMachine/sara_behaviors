@@ -26,7 +26,7 @@ class GetRosParamKey(EventState):
         Constructor
         '''
         super(GetRosParamKey, self).__init__(outcomes=['done', 'failed'], input_keys=['ParamName'], output_keys=['Value'])
-        self.test = re.compile("\$[A-z0-9]*")
+        self.test = re.compile("\$[A-z0-9/\-_]*")
 
     def execute(self, userdata):
         '''
@@ -41,9 +41,14 @@ class GetRosParamKey(EventState):
         matches = self.test.findall(text)
         if matches:
             for match in matches:
-                text = text.replace(str(match), str(rospy.get_param(match[+1:])))
-                print("\t"+str(match[+1:]))
-                ok = True
+                if rospy.has_param(str(match[+1:])):
+                    text = text.replace(str(match), str(rospy.get_param(match[+1:])))
+                    print("\t"+str(match[+1:]))
+                    ok = True
+                else:
+                    text = text.replace(str(match), str(match[+1:]))
+                    print("\t" + str(match[+1:]))
+                    ok = False
             print("by \"" + text + "\"")
             userdata.Value = text
             return "done"

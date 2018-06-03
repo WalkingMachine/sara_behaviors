@@ -17,11 +17,13 @@ from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.SetRosParam import SetRosParam
-from behavior_action_follow.action_follow_sm import Action_followSM
+from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
+from flexbe_states.calculation_state import CalculationState
+from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
+from behavior_action_move.action_move_sm import Action_MoveSM
 from sara_flexbe_states.torque_reader import ReadTorque
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.wait_state import WaitState
-from flexbe_states.calculation_state import CalculationState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -45,7 +47,7 @@ class Action_GiveSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_followSM, 'give/Action_follow')
+		self.add_behavior(Action_MoveSM, 'give/Follow/Action_Move')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -78,8 +80,8 @@ class Action_GiveSM(Behavior):
 
 			# x:53 y:413
 			OperatableStateMachine.add('read torque',
-										ReadTorque(watchdog=5, Joint="right_shoulder_pitch_joint", Threshold=0.5, min_time=1),
-										transitions={'threshold': 'open gripper', 'watchdog': 'open gripper', 'fail': 'failed'},
+										ReadTorque(watchdog=5, Joint="right_elbow_pitch_joint", Threshold=2, min_time=1),
+										transitions={'threshold': 'open gripper', 'watchdog': 'read torque', 'fail': 'failed'},
 										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'torque': 'torque'})
 
@@ -117,23 +119,70 @@ class Action_GiveSM(Behavior):
 										remapping={'target': 'target'})
 
 
-		# x:30 y:365, x:130 y:365, x:230 y:365, x:398 y:124, x:399 y:70, x:530 y:365, x:630 y:365
-		_sm_give_1 = ConcurrencyContainer(outcomes=['failed', 'given', 'continue'], input_keys=['ID', 'Object'], conditions=[
+		# x:326 y:455, x:291 y:228
+		_sm_follow_1 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['ID'])
+
+		with _sm_follow_1:
+			# x:39 y:30
+			OperatableStateMachine.add('not rel',
+										SetKey(Value=False),
+										transitions={'done': 'set dist'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'relative'})
+
+			# x:43 y:279
+			OperatableStateMachine.add('get person',
+										GetEntityByID(),
+										transitions={'found': 'get pos', 'not_found': 'get person'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'ID': 'ID', 'Entity': 'Entity'})
+
+			# x:60 y:372
+			OperatableStateMachine.add('get pos',
+										CalculationState(calculation=lambda x: x.position),
+										transitions={'done': 'reac'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'Entity', 'output_value': 'pose_in'})
+
+			# x:56 y:458
+			OperatableStateMachine.add('reac',
+										Get_Reacheable_Waypoint(),
+										transitions={'done': 'Action_Move'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'pose_in': 'pose_in', 'distance': 'distance', 'pose_out': 'pose_out'})
+
+			# x:30 y:115
+			OperatableStateMachine.add('set dist',
+										SetKey(Value=1),
+										transitions={'done': 'get person'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'distance'})
+
+			# x:254 y:329
+			OperatableStateMachine.add('Action_Move',
+										self.use_behavior(Action_MoveSM, 'give/Follow/Action_Move'),
+										transitions={'finished': 'get person', 'failed': 'Action_Move'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'pose': 'pose_out', 'relative': 'relative'})
+
+
+		# x:313 y:247, x:301 y:177, x:103 y:293, x:303 y:113, x:88 y:385, x:311 y:57, x:93 y:335
+		_sm_give_2 = ConcurrencyContainer(outcomes=['failed', 'given', 'continue'], input_keys=['ID', 'Object'], conditions=[
 										('failed', [('Give', 'failed')]),
 										('given', [('Give', 'given')]),
-										('continue', [('Action_follow', 'done')]),
-										('failed', [('Action_follow', 'failed')])
+										('given', [('Follow', 'finished')]),
+										('failed', [('Follow', 'failed')])
 										])
 
-		with _sm_give_1:
-			# x:95 y:66
-			OperatableStateMachine.add('Action_follow',
-										self.use_behavior(Action_followSM, 'give/Action_follow'),
-										transitions={'failed': 'failed'},
-										autonomy={'failed': Autonomy.Inherit},
+		with _sm_give_2:
+			# x:91 y:50
+			OperatableStateMachine.add('Follow',
+										_sm_follow_1,
+										transitions={'finished': 'given', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
-			# x:102 y:194
+			# x:84 y:164
 			OperatableStateMachine.add('Give',
 										_sm_give_0,
 										transitions={'failed': 'failed', 'given': 'given'},
@@ -153,16 +202,16 @@ class Action_GiveSM(Behavior):
 			# x:75 y:113
 			OperatableStateMachine.add('is object in hand?',
 										CheckConditionState(predicate=lambda x: x),
-										transitions={'true': 'list persons', 'false': 'log empty hand'},
+										transitions={'true': 'name', 'false': 'log empty hand'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'Object'})
 
-			# x:76 y:202
+			# x:70 y:277
 			OperatableStateMachine.add('list persons',
-										list_entities_by_name(Name="person", frontality_level=0.5),
+										list_entities_by_name(frontality_level=0.5),
 										transitions={'found': 'get id', 'not_found': 'Person_not_found'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'Entities_list': 'People_list', 'number': 'number'})
+										remapping={'name': 'name', 'entity_list': 'People_list', 'number': 'number'})
 
 			# x:290 y:56
 			OperatableStateMachine.add('log empty hand',
@@ -226,17 +275,24 @@ class Action_GiveSM(Behavior):
 
 			# x:515 y:515
 			OperatableStateMachine.add('give',
-										_sm_give_1,
+										_sm_give_2,
 										transitions={'failed': 'log movebase fail', 'given': 'set idle pose', 'continue': 'give'},
 										autonomy={'failed': Autonomy.Inherit, 'given': Autonomy.Inherit, 'continue': Autonomy.Inherit},
 										remapping={'ID': 'ID', 'Object': 'Object'})
 
-			# x:251 y:205
+			# x:256 y:278
 			OperatableStateMachine.add('get id',
 										CalculationState(calculation=lambda x: x[0].ID),
 										transitions={'done': 'give'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'People_list', 'output_value': 'ID'})
+
+			# x:95 y:195
+			OperatableStateMachine.add('name',
+										SetKey(Value="person"),
+										transitions={'done': 'list persons'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'name'})
 
 
 		return _state_machine
