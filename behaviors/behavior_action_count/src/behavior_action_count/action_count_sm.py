@@ -11,11 +11,12 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.log_key_state import LogKeyState
 from flexbe_states.wait_state import WaitState
-from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
-from behavior_action_turn.action_turn_sm import action_turnSM
+from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.decision_state import DecisionState
+from behavior_action_turn.action_turn_sm import action_turnSM
+from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetRosParamKey import SetRosParamKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -62,15 +63,15 @@ class Action_countSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-        # x:691 y:456, x:442 y:120, x:506 y:322
+        # x:44 y:423, x:594 y:211, x:407 y:252
         _sm_rotation360_0 = OperatableStateMachine(outcomes=['end', 'in_progress', 'failed'], input_keys=['progress'])
 
         with _sm_rotation360_0:
             # x:11 y:227
             OperatableStateMachine.add('DecisionState',
-                                        DecisionState(outcomes=["0","0.25","0.5","0.75","1"], conditions=lambda x: x),
-                                        transitions={'0': 'Look Left', '0.25': 'Look Right', '0.5': 'Set 180 degres', '0.75': 'Look Right 2', '1': 'Look Left 2'},
-                                        autonomy={'0': Autonomy.Off, '0.25': Autonomy.Off, '0.5': Autonomy.Off, '0.75': Autonomy.Off, '1': Autonomy.Off},
+                                        DecisionState(outcomes=["0","1","2","3","4","5","6"], conditions=lambda x: x),
+                                        transitions={'0': 'Look Left', '1': 'Look Right', '2': 'Set 180 degres', '3': 'Look Right 2', '4': 'Look Left 2', '5': 'LookBackCenter', '6': 'end'},
+                                        autonomy={'0': Autonomy.Off, '1': Autonomy.Off, '2': Autonomy.Off, '3': Autonomy.Off, '4': Autonomy.Off, '5': Autonomy.Off, '6': Autonomy.Off},
                                         remapping={'input_value': 'progress'})
 
             # x:258 y:199
@@ -88,13 +89,13 @@ class Action_countSM(Behavior):
 
             # x:290 y:31
             OperatableStateMachine.add('Rotate Left',
-                                        WaitState(wait_time=8),
+                                        WaitState(wait_time=0.5),
                                         transitions={'done': 'in_progress'},
                                         autonomy={'done': Autonomy.Off})
 
             # x:307 y:108
             OperatableStateMachine.add('Rotate Right',
-                                        WaitState(wait_time=12),
+                                        WaitState(wait_time=0.5),
                                         transitions={'done': 'in_progress'},
                                         autonomy={'done': Autonomy.Off})
 
@@ -118,13 +119,13 @@ class Action_countSM(Behavior):
 
             # x:270 y:381
             OperatableStateMachine.add('Rotate Left 2',
-                                        WaitState(wait_time=12),
-                                        transitions={'done': 'end'},
+                                        WaitState(wait_time=0.5),
+                                        transitions={'done': 'in_progress'},
                                         autonomy={'done': Autonomy.Off})
 
             # x:278 y:292
             OperatableStateMachine.add('Rotate Right 2',
-                                        WaitState(wait_time=8),
+                                        WaitState(wait_time=0.5),
                                         transitions={'done': 'in_progress'},
                                         autonomy={'done': Autonomy.Off})
 
@@ -134,6 +135,18 @@ class Action_countSM(Behavior):
                                         transitions={'done': 'action_turn'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'Key': 'rotation'})
+
+            # x:126 y:452
+            OperatableStateMachine.add('LookBackCenter',
+                                        SaraSetHeadAngle(pitch=0.5, yaw=0),
+                                        transitions={'done': 'Rotate To center'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:270 y:443
+            OperatableStateMachine.add('Rotate To center',
+                                        WaitState(wait_time=0.5),
+                                        transitions={'done': 'in_progress'},
+                                        autonomy={'done': Autonomy.Off})
 
 
         # x:500 y:303
@@ -176,9 +189,16 @@ class Action_countSM(Behavior):
             # x:281 y:191
             OperatableStateMachine.add('Rotation360',
                                         _sm_rotation360_0,
-                                        transitions={'end': 'found', 'in_progress': 'Count Instancies', 'failed': 'failed'},
+                                        transitions={'end': 'found', 'in_progress': 'addToProgress', 'failed': 'failed'},
                                         autonomy={'end': Autonomy.Inherit, 'in_progress': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'progress': 'progress'})
+
+            # x:118 y:181
+            OperatableStateMachine.add('addToProgress',
+                                        CalculationState(calculation=lambda x: x+1),
+                                        transitions={'done': 'Count Instancies'},
+                                        autonomy={'done': Autonomy.Off},
+                                        remapping={'input_value': 'progress', 'output_value': 'progress'})
 
 
 
@@ -197,7 +217,7 @@ class Action_countSM(Behavior):
 
             # x:773 y:38
             OperatableStateMachine.add('Log Count',
-                                        LogKeyState(text="Found: {}", severity=Logger.REPORT_HINT),
+                                        LogKeyState(text="Found: {} objects", severity=Logger.REPORT_HINT),
                                         transitions={'done': 'done'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'data': 'counter'})
