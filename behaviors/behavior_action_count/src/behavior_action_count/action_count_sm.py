@@ -8,16 +8,16 @@
 
 import roslib; roslib.load_manifest('behavior_action_count')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
-from flexbe_states.log_key_state import LogKeyState
-from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.SetKey import SetKey
-from flexbe_states.flexible_calculation_state import FlexibleCalculationState
+from flexbe_states.log_key_state import LogKeyState
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
-from flexbe_states.decision_state import DecisionState
+from flexbe_states.flexible_calculation_state import FlexibleCalculationState
+from flexbe_states.wait_state import WaitState
+from sara_flexbe_states.sara_say_key import SaraSayKey
+from sara_flexbe_states.for_loop import ForLoop
 from behavior_action_turn.action_turn_sm import action_turnSM
-from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.SetRosParamKey import SetRosParamKey
+from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -29,238 +29,241 @@ Created on Sat Jun 1 2018
 @author: Raphael Duchaine
 '''
 class Action_countSM(Behavior):
-    '''
-    Count instances of entity class around sara (will only rotate, won't move).
-    '''
+	'''
+	Count instances of entity class around sara (will only rotate, won't move).
+	'''
 
 
-    def __init__(self):
-        super(Action_countSM, self).__init__()
-        self.name = 'Action_count'
+	def __init__(self):
+		super(Action_countSM, self).__init__()
+		self.name = 'Action_count'
 
-        # parameters of this behavior
+		# parameters of this behavior
 
-        # references to used behaviors
-        self.add_behavior(action_turnSM, 'Count instances WHILE Turning360/Rotation360/action_turn')
+		# references to used behaviors
+		self.add_behavior(action_turnSM, 'action_turn')
 
-        # Additional initialization code can be added inside the following tags
-        # [MANUAL_INIT]
+		# Additional initialization code can be added inside the following tags
+		# [MANUAL_INIT]
         
         # [/MANUAL_INIT]
 
-        # Behavior comments:
+		# Behavior comments:
 
 
 
-    def create(self):
-        # x:775 y:149, x:556 y:207
-        _state_machine = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['className'], output_keys=['counter'])
-        _state_machine.userdata.className = "person"
-        _state_machine.userdata.counter = 0
+	def create(self):
+		# x:475 y:412, x:73 y:374
+		_state_machine = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['className'], output_keys=['Count'])
+		_state_machine.userdata.className = "bottle"
+		_state_machine.userdata.Count = 0
 
-        # Additional creation code can be added inside the following tags
-        # [MANUAL_CREATE]
+		# Additional creation code can be added inside the following tags
+		# [MANUAL_CREATE]
         
         # [/MANUAL_CREATE]
 
-        # x:44 y:423, x:594 y:211, x:407 y:252
-        _sm_rotation360_0 = OperatableStateMachine(outcomes=['end', 'in_progress', 'failed'], input_keys=['progress'])
+		# x:687 y:347
+		_sm_move_head_0 = OperatableStateMachine(outcomes=['finished'], input_keys=['className', 'Count'], output_keys=['Count'])
 
-        with _sm_rotation360_0:
-            # x:11 y:227
-            OperatableStateMachine.add('DecisionState',
-                                        DecisionState(outcomes=["0","1","2","3","4","5","6"], conditions=lambda x: x),
-                                        transitions={'0': 'Look Left', '1': 'Look Right', '2': 'Set 180 degres', '3': 'Look Right 2', '4': 'Look Left 2', '5': 'LookBackCenter', '6': 'end'},
-                                        autonomy={'0': Autonomy.Off, '1': Autonomy.Off, '2': Autonomy.Off, '3': Autonomy.Off, '4': Autonomy.Off, '5': Autonomy.Off, '6': Autonomy.Off},
-                                        remapping={'input_value': 'progress'})
+		with _sm_move_head_0:
+			# x:19 y:95
+			OperatableStateMachine.add('set left',
+										SaraSetHeadAngle(pitch=0.6, yaw=1.05),
+										transitions={'done': 'wait1'},
+										autonomy={'done': Autonomy.Off})
 
-            # x:258 y:199
-            OperatableStateMachine.add('action_turn',
-                                        self.use_behavior(action_turnSM, 'Count instances WHILE Turning360/Rotation360/action_turn'),
-                                        transitions={'finished': 'in_progress', 'failed': 'failed'},
-                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'rotation': 'rotation'})
+			# x:5 y:229
+			OperatableStateMachine.add('count',
+										list_entities_by_name(frontality_level=0),
+										transitions={'found': 'add', 'not_found': 'add'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})
 
-            # x:157 y:114
-            OperatableStateMachine.add('Look Right',
-                                        SaraSetHeadAngle(pitch=0.5, yaw=-1.5),
-                                        transitions={'done': 'Rotate Right'},
-                                        autonomy={'done': Autonomy.Off})
+			# x:10 y:326
+			OperatableStateMachine.add('add',
+										FlexibleCalculationState(calculation=lambda x: x[0]+x[1], input_keys=["Count", "number"]),
+										transitions={'done': 'gen text'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Count': 'Count', 'number': 'number', 'output_value': 'Count'})
 
-            # x:290 y:31
-            OperatableStateMachine.add('Rotate Left',
-                                        WaitState(wait_time=0.5),
-                                        transitions={'done': 'in_progress'},
-                                        autonomy={'done': Autonomy.Off})
+			# x:241 y:88
+			OperatableStateMachine.add('set center',
+										SaraSetHeadAngle(pitch=0.6, yaw=0),
+										transitions={'done': 'wait 2'},
+										autonomy={'done': Autonomy.Off})
 
-            # x:307 y:108
-            OperatableStateMachine.add('Rotate Right',
-                                        WaitState(wait_time=0.5),
-                                        transitions={'done': 'in_progress'},
-                                        autonomy={'done': Autonomy.Off})
+			# x:266 y:154
+			OperatableStateMachine.add('wait 2',
+										WaitState(wait_time=10),
+										transitions={'done': 'count2'},
+										autonomy={'done': Autonomy.Off})
 
-            # x:134 y:34
-            OperatableStateMachine.add('Look Left',
-                                        SaraSetHeadAngle(pitch=0.5, yaw=1.5),
-                                        transitions={'done': 'Rotate Left'},
-                                        autonomy={'done': Autonomy.Off})
+			# x:245 y:224
+			OperatableStateMachine.add('count2',
+										list_entities_by_name(frontality_level=0),
+										transitions={'found': 'add2', 'not_found': 'add2'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})
 
-            # x:124 y:382
-            OperatableStateMachine.add('Look Left 2',
-                                        SaraSetHeadAngle(pitch=0.5, yaw=1.5),
-                                        transitions={'done': 'Rotate Left 2'},
-                                        autonomy={'done': Autonomy.Off})
+			# x:252 y:321
+			OperatableStateMachine.add('add2',
+										FlexibleCalculationState(calculation=lambda x: x[0]+x[1], input_keys=["Count", "number"]),
+										transitions={'done': 'geb text 2'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Count': 'Count', 'number': 'number', 'output_value': 'Count'})
 
-            # x:130 y:298
-            OperatableStateMachine.add('Look Right 2',
-                                        SaraSetHeadAngle(pitch=0.5, yaw=-1.5),
-                                        transitions={'done': 'Rotate Right 2'},
-                                        autonomy={'done': Autonomy.Off})
+			# x:24 y:162
+			OperatableStateMachine.add('wait1',
+										WaitState(wait_time=12),
+										transitions={'done': 'count'},
+										autonomy={'done': Autonomy.Off})
 
-            # x:270 y:381
-            OperatableStateMachine.add('Rotate Left 2',
-                                        WaitState(wait_time=0.5),
-                                        transitions={'done': 'in_progress'},
-                                        autonomy={'done': Autonomy.Off})
+			# x:445 y:90
+			OperatableStateMachine.add('set right',
+										SaraSetHeadAngle(pitch=0.6, yaw=-1.05),
+										transitions={'done': 'wait 3'},
+										autonomy={'done': Autonomy.Off})
 
-            # x:278 y:292
-            OperatableStateMachine.add('Rotate Right 2',
-                                        WaitState(wait_time=0.5),
-                                        transitions={'done': 'in_progress'},
-                                        autonomy={'done': Autonomy.Off})
+			# x:464 y:164
+			OperatableStateMachine.add('wait 3',
+										WaitState(wait_time=10),
+										transitions={'done': 'count3'},
+										autonomy={'done': Autonomy.Off})
 
-            # x:143 y:221
-            OperatableStateMachine.add('Set 180 degres',
-                                        SetKey(Value=3.1416),
-                                        transitions={'done': 'action_turn'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'Key': 'rotation'})
+			# x:443 y:237
+			OperatableStateMachine.add('count3',
+										list_entities_by_name(frontality_level=0),
+										transitions={'found': 'add3', 'not_found': 'add3'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})
 
-            # x:126 y:452
-            OperatableStateMachine.add('LookBackCenter',
-                                        SaraSetHeadAngle(pitch=0.5, yaw=0),
-                                        transitions={'done': 'Rotate To center'},
-                                        autonomy={'done': Autonomy.Off})
+			# x:457 y:334
+			OperatableStateMachine.add('add3',
+										FlexibleCalculationState(calculation=lambda x: x[0]+x[1], input_keys=["Count", "number"]),
+										transitions={'done': 'gen text3'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Count': 'Count', 'number': 'number', 'output_value': 'Count'})
 
-            # x:270 y:443
-            OperatableStateMachine.add('Rotate To center',
-                                        WaitState(wait_time=0.5),
-                                        transitions={'done': 'in_progress'},
-                                        autonomy={'done': Autonomy.Off})
+			# x:70 y:497
+			OperatableStateMachine.add('say1',
+										SaraSayKey(Format=lambda x: x, emotion=1, block=False),
+										transitions={'done': 'set center'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'text'})
 
+			# x:30 y:412
+			OperatableStateMachine.add('gen text',
+										FlexibleCalculationState(calculation=lambda x: "I see "+ str(x[0])+ " "+ str(x[1]), input_keys=["number", "classname"]),
+										transitions={'done': 'say1'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'number': 'number', 'classname': 'className', 'output_value': 'text'})
 
-        # x:500 y:303
-        _sm_count_instancies_1 = OperatableStateMachine(outcomes=['counted'], input_keys=['className'])
+			# x:253 y:392
+			OperatableStateMachine.add('geb text 2',
+										FlexibleCalculationState(calculation=lambda x: "I see "+ str(x[0])+ " "+ str(x[1]), input_keys=["number", "classname"]),
+										transitions={'done': 'say2'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'number': 'number', 'classname': 'className', 'output_value': 'text'})
 
-        with _sm_count_instancies_1:
-            # x:84 y:255
-            OperatableStateMachine.add('SetKey',
-                                        SetKey(Value=0),
-                                        transitions={'done': 'find_an_instance'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'Key': 'counter'})
+			# x:282 y:480
+			OperatableStateMachine.add('say2',
+										SaraSayKey(Format=lambda x: x, emotion=1, block=False),
+										transitions={'done': 'set right'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'text'})
 
-            # x:453 y:163
-            OperatableStateMachine.add('counter+len(instances)',
-                                        FlexibleCalculationState(calculation=lambda x: x[0]+x[1], input_keys=["counter","number"]),
-                                        transitions={'done': 'counted'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'counter': 'counter', 'number': 'number', 'output_value': 'counter'})
+			# x:461 y:405
+			OperatableStateMachine.add('gen text3',
+										FlexibleCalculationState(calculation=lambda x: "I see "+ str(x[0])+ " "+ str(x[1]), input_keys=["number", "classname"]),
+										transitions={'done': 'say 3'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'number': 'number', 'classname': 'className', 'output_value': 'text'})
 
-            # x:181 y:178
-            OperatableStateMachine.add('find_an_instance',
-                                        list_entities_by_name(frontality_level=0.5),
-                                        transitions={'found': 'counter+len(instances)', 'not_found': 'counted'},
-                                        autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-                                        remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})
-
-
-        # x:451 y:193, x:441 y:295
-        _sm_count_instances_while_turning360_2 = OperatableStateMachine(outcomes=['found', 'failed'], input_keys=['className', 'progress'])
-
-        with _sm_count_instances_while_turning360_2:
-            # x:131 y:44
-            OperatableStateMachine.add('Count Instancies',
-                                        _sm_count_instancies_1,
-                                        transitions={'counted': 'Rotation360'},
-                                        autonomy={'counted': Autonomy.Inherit},
-                                        remapping={'className': 'className'})
-
-            # x:281 y:191
-            OperatableStateMachine.add('Rotation360',
-                                        _sm_rotation360_0,
-                                        transitions={'end': 'found', 'in_progress': 'addToProgress', 'failed': 'failed'},
-                                        autonomy={'end': Autonomy.Inherit, 'in_progress': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'progress': 'progress'})
-
-            # x:118 y:181
-            OperatableStateMachine.add('addToProgress',
-                                        CalculationState(calculation=lambda x: x+1),
-                                        transitions={'done': 'Count Instancies'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'input_value': 'progress', 'output_value': 'progress'})
+			# x:499 y:479
+			OperatableStateMachine.add('say 3',
+										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'text'})
 
 
 
-        with _state_machine:
-            # x:110 y:88
-            OperatableStateMachine.add('Look Front Center',
-                                        SaraSetHeadAngle(pitch=0.5, yaw=0),
-                                        transitions={'done': 'SetProgress'},
-                                        autonomy={'done': Autonomy.Off})
+		with _state_machine:
+			# x:55 y:34
+			OperatableStateMachine.add('init count',
+										SetKey(Value=0),
+										transitions={'done': 'set angle'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Count'})
 
-            # x:574 y:63
-            OperatableStateMachine.add('Look Center Found',
-                                        SaraSetHeadAngle(pitch=0.5, yaw=0),
-                                        transitions={'done': 'Log Count'},
-                                        autonomy={'done': Autonomy.Off})
+			# x:444 y:326
+			OperatableStateMachine.add('Log Count',
+										LogKeyState(text="Found: {} objects", severity=Logger.REPORT_HINT),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'Count'})
 
-            # x:773 y:38
-            OperatableStateMachine.add('Log Count',
-                                        LogKeyState(text="Found: {} objects", severity=Logger.REPORT_HINT),
-                                        transitions={'done': 'done'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'data': 'counter'})
+			# x:40 y:183
+			OperatableStateMachine.add('Move head',
+										_sm_move_head_0,
+										transitions={'finished': 'for 1'},
+										autonomy={'finished': Autonomy.Inherit},
+										remapping={'className': 'className', 'Count': 'Count'})
 
-            # x:635 y:153
-            OperatableStateMachine.add('WaitState',
-                                        WaitState(wait_time=1),
-                                        transitions={'done': 'Look Center Found'},
-                                        autonomy={'done': Autonomy.Off})
+			# x:419 y:254
+			OperatableStateMachine.add('Look Center Found',
+										SaraSetHeadAngle(pitch=0.4, yaw=0),
+										transitions={'done': 'Log Count'},
+										autonomy={'done': Autonomy.Off})
 
-            # x:318 y:103
-            OperatableStateMachine.add('Count instances WHILE Turning360',
-                                        _sm_count_instances_while_turning360_2,
-                                        transitions={'found': 'SetParamName', 'failed': 'failed'},
-                                        autonomy={'found': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'className': 'className', 'progress': 'progress'})
+			# x:234 y:227
+			OperatableStateMachine.add('for 1',
+										ForLoop(repeat=0),
+										transitions={'do': 'action_turn', 'end': 'store count'},
+										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+										remapping={'index': 'index'})
 
-            # x:558 y:256
-            OperatableStateMachine.add('SetRosParamKeyCounter',
-                                        SetRosParamKey(),
-                                        transitions={'done': 'WaitState'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'Value': 'counter', 'ParamName': 'ParamName'})
+			# x:38 y:275
+			OperatableStateMachine.add('action_turn',
+										self.use_behavior(action_turnSM, 'action_turn'),
+										transitions={'finished': 'Move head', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'rotation': 'rotation'})
 
-            # x:345 y:257
-            OperatableStateMachine.add('SetParamName',
-                                        SetKey(Value=counter),
-                                        transitions={'done': 'SetRosParamKeyCounter'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'Key': 'ParamName'})
+			# x:56 y:102
+			OperatableStateMachine.add('set angle',
+										SetKey(Value=3.14159),
+										transitions={'done': 'Move head'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'rotation'})
 
-            # x:159 y:171
-            OperatableStateMachine.add('SetProgress',
-                                        SetKey(Value=0),
-                                        transitions={'done': 'Count instances WHILE Turning360'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'Key': 'progress'})
+			# x:417 y:37
+			OperatableStateMachine.add('store count',
+										SetRosParam(ParamName="behavior/Count/CountedObjets"),
+										transitions={'done': 'concat'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'Count'})
+
+			# x:400 y:114
+			OperatableStateMachine.add('concat',
+										FlexibleCalculationState(calculation=lambda x: "I counted "+str(x[0])+" "+str(x[1])+".", input_keys=["Count", "className"]),
+										transitions={'done': 'say Count'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Count': 'Count', 'className': 'className', 'output_value': 'Text'})
+
+			# x:432 y:182
+			OperatableStateMachine.add('say Count',
+										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
+										transitions={'done': 'Look Center Found'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'Text'})
 
 
-        return _state_machine
+		return _state_machine
 
 
-    # Private functions can be added inside the following tags
-    # [MANUAL_FUNC]
+	# Private functions can be added inside the following tags
+	# [MANUAL_FUNC]
     
     # [/MANUAL_FUNC]
