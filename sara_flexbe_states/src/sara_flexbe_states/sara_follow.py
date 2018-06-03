@@ -22,7 +22,7 @@ Modified on 05/21/2017
 @mofificator: Nicolas Nadeau & Philippe La Madeleine
 """
 
-class SaraMoveBase(EventState):
+class SaraFollow(EventState):
     """
     Make Sara follow an entity using move_base.
     -- Distance     float       distance to keep between sara and the entity
@@ -34,23 +34,32 @@ class SaraMoveBase(EventState):
     def __init__(self, distance):
         """Constructor"""
 
-        super(SaraMoveBase, self).__init__( outcomes=['failed'],
-                                            input_keys=['ID'])
+        super(SaraFollow, self).__init__(outcomes=['failed'],
+                                         input_keys=['ID'])
 
         self._action_topic = "/move_base"
 
         self._client = ProxyActionClient({self._action_topic: MoveBaseAction})
 
-        self.entities_topic = "/Entities"
+        self.entities_topic = "/entities"
         self._pose_topic = "/robot_pose"
         self._sub = ProxySubscriberCached({self._pose_topic: Pose, self.entities_topic: Entities})
 
         self.distance = distance
         self.MyPose = None
         self.Entity = None
+        self.count = 0
+        self.LastGoal = None
 
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
+
+        # self.count += 1
+        # if self.count > 10:
+        #     self.count = 0
+        #     return
+
+
 
         self.Entity = None
 
@@ -84,18 +93,22 @@ class SaraMoveBase(EventState):
             GoalPose.orientation.y = qt[1]
             GoalPose.orientation.z = qt[2]
 
+            self.setGoal(GoalPose)
 
-        if self._client.has_result(self._action_topic):
-            status = self._client.get_state(self._action_topic)
-            if status in [GoalStatus.PREEMPTED, GoalStatus.REJECTED,
-                            GoalStatus.RECALLED, GoalStatus.ABORTED]:
-                Logger.logwarn('Navigation failed: %s' % str(status))
-                return 'failed'
+
+            if self._client.has_result(self._action_topic):
+                status = self._client.get_state(self._action_topic)
+                if status in [GoalStatus.PREEMPTED, GoalStatus.REJECTED,
+                                GoalStatus.RECALLED, GoalStatus.ABORTED]:
+                    Logger.logwarn('Navigation failed: %s' % str(status))
+                    return 'failed'
 
 
     def on_enter(self, userdata):
         """Clean the costmap"""
-
+        rospy.wait_for_service('/move_base/clear_costmaps')
+        serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
+        serv()
         self.MyPose = None
         self.Entity = None
 
@@ -110,9 +123,16 @@ class SaraMoveBase(EventState):
 
     def setGoal(self, pose):
 
-        rospy.wait_for_service('/move_base/clear_costmaps')
-        serv = rospy.ServiceProxy('/move_base/clear_costmaps', Empty)
-        serv()
+
+
+        if self.LastGoal:
+            dist = ((self.LastGoal.position.x - pose.position.x) ** 2
+                    + (self.LastGoal.position.x - pose.position.x) ** 2
+                    + (self.LastGoal.position.x - pose.position.x) ** 2) ** 0.5
+            if dist < 0.5:
+                return
+        self.LastGoal = pose
+
         goal = MoveBaseGoal()
 
         goal.target_pose.pose = pose
@@ -121,6 +141,7 @@ class SaraMoveBase(EventState):
 
         # Send the action goal for execution
         try:
+            Logger.loginfo("sending goal" + str(goal))
             self._client.send_goal(self._action_topic, goal)
         except Exception as e:
             Logger.logwarn("Unable to send navigation action goal:\n%s" % str(e))

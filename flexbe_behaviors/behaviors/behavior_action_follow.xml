@@ -13,6 +13,7 @@ Demande le id de la personne a suivre
 
 
 	<!-- Contained Behaviors -->
+	<contains name="action_look_at_face" />
 
 	<!-- Available Parameters -->
 
