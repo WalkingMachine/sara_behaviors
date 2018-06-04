@@ -13,6 +13,7 @@
 
 	<!-- Contained Behaviors -->
 	<contains name="Action_find" />
+	<contains name="action_turn" />
 
 	<!-- Available Parameters -->
 

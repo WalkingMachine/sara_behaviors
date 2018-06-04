@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="action_lookAtFaceBase">
+
+	<executable package_path="behavior_action_lookatfacebase.action_lookatfacebase_sm" class="action_lookAtFaceBaseSM" />
+	<tagstring>Action</tagstring>
+	<author>Veronica Romero</author>
+	<date>Thu Apr 26 2018</date>
+	<description>
+		Moves Sara's head towards the face of an entity
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="action_turn" />
+
+	<!-- Available Parameters -->
+
+</behavior>

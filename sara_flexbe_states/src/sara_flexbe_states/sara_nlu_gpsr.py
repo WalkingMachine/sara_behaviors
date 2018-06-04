@@ -7,7 +7,7 @@ import re
 from wm_nlu.srv import GPSRReceiveAction, GPSRReceiveActionResponse
 from std_msgs.msg import String
 
-class SaraNLU(EventState):
+class SaraNLUgpsr(EventState):
     '''
     Use wm_nlu to parse a sentence and return the detected actions in a standard format (ActionForm)
 
@@ -22,7 +22,7 @@ class SaraNLU(EventState):
 
     def __init__(self):
         # See example_state.py for basic explanations.
-        super(SaraNLU, self).__init__(outcomes=['understood', 'not_understood', 'fail'], input_keys=['sentence'],
+        super(SaraNLUgpsr, self).__init__(outcomes=['understood', 'not_understood', 'fail'], input_keys=['sentence'],
                                       output_keys=['ActionForms'])
         self.RecurentSubject = None
         self.Person = None

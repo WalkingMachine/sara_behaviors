@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<behavior name="Action_find">
+<behavior name="Action_findPerson">
 
-	<executable package_path="behavior_action_find.action_find_sm" class="Action_findSM" />
+	<executable package_path="behavior_action_findperson.action_findperson_sm" class="Action_findPersonSM" />
 	<tagstring>Action</tagstring>
 	<author>Lucas Maurice</author>
 	<date>Sat May 12 2018</date>
 	<description>
-		Find an entity around sara (will only rotate, won't move), identified by entity class.
+		Find an entity arround sara, identified by entity class.
 	</description>
 
 
