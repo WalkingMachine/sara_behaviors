@@ -79,7 +79,7 @@ class WonderlandGetEntityByID(EventState):
 
         entity.waypoint.x = data['entityWaypointX']
         entity.waypoint.y = data['entityWaypointY']
-        entity.waypoint.theta = data['entityWaypointYaw']
+        entity.waypoint.theta = data['entityWaypointYaw']/180*3.14159
 
         entity.containerId = data['entityContainer']
 

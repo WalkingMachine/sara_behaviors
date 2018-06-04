@@ -8,7 +8,12 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_count')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.wait_state import WaitState
+from flexbe_states.calculation_state import CalculationState
+from behavior_action_count.action_count_sm import Action_countSM
+from flexbe_states.flexible_calculation_state import FlexibleCalculationState
+from sara_flexbe_states.sara_say_key import SaraSayKey
+from sara_flexbe_states.SetRosParamKey import SetRosParamKey
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -32,6 +37,7 @@ class ActionWrapper_CountSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
+		self.add_behavior(Action_countSM, 'Action_count')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -40,14 +46,15 @@ class ActionWrapper_CountSM(Behavior):
 
 		# Behavior comments:
 
-		# O 160 33 
+		# O 282 30 
 		# ["Count", "objects_name", "value_name"]
 
 
 
 	def create(self):
-		# x:30 y:324, x:130 y:324
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'])
+		# x:254 y:640, x:328 y:266, x:230 y:365
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
+		_state_machine.userdata.Action = ["Count", "bottle", "behavior/Count/CountedObject"]
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -56,9 +63,58 @@ class ActionWrapper_CountSM(Behavior):
 
 
 		with _state_machine:
-			# x:89 y:97
-			OperatableStateMachine.add('dummy wait',
-										WaitState(wait_time=1),
+			# x:41 y:32
+			OperatableStateMachine.add('get name',
+										CalculationState(calculation=lambda x: x[1]),
+										transitions={'done': 'say start'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'Action', 'output_value': 'className'})
+
+			# x:13 y:220
+			OperatableStateMachine.add('Action_count',
+										self.use_behavior(Action_countSM, 'Action_count'),
+										transitions={'done': 'get paramname', 'failed': 'failed'},
+										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'className': 'className', 'Count': 'Count'})
+
+			# x:14 y:473
+			OperatableStateMachine.add('concat',
+										FlexibleCalculationState(calculation=lambda x: "I counted "+str(x[0])+" "+str(x[1])+".", input_keys=["Count", "className"]),
+										transitions={'done': 'say count'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Count': 'Count', 'className': 'className', 'output_value': 'sentence'})
+
+			# x:24 y:554
+			OperatableStateMachine.add('say count',
+										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
+										transitions={'done': 'set head back'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'sentence'})
+
+			# x:17 y:394
+			OperatableStateMachine.add('store param',
+										SetRosParamKey(),
+										transitions={'done': 'concat'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'Count', 'ParamName': 'ParamName'})
+
+			# x:20 y:312
+			OperatableStateMachine.add('get paramname',
+										CalculationState(calculation=lambda x: x[1]),
+										transitions={'done': 'store param'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'Action', 'output_value': 'ParamName'})
+
+			# x:41 y:125
+			OperatableStateMachine.add('say start',
+										SaraSayKey(Format=lambda x: "I'm starting to count the "+str(x)+"s.", emotion=1, block=False),
+										transitions={'done': 'Action_count'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'className'})
+
+			# x:17 y:633
+			OperatableStateMachine.add('set head back',
+										SaraSetHeadAngle(pitch=0.3, yaw=0),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
