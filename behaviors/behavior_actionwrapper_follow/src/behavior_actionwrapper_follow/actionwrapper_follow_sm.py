@@ -94,7 +94,7 @@ class ActionWrapper_FollowSM(Behavior):
 										remapping={'input_value': 'words'})
 
 
-		# x:395 y:153, x:390 y:47, x:359 y:362, x:304 y:368, x:430 y:368
+		# x:395 y:153, x:390 y:47, x:359 y:362, x:304 y:368
 		_sm_follow_loop_1 = ConcurrencyContainer(outcomes=['finished', 'error'], input_keys=['ID', 'distance'], conditions=[
 										('finished', [('Wait Stop', 'finished')]),
 										('error', [('Action_follow', 'failed')])
@@ -106,7 +106,7 @@ class ActionWrapper_FollowSM(Behavior):
 										self.use_behavior(Action_followSM, 'Follow Loop/Action_follow'),
 										transitions={'failed': 'error'},
 										autonomy={'failed': Autonomy.Inherit},
-										remapping={'ID': 'ID', 'distance': 'distance'})
+										remapping={'ID': 'ID'})
 
 			# x:190 y:139
 			OperatableStateMachine.add('Wait Stop',
