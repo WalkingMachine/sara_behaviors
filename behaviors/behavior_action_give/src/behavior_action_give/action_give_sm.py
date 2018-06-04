@@ -8,12 +8,9 @@
 
 import roslib; roslib.load_manifest('behavior_action_give')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.GetRosParam import GetRosParam
-from flexbe_states.check_condition_state import CheckConditionState
 from flexbe_states.log_state import LogState
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.moveit_move import MoveitMove
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
@@ -58,8 +55,8 @@ class Action_GiveSM(Behavior):
 
 
     def create(self):
-        # x:1195 y:433, x:122 y:501, x:366 y:140, x:1125 y:546
-        _state_machine = OperatableStateMachine(outcomes=['Given', 'Person_not_found', 'No_object_in_hand', 'fail'], input_keys=['person_id'])
+        # x:1195 y:433, x:135 y:397, x:1125 y:546
+        _state_machine = OperatableStateMachine(outcomes=['Given', 'Person_not_found', 'fail'], input_keys=['person_id'])
         _state_machine.userdata.person_id = 0
 
         # Additional creation code can be added inside the following tags
@@ -74,7 +71,7 @@ class Action_GiveSM(Behavior):
             # x:67 y:27
             OperatableStateMachine.add('SetPose',
                                         SetKey(Value="ShowGripper"),
-                                        transitions={'done': 'say give'},
+                                        transitions={'done': 'moveArm'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'Key': 'target'})
 
@@ -91,13 +88,6 @@ class Action_GiveSM(Behavior):
                                         transitions={'object': 'given', 'no_object': 'given'},
                                         autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
                                         remapping={'object_size': 'object_size'})
-
-            # x:62 y:99
-            OperatableStateMachine.add('say give',
-                                        SaraSayKey(Format=lambda x: "Hi. I'm giving you this "+str(x), emotion=1, block=False),
-                                        transitions={'done': 'moveArm'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'sentence': 'Object'})
 
             # x:64 y:248
             OperatableStateMachine.add('say pull',
@@ -166,8 +156,8 @@ class Action_GiveSM(Behavior):
                                         remapping={'pose': 'pose_out', 'relative': 'relative'})
 
 
-        # x:313 y:247, x:301 y:177, x:103 y:293, x:303 y:113, x:88 y:385, x:311 y:57, x:93 y:335
-        _sm_give_2 = ConcurrencyContainer(outcomes=['failed', 'given', 'continue'], input_keys=['ID', 'Object'], conditions=[
+        # x:313 y:247, x:301 y:177, x:103 y:293, x:303 y:113, x:88 y:385, x:311 y:57, x:93 y:335, x:304 y:15
+        _sm_give_2 = ConcurrencyContainer(outcomes=['failed', 'given', 'continue', 'person_lost'], input_keys=['ID'], conditions=[
                                         ('failed', [('Give', 'failed')]),
                                         ('given', [('Give', 'given')]),
                                         ('given', [('Follow', 'finished')]),
@@ -192,31 +182,12 @@ class Action_GiveSM(Behavior):
 
 
         with _state_machine:
-            # x:77 y:29
-            OperatableStateMachine.add('Get hand contaent',
-                                        GetRosParam(ParamName="GripperContent"),
-                                        transitions={'done': 'is object in hand?', 'failed': 'log empty hand'},
-                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-                                        remapping={'Value': 'Object'})
-
-            # x:75 y:113
-            OperatableStateMachine.add('is object in hand?',
-                                        CheckConditionState(predicate=lambda x: x),
-                                        transitions={'true': 'give', 'false': 'log empty hand'},
-                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-                                        remapping={'input_value': 'Object'})
-
-            # x:290 y:56
-            OperatableStateMachine.add('log empty hand',
-                                        LogState(text="The hand is empty. Set the GripperContent rosParma", severity=Logger.REPORT_HINT),
-                                        transitions={'done': 'No_object_in_hand'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:971 y:298
-            OperatableStateMachine.add('log moveitfail',
-                                        LogState(text="moveit failed", severity=Logger.REPORT_HINT),
-                                        transitions={'done': 'fail'},
-                                        autonomy={'done': Autonomy.Off})
+            # x:288 y:222
+            OperatableStateMachine.add('give',
+                                        _sm_give_2,
+                                        transitions={'failed': 'log movebase fail', 'given': 'set idle pose', 'continue': 'give', 'person_lost': 'Person_not_found'},
+                                        autonomy={'failed': Autonomy.Inherit, 'given': Autonomy.Inherit, 'continue': Autonomy.Inherit, 'person_lost': Autonomy.Inherit},
+                                        remapping={'ID': 'person_id'})
 
             # x:815 y:527
             OperatableStateMachine.add('log movebase fail',
@@ -227,7 +198,7 @@ class Action_GiveSM(Behavior):
             # x:863 y:76
             OperatableStateMachine.add('set idle pose',
                                         SetKey(Value="IdlePose"),
-                                        transitions={'done': 'say good'},
+                                        transitions={'done': 'moveArm2'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'Key': 'target'})
 
@@ -237,13 +208,6 @@ class Action_GiveSM(Behavior):
                                         transitions={'done': 'set none', 'failed': 'log moveitfail'},
                                         autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'target': 'target'})
-
-            # x:1012 y:76
-            OperatableStateMachine.add('say good',
-                                        SaraSayKey(Format=lambda x: "Good, enjoy your "+str(x), emotion=1, block=True),
-                                        transitions={'done': 'moveArm2'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'sentence': 'Object'})
 
             # x:1167 y:337
             OperatableStateMachine.add('close gripper',
@@ -266,12 +230,11 @@ class Action_GiveSM(Behavior):
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'Key': 'none'})
 
-            # x:515 y:515
-            OperatableStateMachine.add('give',
-                                        _sm_give_2,
-                                        transitions={'failed': 'log movebase fail', 'given': 'set idle pose', 'continue': 'give'},
-                                        autonomy={'failed': Autonomy.Inherit, 'given': Autonomy.Inherit, 'continue': Autonomy.Inherit},
-                                        remapping={'ID': 'person_id', 'Object': 'Object'})
+            # x:971 y:298
+            OperatableStateMachine.add('log moveitfail',
+                                        LogState(text="moveit failed", severity=Logger.REPORT_HINT),
+                                        transitions={'done': 'fail'},
+                                        autonomy={'done': Autonomy.Off})
 
 
         return _state_machine
