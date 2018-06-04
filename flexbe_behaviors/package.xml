@@ -12,7 +12,82 @@
   <run_depend>rospy</run_depend>
 
   <!-- Add here all ROS packages that contain behaviors -->
-
+  <run_depend>behavior_a_test_wonderland</run_depend>
+  <run_depend>behavior_action_give_back_bag</run_depend>
+  <run_depend>behavior_action_receive_bag</run_depend>
+  <run_depend>behavior_action_setexpression</run_depend>
+  <run_depend>behavior_actionwrapper_attach</run_depend>
+  <run_depend>behavior_actionwrapper_bring</run_depend>
+  <run_depend>behavior_actionwrapper_find</run_depend>
+  <run_depend>behavior_actionwrapper_follow</run_depend>
+  <run_depend>behavior_actionwrapper_give</run_depend>
+  <run_depend>behavior_actionwrapper_lookat</run_depend>
+  <run_depend>behavior_actionwrapper_move</run_depend>
+  <run_depend>behavior_actionwrapper_pick</run_depend>
+  <run_depend>behavior_actionwrapper_place</run_depend>
+  <run_depend>behavior_actionwrapper_give</run_depend>
+  <run_depend>behavior_actionwrapper_turn</run_depend>
+  <run_depend>behavior_stop</run_depend>
+  <run_depend>behavior_actionwrapper_stop</run_depend>
+  <run_depend>behavior_actionwrapper_turn</run_depend>
+  <run_depend>behavior_actionwrapper_waitfordoor</run_depend>
+  <run_depend>behavior_wonderland_entity_in_room</run_depend>
+  <run_depend>behavior_wonderland_list_entities_in_room</run_depend>
+  <run_depend>behavior_wonderland_list_rooms</run_depend>
+  <run_depend>behavior_say_hello</run_depend>
+  <run_depend>behavior_wonderland_get_doors</run_depend>
+  <run_depend>behavior_wonderland_entity_in_room_name</run_depend>
+  <run_depend>behavior_scenario_security_check</run_depend>
+  <run_depend>behavior_wonderland_get_waypoint</run_depend>
+  <run_depend>behavior_wonderland_test2</run_depend>
+  <run_depend>behavior_wonderland_get_origin</run_depend>
+  <run_depend>behavior_return_to_origin</run_depend>
+  <run_depend>behavior_entity_pose_creator</run_depend>
+  <run_depend>behavior_wonderland_waypoint_id</run_depend>
+  <run_depend>behavior_wonderland_get_waypoint_from_id</run_depend>
+  <run_depend>behavior_get_waypoint_pose</run_depend>
+  <run_depend>behavior_wonderland_goto_exit</run_depend>
+  <run_depend>behavior_action_sarapick</run_depend>
+  <run_depend>behavior_new_qualif</run_depend>
+  <run_depend>behavior_sandbox_for_test_purpose</run_depend>
+  <run_depend>behavior_sara_action_executor</run_depend>
+  <run_depend>behavior_sara_command_manager</run_depend>
+  <run_depend>behavior_sara_main_behavior</run_depend>
+  <run_depend>behavior_sara_presentation</run_depend>
+  <run_depend>behavior_say_hello</run_depend>
+  <run_depend>behavior_scenario_help_me_carry</run_depend>
+  <run_depend>behavior_scenario_security_check</run_depend>
+  <run_depend>behavior_stop</run_depend>
+  <run_depend>behavior_test_continue</run_depend>
+  <run_depend>behavior_test_for</run_depend>
+  <run_depend>behavior_test_gripper</run_depend>
+  <run_depend>behavior_test_lu4r</run_depend>
+  <run_depend>behavior_init_sequence</run_depend>
+  <run_depend>behavior_go_to_room</run_depend>
+  <run_depend>behavior_go_to_exit</run_depend>
+  <run_depend>behavior_action_receive_bag</run_depend>
+  <run_depend>behavior_action_receive_bag</run_depend>
+  <run_depend>behavior_sara_presentation</run_depend>
+  <run_depend>behavior_get_speech</run_depend>
+  <run_depend>behavior_hello_world</run_depend>
+  <run_depend>behavior_action_pick</run_depend>
+  <run_depend>behavior_action_get_entity_pose</run_depend>
+  <run_depend>behavior_check_reachability</run_depend>
+  <run_depend>behavior_action_move</run_depend>
+  <run_depend>behavior_get_operator</run_depend>
+  <run_depend>behavior_action_follow</run_depend>
+  <run_depend>behavior_action_look_at</run_depend>
+  <run_depend>behavior_action_look_at_face</run_depend>
+  <run_depend>behavior_scenario_security_check2</run_depend>
+  <run_depend>behavior_scenario2_security_check</run_depend>
+  <run_depend>behavior_a_test_sandbox</run_depend>
+  <run_depend>behavior_action_guiding_person</run_depend>
+  <run_depend>behavior_action_pass_door</run_depend>
+  <run_depend>behavior_a_go_home</run_depend>
+    <run_depend>behavior_wonderlandaddupdateperson</run_depend>
+  <run_depend>behavior_action_give</run_depend>
+  <run_depend>behavior_action_point_at</run_depend>
+  <run_depend>behavior_action_count</run_depend>
 <run_depend>behavior_a_go_home</run_depend>
 <run_depend>behavior_a_test_sandbox</run_depend>
 <run_depend>behavior_a_test_wonderland</run_depend>

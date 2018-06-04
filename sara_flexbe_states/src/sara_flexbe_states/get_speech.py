@@ -33,8 +33,6 @@ class GetSpeech(EventState):
         self.time = 0
 
     def execute(self, userdata):
-
-        Logger.loginfo('looking for voice command ')
         if self._sub.has_msg(self._topic):
             Logger.loginfo('getting message')
             message = self._sub.get_last_msg(self._topic)
