@@ -8,16 +8,14 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_pick')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
+from sara_flexbe_states.GetRosParam import GetRosParam
 from flexbe_states.check_condition_state import CheckConditionState
-from sara_flexbe_states.sara_say_key import SaraSayKey
-from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
-from behavior_action_move.action_move_sm import Action_MoveSM
-from sara_flexbe_states.pose_gen_euler import GenPoseEuler
-from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.sara_say_key import SaraSayKey
 from behavior_action_pick.action_pick_sm import Action_pickSM
+from flexbe_states.calculation_state import CalculationState
+from sara_flexbe_states.list_entities_by_name import list_entities_by_name
+from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -41,9 +39,8 @@ class ActionWrapper_PickSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_MoveSM, 'pick/Action_Move')
-		self.add_behavior(Action_MoveSM, 'pick/Forward/Action_Move_2')
-		self.add_behavior(Action_pickSM, 'pick/Action_pick')
+		self.add_behavior(Action_pickSM, 'Action_pick')
+		self.add_behavior(action_look_at_faceSM, 'action_look_at_face')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -53,12 +50,12 @@ class ActionWrapper_PickSM(Behavior):
 		# Behavior comments:
 
 		# O 506 16 
-		# Pick|n1- object|n2- where to find it
+		# Pick|n1- object
 
 
 
 	def create(self):
-		# x:885 y:201, x:725 y:372
+		# x:573 y:362, x:584 y:226, x:715 y:440
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action', 'ObjectInGripper'])
 		_state_machine.userdata.Action = ["Pick","cup",""]
 		_state_machine.userdata.ObjectInGripper = False
@@ -72,232 +69,109 @@ class ActionWrapper_PickSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-		# x:516 y:297, x:455 y:109
-		_sm_forward_0 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'])
+		# x:330 y:124, x:272 y:201
+		_sm_get_object_0 = OperatableStateMachine(outcomes=['not_found', 'done'], input_keys=['Action'], output_keys=['ObjectName', 'ID', 'Object'])
 
-		with _sm_forward_0:
-			# x:47 y:28
-			OperatableStateMachine.add('gen pose',
-										GenPoseEuler(x=0.35, y=0, z=0, roll=0, pitch=0, yaw=0),
-										transitions={'done': 'set rel'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose': 'pose'})
-
-			# x:56 y:143
-			OperatableStateMachine.add('set rel',
-										SetKey(Value=True),
-										transitions={'done': 'Action_Move_2'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'relative'})
-
-			# x:43 y:253
-			OperatableStateMachine.add('Action_Move_2',
-										self.use_behavior(Action_MoveSM, 'pick/Forward/Action_Move_2'),
-										transitions={'finished': 'finished', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'pose', 'relative': 'relative'})
-
-
-		# x:437 y:171
-		_sm_set_keys_1 = OperatableStateMachine(outcomes=['done'], output_keys=['id', 'color', 'expected_pose', 'relative', 'typer'])
-
-		with _sm_set_keys_1:
-			# x:34 y:40
-			OperatableStateMachine.add('set id',
-										SetKey(Value=None),
-										transitions={'done': 'set color'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'id'})
-
-			# x:34 y:191
-			OperatableStateMachine.add('set type',
-										SetKey(Value=None),
-										transitions={'done': 'get pose'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'typer'})
-
-			# x:30 y:112
-			OperatableStateMachine.add('set color',
-										SetKey(Value=None),
-										transitions={'done': 'set type'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'color'})
-
-			# x:413 y:309
-			OperatableStateMachine.add('set rel',
-										SetKey(Value=False),
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'relative'})
-
-			# x:215 y:327
-			OperatableStateMachine.add('get pose',
-										Get_Robot_Pose(),
-										transitions={'done': 'set rel'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose': 'expected_pose'})
-
-
-		# x:34 y:527
-		_sm_get_informations_2 = OperatableStateMachine(outcomes=['done'], input_keys=['Action'], output_keys=['name', 'location'])
-
-		with _sm_get_informations_2:
-			# x:62 y:117
-			OperatableStateMachine.add('get name',
+		with _sm_get_object_0:
+			# x:39 y:40
+			OperatableStateMachine.add('get object name',
 										CalculationState(calculation=lambda x: x[1]),
-										transitions={'done': 'check location'},
+										transitions={'done': 'get objects'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'Action', 'output_value': 'name'})
+										remapping={'input_value': 'Action', 'output_value': 'ObjectName'})
 
-			# x:140 y:194
-			OperatableStateMachine.add('get location',
-										CalculationState(calculation=lambda x: x[2]),
-										transitions={'done': 'say locatiion'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'Action', 'output_value': 'location'})
+			# x:30 y:114
+			OperatableStateMachine.add('get objects',
+										list_entities_by_name(frontality_level=0.5),
+										transitions={'found': 'GetObject', 'not_found': 'not_found'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'name': 'ObjectName', 'entity_list': 'Objects', 'number': 'number'})
 
-			# x:278 y:143
-			OperatableStateMachine.add('check location',
-										CheckConditionState(predicate=lambda x: x[2]!=""),
-										transitions={'true': 'get location', 'false': 'set location'},
-										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-										remapping={'input_value': 'Action'})
-
-			# x:421 y:503
-			OperatableStateMachine.add('set location',
-										SetKey(Value=None),
+			# x:36 y:274
+			OperatableStateMachine.add('get closest ID',
+										CalculationState(calculation=lambda x: x.ID),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'location'})
+										remapping={'input_value': 'Object', 'output_value': 'ID'})
 
-			# x:33 y:330
-			OperatableStateMachine.add('say locatiion',
-										SaraSayKey(Format=lambda x: "In the "+x, emotion=1, block=True),
-										transitions={'done': 'done'},
+			# x:42 y:193
+			OperatableStateMachine.add('GetObject',
+										CalculationState(calculation=lambda x: x[0]),
+										transitions={'done': 'get closest ID'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'location'})
-
-
-		# x:778 y:25, x:580 y:518
-		_sm_pick_3 = OperatableStateMachine(outcomes=['success', 'failed'], input_keys=['Action'])
-
-		with _sm_pick_3:
-			# x:42 y:31
-			OperatableStateMachine.add('Get informations',
-										_sm_get_informations_2,
-										transitions={'done': 'Set keys'},
-										autonomy={'done': Autonomy.Inherit},
-										remapping={'Action': 'Action', 'name': 'name', 'location': 'location'})
-
-			# x:738 y:120
-			OperatableStateMachine.add('say fail',
-										SaraSayKey(Format=lambda x: "Sorry, I failed to get the "+x, emotion=1, block=True),
-										transitions={'done': 'success'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'name'})
-
-			# x:14 y:216
-			OperatableStateMachine.add('Set keys',
-										_sm_set_keys_1,
-										transitions={'done': 'Get object'},
-										autonomy={'done': Autonomy.Inherit},
-										remapping={'id': 'id', 'color': 'color', 'expected_pose': 'expected_pose', 'relative': 'relative', 'typer': 'typer'})
-
-			# x:45 y:585
-			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(Action_MoveSM, 'pick/Action_Move'),
-										transitions={'finished': 'Action_pick', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'object_pose', 'relative': 'relative'})
-
-			# x:200 y:311
-			OperatableStateMachine.add('Forward',
-										_sm_forward_0,
-										transitions={'finished': 'Action_pick', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
-
-			# x:268 y:123
-			OperatableStateMachine.add('for',
-										ForLoop(repeat=2),
-										transitions={'do': 'get closer', 'end': 'say fail'},
-										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
-										remapping={'index': 'index'})
-
-			# x:417 y:112
-			OperatableStateMachine.add('say unreachable',
-										SaraSay(sentence="I can't reach it", emotion=1, block=True),
-										transitions={'done': 'say fail'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:260 y:235
-			OperatableStateMachine.add('get closer',
-										SaraSay(sentence="I need to get closer", emotion=1, block=True),
-										transitions={'done': 'Forward'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:229 y:426
-			OperatableStateMachine.add('say unknow',
-										SaraSayKey(Format=lambda x: "I don't know any "+x, emotion=1, block=True),
-										transitions={'done': 'say fail'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'name'})
-
-			# x:211 y:505
-			OperatableStateMachine.add('memory',
-										SaraSay(sentence="Strange, I lost contact with my memory", emotion=1, block=True),
-										transitions={'done': 'failed'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:202 y:39
-			OperatableStateMachine.add('Action_pick',
-										self.use_behavior(Action_pickSM, 'pick/Action_pick'),
-										transitions={'success': 'success', 'too far': 'for', 'unreachable': 'say unreachable', 'not seen': 'say fail', 'critical fail': 'failed', 'missed': 'say fail'},
-										autonomy={'success': Autonomy.Inherit, 'too far': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not seen': Autonomy.Inherit, 'critical fail': Autonomy.Inherit, 'missed': Autonomy.Inherit},
-										remapping={'object': 'name', 'grip_pose': 'grip_pose'})
+										remapping={'input_value': 'Objects', 'output_value': 'Object'})
 
 
 
 		with _state_machine:
-			# x:36 y:47
-			OperatableStateMachine.add('check object in gripper',
-										CheckConditionState(predicate=lambda x: x),
-										transitions={'true': 'finished', 'false': 'cond'},
-										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-										remapping={'input_value': 'ObjectInGripper'})
+			# x:42 y:31
+			OperatableStateMachine.add('check if gripper full',
+										GetRosParam(ParamName="behavior/Gripper_Content"),
+										transitions={'done': 'say full', 'failed': 'cond'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'Value': 'ObjectInGripper'})
 
-			# x:223 y:185
-			OperatableStateMachine.add('object given',
-										SaraSayKey(Format=lambda x: "I'm going to pick that "+x[1], emotion=1, block=True),
-										transitions={'done': 'pick'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'Action'})
-
-			# x:41 y:189
+			# x:41 y:112
 			OperatableStateMachine.add('cond',
 										CheckConditionState(predicate=lambda x: x[1] == ''),
 										transitions={'true': 'not told', 'false': 'object given'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'Action'})
 
-			# x:396 y:183
-			OperatableStateMachine.add('pick',
-										_sm_pick_3,
-										transitions={'success': 'got it', 'failed': 'failed'},
-										autonomy={'success': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'Action': 'Action'})
-
-			# x:205 y:321
+			# x:233 y:110
 			OperatableStateMachine.add('not told',
-										SaraSay(sentence="You didn't told me what to pick", emotion=1, block=True),
-										transitions={'done': 'finished'},
+										SaraSay(sentence="Hum! They didn't told me what to pick", emotion=1, block=True),
+										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:579 y:192
+			# x:348 y:487
 			OperatableStateMachine.add('got it',
-										SaraSayKey(Format=lambda x: "I have the "+x[1], emotion=1, block=True),
+										SaraSayKey(Format=lambda x: "I have the "+x, emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'ObjectName'})
+
+			# x:224 y:34
+			OperatableStateMachine.add('say full',
+										SaraSayKey(Format=lambda x: "Wait. There is already a "+ x + "in my gripper.", emotion=1, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'ObjectInGripper'})
+
+			# x:23 y:478
+			OperatableStateMachine.add('Action_pick',
+										self.use_behavior(Action_pickSM, 'Action_pick'),
+										transitions={'success': 'got it', 'unreachable': 'failed', 'not found': 'say lost', 'dropped': 'failed'},
+										autonomy={'success': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not found': Autonomy.Inherit, 'dropped': Autonomy.Inherit},
+										remapping={'objectID': 'ID'})
+
+			# x:261 y:249
+			OperatableStateMachine.add('say lost',
+										SaraSayKey(Format=lambda x: "Hum! I lost sight of the "++x, emotion=1, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'ObjectName'})
+
+			# x:47 y:182
+			OperatableStateMachine.add('object given',
+										SaraSayKey(Format=lambda x: "I'm going to pick that "+x[1], emotion=1, block=True),
+										transitions={'done': 'Get object'},
+										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'Action'})
+
+			# x:37 y:258
+			OperatableStateMachine.add('Get object',
+										_sm_get_object_0,
+										transitions={'not_found': 'say lost', 'done': 'action_look_at_face'},
+										autonomy={'not_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
+										remapping={'Action': 'Action', 'ObjectName': 'ObjectName', 'ID': 'ID', 'Object': 'Object'})
+
+			# x:14 y:363
+			OperatableStateMachine.add('action_look_at_face',
+										self.use_behavior(action_look_at_faceSM, 'action_look_at_face'),
+										transitions={'finished': 'Action_pick', 'failed': 'Action_pick'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'Entity': 'Object'})
 
 
 		return _state_machine
