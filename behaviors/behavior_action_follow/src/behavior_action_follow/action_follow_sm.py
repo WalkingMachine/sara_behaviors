@@ -152,17 +152,23 @@ Demande le id de la personne a suivre
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Entity': 'Entity'})
 
-			# x:205 y:355
+			# x:248 y:264
 			OperatableStateMachine.add('Find back',
 										_sm_find_back_2,
-										transitions={'back': 'get entity'},
+										transitions={'back': 'Found you'},
 										autonomy={'back': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
-			# x:430 y:275
+			# x:470 y:272
 			OperatableStateMachine.add('sorry',
 										SaraSay(sentence="Sorry, I lost you. Please wait for me!", emotion=1, block=False),
 										transitions={'done': 'Find back'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:103 y:276
+			OperatableStateMachine.add('Found you',
+										SaraSay(sentence="Here you are!", emotion=1, block=False),
+										transitions={'done': 'get entity'},
 										autonomy={'done': Autonomy.Off})
 
 
