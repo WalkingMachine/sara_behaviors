@@ -14,8 +14,8 @@ from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.set_gripper_state import SetGripperState
-from sara_flexbe_states.torque_reader import ReadTorque
 from flexbe_states.log_state import LogState
+from sara_flexbe_states.torque_reader import ReadTorque
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -89,28 +89,53 @@ class Action_placeSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-		# x:30 y:458
-		_sm_read_torque_0 = OperatableStateMachine(outcomes=['done'])
+		# x:30 y:458, x:130 y:458, x:230 y:458, x:330 y:458, x:430 y:458, x:530 y:458, x:630 y:458, x:59 y:533, x:830 y:458
+		_sm_group_0 = ConcurrencyContainer(outcomes=['threshold', 'watchdog', 'fail'], conditions=[
+										('threshold', [('read', 'threshold')]),
+										('watchdog', [('read', 'watchdog')]),
+										('fail', [('read', 'fail')]),
+										('threshold', [('read yaw', 'threshold')]),
+										('fail', [('read yaw', 'fail')]),
+										('watchdog', [('read yaw', 'watchdog')])
+										])
 
-		with _sm_read_torque_0:
-			# x:142 y:61
-			OperatableStateMachine.add('log',
-										LogState(text="going down", severity=Logger.REPORT_HINT),
-										transitions={'done': 'read'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:131 y:164
+		with _sm_group_0:
+			# x:86 y:125
 			OperatableStateMachine.add('read',
-										ReadTorque(watchdog=1, Joint="right_elbow_pitch_joint", Threshold=0.25, min_time=0.75),
-										transitions={'threshold': 'done', 'watchdog': 'log', 'fail': 'done'},
+										ReadTorque(watchdog=1, Joint="right_elbow_pitch_joint", Threshold=0.7, min_time=0.4),
+										transitions={'threshold': 'threshold', 'watchdog': 'watchdog', 'fail': 'fail'},
+										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'torque': 'torque'})
+
+			# x:252 y:135
+			OperatableStateMachine.add('read yaw',
+										ReadTorque(watchdog=1, Joint="right_elbow_pitch_joint", Threshold=0.5, min_time=0.4),
+										transitions={'threshold': 'threshold', 'watchdog': 'watchdog', 'fail': 'fail'},
 										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'torque': 'torque'})
 
 
 		# x:30 y:458
-		_sm_go_down_1 = OperatableStateMachine(outcomes=['done'], input_keys=['GripPose'])
+		_sm_read_torque_1 = OperatableStateMachine(outcomes=['done'])
 
-		with _sm_go_down_1:
+		with _sm_read_torque_1:
+			# x:142 y:61
+			OperatableStateMachine.add('log',
+										LogState(text="going down", severity=Logger.REPORT_HINT),
+										transitions={'done': 'Group'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:131 y:164
+			OperatableStateMachine.add('Group',
+										_sm_group_0,
+										transitions={'threshold': 'done', 'watchdog': 'log', 'fail': 'done'},
+										autonomy={'threshold': Autonomy.Inherit, 'watchdog': Autonomy.Inherit, 'fail': Autonomy.Inherit})
+
+
+		# x:30 y:458
+		_sm_go_down_2 = OperatableStateMachine(outcomes=['done'], input_keys=['GripPose'])
+
+		with _sm_go_down_2:
 			# x:126 y:194
 			OperatableStateMachine.add('movePlace',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
@@ -120,22 +145,22 @@ class Action_placeSM(Behavior):
 
 
 		# x:30 y:458, x:130 y:458, x:230 y:458
-		_sm_get_down_2 = ConcurrencyContainer(outcomes=['done'], input_keys=['GripPose'], conditions=[
+		_sm_get_down_3 = ConcurrencyContainer(outcomes=['done'], input_keys=['GripPose'], conditions=[
 										('done', [('Go down', 'done')]),
 										('done', [('read torque', 'done')])
 										])
 
-		with _sm_get_down_2:
+		with _sm_get_down_3:
 			# x:178 y:127
 			OperatableStateMachine.add('Go down',
-										_sm_go_down_1,
+										_sm_go_down_2,
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'GripPose': 'GripPose'})
 
 			# x:405 y:150
 			OperatableStateMachine.add('read torque',
-										_sm_read_torque_0,
+										_sm_read_torque_1,
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Inherit})
 
@@ -187,7 +212,7 @@ class Action_placeSM(Behavior):
 			# x:131 y:443
 			OperatableStateMachine.add('Gen approach_pos',
 										GenGripperPose(l=0.0, z=0.20, planar=True),
-										transitions={'done': 'MoveIt_isReachable', 'fail': 'failed'},
+										transitions={'done': 'log place pos', 'fail': 'failed'},
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'pose_in': 'pos', 'pose_out': 'approach_pose'})
 
@@ -235,10 +260,17 @@ class Action_placeSM(Behavior):
 
 			# x:392 y:670
 			OperatableStateMachine.add('Get_down',
-										_sm_get_down_2,
+										_sm_get_down_3,
 										transitions={'done': 'open gripper'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'GripPose': 'grip_pose'})
+
+			# x:324 y:470
+			OperatableStateMachine.add('log place pos',
+										LogKeyState(text="place pose is {}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'MoveIt_isReachable'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'grip_pose'})
 
 
 		return _state_machine

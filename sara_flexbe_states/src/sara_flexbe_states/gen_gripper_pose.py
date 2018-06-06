@@ -49,16 +49,6 @@ class GenGripperPose(EventState):
 
         out.position.z += self.zo
 
-        # Transform the point into the baselink frame
-        point = PointStamped()
-        point.header.frame_id = "map"
-        point.point = out.position
-        self.listener.waitForTransform("map", "base_link", rospy.Time(0), rospy.Duration(1))
-        print("Frame : map")
-        print(" point : " + str(point.point))
-        point = self.listener.transformPoint("base_link", point)
-        out.position = point.point
-
         gripperPose = self.group.get_current_pose().pose
 
         # calcul des angles
