@@ -8,14 +8,16 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_place')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.GetRosParam import GetRosParam
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from behavior_action_place.action_place_sm import Action_placeSM
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from sara_flexbe_states.TF_transform import TF_transformation
-from sara_flexbe_states.GetRosParam import GetRosParam
+from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
+from flexbe_states.log_state import LogState
+from flexbe_states.log_key_state import LogKeyState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -82,7 +84,7 @@ class ActionWrapper_PlaceSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'sentence'})
 
-			# x:45 y:643
+			# x:66 y:744
 			OperatableStateMachine.add('Action_place',
 										self.use_behavior(Action_placeSM, 'Action_place'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
@@ -91,7 +93,7 @@ class ActionWrapper_PlaceSM(Behavior):
 
 			# x:44 y:470
 			OperatableStateMachine.add('genPoseArm',
-										GenPoseEuler(x=1, y=1, z=-0.1, roll=0, pitch=0, yaw=0),
+										GenPoseEuler(x=0.75, y=-0.1, z=0.8, roll=0, pitch=0, yaw=0),
 										transitions={'done': 'referential from robot to map'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'position'})
@@ -99,7 +101,7 @@ class ActionWrapper_PlaceSM(Behavior):
 			# x:26 y:554
 			OperatableStateMachine.add('referential from robot to map',
 										TF_transformation(in_ref="base_link", out_ref="map"),
-										transitions={'done': 'Action_place', 'fail': 'failed'},
+										transitions={'done': 'log pose', 'fail': 'log tf error'},
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'in_pos': 'position', 'out_pos': 'MapPosition'})
 
@@ -118,7 +120,7 @@ class ActionWrapper_PlaceSM(Behavior):
 
 			# x:29 y:297
 			OperatableStateMachine.add('construction phrase',
-										FlexibleCalculationState(calculation=lambda x: "I will place this "+x[0]+" on the "+x[1], input_keys=["content", "Action"]),
+										FlexibleCalculationState(calculation=lambda x: "I will place this "+str(x[0])+" on the "+str(x[1][1]), input_keys=["content", "Action"]),
 										transitions={'done': 'say place object'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'content': 'content', 'Action': 'Action', 'output_value': 'sentence'})
@@ -133,9 +135,22 @@ class ActionWrapper_PlaceSM(Behavior):
 			# x:37 y:211
 			OperatableStateMachine.add('cond',
 										CheckConditionState(predicate=lambda x: x[1] != ''),
-										transitions={'true': 'construction phrase', 'false': 'say place it this place'},
+										transitions={'true': 'construction phrase', 'false': 'failed'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'Action'})
+
+			# x:257 y:413
+			OperatableStateMachine.add('log tf error',
+										LogState(text="tf error", severity=Logger.REPORT_HINT),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:66 y:638
+			OperatableStateMachine.add('log pose',
+										LogKeyState(text="the placement pose will be: {}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'Action_place'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'MapPosition'})
 
 
 		return _state_machine
