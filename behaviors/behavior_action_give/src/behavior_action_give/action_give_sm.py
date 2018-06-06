@@ -202,16 +202,17 @@ class Action_GiveSM(Behavior):
 			# x:75 y:113
 			OperatableStateMachine.add('is object in hand?',
 										CheckConditionState(predicate=lambda x: x),
-										transitions={'true': 'set person', 'false': 'say empty'},
+
+										transitions={'true': 'name', 'false': 'log empty hand'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'Object'})
 
-			# x:75 y:291
+			# x:70 y:277
 			OperatableStateMachine.add('list persons',
 										list_entities_by_name(frontality_level=0.5),
-										transitions={'found': 'get id', 'not_found': 'say nobody'},
+										transitions={'found': 'get id', 'not_found': 'Person_not_found'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'name': 'name', 'list_entities_by_name': 'People_list', 'number': 'number'})
+										remapping={'name': 'name', 'entity_list': 'People_list', 'number': 'number'})
 
 			# x:434 y:62
 			OperatableStateMachine.add('log empty hand',
@@ -280,32 +281,21 @@ class Action_GiveSM(Behavior):
 										autonomy={'failed': Autonomy.Inherit, 'given': Autonomy.Inherit, 'continue': Autonomy.Inherit},
 										remapping={'ID': 'ID', 'Object': 'Object'})
 
-			# x:275 y:280
+
+			# x:256 y:278
 			OperatableStateMachine.add('get id',
 										CalculationState(calculation=lambda x: x[0].ID),
 										transitions={'done': 'give'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'People_list', 'output_value': 'ID'})
 
-			# x:91 y:209
-			OperatableStateMachine.add('set person',
+
+			# x:95 y:195
+			OperatableStateMachine.add('name',
 										SetKey(Value="person"),
 										transitions={'done': 'list persons'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'name'})
-
-			# x:300 y:58
-			OperatableStateMachine.add('say empty',
-										SaraSay(sentence="Hum. I got nothing to give.", emotion=1, block=True),
-										transitions={'done': 'log empty hand'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:89 y:416
-			OperatableStateMachine.add('say nobody',
-										SaraSayKey(Format=lambda x: "Strange. I got an "+ x +" to give. But there is nobody around to take it.", emotion=1, block=True),
-										transitions={'done': 'Person_not_found'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'Object'})
 
 
 		return _state_machine

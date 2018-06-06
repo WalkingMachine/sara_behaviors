@@ -152,14 +152,15 @@ class HelpmecarrySM(Behavior):
 										list_entities_by_name(frontality_level=0.5),
 										transitions={'found': 'GetID', 'not_found': 'failed'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'name': 'person', 'list_entities_by_name': 'Entities_list', 'number': 'number'})
+
+										remapping={'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:368 y:541
 			OperatableStateMachine.add('GetID',
 										CalculationState(calculation=lambda x: x[0].ID),
 										transitions={'done': 'setID'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'Entities_list', 'output_value': 'ID'})
+										remapping={'input_value': 'entity_list', 'output_value': 'ID'})
 
 			# x:582 y:323
 			OperatableStateMachine.add('Follow',

@@ -44,7 +44,7 @@ class ActionWrapper_WaitForDoorSM(Behavior):
 
     def create(self):
         # x:30 y:304, x:130 y:304
-        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
+        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'])
 
         # Additional creation code can be added inside the following tags
         # [MANUAL_CREATE]

@@ -50,7 +50,7 @@ class ActionWrapper_GiveSM(Behavior):
 
     def create(self):
         # x:892 y:284, x:885 y:449
-        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
+        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
         _state_machine.userdata.Action = []
 
         # Additional creation code can be added inside the following tags

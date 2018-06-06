@@ -4,14 +4,15 @@
 
 	<executable package_path="behavior_actionwrapper_move.actionwrapper_move_sm" class="ActionWrapper_MoveSM" />
 	<tagstring>ActionWrapper</tagstring>
-	<author>Raphael Duchaine</author>
-	<date>Sat Oct 28 2017</date>
+	<author>Lucas Maurice</author>
+	<date>22/05/2018</date>
 	<description>
-		ActionWrapper for movements
+		action wrapper pour move
 	</description>
 
 
 	<!-- Contained Behaviors -->
+	<contains name="WonderlandUniqueEnity" />
 	<contains name="Action_Move" />
 
 	<!-- Available Parameters -->

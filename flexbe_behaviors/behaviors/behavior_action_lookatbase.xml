@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="action_lookAtBase">
+
+	<executable package_path="behavior_action_lookatbase.action_lookatbase_sm" class="action_lookAtBaseSM" />
+	<tagstring>Action</tagstring>
+	<author>Veronica</author>
+	<date>Wed Apr 25 2018</date>
+	<description>
+		Makes sara look at a given point
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="action_turn" />
+
+	<!-- Available Parameters -->
+
+</behavior>

@@ -220,6 +220,7 @@ class Get_operatorSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Operator'})
 
+
 			# x:461 y:475
 			OperatableStateMachine.add('Move to person',
 										_sm_move_to_person_3,
@@ -268,6 +269,7 @@ class Get_operatorSM(Behavior):
 										transitions={'not_found': 'say where are you', 'done': 'ask if operator'},
 										autonomy={'not_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'index2': 'index2', 'Operator': 'Operator'})
+
 
 
 		return _state_machine
