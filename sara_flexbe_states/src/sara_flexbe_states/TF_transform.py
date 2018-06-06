@@ -46,10 +46,13 @@ class TF_transformation(EventState):
             return 'fail'
 
         point.header.frame_id = self.in_ref
-        self.listener.waitForTransform("map", self.out_ref, rospy.Time(0), rospy.Duration(1))
-        print("Frame : map")
+        self.listener.waitForTransform(self.in_ref, self.out_ref, rospy.Time(0), rospy.Duration(1))
+        print("Frame : " + self.in_ref)
         print(" point : "+str(point.point))
 
         point = self.listener.transformPoint(self.out_ref, point)
+
+        print("Frame : " + self.out_ref)
+        print(" point : "+str(point.point))
         userdata.out_pos = point.point
         return 'done'
