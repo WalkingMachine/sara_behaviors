@@ -10,12 +10,12 @@ import roslib; roslib.load_manifest('behavior_action_pick')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from flexbe_states.calculation_state import CalculationState
-from behavior_action_look_at.action_look_at_sm import action_look_atSM
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.gen_gripper_pose import GenGripperPose
+from sara_flexbe_states.TF_transform import TF_transformation
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -39,7 +39,6 @@ class Action_pickSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(action_look_atSM, 'Get object/action_look_at')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -68,13 +67,13 @@ class Action_pickSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-		# x:30 y:465, x:130 y:465, x:230 y:465
+		# x:499 y:227, x:263 y:214, x:271 y:492
 		_sm_pregrip_0 = OperatableStateMachine(outcomes=['fail', 'failed', 'done'], input_keys=['PreGripPose', 'posobjet'], output_keys=['pose_app', 'grippose', 'pose_lift', 'pose_ret'])
 
 		with _sm_pregrip_0:
 			# x:70 y:40
 			OperatableStateMachine.add('gen_gripPose',
-										GenGripperPose(l=0.0, z=-0.15, planar=True),
+										GenGripperPose(l=0.0, z=0, planar=True),
 										transitions={'done': 'checkifposeaccess', 'fail': 'fail'},
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'pose_in': 'posobjet', 'pose_out': 'grippose'})
@@ -88,7 +87,7 @@ class Action_pickSM(Behavior):
 
 			# x:30 y:398
 			OperatableStateMachine.add('gen_approachPose',
-										GenGripperPose(l=0.15, z=-0.12, planar=True),
+										GenGripperPose(l=0.15, z=0, planar=True),
 										transitions={'done': 'gen_liftPose', 'fail': 'fail'},
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'pose_in': 'posobjet', 'pose_out': 'pose_app'})
@@ -121,7 +120,7 @@ class Action_pickSM(Behavior):
 										remapping={'target': 'grippose'})
 
 
-		# x:30 y:465, x:130 y:465
+		# x:355 y:104, x:130 y:465
 		_sm_get_object_1 = OperatableStateMachine(outcomes=['not_found', 'finished'], input_keys=['objectID'], output_keys=['posobjet'])
 
 		with _sm_get_object_1:
@@ -132,21 +131,14 @@ class Action_pickSM(Behavior):
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ID': 'objectID', 'Entity': 'Entity'})
 
-			# x:50 y:186
+			# x:59 y:257
 			OperatableStateMachine.add('getpose',
 										CalculationState(calculation=lambda x: x.position),
-										transitions={'done': 'action_look_at'},
+										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Entity', 'output_value': 'posobjet'})
 
-			# x:30 y:263
-			OperatableStateMachine.add('action_look_at',
-										self.use_behavior(action_look_atSM, 'Get object/action_look_at'),
-										transitions={'finished': 'finished'},
-										autonomy={'finished': Autonomy.Inherit},
-										remapping={'Position': 'posobjet'})
-
-			# x:46 y:110
+			# x:65 y:151
 			OperatableStateMachine.add('say see it',
 										SaraSayKey(Format=lambda x: "I see the " + x.name, emotion=1, block=False),
 										transitions={'done': 'getpose'},
@@ -159,7 +151,7 @@ class Action_pickSM(Behavior):
 			# x:77 y:23
 			OperatableStateMachine.add('Get object',
 										_sm_get_object_1,
-										transitions={'not_found': 'not found', 'finished': 'PreGrip'},
+										transitions={'not_found': 'not found', 'finished': 'transform point'},
 										autonomy={'not_found': Autonomy.Inherit, 'finished': Autonomy.Inherit},
 										remapping={'objectID': 'objectID', 'posobjet': 'posobjet'})
 
@@ -256,6 +248,13 @@ class Action_pickSM(Behavior):
 										transitions={'fail': 'cant reach', 'failed': 'cant reach', 'done': 'move_approach'},
 										autonomy={'fail': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'PreGripPose': 'PreGripPose', 'posobjet': 'posobjet', 'pose_app': 'pose_app', 'grippose': 'grippose', 'pose_lift': 'pose_lift', 'pose_ret': 'pose_ret'})
+
+			# x:67 y:114
+			OperatableStateMachine.add('transform point',
+										TF_transformation(in_ref="map", out_ref="base_link"),
+										transitions={'done': 'PreGrip', 'fail': 'Get object'},
+										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'in_pos': 'posobjet', 'out_pos': 'posobjet'})
 
 
 		return _state_machine

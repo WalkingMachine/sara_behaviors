@@ -14,7 +14,7 @@ from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from behavior_action_pick.action_pick_sm import Action_pickSM
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.list_entities_by_name import list_entities_by_name
+from behavior_action_find.action_find_sm import Action_findSM
 from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
@@ -47,6 +47,7 @@ class ActionWrapper_PickSM(Behavior):
 
 		# references to used behaviors
 		self.add_behavior(Action_pickSM, 'Action_pick')
+		self.add_behavior(Action_findSM, 'Get object/Action_find')
 		self.add_behavior(action_look_at_faceSM, 'action_look_at_face')
 
 		# Additional initialization code can be added inside the following tags
@@ -62,7 +63,7 @@ class ActionWrapper_PickSM(Behavior):
 
 
 	def create(self):
-		# x:573 y:362, x:584 y:226, x:715 y:440
+		# x:629 y:497, x:743 y:359, x:715 y:440
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Pick","bottle"]
 
@@ -93,27 +94,10 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:30 y:365
-		_sm_look_down_1 = OperatableStateMachine(outcomes=['done'])
-
-		with _sm_look_down_1:
-			# x:30 y:113
-			OperatableStateMachine.add('look down',
-										SaraSetHeadAngle(pitch=0.7, yaw=0),
-										transitions={'done': 'wait'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:165 y:215
-			OperatableStateMachine.add('wait',
-										WaitState(wait_time=3),
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Off})
-
-
 		# x:40 y:700
-		_sm_get_closer_2 = OperatableStateMachine(outcomes=['done'], input_keys=['Object'])
+		_sm_get_closer_1 = OperatableStateMachine(outcomes=['done'], input_keys=['Object'])
 
-		with _sm_get_closer_2:
+		with _sm_get_closer_1:
 			# x:59 y:36
 			OperatableStateMachine.add('set targetpose',
 										SetKey(Value="PreGripPose"),
@@ -175,23 +159,16 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:330 y:124, x:272 y:201
-		_sm_get_object_3 = OperatableStateMachine(outcomes=['not_found', 'done'], input_keys=['Action'], output_keys=['ObjectName', 'ID', 'Object'])
+		# x:421 y:110, x:272 y:201
+		_sm_get_object_2 = OperatableStateMachine(outcomes=['not_found', 'done'], input_keys=['Action'], output_keys=['ObjectName', 'ID', 'Object'])
 
-		with _sm_get_object_3:
+		with _sm_get_object_2:
 			# x:39 y:40
 			OperatableStateMachine.add('get object name',
 										CalculationState(calculation=lambda x: x[1]),
-										transitions={'done': 'get objects'},
+										transitions={'done': 'Action_find'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'ObjectName'})
-
-			# x:30 y:114
-			OperatableStateMachine.add('get objects',
-										list_entities_by_name(frontality_level=0.5),
-										transitions={'found': 'GetObject', 'not_found': 'not_found'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'name': 'ObjectName', 'entity_list': 'Objects', 'number': 'number'})
 
 			# x:36 y:274
 			OperatableStateMachine.add('get closest ID',
@@ -200,104 +177,122 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Object', 'output_value': 'ID'})
 
-			# x:42 y:193
-			OperatableStateMachine.add('GetObject',
-										CalculationState(calculation=lambda x: x[0]),
-										transitions={'done': 'get closest ID'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'Objects', 'output_value': 'Object'})
+			# x:27 y:148
+			OperatableStateMachine.add('Action_find',
+										self.use_behavior(Action_findSM, 'Get object/Action_find'),
+										transitions={'done': 'get closest ID', 'failed': 'not_found'},
+										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'className': 'ObjectName', 'entity': 'Object'})
 
 
+		# x:59 y:308, x:443 y:109
+		_sm_check_form_3 = OperatableStateMachine(outcomes=['done', 'fail'], input_keys=['Action'])
 
-		with _state_machine:
-			# x:42 y:31
+		with _sm_check_form_3:
+			# x:31 y:40
 			OperatableStateMachine.add('check if gripper full',
 										GetRosParam(ParamName="behavior/Gripper_Content"),
 										transitions={'done': 'say full', 'failed': 'cond'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'ObjectInGripper'})
 
-			# x:41 y:112
+			# x:30 y:121
 			OperatableStateMachine.add('cond',
 										CheckConditionState(predicate=lambda x: x[1] == ''),
 										transitions={'true': 'not told', 'false': 'object given'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'Action'})
 
-			# x:233 y:110
+			# x:222 y:119
 			OperatableStateMachine.add('not told',
 										SaraSay(sentence="Hum! They didn't told me what to pick", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'fail'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:348 y:487
-			OperatableStateMachine.add('got it',
-										SaraSayKey(Format=lambda x: "I have the "+x, emotion=1, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'ObjectName'})
-
-			# x:224 y:34
+			# x:213 y:43
 			OperatableStateMachine.add('say full',
 										SaraSayKey(Format=lambda x: "Wait. There is already a "+ x + "in my gripper.", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'fail'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'ObjectInGripper'})
 
-			# x:23 y:478
+			# x:36 y:191
+			OperatableStateMachine.add('object given',
+										SaraSayKey(Format=lambda x: "I need to pick a "+x[1], emotion=1, block=True),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'Action'})
+
+
+
+		with _state_machine:
+			# x:42 y:31
+			OperatableStateMachine.add('Check Form',
+										_sm_check_form_3,
+										transitions={'done': 'Get object', 'fail': 'failed'},
+										autonomy={'done': Autonomy.Inherit, 'fail': Autonomy.Inherit},
+										remapping={'Action': 'Action'})
+
+			# x:32 y:336
 			OperatableStateMachine.add('Action_pick',
 										self.use_behavior(Action_pickSM, 'Action_pick'),
-										transitions={'success': 'got it', 'unreachable': 'for 1', 'not found': 'say lost', 'dropped': 'failed'},
+										transitions={'success': 'got it', 'unreachable': 'for 1', 'not found': 'say lost', 'dropped': 'say missed'},
 										autonomy={'success': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not found': Autonomy.Inherit, 'dropped': Autonomy.Inherit},
 										remapping={'objectID': 'ID'})
 
-			# x:230 y:357
+			# x:271 y:440
 			OperatableStateMachine.add('say lost',
 										SaraSayKey(Format=lambda x: "Hum! I lost sight of the "+x, emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'ObjectName'})
 
-			# x:47 y:182
-			OperatableStateMachine.add('object given',
-										SaraSayKey(Format=lambda x: "I need to pick a "+x[1], emotion=1, block=True),
-										transitions={'done': 'Get object'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'Action'})
-
-			# x:37 y:258
+			# x:34 y:117
 			OperatableStateMachine.add('Get object',
-										_sm_get_object_3,
-										transitions={'not_found': 'look down', 'done': 'action_look_at_face'},
+										_sm_get_object_2,
+										transitions={'not_found': 'failed', 'done': 'action_look_at_face'},
 										autonomy={'not_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Action': 'Action', 'ObjectName': 'ObjectName', 'ID': 'ID', 'Object': 'Object'})
 
-			# x:14 y:363
+			# x:21 y:212
 			OperatableStateMachine.add('action_look_at_face',
 										self.use_behavior(action_look_at_faceSM, 'action_look_at_face'),
 										transitions={'finished': 'Action_pick', 'failed': 'Action_pick'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Entity': 'Object'})
 
-			# x:179 y:598
+			# x:223 y:218
 			OperatableStateMachine.add('Get closer',
-										_sm_get_closer_2,
+										_sm_get_closer_1,
 										transitions={'done': 'Get object'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'Object': 'Object'})
 
-			# x:33 y:597
+			# x:237 y:328
 			OperatableStateMachine.add('for 1',
 										ForLoop(repeat=1),
-										transitions={'do': 'Get closer', 'end': 'failed'},
+										transitions={'do': 'Get closer', 'end': 'say giveup'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
-			# x:203 y:260
-			OperatableStateMachine.add('look down',
-										_sm_look_down_1,
-										transitions={'done': 'Get object'},
-										autonomy={'done': Autonomy.Inherit})
+			# x:358 y:325
+			OperatableStateMachine.add('say giveup',
+										SaraSay(sentence="I give up", emotion=1, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:271 y:388
+			OperatableStateMachine.add('say missed',
+										SaraSay(sentence="Oops! I missed.", emotion=1, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:273 y:487
+			OperatableStateMachine.add('got it',
+										SaraSayKey(Format=lambda x: "I have the "+x, emotion=1, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'ObjectName'})
 
 
 		return _state_machine
