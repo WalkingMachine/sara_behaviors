@@ -14,7 +14,7 @@ from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.wait_state import WaitState
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetKey import SetKey
-from behavior_action_turn.action_turn_sm import action_turnSM
+from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -39,9 +39,7 @@ class Action_findSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(action_turnSM, 'Find Entity WHILE Turning360/Rotation360/action_turn')
-		self.add_behavior(action_look_at_faceSM, 'action_look_at_face')
-		self.add_behavior(action_look_at_faceSM, 'action_look_at_face_2')
+		self.add_behavior(action_look_at_faceSM, 'look for 2 sec/Look at/action_look_at_face')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -53,7 +51,7 @@ class Action_findSM(Behavior):
 
 
 	def create(self):
-		# x:1038 y:503, x:727 y:360
+		# x:84 y:465, x:727 y:360
 		_state_machine = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['className'], output_keys=['entity'])
 		_state_machine.userdata.className = "bottle"
 		_state_machine.userdata.entity = None
@@ -63,77 +61,77 @@ class Action_findSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-		# x:422 y:153
-		_sm_rotation360_0 = OperatableStateMachine(outcomes=['end'])
+		# x:30 y:365
+		_sm_look_at_0 = OperatableStateMachine(outcomes=['end'], input_keys=['ID'])
 
-		with _sm_rotation360_0:
-			# x:83 y:39
+		with _sm_look_at_0:
+			# x:95 y:61
+			OperatableStateMachine.add('get entity',
+										GetEntityByID(),
+										transitions={'found': 'action_look_at_face', 'not_found': 'get entity'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'ID': 'ID', 'Entity': 'Entity'})
+
+			# x:88 y:149
+			OperatableStateMachine.add('action_look_at_face',
+										self.use_behavior(action_look_at_faceSM, 'look for 2 sec/Look at/action_look_at_face'),
+										transitions={'finished': 'action_look_at_face', 'failed': 'action_look_at_face'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'Entity': 'Entity'})
+
+
+		# x:648 y:330
+		_sm_rotation360_1 = OperatableStateMachine(outcomes=['end'])
+
+		with _sm_rotation360_1:
+			# x:42 y:34
 			OperatableStateMachine.add('Set 180 degres',
 										SetKey(Value=3.1416),
 										transitions={'done': 'Look Left'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'rotation'})
 
-			# x:837 y:101
-			OperatableStateMachine.add('action_turn',
-										self.use_behavior(action_turnSM, 'Find Entity WHILE Turning360/Rotation360/action_turn'),
-										transitions={'finished': 'Look Right 2', 'failed': 'end'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'rotation': 'rotation'})
-
-			# x:421 y:54
+			# x:16 y:282
 			OperatableStateMachine.add('Look Right',
-										SaraSetHeadAngle(pitch=0.7, yaw=-1),
+										SaraSetHeadAngle(pitch=0.9, yaw=1),
 										transitions={'done': 'Rotate Right'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:265 y:56
+			# x:36 y:206
 			OperatableStateMachine.add('Rotate Left',
 										WaitState(wait_time=8),
 										transitions={'done': 'Look Right'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:630 y:56
+			# x:27 y:357
 			OperatableStateMachine.add('Rotate Right',
 										WaitState(wait_time=12),
-										transitions={'done': 'action_turn'},
+										transitions={'done': 'Look Left 2'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:77 y:128
+			# x:22 y:134
 			OperatableStateMachine.add('Look Left',
-										SaraSetHeadAngle(pitch=0.7, yaw=1),
+										SaraSetHeadAngle(pitch=0.9, yaw=-1),
 										transitions={'done': 'Rotate Left'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:426 y:240
+			# x:203 y:361
 			OperatableStateMachine.add('Look Left 2',
-										SaraSetHeadAngle(pitch=0.7, yaw=1),
+										SaraSetHeadAngle(pitch=0.9, yaw=-1),
 										transitions={'done': 'Rotate Left 2'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:805 y:226
-			OperatableStateMachine.add('Look Right 2',
-										SaraSetHeadAngle(pitch=0.7, yaw=-1),
-										transitions={'done': 'Rotate Right 2'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:152 y:234
+			# x:220 y:280
 			OperatableStateMachine.add('Rotate Left 2',
 										WaitState(wait_time=12),
-										transitions={'done': 'end'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:637 y:231
-			OperatableStateMachine.add('Rotate Right 2',
-										WaitState(wait_time=8),
-										transitions={'done': 'Look Left 2'},
+										transitions={'done': 'Look Right'},
 										autonomy={'done': Autonomy.Off})
 
 
 		# x:683 y:188, x:473 y:345
-		_sm_find_entity_1 = OperatableStateMachine(outcomes=['found', 'not_found'], input_keys=['className'], output_keys=['entity'])
+		_sm_find_entity_2 = OperatableStateMachine(outcomes=['found', 'not_found'], input_keys=['className'], output_keys=['entity'])
 
-		with _sm_find_entity_1:
+		with _sm_find_entity_2:
 			# x:181 y:178
 			OperatableStateMachine.add('find_entity',
 										list_entities_by_name(frontality_level=0.5),
@@ -155,87 +153,90 @@ class Action_findSM(Behavior):
 										remapping={'input_value': 'entity_list', 'output_value': 'entity'})
 
 
+		# x:371 y:306, x:130 y:365, x:230 y:365
+		_sm_look_for_2_sec_3 = ConcurrencyContainer(outcomes=['done'], input_keys=['ID'], conditions=[
+										('done', [('WaitState 2', 'done')]),
+										('done', [('Look at', 'end')])
+										])
+
+		with _sm_look_for_2_sec_3:
+			# x:84 y:166
+			OperatableStateMachine.add('Look at',
+										_sm_look_at_0,
+										transitions={'end': 'done'},
+										autonomy={'end': Autonomy.Inherit},
+										remapping={'ID': 'ID'})
+
+			# x:345 y:187
+			OperatableStateMachine.add('WaitState 2',
+										WaitState(wait_time=3),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off})
+
+
 		# x:372 y:27, x:370 y:220, x:368 y:100, x:330 y:458, x:460 y:465
-		_sm_find_entity_while_turning360_2 = ConcurrencyContainer(outcomes=['found', 'not_found'], input_keys=['className'], output_keys=['entity'], conditions=[
+		_sm_find_entity_while_turning360_4 = ConcurrencyContainer(outcomes=['found', 'not_found'], input_keys=['className'], output_keys=['entity'], conditions=[
 										('not_found', [('Rotation360', 'end')]),
 										('found', [('Find Entity', 'found')]),
 										('not_found', [('Find Entity', 'not_found')])
 										])
 
-		with _sm_find_entity_while_turning360_2:
+		with _sm_find_entity_while_turning360_4:
 			# x:131 y:44
 			OperatableStateMachine.add('Find Entity',
-										_sm_find_entity_1,
+										_sm_find_entity_2,
 										transitions={'found': 'found', 'not_found': 'not_found'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'className': 'className', 'entity': 'entity'})
 
 			# x:129 y:197
 			OperatableStateMachine.add('Rotation360',
-										_sm_rotation360_0,
+										_sm_rotation360_1,
 										transitions={'end': 'not_found'},
 										autonomy={'end': Autonomy.Inherit})
 
 
 
 		with _state_machine:
-			# x:148 y:101
+			# x:55 y:41
 			OperatableStateMachine.add('Look Front Center',
-										SaraSetHeadAngle(pitch=0.5, yaw=0),
+										SaraSetHeadAngle(pitch=0.7, yaw=0),
 										transitions={'done': 'Find Entity WHILE Turning360'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:574 y:63
-			OperatableStateMachine.add('Look Center Found',
-										SaraSetHeadAngle(pitch=0.5, yaw=0),
-										transitions={'done': 'Log Entity'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:573 y:223
+			# x:345 y:156
 			OperatableStateMachine.add('Look Center Not Found',
-										SaraSetHeadAngle(pitch=0.5, yaw=0),
+										SaraSetHeadAngle(pitch=0.7, yaw=0),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:773 y:38
+			# x:59 y:376
 			OperatableStateMachine.add('Log Entity',
 										LogKeyState(text="Found entity: {}", severity=Logger.REPORT_HINT),
-										transitions={'done': 'action_look_at_face'},
+										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'data': 'entity'})
 
-			# x:338 y:107
+			# x:26 y:121
 			OperatableStateMachine.add('Find Entity WHILE Turning360',
-										_sm_find_entity_while_turning360_2,
-										transitions={'found': 'WaitState', 'not_found': 'Look Center Not Found'},
+										_sm_find_entity_while_turning360_4,
+										transitions={'found': 'get ID', 'not_found': 'Look Center Not Found'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'className': 'className', 'entity': 'entity'})
 
-			# x:635 y:153
-			OperatableStateMachine.add('WaitState',
-										WaitState(wait_time=1),
-										transitions={'done': 'Look Center Found'},
-										autonomy={'done': Autonomy.Off})
+			# x:45 y:290
+			OperatableStateMachine.add('look for 2 sec',
+										_sm_look_for_2_sec_3,
+										transitions={'done': 'Log Entity'},
+										autonomy={'done': Autonomy.Inherit},
+										remapping={'ID': 'ID'})
 
-			# x:969 y:53
-			OperatableStateMachine.add('action_look_at_face',
-										self.use_behavior(action_look_at_faceSM, 'action_look_at_face'),
-										transitions={'finished': 'WaitState 1', 'failed': 'WaitState 1'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'Entity': 'entity'})
-
-			# x:1024 y:197
-			OperatableStateMachine.add('WaitState 1',
-										WaitState(wait_time=2),
-										transitions={'done': 'action_look_at_face_2'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:983 y:357
-			OperatableStateMachine.add('action_look_at_face_2',
-										self.use_behavior(action_look_at_faceSM, 'action_look_at_face_2'),
-										transitions={'finished': 'done', 'failed': 'done'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'Entity': 'entity'})
+			# x:62 y:211
+			OperatableStateMachine.add('get ID',
+										CalculationState(calculation=lambda x: x.ID),
+										transitions={'done': 'look for 2 sec'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'entity', 'output_value': 'ID'})
 
 
 		return _state_machine
