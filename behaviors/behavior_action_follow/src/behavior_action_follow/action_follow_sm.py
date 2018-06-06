@@ -144,6 +144,7 @@ Demande le id de la personne a suivre
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ID': 'ID', 'Entity': 'Entity'})
 
+
 			# x:422 y:129
 			OperatableStateMachine.add('action_look_at_face',
 										self.use_behavior(action_look_at_faceSM, 'Follow/Look at/action_look_at_face'),

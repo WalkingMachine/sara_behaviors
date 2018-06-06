@@ -35,7 +35,8 @@ class Get_Reacheable_Waypoint(EventState):
         Execute this state
         '''
 
-        mypose = userdata.pose = self._sub.get_last_msg(self._topic)
+        # Get the latest robot pose
+        mypose = self._sub.get_last_msg(self._topic)
         Logger.loginfo('my pose is:'+str(mypose))
 
         Out = Pose()
