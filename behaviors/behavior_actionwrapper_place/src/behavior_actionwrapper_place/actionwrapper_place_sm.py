@@ -53,13 +53,13 @@ class ActionWrapper_PlaceSM(Behavior):
 		# O 281 11 
 		# Place|n1- where to put the object
 
-		# O 995 164 
+		# O 588 404 
 		# Chercher un objet de type container (le plus proche?) et se deplacer la bas
 
 
 
 	def create(self):
-		# x:620 y:593, x:661 y:130, x:656 y:30
+		# x:504 y:506, x:675 y:139, x:656 y:30
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Place", "table"]
 
@@ -77,62 +77,62 @@ class ActionWrapper_PlaceSM(Behavior):
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'content'})
 
-			# x:41 y:387
+			# x:34 y:300
 			OperatableStateMachine.add('say place object',
 										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
 										transitions={'done': 'genPoseArm'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'sentence'})
 
-			# x:66 y:744
+			# x:222 y:497
 			OperatableStateMachine.add('Action_place',
 										self.use_behavior(Action_placeSM, 'Action_place'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pos': 'MapPosition'})
 
-			# x:44 y:470
+			# x:39 y:367
 			OperatableStateMachine.add('genPoseArm',
-										GenPoseEuler(x=0.75, y=-0.1, z=0.8, roll=0, pitch=0, yaw=0),
+										GenPoseEuler(x=0.75, y=-0.1, z=0.75, roll=0, pitch=0, yaw=0),
 										transitions={'done': 'referential from robot to map'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'position'})
 
-			# x:26 y:554
+			# x:8 y:433
 			OperatableStateMachine.add('referential from robot to map',
 										TF_transformation(in_ref="base_link", out_ref="map"),
 										transitions={'done': 'log pose', 'fail': 'log tf error'},
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'in_pos': 'position', 'out_pos': 'MapPosition'})
 
-			# x:39 y:118
+			# x:25 y:98
 			OperatableStateMachine.add('if contain something',
 										CheckConditionState(predicate=lambda x: x != ''),
 										transitions={'true': 'cond', 'false': 'say nothing in gripper'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'content'})
 
-			# x:268 y:113
+			# x:209 y:98
 			OperatableStateMachine.add('say nothing in gripper',
 										SaraSay(sentence="It seems I have nothing in my gripper", emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:29 y:297
+			# x:28 y:236
 			OperatableStateMachine.add('construction phrase',
 										FlexibleCalculationState(calculation=lambda x: "I will place this "+str(x[0])+" on the "+str(x[1][1]), input_keys=["content", "Action"]),
 										transitions={'done': 'say place object'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'content': 'content', 'Action': 'Action', 'output_value': 'sentence'})
 
-			# x:1077 y:204
+			# x:641 y:451
 			OperatableStateMachine.add('say place it this place',
 										SaraSayKey(Format=lambda x: "I will place this "+x+" right there.", emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'content'})
 
-			# x:37 y:211
+			# x:33 y:167
 			OperatableStateMachine.add('cond',
 										CheckConditionState(predicate=lambda x: x[1] != ''),
 										transitions={'true': 'construction phrase', 'false': 'failed'},
@@ -145,7 +145,7 @@ class ActionWrapper_PlaceSM(Behavior):
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:66 y:638
+			# x:42 y:502
 			OperatableStateMachine.add('log pose',
 										LogKeyState(text="the placement pose will be: {}", severity=Logger.REPORT_HINT),
 										transitions={'done': 'Action_place'},

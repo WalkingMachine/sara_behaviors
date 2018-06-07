@@ -8,10 +8,9 @@
 
 import roslib; roslib.load_manifest('behavior_a_test_sandbox')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from flexbe_states.log_state import LogState
-from behavior_action_place.action_place_sm import Action_placeSM
-from sara_flexbe_states.moveit_move import MoveitMove
+from behavior_actionwrapper_pick.actionwrapper_pick_sm import ActionWrapper_PickSM
+from behavior_actionwrapper_place.actionwrapper_place_sm import ActionWrapper_PlaceSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -35,7 +34,8 @@ class ATestSandboxSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_placeSM, 'Action_place')
+		self.add_behavior(ActionWrapper_PickSM, 'ActionWrapper_Pick')
+		self.add_behavior(ActionWrapper_PlaceSM, 'ActionWrapper_Place')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -51,6 +51,7 @@ class ATestSandboxSM(Behavior):
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.Pose1 = "PreGripPose"
 		_state_machine.userdata.Pose2 = "IdlePose"
+		_state_machine.userdata.Action = ["", "bottle"]
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -59,25 +60,12 @@ class ATestSandboxSM(Behavior):
 
 
 		with _state_machine:
-			# x:80 y:50
-			OperatableStateMachine.add('POSE',
-										GenPoseEuler(x=0.75, y=-0.25, z=0.8, roll=0, pitch=0, yaw=0),
-										transitions={'done': 'Action_place'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose': 'pos'})
-
-			# x:725 y:32
-			OperatableStateMachine.add('success',
-										LogState(text="The test is a success", severity=Logger.REPORT_HINT),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:266 y:65
-			OperatableStateMachine.add('Action_place',
-										self.use_behavior(Action_placeSM, 'Action_place'),
-										transitions={'finished': 'back', 'failed': 'Failure'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pos': 'pos'})
+			# x:120 y:64
+			OperatableStateMachine.add('ActionWrapper_Pick',
+										self.use_behavior(ActionWrapper_PickSM, 'ActionWrapper_Pick'),
+										transitions={'finished': 'ActionWrapper_Place', 'failed': 'Failure', 'critical_fail': 'Failure'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
+										remapping={'Action': 'Action'})
 
 			# x:718 y:180
 			OperatableStateMachine.add('Failure',
@@ -85,12 +73,18 @@ class ATestSandboxSM(Behavior):
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:542 y:17
-			OperatableStateMachine.add('back',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'success', 'failed': 'success'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'Pose2'})
+			# x:388 y:20
+			OperatableStateMachine.add('ActionWrapper_Place',
+										self.use_behavior(ActionWrapper_PlaceSM, 'ActionWrapper_Place'),
+										transitions={'finished': 'success', 'failed': 'Failure', 'critical_fail': 'Failure'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
+										remapping={'Action': 'Action'})
+
+			# x:725 y:32
+			OperatableStateMachine.add('success',
+										LogState(text="The test is a success", severity=Logger.REPORT_HINT),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

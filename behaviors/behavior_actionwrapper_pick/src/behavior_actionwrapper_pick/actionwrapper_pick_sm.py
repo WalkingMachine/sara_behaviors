@@ -23,6 +23,7 @@ from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.for_loop import ForLoop
+from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -268,14 +269,14 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'Object': 'Object'})
 
-			# x:237 y:328
+			# x:275 y:333
 			OperatableStateMachine.add('for 1',
 										ForLoop(repeat=1),
 										transitions={'do': 'Get closer', 'end': 'say giveup'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
-			# x:358 y:325
+			# x:399 y:336
 			OperatableStateMachine.add('say giveup',
 										SaraSay(sentence="I give up", emotion=1, block=True),
 										transitions={'done': 'failed'},
@@ -290,9 +291,16 @@ class ActionWrapper_PickSM(Behavior):
 			# x:273 y:487
 			OperatableStateMachine.add('got it',
 										SaraSayKey(Format=lambda x: "I have the "+x, emotion=1, block=True),
-										transitions={'done': 'finished'},
+										transitions={'done': 'set param'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'ObjectName'})
+
+			# x:443 y:497
+			OperatableStateMachine.add('set param',
+										SetRosParam(ParamName="behavior/GripperContent"),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'ObjectName'})
 
 
 		return _state_machine
