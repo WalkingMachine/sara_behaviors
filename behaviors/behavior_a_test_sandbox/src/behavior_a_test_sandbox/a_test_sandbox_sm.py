@@ -8,8 +8,9 @@
 
 import roslib; roslib.load_manifest('behavior_a_test_sandbox')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.sara_follow import SaraFollow
 from flexbe_states.log_state import LogState
+from behavior_actionwrapper_pick.actionwrapper_pick_sm import ActionWrapper_PickSM
+from behavior_actionwrapper_place.actionwrapper_place_sm import ActionWrapper_PlaceSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -33,6 +34,8 @@ class ATestSandboxSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
+		self.add_behavior(ActionWrapper_PickSM, 'ActionWrapper_Pick')
+		self.add_behavior(ActionWrapper_PlaceSM, 'ActionWrapper_Place')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -46,7 +49,9 @@ class ATestSandboxSM(Behavior):
 	def create(self):
 		# x:824 y:62, x:824 y:212
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
-		_state_machine.userdata.ID = 1
+		_state_machine.userdata.Pose1 = "PreGripPose"
+		_state_machine.userdata.Pose2 = "IdlePose"
+		_state_machine.userdata.Action = ["", "bottle"]
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -55,23 +60,30 @@ class ATestSandboxSM(Behavior):
 
 
 		with _state_machine:
-			# x:438 y:121
-			OperatableStateMachine.add('ff',
-										SaraFollow(distance=1),
-										transitions={'failed': 'success'},
-										autonomy={'failed': Autonomy.Off},
-										remapping={'ID': 'ID'})
-
-			# x:725 y:32
-			OperatableStateMachine.add('success',
-										LogState(text="The test is a success", severity=Logger.REPORT_HINT),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off})
+			# x:120 y:64
+			OperatableStateMachine.add('ActionWrapper_Pick',
+										self.use_behavior(ActionWrapper_PickSM, 'ActionWrapper_Pick'),
+										transitions={'finished': 'ActionWrapper_Place', 'failed': 'Failure', 'critical_fail': 'Failure'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
+										remapping={'Action': 'Action'})
 
 			# x:718 y:180
 			OperatableStateMachine.add('Failure',
 										LogState(text="The test is a failure", severity=Logger.REPORT_HINT),
 										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:388 y:20
+			OperatableStateMachine.add('ActionWrapper_Place',
+										self.use_behavior(ActionWrapper_PlaceSM, 'ActionWrapper_Place'),
+										transitions={'finished': 'success', 'failed': 'Failure', 'critical_fail': 'Failure'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
+										remapping={'Action': 'Action'})
+
+			# x:725 y:32
+			OperatableStateMachine.add('success',
+										LogState(text="The test is a success", severity=Logger.REPORT_HINT),
+										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
 

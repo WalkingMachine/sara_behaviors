@@ -71,14 +71,14 @@ class action_look_at_faceSM(Behavior):
 
 			# x:471 y:323
 			OperatableStateMachine.add('direction',
-										Get_direction_to_point(frame_origin="base_link", frame_reference="head_link"),
+										Get_direction_to_point(frame_origin="base_link", frame_reference="head_xtion_link"),
 										transitions={'done': 'limit yaw', 'fail': 'failed'},
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'targetPoint': 'Position', 'yaw': 'yaw', 'pitch': 'pitch'})
 
 			# x:791 y:325
 			OperatableStateMachine.add('InvertPitch',
-										CalculationState(calculation=lambda x: max(min(-x, 0.7), -0.7)),
+										CalculationState(calculation=lambda x: max(min(-x, 0.7), -0.7)+0.2),
 										transitions={'done': 'Head'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'pitch', 'output_value': 'pitch'})
@@ -160,7 +160,7 @@ class action_look_at_faceSM(Behavior):
 
 			# x:651 y:324
 			OperatableStateMachine.add('limit yaw',
-										CalculationState(calculation=lambda x: max(min(x, 1.5), -1.5)),
+										CalculationState(calculation=lambda x: max(min(x, 2), -2)),
 										transitions={'done': 'InvertPitch'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'yaw', 'output_value': 'yaw'})

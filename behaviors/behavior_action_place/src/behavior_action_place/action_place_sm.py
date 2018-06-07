@@ -14,8 +14,9 @@ from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.set_gripper_state import SetGripperState
-from sara_flexbe_states.torque_reader import ReadTorque
 from flexbe_states.log_state import LogState
+from sara_flexbe_states.torque_reader import ReadTorque
+from sara_flexbe_states.sara_say import SaraSay
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -50,37 +51,37 @@ class Action_placeSM(Behavior):
 		# O 52 47 
 		# TF Transform |nFrame1 Frame2|n
 
-		# O 50 355 
+		# O 36 311 
 		# Gen Grip pose|n|nA
 
-		# O 25 536 
+		# O 21 445 
 		# MoveIt move|nmove = false|n|nPos
 
 		# O 7 186 
 		# PreGrip Pose #pre grip
 
-		# O 23 441 
+		# O 18 372 
 		# #approach_pos|nGen Grip pose|ndistance = 0.25
 
-		# O 408 728 
+		# O 344 635 
 		# MoveIt move|nmove =True|n|nA
 
-		# O 624 719 
+		# O 613 634 
 		# open grip
 
-		# O 33 672 
+		# O 33 577 
 		# MoveIt move|nmove =True|n|nB
 
-		# O 820 714 
+		# O 766 629 
 		# MoveIt move|n|nB
 
-		# O 1135 688 
+		# O 1087 628 
 		# #preGrip|nMoveIt move
 
 
 
 	def create(self):
-		# x:1326 y:575, x:733 y:320
+		# x:1108 y:375, x:649 y:312
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['pos'])
 		_state_machine.userdata.pos = 0
 
@@ -89,28 +90,53 @@ class Action_placeSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-		# x:30 y:458
-		_sm_read_torque_0 = OperatableStateMachine(outcomes=['done'])
+		# x:30 y:458, x:130 y:458, x:230 y:458, x:330 y:458, x:430 y:458, x:530 y:458, x:630 y:458, x:59 y:533, x:830 y:458
+		_sm_group_0 = ConcurrencyContainer(outcomes=['threshold', 'watchdog', 'fail'], conditions=[
+										('threshold', [('read', 'threshold')]),
+										('watchdog', [('read', 'watchdog')]),
+										('fail', [('read', 'fail')]),
+										('threshold', [('read yaw', 'threshold')]),
+										('fail', [('read yaw', 'fail')]),
+										('watchdog', [('read yaw', 'watchdog')])
+										])
 
-		with _sm_read_torque_0:
-			# x:142 y:61
-			OperatableStateMachine.add('log',
-										LogState(text="going down", severity=Logger.REPORT_HINT),
-										transitions={'done': 'read'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:131 y:164
+		with _sm_group_0:
+			# x:86 y:125
 			OperatableStateMachine.add('read',
-										ReadTorque(watchdog=1, Joint="right_elbow_pitch_joint", Threshold=0.25, min_time=0.75),
-										transitions={'threshold': 'done', 'watchdog': 'log', 'fail': 'done'},
+										ReadTorque(watchdog=1, Joint="right_elbow_pitch_joint", Threshold=0.7, min_time=0.4),
+										transitions={'threshold': 'threshold', 'watchdog': 'watchdog', 'fail': 'fail'},
+										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'torque': 'torque'})
+
+			# x:252 y:135
+			OperatableStateMachine.add('read yaw',
+										ReadTorque(watchdog=1, Joint="right_elbow_pitch_joint", Threshold=0.5, min_time=0.4),
+										transitions={'threshold': 'threshold', 'watchdog': 'watchdog', 'fail': 'fail'},
 										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'torque': 'torque'})
 
 
 		# x:30 y:458
-		_sm_go_down_1 = OperatableStateMachine(outcomes=['done'], input_keys=['GripPose'])
+		_sm_read_torque_1 = OperatableStateMachine(outcomes=['done'])
 
-		with _sm_go_down_1:
+		with _sm_read_torque_1:
+			# x:142 y:61
+			OperatableStateMachine.add('log',
+										LogState(text="going down", severity=Logger.REPORT_HINT),
+										transitions={'done': 'Group'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:131 y:164
+			OperatableStateMachine.add('Group',
+										_sm_group_0,
+										transitions={'threshold': 'done', 'watchdog': 'log', 'fail': 'done'},
+										autonomy={'threshold': Autonomy.Inherit, 'watchdog': Autonomy.Inherit, 'fail': Autonomy.Inherit})
+
+
+		# x:30 y:458
+		_sm_go_down_2 = OperatableStateMachine(outcomes=['done'], input_keys=['GripPose'])
+
+		with _sm_go_down_2:
 			# x:126 y:194
 			OperatableStateMachine.add('movePlace',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
@@ -120,22 +146,22 @@ class Action_placeSM(Behavior):
 
 
 		# x:30 y:458, x:130 y:458, x:230 y:458
-		_sm_get_down_2 = ConcurrencyContainer(outcomes=['done'], input_keys=['GripPose'], conditions=[
+		_sm_get_down_3 = ConcurrencyContainer(outcomes=['done'], input_keys=['GripPose'], conditions=[
 										('done', [('Go down', 'done')]),
 										('done', [('read torque', 'done')])
 										])
 
-		with _sm_get_down_2:
+		with _sm_get_down_3:
 			# x:178 y:127
 			OperatableStateMachine.add('Go down',
-										_sm_go_down_1,
+										_sm_go_down_2,
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'GripPose': 'GripPose'})
 
 			# x:405 y:150
 			OperatableStateMachine.add('read torque',
-										_sm_read_torque_0,
+										_sm_read_torque_1,
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Inherit})
 
@@ -149,96 +175,109 @@ class Action_placeSM(Behavior):
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'in_pos': 'pos', 'out_pos': 'pos'})
 
-			# x:144 y:351
+			# x:144 y:299
 			OperatableStateMachine.add('Gen place_pos',
 										GenGripperPose(l=0, z=-0.05, planar=True),
 										transitions={'done': 'Gen approach_pos', 'fail': 'failed'},
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'pose_in': 'pos', 'pose_out': 'grip_pose'})
 
-			# x:118 y:672
+			# x:118 y:580
 			OperatableStateMachine.add('Move_approach',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
 										transitions={'done': 'Get_down', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'approach_pose'})
 
-			# x:155 y:262
+			# x:150 y:231
 			OperatableStateMachine.add('gotoPreGrip',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
 										transitions={'done': 'Gen place_pos', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'PreGripPose'})
 
-			# x:115 y:537
+			# x:124 y:435
 			OperatableStateMachine.add('MoveIt_isReachable',
 										MoveitMove(move=False, waitForExecution=True, group="RightArm"),
 										transitions={'done': 'log app', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'grip_pose'})
 
-			# x:157 y:185
+			# x:148 y:165
 			OperatableStateMachine.add('setPreGripPose',
 										SetKey(Value="PrePlacePose"),
 										transitions={'done': 'gotoPreGrip'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'PreGripPose'})
 
-			# x:131 y:443
+			# x:131 y:367
 			OperatableStateMachine.add('Gen approach_pos',
 										GenGripperPose(l=0.0, z=0.20, planar=True),
-										transitions={'done': 'MoveIt_isReachable', 'fail': 'failed'},
+										transitions={'done': 'log place pos', 'fail': 'failed'},
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'pose_in': 'pos', 'pose_out': 'approach_pose'})
 
-			# x:821 y:669
+			# x:739 y:581
 			OperatableStateMachine.add('ReturnApproachPose',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
 										transitions={'done': 'close gripper', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'approach_pose'})
 
-			# x:1135 y:642
+			# x:1083 y:580
 			OperatableStateMachine.add('ReturnPreGrip',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
 										transitions={'done': 'finished', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'PreGripPose'})
 
-			# x:154 y:106
+			# x:151 y:101
 			OperatableStateMachine.add('LOG POSE',
 										LogKeyState(text="{}", severity=Logger.REPORT_HINT),
 										transitions={'done': 'setPreGripPose'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'data': 'pos'})
 
-			# x:123 y:605
+			# x:137 y:506
 			OperatableStateMachine.add('log app',
 										LogKeyState(text="{}", severity=Logger.REPORT_HINT),
 										transitions={'done': 'Move_approach'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'data': 'approach_pose'})
 
-			# x:606 y:675
+			# x:590 y:586
 			OperatableStateMachine.add('open gripper',
 										SetGripperState(width=0.14, effort=1),
 										transitions={'object': 'ReturnApproachPose', 'no_object': 'ReturnApproachPose'},
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
-			# x:988 y:659
+			# x:923 y:585
 			OperatableStateMachine.add('close gripper',
 										SetGripperState(width=0, effort=1),
 										transitions={'object': 'ReturnPreGrip', 'no_object': 'ReturnPreGrip'},
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
-			# x:392 y:670
+			# x:321 y:579
 			OperatableStateMachine.add('Get_down',
-										_sm_get_down_2,
-										transitions={'done': 'open gripper'},
+										_sm_get_down_3,
+										transitions={'done': 'say touchdown'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'GripPose': 'grip_pose'})
+
+			# x:287 y:397
+			OperatableStateMachine.add('log place pos',
+										LogKeyState(text="place pose is {}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'MoveIt_isReachable'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'grip_pose'})
+
+			# x:463 y:518
+			OperatableStateMachine.add('say touchdown',
+										SaraSay(sentence="Touchdown!", emotion=1, block=False),
+										transitions={'done': 'open gripper'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

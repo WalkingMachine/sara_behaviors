@@ -59,7 +59,7 @@ class Action_GiveSM(Behavior):
 
 
 	def create(self):
-		# x:1195 y:433, x:122 y:501, x:366 y:140, x:1118 y:593
+		# x:1195 y:433, x:121 y:572, x:572 y:82, x:1118 y:593
 		_state_machine = OperatableStateMachine(outcomes=['Given', 'Person_not_found', 'No_object_in_hand', 'fail'])
 
 		# Additional creation code can be added inside the following tags
@@ -195,13 +195,14 @@ class Action_GiveSM(Behavior):
 			# x:77 y:29
 			OperatableStateMachine.add('Get hand contaent',
 										GetRosParam(ParamName="GripperContent"),
-										transitions={'done': 'is object in hand?', 'failed': 'log empty hand'},
+										transitions={'done': 'is object in hand?', 'failed': 'say empty'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'Object'})
 
 			# x:75 y:113
 			OperatableStateMachine.add('is object in hand?',
 										CheckConditionState(predicate=lambda x: x),
+
 										transitions={'true': 'name', 'false': 'log empty hand'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'Object'})
@@ -213,9 +214,9 @@ class Action_GiveSM(Behavior):
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'name': 'name', 'entity_list': 'People_list', 'number': 'number'})
 
-			# x:290 y:56
+			# x:434 y:62
 			OperatableStateMachine.add('log empty hand',
-										LogState(text="The hand is empty. Set the GripperContent rosParma", severity=Logger.REPORT_HINT),
+										LogState(text="The hand is empty. Set the GripperContent rosParam", severity=Logger.REPORT_HINT),
 										transitions={'done': 'No_object_in_hand'},
 										autonomy={'done': Autonomy.Off})
 
@@ -280,12 +281,14 @@ class Action_GiveSM(Behavior):
 										autonomy={'failed': Autonomy.Inherit, 'given': Autonomy.Inherit, 'continue': Autonomy.Inherit},
 										remapping={'ID': 'ID', 'Object': 'Object'})
 
+
 			# x:256 y:278
 			OperatableStateMachine.add('get id',
 										CalculationState(calculation=lambda x: x[0].ID),
 										transitions={'done': 'give'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'People_list', 'output_value': 'ID'})
+
 
 			# x:95 y:195
 			OperatableStateMachine.add('name',
