@@ -50,11 +50,12 @@ class WonderlandSaveAllPersonsSM(Behavior):
 
 
 	def create(self):
-		# x:933 y:53, x:166 y:335
-		_state_machine = OperatableStateMachine(outcomes=['done', 'none'], output_keys=['females', 'males'])
+		# x:977 y:71, x:166 y:335
+		_state_machine = OperatableStateMachine(outcomes=['done', 'none'], output_keys=['females', 'males', 'number'])
 		_state_machine.userdata.person = "person"
 		_state_machine.userdata.males = 0
 		_state_machine.userdata.females = 0
+		_state_machine.userdata.number = 0
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -163,7 +164,7 @@ class WonderlandSaveAllPersonsSM(Behavior):
 
 
 		with _state_machine:
-			# x:229 y:43
+			# x:249 y:50
 			OperatableStateMachine.add('Get All Persons',
 										list_entities_by_name(frontality_level=0.5),
 										transitions={'found': 'Save all persons', 'not_found': 'No Person Found'},
