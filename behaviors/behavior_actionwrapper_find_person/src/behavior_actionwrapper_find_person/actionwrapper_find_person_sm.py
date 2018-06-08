@@ -167,8 +167,8 @@ class ActionWrapper_Find_PersonSM(Behavior):
 			# x:270 y:71
 			OperatableStateMachine.add('Action_find',
 										self.use_behavior(Action_findSM, 'Action_find'),
-										transitions={'done': 'Ask Confirmation', 'pas_done': 'reset Head'},
-										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
+										transitions={'done': 'Ask Confirmation', 'failed': 'reset Head'},
+										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'className': 'person', 'entity': 'entity'})
 
 			# x:401 y:658

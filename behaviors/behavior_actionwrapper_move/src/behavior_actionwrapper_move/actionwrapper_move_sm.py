@@ -60,7 +60,7 @@ class ActionWrapper_MoveSM(Behavior):
 
 
 	def create(self):
-		# x:470 y:280, x:618 y:290, x:408 y:396
+		# x:470 y:280, x:374 y:185, x:408 y:396
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Move",'table','kitchen']
 		_state_machine.userdata.relative = False
@@ -269,7 +269,7 @@ class ActionWrapper_MoveSM(Behavior):
 			# x:69 y:234
 			OperatableStateMachine.add('Try to find area',
 										_sm_try_to_find_area_5,
-										transitions={'found': 'Try to reach', 'not_found': 'Set Finished'},
+										transitions={'found': 'Try to reach', 'not_found': 'failed'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'area_to_search': 'area', 'containers': 'containers', 'area_name': 'area_name', 'waypoint': 'waypoint'})
 

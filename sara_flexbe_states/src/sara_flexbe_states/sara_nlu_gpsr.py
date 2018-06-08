@@ -33,16 +33,12 @@ class SaraNLUgpsr(EventState):
 
     def execute(self, userdata):
 
-        # Special case for STOP
-        regex = re.compile('.*(stop).*')
-        if regex.match(userdata.sentence.lower()):
-            Logger.loginfo("Stop now!")
-            userdata.ActionForms = [["Stop"]]
-            return "understood"
-
         # Call the NLU service
         serv = rospy.ServiceProxy(self.serviceName, GPSRReceiveAction)
+        Logger.loginfo('Calling NLU service')
         Resp = serv(String(userdata.sentence))
+        Logger.loginfo(str(Resp))
+
 
         # Checking the validity of the responce
         count = len(Resp.actions.actions)
@@ -68,4 +64,4 @@ class SaraNLUgpsr(EventState):
         return "understood"
 
     def on_enter(self, userdata):
-        Logger.loginfo('Enter SaraNLU')
+        Logger.loginfo('Enter SaraNLUgpsr')

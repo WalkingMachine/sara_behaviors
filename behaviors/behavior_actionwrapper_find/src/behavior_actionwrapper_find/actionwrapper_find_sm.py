@@ -73,7 +73,7 @@ class ActionWrapper_FindSM(Behavior):
 			# x:325 y:70
 			OperatableStateMachine.add('say no object given',
 										SaraSay(sentence="You didn't told me what to find.", emotion=1, block=True),
-										transitions={'done': 'finished'},
+										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:75 y:253
@@ -118,7 +118,7 @@ class ActionWrapper_FindSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'entity', 'output_value': 'id'})
 
-			# x:511 y:316
+			# x:490 y:316
 			OperatableStateMachine.add('Set Time',
 										SetRosParam(ParamName="/behavior/FoundEntity/lastUpdate"),
 										transitions={'done': 'Set Id'},
@@ -128,7 +128,7 @@ class ActionWrapper_FindSM(Behavior):
 			# x:645 y:323
 			OperatableStateMachine.add('Set Id',
 										SetRosParam(ParamName="/behavior/FoundEntity/Id"),
-										transitions={'done': 'failed'},
+										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'id'})
 
