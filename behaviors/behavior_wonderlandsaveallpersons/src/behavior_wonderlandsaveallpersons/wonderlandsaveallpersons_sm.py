@@ -15,6 +15,7 @@ from flexbe_states.check_condition_state import CheckConditionState
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from behavior_wonderlandaddupdateperson.wonderlandaddupdateperson_sm import WonderlandAddUpdatePersonSM
 from sara_flexbe_states.SetKey import SetKey
+from flexbe_states.log_key_state import LogKeyState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -83,21 +84,21 @@ class WonderlandSaveAllPersonsSM(Behavior):
 			# x:434 y:186
 			OperatableStateMachine.add('Decrease Index',
 										CalculationState(calculation=lambda x: x-1),
-										transitions={'done': 'Select entity'},
+										transitions={'done': 'LogIndex'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'index', 'output_value': 'index'})
 
 			# x:621 y:189
 			OperatableStateMachine.add('Select entity',
-										FlexibleCalculationState(calculation=lambda x: x[0][x[1]], input_keys=["index", "entities"]),
-										transitions={'done': 'Is Female'},
+										FlexibleCalculationState(calculation=lambda x: x[1][x[0]], input_keys=["index", "entities"]),
+										transitions={'done': 'Log Entity'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'index': 'index', 'entities': 'entities', 'output_value': 'entity'})
 
 			# x:564 y:459
 			OperatableStateMachine.add('WonderlandAddUpdatePerson',
 										self.use_behavior(WonderlandAddUpdatePersonSM, 'Save all persons/WonderlandAddUpdatePerson'),
-										transitions={'added': 'Added', 'updated': 'Updated', 'error': 'BadObject', 'bad_object': 'BadObject'},
+										transitions={'added': 'Added', 'updated': 'Updated', 'error': 'ErrorObject', 'bad_object': 'BadObject'},
 										autonomy={'added': Autonomy.Inherit, 'updated': Autonomy.Inherit, 'error': Autonomy.Inherit, 'bad_object': Autonomy.Inherit},
 										remapping={'entity': 'entity'})
 
@@ -115,7 +116,7 @@ class WonderlandSaveAllPersonsSM(Behavior):
 
 			# x:276 y:466
 			OperatableStateMachine.add('BadObject',
-										LogState(text="Can not add oject.", severity=Logger.REPORT_ERROR),
+										LogState(text="Can not add oject: Bad Object.", severity=Logger.REPORT_ERROR),
 										transitions={'done': 'IsEnd'},
 										autonomy={'done': Autonomy.Off})
 
@@ -160,6 +161,26 @@ class WonderlandSaveAllPersonsSM(Behavior):
 										transitions={'done': 'WonderlandAddUpdatePerson'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'males', 'output_value': 'males'})
+
+			# x:874 y:120
+			OperatableStateMachine.add('Log Entity',
+										LogKeyState(text="Entity: \n {}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'Is Female'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'entity'})
+
+			# x:588 y:80
+			OperatableStateMachine.add('LogIndex',
+										LogKeyState(text="Index: {}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'Select entity'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'index'})
+
+			# x:267 y:550
+			OperatableStateMachine.add('ErrorObject',
+										LogState(text="Can not add oject: Error.", severity=Logger.REPORT_HINT),
+										transitions={'done': 'IsEnd'},
+										autonomy={'done': Autonomy.Off})
 
 
 
