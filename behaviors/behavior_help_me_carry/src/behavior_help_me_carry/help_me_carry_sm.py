@@ -84,9 +84,9 @@ class HelpmecarrySM(Behavior):
 		# [/MANUAL_CREATE]
 
 		# x:700 y:231, x:418 y:463
-		_sm_ecoute&getpose_0 = OperatableStateMachine(outcomes=['arrete', 'fail'], output_keys=['Position'])
+		_sm_ecoute_getpose_0 = OperatableStateMachine(outcomes=['arrete', 'fail'], output_keys=['Position'])
 
-		with _sm_ecoute&getpose_0:
+		with _sm_ecoute_getpose_0:
 			# x:53 y:35
 			OperatableStateMachine.add('Ecoute',
 										GetSpeech(watchdog=5),
@@ -112,8 +112,8 @@ class HelpmecarrySM(Behavior):
 		# x:346 y:367, x:130 y:365, x:230 y:365, x:178 y:422, x:430 y:365
 		_sm_follow_1 = ConcurrencyContainer(outcomes=['done', 'failed'], input_keys=['ID', 'distance'], output_keys=['Position'], conditions=[
 										('failed', [('Action_follow', 'failed')]),
-										('done', [('Ecoute&getPose', 'arrete')]),
-										('failed', [('Ecoute&getPose', 'fail')])
+										('done', [('Ecoute_getPose', 'arrete')]),
+										('failed', [('Ecoute_getPose', 'fail')])
 										])
 
 		with _sm_follow_1:
@@ -125,8 +125,8 @@ class HelpmecarrySM(Behavior):
 										remapping={'ID': 'ID', 'distance': 'distance'})
 
 			# x:294 y:146
-			OperatableStateMachine.add('Ecoute&getPose',
-										_sm_ecoute&getpose_0,
+			OperatableStateMachine.add('Ecoute_getPose',
+										_sm_ecoute_getpose_0,
 										transitions={'arrete': 'done', 'fail': 'failed'},
 										autonomy={'arrete': Autonomy.Inherit, 'fail': Autonomy.Inherit},
 										remapping={'Position': 'Position'})
