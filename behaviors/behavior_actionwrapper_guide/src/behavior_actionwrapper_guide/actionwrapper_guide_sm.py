@@ -580,14 +580,14 @@ class ActionWrapper_GuideSM(Behavior):
 
 
 		with _state_machine:
-			# x:88 y:77
+			# x:86 y:45
 			OperatableStateMachine.add('Get Person Id',
 										GetRosParam(ParamName="behavior/FoundPerson/Id"),
 										transitions={'done': 'GetPerson', 'failed': 'Cant Find Person'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'ID'})
 
-			# x:72 y:240
+			# x:61 y:242
 			OperatableStateMachine.add('Decompose Command',
 										_sm_decompose_command_18,
 										transitions={'done': 'Try to find area'},
@@ -607,17 +607,17 @@ class ActionWrapper_GuideSM(Behavior):
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:91 y:159
+			# x:88 y:129
 			OperatableStateMachine.add('GetPerson',
 										GetEntityByID(),
 										transitions={'found': 'Decompose Command', 'not_found': 'Cant Find Person'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ID': 'ID', 'Entity': 'Entity'})
 
-			# x:89 y:386
+			# x:77 y:331
 			OperatableStateMachine.add('Try to find area',
 										_sm_try_to_find_area_16,
-										transitions={'found': 'Try to reach', 'not_found': 'Cant Find Person'},
+										transitions={'found': 'say begin follow me', 'not_found': 'Cant Find Person'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'area_to_search': 'area', 'containers': 'containers', 'area_name': 'area_name', 'waypoint': 'waypoint'})
 
@@ -633,6 +633,13 @@ class ActionWrapper_GuideSM(Behavior):
 										SaraSay(sentence="I have reach my goal but I'm not sure if my operator is there", emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:85 y:421
+			OperatableStateMachine.add('say begin follow me',
+										SaraSayKey(Format=lambda x: "Follow me please. I'm going to the "+x, emotion=1, block=True),
+										transitions={'done': 'Try to reach'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'area_name'})
 
 
 		return _state_machine
