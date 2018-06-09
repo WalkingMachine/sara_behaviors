@@ -8,16 +8,12 @@
 
 import roslib; roslib.load_manifest('behavior_action_follow')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
+from sara_flexbe_states.sara_follow import SaraFollow
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
-from flexbe_states.log_key_state import LogKeyState
-from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.sara_move_base import SaraMoveBase
+from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.wait_state import WaitState
-from sara_flexbe_states.get_distance2D import getDistance2D
-from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
-from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
-from sara_flexbe_states.process_follow_distance import processFollowDistance
-from sara_flexbe_states.SetKey import SetKey
+from sara_flexbe_states.sara_say import SaraSay
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -42,6 +38,7 @@ Demande le id de la personne a suivre
 		# parameters of this behavior
 
 		# references to used behaviors
+		self.add_behavior(action_look_at_faceSM, 'Follow/Look at/action_look_at_face')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -54,159 +51,169 @@ Demande le id de la personne a suivre
 
 	def create(self):
 		# x:572 y:135
-		_state_machine = OperatableStateMachine(outcomes=['failed'], input_keys=['ID', 'distance'])
-		_state_machine.userdata.ID = 74
-		_state_machine.userdata.distance = 1
+		_state_machine = OperatableStateMachine(outcomes=['failed'], input_keys=['ID'])
+		_state_machine.userdata.ID = 22
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
         
         # [/MANUAL_CREATE]
 
-		# x:549 y:52, x:392 y:555
-		_sm_group_2_0 = OperatableStateMachine(outcomes=['not_found', 'update'], input_keys=['ID', 'TargetPose', 'distance'], output_keys=['TargetPose'])
+		# x:30 y:365
+		_sm_turn_head_0 = OperatableStateMachine(outcomes=['fail'])
 
-		with _sm_group_2_0:
-			# x:309 y:115
-			OperatableStateMachine.add('wait1',
-										WaitState(wait_time=2),
-										transitions={'done': 'GetEntityByID'},
+		with _sm_turn_head_0:
+			# x:75 y:47
+			OperatableStateMachine.add('turn r',
+										SaraSetHeadAngle(pitch=0, yaw=-1.5),
+										transitions={'done': 'w3'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:32 y:113
-			OperatableStateMachine.add('getPositionFromEntity',
-										CalculationState(calculation=lambda x: x.position),
-										transitions={'done': 'Get_Reacheable_Waypoint'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'Entity', 'output_value': 'position'})
+			# x:673 y:293
+			OperatableStateMachine.add('wait1',
+										WaitState(wait_time=8),
+										transitions={'done': 'turn right'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:95 y:341
-			OperatableStateMachine.add('getDistance2D',
-										getDistance2D(),
-										transitions={'done': 'processFollowDistance'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'point1': 'position', 'point2': 'sara_position', 'distance': 'distance'})
+			# x:369 y:464
+			OperatableStateMachine.add('turn right',
+										SaraSetHeadAngle(pitch=0, yaw=-1.5),
+										transitions={'done': 'wait2'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:105 y:186
-			OperatableStateMachine.add('Get_Robot_Pose',
-										Get_Robot_Pose(),
-										transitions={'done': 'getPositionFromPose'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose': 'pose'})
+			# x:165 y:362
+			OperatableStateMachine.add('wait2',
+										WaitState(wait_time=8),
+										transitions={'done': 'turn left'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:89 y:259
-			OperatableStateMachine.add('getPositionFromPose',
-										CalculationState(calculation=lambda x: x.position),
-										transitions={'done': 'getDistance2D'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'pose', 'output_value': 'sara_position'})
+			# x:240 y:48
+			OperatableStateMachine.add('w3',
+										WaitState(wait_time=4),
+										transitions={'done': 'turn left'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:41 y:500
-			OperatableStateMachine.add('Get_Reacheable_Waypoint',
-										Get_Reacheable_Waypoint(),
-										transitions={'done': 'lo'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose_in': 'position', 'distance': 'distance', 'pose_out': 'TargetPose'})
+			# x:429 y:68
+			OperatableStateMachine.add('turn left',
+										SaraSetHeadAngle(pitch=0, yaw=1.5),
+										transitions={'done': 'wait1'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:100 y:42
-			OperatableStateMachine.add('GetEntityByID',
+
+		# x:30 y:365
+		_sm_search_1 = OperatableStateMachine(outcomes=['found'], input_keys=['ID'])
+
+		with _sm_search_1:
+			# x:91 y:163
+			OperatableStateMachine.add('get en',
 										GetEntityByID(),
-										transitions={'found': 'getPositionFromEntity', 'not_found': 'not_found'},
+										transitions={'found': 'found', 'not_found': 'get en'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ID': 'ID', 'Entity': 'Entity'})
 
-			# x:294 y:456
-			OperatableStateMachine.add('lo',
-										LogKeyState(text="send {}", severity=Logger.REPORT_HINT),
-										transitions={'done': 'update'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'data': 'TargetPose'})
 
-			# x:97 y:418
-			OperatableStateMachine.add('processFollowDistance',
-										processFollowDistance(minimum_distance=1, divisor_distance=2, threshold=.5),
-										transitions={'move': 'Get_Reacheable_Waypoint', 'done': 'Get_Reacheable_Waypoint'},
-										autonomy={'move': Autonomy.Off, 'done': Autonomy.Off},
-										remapping={'distance_of_target': 'distance', 'distance': 'distance'})
-
-
-		# x:130 y:365
-		_sm_group_1 = OperatableStateMachine(outcomes=['failed'], input_keys=['TargetPose'], output_keys=['TargetPose'])
-
-		with _sm_group_1:
-			# x:124 y:145
-			OperatableStateMachine.add('move',
-										SaraMoveBase(),
-										transitions={'arrived': 'failed', 'failed': 'failed'},
-										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'pose': 'TargetPose'})
-
-
-		# x:257 y:158, x:87 y:246, x:246 y:82, x:37 y:281
-		_sm_group_3_2 = ConcurrencyContainer(outcomes=['not_found', 'updatePose'], input_keys=['ID', 'TargetPose', 'distance'], output_keys=['TargetPose'], conditions=[
-										('not_found', [('Group_2', 'not_found')]),
-										('updatePose', [('Group_2', 'update'), ('Group', 'failed')])
+		# x:30 y:365, x:530 y:244, x:230 y:365
+		_sm_find_back_2 = ConcurrencyContainer(outcomes=['back'], input_keys=['ID'], conditions=[
+										('back', [('search', 'found')]),
+										('back', [('Turn head', 'fail')])
 										])
 
-		with _sm_group_3_2:
-			# x:389 y:52
-			OperatableStateMachine.add('Group',
-										_sm_group_1,
-										transitions={'failed': 'updatePose'},
-										autonomy={'failed': Autonomy.Inherit},
-										remapping={'TargetPose': 'TargetPose'})
+		with _sm_find_back_2:
+			# x:145 y:108
+			OperatableStateMachine.add('search',
+										_sm_search_1,
+										transitions={'found': 'back'},
+										autonomy={'found': Autonomy.Inherit},
+										remapping={'ID': 'ID'})
 
-			# x:58 y:121
-			OperatableStateMachine.add('Group_2',
-										_sm_group_2_0,
-										transitions={'not_found': 'not_found', 'update': 'updatePose'},
-										autonomy={'not_found': Autonomy.Inherit, 'update': Autonomy.Inherit},
-										remapping={'ID': 'ID', 'TargetPose': 'TargetPose', 'distance': 'distance'})
+			# x:469 y:136
+			OperatableStateMachine.add('Turn head',
+										_sm_turn_head_0,
+										transitions={'fail': 'back'},
+										autonomy={'fail': Autonomy.Inherit})
+
+
+		# x:30 y:458
+		_sm_look_at_3 = OperatableStateMachine(outcomes=['fail'], input_keys=['ID'])
+
+		with _sm_look_at_3:
+			# x:110 y:102
+			OperatableStateMachine.add('get entity',
+										GetEntityByID(),
+										transitions={'found': 'action_look_at_face', 'not_found': 'sorry'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'ID': 'ID', 'Entity': 'Entity'})
+
+
+			# x:422 y:129
+			OperatableStateMachine.add('action_look_at_face',
+										self.use_behavior(action_look_at_faceSM, 'Follow/Look at/action_look_at_face'),
+										transitions={'finished': 'get entity', 'failed': 'sorry'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'Entity': 'Entity'})
+
+			# x:248 y:264
+			OperatableStateMachine.add('Find back',
+										_sm_find_back_2,
+										transitions={'back': 'Found you'},
+										autonomy={'back': Autonomy.Inherit},
+										remapping={'ID': 'ID'})
+
+			# x:470 y:272
+			OperatableStateMachine.add('sorry',
+										SaraSay(sentence="Sorry, I lost you. Please wait for me!", emotion=1, block=False),
+										transitions={'done': 'Find back'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:103 y:276
+			OperatableStateMachine.add('Found you',
+										SaraSay(sentence="Here you are!", emotion=1, block=False),
+										transitions={'done': 'get entity'},
+										autonomy={'done': Autonomy.Off})
+
+
+		# x:30 y:365
+		_sm_follow_4 = OperatableStateMachine(outcomes=['failed'], input_keys=['ID'])
+
+		with _sm_follow_4:
+			# x:65 y:167
+			OperatableStateMachine.add('follow',
+										SaraFollow(distance=1.2),
+										transitions={'failed': 'follow'},
+										autonomy={'failed': Autonomy.Off},
+										remapping={'ID': 'ID'})
+
+
+		# x:368 y:271, x:423 y:158, x:230 y:458
+		_sm_follow_5 = ConcurrencyContainer(outcomes=['not_found'], input_keys=['ID'], conditions=[
+										('not_found', [('Look at', 'fail')]),
+										('not_found', [('Follow', 'failed')])
+										])
+
+		with _sm_follow_5:
+			# x:185 y:134
+			OperatableStateMachine.add('Follow',
+										_sm_follow_4,
+										transitions={'failed': 'not_found'},
+										autonomy={'failed': Autonomy.Inherit},
+										remapping={'ID': 'ID'})
+
+			# x:123 y:236
+			OperatableStateMachine.add('Look at',
+										_sm_look_at_3,
+										transitions={'fail': 'not_found'},
+										autonomy={'fail': Autonomy.Inherit},
+										remapping={'ID': 'ID'})
 
 
 
 		with _state_machine:
-			# x:95 y:26
-			OperatableStateMachine.add('En',
-										GetEntityByID(),
-										transitions={'found': 'dist', 'not_found': 'failed'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'ID': 'ID', 'Entity': 'Entity'})
-
-			# x:300 y:408
-			OperatableStateMachine.add('log',
-										LogKeyState(text="{}", severity=Logger.REPORT_HINT),
-										transitions={'done': 'Group_3'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'data': 'TargetPose'})
-
-			# x:77 y:212
-			OperatableStateMachine.add('pos',
-										CalculationState(calculation=lambda x: x.position),
-										transitions={'done': 're'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'Entity', 'output_value': 'TargetPose'})
-
-			# x:287 y:299
-			OperatableStateMachine.add('Group_3',
-										_sm_group_3_2,
-										transitions={'not_found': 'failed', 'updatePose': 'log'},
-										autonomy={'not_found': Autonomy.Inherit, 'updatePose': Autonomy.Inherit},
-										remapping={'ID': 'ID', 'TargetPose': 'TargetPose', 'distance': 'distance'})
-
-			# x:47 y:307
-			OperatableStateMachine.add('re',
-										Get_Reacheable_Waypoint(),
-										transitions={'done': 'Group_3'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose_in': 'TargetPose', 'distance': 'distance', 'pose_out': 'TargetPose'})
-
-			# x:90 y:113
-			OperatableStateMachine.add('dist',
-										SetKey(Value=1),
-										transitions={'done': 'pos'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'distance'})
+			# x:150 y:130
+			OperatableStateMachine.add('Follow',
+										_sm_follow_5,
+										transitions={'not_found': 'failed'},
+										autonomy={'not_found': Autonomy.Inherit},
+										remapping={'ID': 'ID'})
 
 
 		return _state_machine

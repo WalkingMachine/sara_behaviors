@@ -77,24 +77,24 @@ class Action_Receive_BagSM(Behavior):
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'target'})
 
-			# x:294 y:277
+			# x:381 y:295
 			OperatableStateMachine.add('Torque_Reader',
 										ReadTorque(watchdog=10, Joint="right_elbow_pitch_joint", Threshold=1, min_time=1),
 										transitions={'threshold': 'close_gripper', 'watchdog': 'Torque_Reader', 'fail': 'failed'},
 										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'torque': 'torque'})
 
-			# x:664 y:147
+			# x:668 y:133
 			OperatableStateMachine.add('setTarget2',
 										SetKey(Value="PostGripPose"),
 										transitions={'done': 'Go_to_Pose'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'target'})
 
-			# x:160 y:163
+			# x:78 y:177
 			OperatableStateMachine.add('Go_to_receive_bag_pose',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'Torque_Reader', 'failed': 'failed'},
+										transitions={'done': 'opengripper', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'target'})
 
@@ -110,6 +110,13 @@ class Action_Receive_BagSM(Behavior):
 										SaraSay(sentence="Thank you", emotion=1, block=True),
 										transitions={'done': 'setTarget2'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:208 y:269
+			OperatableStateMachine.add('opengripper',
+										SetGripperState(width=0.25, effort=1),
+										transitions={'object': 'Torque_Reader', 'no_object': 'Torque_Reader'},
+										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
+										remapping={'object_size': 'object_size'})
 
 
 		return _state_machine

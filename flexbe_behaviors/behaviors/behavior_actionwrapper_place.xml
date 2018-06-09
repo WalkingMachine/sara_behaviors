@@ -12,6 +12,7 @@
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Action_place" />
 
 	<!-- Available Parameters -->
 

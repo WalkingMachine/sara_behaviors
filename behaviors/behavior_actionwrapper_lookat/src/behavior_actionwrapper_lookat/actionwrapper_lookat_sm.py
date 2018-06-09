@@ -53,7 +53,7 @@ class ActionWrapper_LookAtSM(Behavior):
 
     def create(self):
         # x:1213 y:438
-        _state_machine = OperatableStateMachine(outcomes=['finished'], input_keys=['Action'])
+        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
         _state_machine.userdata.Action = ["LookAt", "you"]
         _state_machine.userdata.ID = 0
         _state_machine.userdata.name = ["bottle"]
@@ -117,7 +117,7 @@ class ActionWrapper_LookAtSM(Behavior):
                                         CalculationState(calculation=lambda x: x[0].position),
                                         transitions={'done': 'action_look_at'},
                                         autonomy={'done': Autonomy.Off},
-                                        remapping={'input_value': 'list_entities_by_name', 'output_value': 'Position'})
+                                        remapping={'input_value': 'entity_list', 'output_value': 'Position'})
 
             # x:219 y:43
             OperatableStateMachine.add('cond',
@@ -138,21 +138,21 @@ class ActionWrapper_LookAtSM(Behavior):
                                         list_entities_by_name(frontality_level=0.5),
                                         transitions={'found': 'GetPosition', 'not_found': 'Look for object'},
                                         autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-                                        remapping={'name': 'name', 'list_entities_by_name': 'list_entities_by_name', 'number': 'number'})
+                                        remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
 
             # x:384 y:287
             OperatableStateMachine.add('look for',
                                         list_entities_by_name(frontality_level=0.5),
                                         transitions={'found': 'GetPosition', 'not_found': 'Look the other side'},
                                         autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-                                        remapping={'name': 'name', 'list_entities_by_name': 'list_entities_by_name', 'number': 'number'})
+                                        remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
 
             # x:738 y:288
             OperatableStateMachine.add('look again',
                                         list_entities_by_name(frontality_level=0.5),
                                         transitions={'found': 'GetPosition', 'not_found': 'not found'},
                                         autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-                                        remapping={'name': 'name', 'list_entities_by_name': 'list_entities_by_name', 'number': 'number'})
+                                        remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
 
 
         return _state_machine

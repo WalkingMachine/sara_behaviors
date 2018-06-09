@@ -49,7 +49,7 @@ class ActionWrapper_TurnSM(Behavior):
 
     def create(self):
         # x:892 y:301, x:888 y:436
-        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
+        _state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
         _state_machine.userdata.Action = ["Turn","Right"]
 
         # Additional creation code can be added inside the following tags

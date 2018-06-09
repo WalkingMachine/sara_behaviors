@@ -10,12 +10,12 @@ class processFollowDistance(EventState):
     Calcule la distance  entre deux points donnes.
 
     ###Params
-    --minimum_distance      double      minimum_distance
-    --divisor_distance      double      divisor_distance
-    --threshold             double      threshold
+    -- minimum_distance      double      minimum_distance
+    -- divisor_distance      double      divisor_distance
+    -- threshold             double      threshold
 
     ### InputKey
-    >#distance_of_target    double      distance_of_target
+    ># distance_of_target    double      distance_of_target
 
     ### OutputKey
     #> distance             double      distance

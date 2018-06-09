@@ -3,21 +3,21 @@
 from flexbe_core import EventState, Logger
 import rospy
 import tf
-from geometry_msgs.msg import PointStamped
+from geometry_msgs.msg import PointStamped, Point, Pose
 
 class TF_transformation(EventState):
     """
     Transformation from a referential  to another
 
     ###Params
-    --in_ref   string      first referential
-    --out_ref  string      second referential
+    -- in_ref   String      first referential
+    -- out_ref  String      second referential
 
     ### InputKey
-    >#in_pos   geometry_msgs/Point       point in first referential
+    ># in_pos   geometry_msgs/Point       point in first referential
 
     ### OutputKey
-    #>out_pos  geometry_msgs/Point       point in second referential
+    #> out_pos  geometry_msgs/Point       point in second referential
 
     ###Outcomes
     <= done                 Did all the transformation
@@ -33,15 +33,26 @@ class TF_transformation(EventState):
         self.out_ref=out_ref
 
     def execute(self, userdata):
+
         point = PointStamped()
-        point.header.frame_id = self.in_ref
-        point.point = userdata.in_pos
-        self.listener.waitForTransform("map", self.out_ref, rospy.Time(0), rospy.Duration(1))
-        print("Frame : map")
-        print(" point : "+str(point.point))
-        try:
-            point = self.listener.transformPoint(self.out_ref, point)
-            userdata.out_pos = point.point
-            return 'done'
-        except:
+        if type(userdata.in_pos) is Point:
+            print("this is a point")
+            point.point = userdata.in_pos
+        elif type(userdata.in_pos) is Pose:
+            print("this is a pose")
+            point.point = userdata.in_pos.position
+        else:
+            Logger.loginfo('ERROR in ' + str(self.name) + ' : in_pos is not a Pose() nor a Point()')
             return 'fail'
+
+        point.header.frame_id = self.in_ref
+        self.listener.waitForTransform(self.in_ref, self.out_ref, rospy.Time(0), rospy.Duration(1))
+        print("Frame : " + self.in_ref)
+        print(" point : "+str(point.point))
+
+        point = self.listener.transformPoint(self.out_ref, point)
+
+        print("Frame : " + self.out_ref)
+        print(" point : "+str(point.point))
+        userdata.out_pos = point.point
+        return 'done'

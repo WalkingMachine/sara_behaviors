@@ -21,7 +21,7 @@ class WonderlandGetEntityVerbal(EventState):
     ># name             string         Recognition name of the object
     ># containers       string array   Array of containers recognition name (can be empty) on single container
 
-    #> entities         sara_msgs/Entities
+    #> entities         sara_msgs/Entities   list of entities
 
     <= one              return when one entity exist
     <= multiple         return when more than one entity exist
@@ -113,7 +113,7 @@ class WonderlandGetEntityVerbal(EventState):
 
         entity.waypoint.x = data['entityWaypointX']
         entity.waypoint.y = data['entityWaypointY']
-        entity.waypoint.theta = data['entityWaypointYaw']
+        entity.waypoint.theta = data['entityWaypointYaw']/180*3.14159
 
         entity.containerId = data['entityContainer']
 
