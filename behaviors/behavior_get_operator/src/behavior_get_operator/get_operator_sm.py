@@ -59,6 +59,7 @@ class Get_operatorSM(Behavior):
 		# x:814 y:45, x:514 y:274
 		_state_machine = OperatableStateMachine(outcomes=['Found', 'NotFound'], output_keys=['Operator'])
 		_state_machine.userdata.Operator = None
+		_state_machine.userdata.Name = "person"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -155,10 +156,10 @@ class Get_operatorSM(Behavior):
 
 			# x:49 y:511
 			OperatableStateMachine.add('Get persons',
-										list_entities_by_name(Name="person", frontality_level=0.5),
+										list_entities_by_name(frontality_level=0.5),
 										transitions={'found': 'Get closest', 'not_found': 'say where are you'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'Entities_list': 'Entities_list', 'number': 'number'})
+										remapping={'name': 'Name', 'list_entities_by_name': 'list_entities_by_name', 'number': 'number'})
 
 			# x:461 y:475
 			OperatableStateMachine.add('Move to person',
@@ -207,7 +208,7 @@ class Get_operatorSM(Behavior):
 										BinaryCalculationState(calculation="X[Y-1]"),
 										transitions={'done': 'ask if operator'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'X': 'Entities_list', 'Y': 'index2', 'Z': 'Operator'})
+										remapping={'X': 'list_entities_by_name', 'Y': 'index2', 'Z': 'Operator'})
 
 
 		return _state_machine

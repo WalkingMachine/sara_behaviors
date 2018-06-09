@@ -57,24 +57,21 @@ class HelpmecarrySM(Behavior):
 
 		# Behavior comments:
 
-		# O 452 31 /Getting ready and ID Operator
-		# Attend que l'opérateur s'identifie. Le robot mémorise l'identifiant. Le robot suit l'opérateur.
-
 		# O 138 655 
-		# Une fois que le robot arrive à destination, il informe quil laissera le sac sur le sol.
+		# Une fois que le robot arrive a destination, il informe quil laissera le sac sur le sol.
 
-		# O 221 46 
-		# retourne à la position initiale
+		# O 222 46 
+		# retourne a la position initiale
 
 		# O 153 322 
-		# lorsquil arrive à destination, il baisse le bras, ouvre la pince ,attend et ferme sa pince.
+		# lorsquil arrive a destination, il baisse le bras, ouvre la pince ,attend et ferme sa pince.
 
 
 
 	def create(self):
 		# x:1247 y:491, x:728 y:256, x:980 y:176
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'not_found'], input_keys=['ID'])
-		_state_machine.userdata.ID = ID
+		_state_machine.userdata.ID = 0
 		_state_machine.userdata.Closed_Gripper_Width = 1
 		_state_machine.userdata.Open_Gripper_Width = 255
 
@@ -161,7 +158,7 @@ class HelpmecarrySM(Behavior):
 		_sm_waiting_for_operator_3 = OperatableStateMachine(outcomes=['done', 'failed'])
 
 		with _sm_waiting_for_operator_3:
-			# x:56 y:40
+			# x:57 y:67
 			OperatableStateMachine.add('getSpeech',
 										GetSpeech(watchdog=5),
 										transitions={'done': 'UnderstandingOpe', 'nothing': 'getSpeech', 'fail': 'failed'},
@@ -176,7 +173,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:39 y:162
 			OperatableStateMachine.add('UnderstandingOpe',
-										RegexTester(regex=".*Follow me.*"),
+										RegexTester(regex=".*follow me.*"),
 										transitions={'true': 'start', 'false': 'failed'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'text': 'words', 'result': 'result'})
@@ -208,14 +205,14 @@ class HelpmecarrySM(Behavior):
 										remapping={'Position': 'Position'})
 
 
-		# x:365 y:140, x:420 y:262, x:279 y:38, x:389 y:477
-		_sm_getting_id_operator_and_follow__5 = OperatableStateMachine(outcomes=['false', 'failed', 'fail', 'done'], output_keys=['Position'])
+		# x:420 y:262, x:389 y:477
+		_sm_getting_id_operator_and_follow__5 = OperatableStateMachine(outcomes=['failed', 'done'], output_keys=['Position'])
 
 		with _sm_getting_id_operator_and_follow__5:
 			# x:62 y:46
 			OperatableStateMachine.add('Waiting for operator',
 										_sm_waiting_for_operator_3,
-										transitions={'done': 'Get operator ID', 'failed': 'fail'},
+										transitions={'done': 'Get operator ID', 'failed': 'Waiting for operator'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 			# x:69 y:355
@@ -285,8 +282,8 @@ class HelpmecarrySM(Behavior):
 			# x:31 y:106
 			OperatableStateMachine.add('Getting ID Operator and follow ',
 										_sm_getting_id_operator_and_follow__5,
-										transitions={'false': 'Getting ID Operator and follow ', 'failed': 'failed', 'fail': 'failed', 'done': 'sac'},
-										autonomy={'false': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'fail': Autonomy.Inherit, 'done': Autonomy.Inherit},
+										transitions={'failed': 'failed', 'done': 'sac'},
+										autonomy={'failed': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Position': 'Position'})
 
 			# x:51 y:241
