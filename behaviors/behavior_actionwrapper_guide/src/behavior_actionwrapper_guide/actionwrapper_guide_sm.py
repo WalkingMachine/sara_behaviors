@@ -35,7 +35,7 @@ Created on 05/06/2018
 '''
 class ActionWrapper_GuideSM(Behavior):
 	'''
-	action wrapper pour indiquer la route à un opérateur.
+	action wrapper pour indiquer la route a un operateur.
 	'''
 
 
@@ -47,8 +47,8 @@ class ActionWrapper_GuideSM(Behavior):
 
 		# references to used behaviors
 		self.add_behavior(Action_MoveSM, 'Try to reach/Container/navigate to the point/Action_Move')
-		self.add_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/Group/action_turn')
-		self.add_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/Group/action_turn_2')
+		self.add_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn')
+		self.add_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn_2')
 		self.add_behavior(WonderlandUniqueEnitySM, 'Try to find area/WonderlandUniqueEnity')
 
 		# Additional initialization code can be added inside the following tags
@@ -69,7 +69,7 @@ class ActionWrapper_GuideSM(Behavior):
 	def create(self):
 		# x:587 y:780, x:781 y:419, x:951 y:679
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
-		_state_machine.userdata.Action = ["Move",'table','kitchen']
+		_state_machine.userdata.Action = ["Guide",'table', 'kitchen']
 		_state_machine.userdata.relative = False
 
 		# Additional creation code can be added inside the following tags
@@ -116,9 +116,9 @@ class ActionWrapper_GuideSM(Behavior):
 
 
 		# x:379 y:221
-		_sm_container_2 = OperatableStateMachine(outcomes=['finished'])
+		_sm_wait_to_compte_2 = OperatableStateMachine(outcomes=['finished'])
 
-		with _sm_container_2:
+		with _sm_wait_to_compte_2:
 			# x:77 y:195
 			OperatableStateMachine.add('one more wait',
 										WaitState(wait_time=20),
@@ -127,20 +127,20 @@ class ActionWrapper_GuideSM(Behavior):
 
 
 		# x:535 y:314
-		_sm_group_3 = OperatableStateMachine(outcomes=['failed'])
+		_sm_turn_around_3 = OperatableStateMachine(outcomes=['failed'])
 
-		with _sm_group_3:
-			# x:50 y:40
+		with _sm_turn_around_3:
+			# x:47 y:45
 			OperatableStateMachine.add('set orientation',
 										SetKey(Value=1.57),
-										transitions={'done': 'move head'},
+										transitions={'done': 'action_turn'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'rotation'})
 
-			# x:41 y:127
+			# x:42 y:213
 			OperatableStateMachine.add('move head',
 										SaraSetHeadAngle(pitch=0, yaw=1.57),
-										transitions={'done': 'action_turn'},
+										transitions={'done': 'waitwait'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:53 y:294
@@ -149,10 +149,10 @@ class ActionWrapper_GuideSM(Behavior):
 										transitions={'done': 'move head 2 '},
 										autonomy={'done': Autonomy.Off})
 
-			# x:38 y:197
+			# x:33 y:122
 			OperatableStateMachine.add('action_turn',
-										self.use_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/Group/action_turn'),
-										transitions={'finished': 'waitwait', 'failed': 'failed'},
+										self.use_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn'),
+										transitions={'finished': 'move head', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
 
@@ -164,7 +164,7 @@ class ActionWrapper_GuideSM(Behavior):
 
 			# x:30 y:439
 			OperatableStateMachine.add('action_turn_2',
-										self.use_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/Group/action_turn_2'),
+										self.use_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn_2'),
 										transitions={'finished': 'head left right', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
@@ -208,20 +208,20 @@ class ActionWrapper_GuideSM(Behavior):
 
 		# x:549 y:135, x:555 y:269, x:230 y:458
 		_sm_move_head_and_base_5 = ConcurrencyContainer(outcomes=['failed'], conditions=[
-										('failed', [('Group', 'failed')]),
-										('failed', [('Container', 'finished')])
+										('failed', [('turn around', 'failed')]),
+										('failed', [('wait to compte', 'finished')])
 										])
 
 		with _sm_move_head_and_base_5:
 			# x:268 y:77
-			OperatableStateMachine.add('Group',
-										_sm_group_3,
+			OperatableStateMachine.add('turn around',
+										_sm_turn_around_3,
 										transitions={'failed': 'failed'},
 										autonomy={'failed': Autonomy.Inherit})
 
 			# x:263 y:246
-			OperatableStateMachine.add('Container',
-										_sm_container_2,
+			OperatableStateMachine.add('wait to compte',
+										_sm_wait_to_compte_2,
 										transitions={'finished': 'failed'},
 										autonomy={'finished': Autonomy.Inherit})
 
@@ -232,7 +232,7 @@ class ActionWrapper_GuideSM(Behavior):
 		with _sm_container_6:
 			# x:230 y:160
 			OperatableStateMachine.add('wait long',
-										WaitState(wait_time=45),
+										WaitState(wait_time=15),
 										transitions={'done': 'check'},
 										autonomy={'done': Autonomy.Off})
 
@@ -243,7 +243,7 @@ class ActionWrapper_GuideSM(Behavior):
 		with _sm_navigate_to_the_point_7:
 			# x:174 y:122
 			OperatableStateMachine.add('set relative',
-										SetKey(Value=false),
+										SetKey(Value=False),
 										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'relative'})
@@ -256,7 +256,7 @@ class ActionWrapper_GuideSM(Behavior):
 										remapping={'pose': 'pose', 'relative': 'relative'})
 
 
-		# x:732 y:378, x:792 y:103, x:738 y:249, x:330 y:458, x:430 y:458
+		# x:732 y:378, x:792 y:103, x:738 y:249, x:330 y:458
 		_sm_check_person_behind_8 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['ID'], conditions=[
 										('failed', [('move head and base', 'failed')]),
 										('finished', [('find human', 'finished')])
@@ -386,14 +386,14 @@ class ActionWrapper_GuideSM(Behavior):
 										remapping={'sentence': 'area_name'})
 
 
-		# x:323 y:632, x:370 y:631
+		# x:323 y:632, x:608 y:633
 		_sm_try_to_reach_12 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['waypoint', 'relative', 'areaName', 'ID'])
 
 		with _sm_try_to_reach_12:
 			# x:252 y:161
 			OperatableStateMachine.add('Container',
 										_sm_container_9,
-										transitions={'finished': 'Say reached', 'failed': 'Say not reached', 'check': 'check person behind'},
+										transitions={'finished': 'Say reached', 'failed': 'Say not reached', 'check': 'say check'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'check': Autonomy.Inherit},
 										remapping={'waypoint': 'waypoint'})
 
@@ -424,6 +424,12 @@ class ActionWrapper_GuideSM(Behavior):
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
+			# x:445 y:69
+			OperatableStateMachine.add('say check',
+										SaraSay(sentence="I check if my operator is still there", emotion=1, block=True),
+										transitions={'done': 'check person behind'},
+										autonomy={'done': Autonomy.Off})
+
 
 		# x:871 y:59
 		_sm_decompose_command_13 = OperatableStateMachine(outcomes=['done'], input_keys=['command'], output_keys=['containers', 'area'])
@@ -435,14 +441,14 @@ class ActionWrapper_GuideSM(Behavior):
 										transitions={'done': 'Get area name'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:377 y:34
+			# x:387 y:58
 			OperatableStateMachine.add('Get area name',
 										CalculationState(calculation=lambda x: x[1]),
 										transitions={'done': 'Get area containers'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'command', 'output_value': 'area'})
 
-			# x:600 y:30
+			# x:597 y:94
 			OperatableStateMachine.add('Get area containers',
 										_sm_get_area_containers_10,
 										transitions={'done': 'done'},
@@ -492,7 +498,7 @@ class ActionWrapper_GuideSM(Behavior):
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ID': 'ID', 'Entity': 'Entity'})
 
-			# x:93 y:365
+			# x:179 y:377
 			OperatableStateMachine.add('Try to find area',
 										_sm_try_to_find_area_11,
 										transitions={'found': 'Try to reach', 'not_found': 'Cant Find Person'},
