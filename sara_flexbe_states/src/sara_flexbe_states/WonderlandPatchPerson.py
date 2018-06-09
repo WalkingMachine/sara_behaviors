@@ -53,7 +53,7 @@ class WonderlandPatchPerson(EventState):
             data.update({'peoplePose': entity.pose})
 
         if entity.poseProbability is not None:
-            data.update({'peoplePoseAccuracy': entity.color})
+            data.update({'peoplePoseAccuracy': entity.poseProbability})
 
         if entity.face.gender is not None:
             data.update({'peopleGender': entity.face.gender})
