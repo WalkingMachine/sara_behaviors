@@ -150,5 +150,6 @@
 <run_depend>behavior_actionwrapper_find_person</run_depend>
   <run_depend>behavior_action_lookatbase</run_depend>
   <run_depend>behavior_action_lookatfacebase</run_depend>
+  <run_depend>behavior_actionwrapper_guide</run_depend>
 
 </package>
