@@ -83,7 +83,7 @@ class Action_placeSM(Behavior):
 	def create(self):
 		# x:1108 y:375, x:649 y:312
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['pos'])
-		_state_machine.userdata.pos = 0
+		_state_machine.userdata.pos = {"x":0.8, "y":0, "z":1}
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
