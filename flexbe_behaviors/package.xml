@@ -84,7 +84,7 @@
   <run_depend>behavior_action_guiding_person</run_depend>
   <run_depend>behavior_action_pass_door</run_depend>
   <run_depend>behavior_a_go_home</run_depend>
-    <run_depend>behavior_wonderlandaddupdateperson</run_depend>
+  <run_depend>behavior_wonderlandaddupdateperson</run_depend>
   <run_depend>behavior_action_give</run_depend>
   <run_depend>behavior_action_point_at</run_depend>
   <run_depend>behavior_action_count</run_depend>
@@ -146,10 +146,16 @@
 <run_depend>behavior_wonderlandaddupdateperson</run_depend>
 <run_depend>behavior_wonderlanduniqueenity</run_depend>
 <run_depend>behavior_actionwrapper_say</run_depend>
+<run_depend>behavior_scenario_gpsr</run_depend>
+<run_depend>behavior_actionwrapper_find_person</run_depend>
+<run_depend>behavior_action_executor</run_depend>
+<run_depend>behavior_actionwrapper_say</run_depend>
 <run_depend>behavior_action_findperson</run_depend>
 <run_depend>behavior_actionwrapper_find_person</run_depend>
-  <run_depend>behavior_action_lookatbase</run_depend>
-  <run_depend>behavior_action_lookatfacebase</run_depend>
-  <run_depend>behavior_actionwrapper_guide</run_depend>
+<run_depend>behavior_action_lookatbase</run_depend>
+<run_depend>behavior_action_lookatfacebase</run_depend>
+<run_depend>behavior_action_lookatbase</run_depend>
+<run_depend>behavior_action_lookatfacebase</run_depend>
+<run_depend>behavior_actionwrapper_guide</run_depend>
 
 </package>
