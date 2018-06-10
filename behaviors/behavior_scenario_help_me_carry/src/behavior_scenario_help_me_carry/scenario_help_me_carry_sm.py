@@ -12,10 +12,8 @@ from flexbe_states.subscriber_state import SubscriberState
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_states.GetPersonID import GetPersonID
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.for_loop import ForLoop
-from sara_flexbe_states.GetIDPose import GetIDPose
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_states.compare_poses import ComparePoses
@@ -73,14 +71,6 @@ class Scenario_Help_me_carrySM(Behavior):
 
         # x:30 y:308, x:130 y:308, x:230 y:308
         _sm_get_operator_pose_0 = OperatableStateMachine(outcomes=['failed', 'lost', 'done'], input_keys=['person_id'], output_keys=['pose'])
-
-        with _sm_get_operator_pose_0:
-            # x:62 y:124
-            OperatableStateMachine.add('get pose',
-                                        GetIDPose(),
-                                        transitions={'done': 'done', 'lost': 'lost', 'failed': 'failed'},
-                                        autonomy={'done': Autonomy.Off, 'lost': Autonomy.Off, 'failed': Autonomy.Off},
-                                        remapping={'person_id': 'person_id', 'person_pose': 'pose'})
 
 
         # x:646 y:266
@@ -215,12 +205,7 @@ class Scenario_Help_me_carrySM(Behavior):
         _sm_find_operator_5 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['person_id'])
 
         with _sm_find_operator_5:
-            # x:121 y:126
-            OperatableStateMachine.add('get id',
-                                        GetPersonID(),
-                                        transitions={'done': 'finished', 'failed': 'failed', 'notfound': 'wait'},
-                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off, 'notfound': Autonomy.Off},
-                                        remapping={'person_id': 'person_id'})
+
 
             # x:416 y:89
             OperatableStateMachine.add('wait',
