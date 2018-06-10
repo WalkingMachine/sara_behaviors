@@ -35,15 +35,10 @@ class WonderlandAddPerson(EventState):
 
         entity = userdata.entity
 
-        if entity.face.id is None:
-            Logger.logwarn('Need face ID !')
-            return 'bad_request'
+        data = {}
 
-        if entity.wonderlandId is None and entity.face.id is None:
-            Logger.logwarn('Need wonderland ID or face ID !')
-            return 'bad_request'
-
-        data = {'peopleRecognitionId': entity.face.id}
+        if entity.face.id is not None:
+            data.update({'peopleRecognitionId': entity.face.id})
 
         if entity.color is not None:
             data.update({'peopleColor': entity.color})
