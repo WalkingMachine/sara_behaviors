@@ -7,13 +7,15 @@
 	<author>Lucas Maurice</author>
 	<date>Thu Jun 07 2018</date>
 	<description>
-		Contient le scénario SPR
+		Contient le scenario SPR.
 	</description>
 
 
 	<!-- Contained Behaviors -->
-	<contains name="action_turn" />
 	<contains name="WonderlandSaveAllPersons" />
+	<contains name="action_look_at_face" />
+	<contains name="action_turn" />
+	<contains name="ActionWrapper_Move" />
 
 	<!-- Available Parameters -->
 
