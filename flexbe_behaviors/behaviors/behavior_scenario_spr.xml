@@ -12,7 +12,6 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="WonderlandSaveAllPersons" />
 	<contains name="action_look_at_face" />
 	<contains name="action_turn" />
 	<contains name="ActionWrapper_Move" />

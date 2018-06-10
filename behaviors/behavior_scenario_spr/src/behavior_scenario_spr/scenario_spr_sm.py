@@ -12,7 +12,7 @@ from sara_flexbe_states.story import Set_Story
 from sara_flexbe_states.continue_button import ContinueButton
 from sara_flexbe_states.WonderlandClearPeoples import WonderlandClearPeoples
 from sara_flexbe_states.set_a_step import Set_a_step
-from behavior_wonderlandsaveallpersons.wonderlandsaveallpersons_sm import WonderlandSaveAllPersonsSM
+from sara_flexbe_states.WonderlandAddUpdatePeople import WonderlandAddUpdatePeople
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.WonderlandGetPersonStat import WonderlandGetPersonStat
@@ -54,7 +54,6 @@ class Scenario_SPRSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(WonderlandSaveAllPersonsSM, 'Analyse Crowd/Analyse/WonderlandSaveAllPersons')
 		self.add_behavior(action_look_at_faceSM, 'Questions/Follow Head/action_look_at_face')
 		self.add_behavior(action_turnSM, 'Waiting And Turn/action_turn')
 		self.add_behavior(ActionWrapper_MoveSM, 'Leave Arena')
@@ -197,17 +196,16 @@ class Scenario_SPRSM(Behavior):
 		_sm_analyse_3 = OperatableStateMachine(outcomes=['finished'])
 
 		with _sm_analyse_3:
-			# x:106 y:51
-			OperatableStateMachine.add('WonderlandSaveAllPersons',
-										self.use_behavior(WonderlandSaveAllPersonsSM, 'Analyse Crowd/Analyse/WonderlandSaveAllPersons'),
-										transitions={'done': 'Wait', 'none': 'Wait'},
-										autonomy={'done': Autonomy.Inherit, 'none': Autonomy.Inherit},
-										remapping={'females': 'females', 'males': 'males', 'number': 'number'})
+			# x:156 y:47
+			OperatableStateMachine.add('People Sync',
+										WonderlandAddUpdatePeople(),
+										transitions={'done': 'Wait'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:483 y:56
+			# x:480 y:59
 			OperatableStateMachine.add('Wait',
 										WaitState(wait_time=2),
-										transitions={'done': 'WonderlandSaveAllPersons'},
+										transitions={'done': 'People Sync'},
 										autonomy={'done': Autonomy.Off})
 
 
