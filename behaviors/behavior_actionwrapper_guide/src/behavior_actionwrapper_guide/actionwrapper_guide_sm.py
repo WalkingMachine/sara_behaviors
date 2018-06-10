@@ -80,13 +80,13 @@ class ActionWrapper_GuideSM(Behavior):
         # [/MANUAL_CREATE]
 
 		# x:30 y:458
-		_sm_groupwait_0 = OperatableStateMachine(outcomes=['done'])
+		_sm_groupwait_0 = OperatableStateMachine(outcomes=['end'])
 
 		with _sm_groupwait_0:
 			# x:30 y:40
 			OperatableStateMachine.add('waitwait',
 										WaitState(wait_time=20),
-										transitions={'done': 'done'},
+										transitions={'done': 'end'},
 										autonomy={'done': Autonomy.Off})
 
 
@@ -164,10 +164,10 @@ class ActionWrapper_GuideSM(Behavior):
 										remapping={'ID': 'ID', 'Entity': 'Entity'})
 
 
-		# x:446 y:347, x:498 y:126, x:464 y:463
+		# x:415 y:99, x:318 y:246, x:442 y:295, x:330 y:458, x:530 y:458
 		_sm_move_head_and_base_end__3 = ConcurrencyContainer(outcomes=['failed'], conditions=[
-										('finished', [('Groupwait', 'done')]),
-										('failed', [('move head and base at the end', 'failed')])
+										('failed', [('move head and base at the end', 'failed')]),
+										('failed', [('Groupwait', 'end')])
 										])
 
 		with _sm_move_head_and_base_end__3:
@@ -180,8 +180,8 @@ class ActionWrapper_GuideSM(Behavior):
 			# x:121 y:218
 			OperatableStateMachine.add('Groupwait',
 										_sm_groupwait_0,
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Inherit})
+										transitions={'end': 'failed'},
+										autonomy={'end': Autonomy.Inherit})
 
 
 		# x:67 y:227
