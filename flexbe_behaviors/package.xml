@@ -155,6 +155,5 @@
 <run_depend>behavior_action_lookatbase</run_depend>
 <run_depend>behavior_action_lookatfacebase</run_depend>
 <run_depend>behavior_scenario_spr</run_depend>
-<run_depend>behavior_wonderlandsaveallpersons</run_depend>
 
 </package>
