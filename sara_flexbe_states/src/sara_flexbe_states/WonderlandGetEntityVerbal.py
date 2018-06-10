@@ -90,7 +90,7 @@ class WonderlandGetEntityVerbal(EventState):
         entity = Entity()
 
         entity.wonderlandId = data['entityId']
-        if 'entityName' in data:
+        if 'entityName' in data and data['entityName'] is not None:
             entity.aliases.append(data['entityName'].encode('ascii', 'ignore'))
 
         # Description of the object:
