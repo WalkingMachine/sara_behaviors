@@ -5,11 +5,10 @@ import rospy
 from std_msgs.msg import UInt32
 
 
-
 class Set_a_step(EventState):
     """
-       set a step. need a story
-    -- step   UInt32  the desired step of the story
+    Set a step in the Vizbox storyboard.
+    -- step   UInt32 The desired step of the story
 
     <= done  what's suppose to be set was set
     """
@@ -19,10 +18,9 @@ class Set_a_step(EventState):
         super(Set_a_step, self).__init__(outcomes=['done'])
         self.pub = rospy.Publisher("/challenge_step", UInt32)
         self.msg = UInt32()
-        self.msg.data =step
+        self.msg.data = step
 
     def execute(self, userdata):
         """execute what needs to be executed"""
         self.pub.publish(self.msg)
-        Logger.loginfo('Success')
         return 'done'

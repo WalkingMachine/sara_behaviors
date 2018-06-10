@@ -25,6 +25,7 @@ class SetKey(EventState):
         '''
         super(SetKey, self).__init__(outcomes=['done'],  output_keys=['Key'])
         self.Value = Value
+
     def execute(self, userdata):
         '''
         Execute this state
