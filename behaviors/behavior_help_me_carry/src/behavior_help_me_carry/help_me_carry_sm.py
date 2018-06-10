@@ -102,18 +102,18 @@ class HelpmecarrySM(Behavior):
 										remapping={'text': 'words', 'result': 'result'})
 
 
-		# x:30 y:365, x:130 y:365
+		# x:320 y:111, x:217 y:274
 		_sm_get_operator_id_1 = OperatableStateMachine(outcomes=['not_found', 'done'], output_keys=['ID'])
 
 		with _sm_get_operator_id_1:
-			# x:66 y:40
+			# x:42 y:30
 			OperatableStateMachine.add('nom',
 										SetKey(Value="person"),
 										transitions={'done': 'FindId'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'name'})
 
-			# x:143 y:251
+			# x:34 y:274
 			OperatableStateMachine.add('setID',
 										SetRosParam(ParamName="OperatorID"),
 										transitions={'done': 'done'},
@@ -127,7 +127,7 @@ class HelpmecarrySM(Behavior):
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'name': 'name', 'entity_list': 'Entities_list', 'number': 'number'})
 
-			# x:49 y:186
+			# x:30 y:186
 			OperatableStateMachine.add('GetID',
 										CalculationState(calculation=lambda x: x[0].ID),
 										transitions={'done': 'setID'},
@@ -157,7 +157,7 @@ class HelpmecarrySM(Behavior):
 										autonomy={'arrete': Autonomy.Inherit, 'fail': Autonomy.Inherit})
 
 
-		# x:30 y:365, x:130 y:365
+		# x:57 y:371, x:360 y:132
 		_sm_waiting_for_operator_3 = OperatableStateMachine(outcomes=['done', 'failed'])
 
 		with _sm_waiting_for_operator_3:
@@ -332,14 +332,14 @@ class HelpmecarrySM(Behavior):
 										transitions={'done': 'Get operator ID', 'failed': 'Waiting for operator'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:71 y:442
+			# x:71 y:504
 			OperatableStateMachine.add('get pose',
 										Get_Robot_Pose(),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'Position'})
 
-			# x:69 y:355
+			# x:69 y:415
 			OperatableStateMachine.add('Follow',
 										_sm_follow_2,
 										transitions={'done': 'get pose', 'failed': 'failed'},
@@ -353,7 +353,7 @@ class HelpmecarrySM(Behavior):
 										autonomy={'not_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
-			# x:66 y:259
+			# x:60 y:324
 			OperatableStateMachine.add('set follow distance',
 										SetKey(Value="0.5"),
 										transitions={'done': 'Follow'},
@@ -363,7 +363,7 @@ class HelpmecarrySM(Behavior):
 
 
 		with _state_machine:
-			# x:80 y:46
+			# x:46 y:33
 			OperatableStateMachine.add('get_pose',
 										Get_Robot_Pose(),
 										transitions={'done': 'Getting ID Operator and follow '},
