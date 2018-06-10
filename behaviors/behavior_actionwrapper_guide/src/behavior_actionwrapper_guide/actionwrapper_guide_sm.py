@@ -69,7 +69,7 @@ class ActionWrapper_GuideSM(Behavior):
 
 
 	def create(self):
-		# x:587 y:780, x:781 y:419, x:951 y:679
+		# x:774 y:800, x:781 y:419, x:797 y:103
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Guide",'table', 'kitchen']
 		_state_machine.userdata.relative = False
@@ -164,7 +164,7 @@ class ActionWrapper_GuideSM(Behavior):
 										remapping={'ID': 'ID', 'Entity': 'Entity'})
 
 
-		# x:415 y:99, x:318 y:246, x:442 y:295, x:330 y:458, x:530 y:458
+		# x:415 y:99, x:318 y:246, x:442 y:295
 		_sm_move_head_and_base_end__3 = ConcurrencyContainer(outcomes=['failed'], conditions=[
 										('failed', [('move head and base at the end', 'failed')]),
 										('failed', [('Groupwait', 'end')])
@@ -617,14 +617,14 @@ class ActionWrapper_GuideSM(Behavior):
 			# x:77 y:331
 			OperatableStateMachine.add('Try to find area',
 										_sm_try_to_find_area_16,
-										transitions={'found': 'say begin follow me', 'not_found': 'Cant Find Person'},
+										transitions={'found': 'sayfollowme', 'not_found': 'Cant Find Person'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'area_to_search': 'area', 'containers': 'containers', 'area_name': 'area_name', 'waypoint': 'waypoint'})
 
 			# x:93 y:604
 			OperatableStateMachine.add('Container',
 										_sm_container_15,
-										transitions={'finished': 'finished', 'failed': 'say lost operator'},
+										transitions={'finished': 'sayreachtheentity', 'failed': 'say lost operator'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
@@ -634,10 +634,22 @@ class ActionWrapper_GuideSM(Behavior):
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:85 y:421
-			OperatableStateMachine.add('say begin follow me',
-										SaraSayKey(Format=lambda x: "Follow me please. I'm going to the "+x, emotion=1, block=True),
+			# x:88 y:425
+			OperatableStateMachine.add('sayfollowme',
+										SaraSay(sentence="Follow me please.", emotion=1, block=True),
 										transitions={'done': 'Try to reach'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:542 y:745
+			OperatableStateMachine.add('head to middle',
+										SaraSetHeadAngle(pitch=0, yaw=0),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:287 y:723
+			OperatableStateMachine.add('sayreachtheentity',
+										SaraSayKey(Format=lambda x: "Here is the "+x, emotion=1, block=True),
+										transitions={'done': 'head to middle'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'area_name'})
 
