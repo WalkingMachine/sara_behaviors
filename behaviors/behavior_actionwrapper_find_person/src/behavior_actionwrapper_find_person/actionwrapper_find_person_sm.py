@@ -12,13 +12,15 @@ from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetKey import SetKey
-from behavior_action_find.action_find_sm import Action_findSM
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.for_loop import ForLoop
-from sara_flexbe_states.get_speech import GetSpeech
-from flexbe_states.log_key_state import LogKeyState
 from behavior_action_turn.action_turn_sm import action_turnSM
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
+from behavior_action_findperson.action_findperson_sm import Action_findPersonSM
+from sara_flexbe_states.SetRosParam import SetRosParam
+from sara_flexbe_states.get_speech import GetSpeech
+from flexbe_states.log_key_state import LogKeyState
+from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -42,8 +44,9 @@ class ActionWrapper_Find_PersonSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_findSM, 'Action_find')
 		self.add_behavior(action_turnSM, 'action_turn')
+		self.add_behavior(Action_findPersonSM, 'Action_findPerson')
+		self.add_behavior(action_look_at_faceSM, 'confirm and look at/look at/action_look_at_face')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -62,16 +65,29 @@ class ActionWrapper_Find_PersonSM(Behavior):
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["FindPerson","Rachel"]
 		_state_machine.userdata.rotation = -1.57
+		_state_machine.userdata.className = "person"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
         
         # [/MANUAL_CREATE]
 
-		# x:55 y:588, x:354 y:578, x:383 y:108
-		_sm_ask_confirmation_0 = OperatableStateMachine(outcomes=['yes', 'no', 'error'], input_keys=['name'])
+		# x:30 y:458
+		_sm_look_at_0 = OperatableStateMachine(outcomes=['finished'], input_keys=['entity'])
 
-		with _sm_ask_confirmation_0:
+		with _sm_look_at_0:
+			# x:73 y:122
+			OperatableStateMachine.add('action_look_at_face',
+										self.use_behavior(action_look_at_faceSM, 'confirm and look at/look at/action_look_at_face'),
+										transitions={'finished': 'action_look_at_face', 'failed': 'action_look_at_face'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'Entity': 'entity'})
+
+
+		# x:30 y:458, x:130 y:458, x:230 y:458
+		_sm_ask_confirmation_1 = OperatableStateMachine(outcomes=['yes', 'no', 'error'], input_keys=['name'])
+
+		with _sm_ask_confirmation_1:
 			# x:45 y:101
 			OperatableStateMachine.add('Repeat the question',
 										ForLoop(repeat=5),
@@ -122,10 +138,34 @@ class ActionWrapper_Find_PersonSM(Behavior):
 										remapping={'data': 'words'})
 
 
-		# x:305 y:322, x:287 y:53
-		_sm_init_1 = OperatableStateMachine(outcomes=['done', 'no_param'], input_keys=['Action'], output_keys=['person', 'name'])
+		# x:479 y:277, x:492 y:167, x:508 y:57, x:330 y:458, x:430 y:458, x:530 y:458, x:630 y:458, x:730 y:458
+		_sm_confirm_and_look_at_2 = ConcurrencyContainer(outcomes=['yes', 'no', 'error'], input_keys=['name', 'entity'], conditions=[
+										('yes', [('Ask Confirmation', 'yes')]),
+										('no', [('Ask Confirmation', 'no')]),
+										('error', [('Ask Confirmation', 'error')]),
+										('error', [('look at', 'finished')])
+										])
 
-		with _sm_init_1:
+		with _sm_confirm_and_look_at_2:
+			# x:30 y:40
+			OperatableStateMachine.add('Ask Confirmation',
+										_sm_ask_confirmation_1,
+										transitions={'yes': 'yes', 'no': 'no', 'error': 'error'},
+										autonomy={'yes': Autonomy.Inherit, 'no': Autonomy.Inherit, 'error': Autonomy.Inherit},
+										remapping={'name': 'name'})
+
+			# x:30 y:107
+			OperatableStateMachine.add('look at',
+										_sm_look_at_0,
+										transitions={'finished': 'error'},
+										autonomy={'finished': Autonomy.Inherit},
+										remapping={'entity': 'entity'})
+
+
+		# x:305 y:322, x:287 y:53
+		_sm_init_3 = OperatableStateMachine(outcomes=['done', 'no_param'], input_keys=['Action'], output_keys=['person', 'name'])
+
+		with _sm_init_3:
 			# x:30 y:40
 			OperatableStateMachine.add('cond',
 										CheckConditionState(predicate=lambda x: x[1] is not None and x[1] != ''),
@@ -159,17 +199,10 @@ class ActionWrapper_Find_PersonSM(Behavior):
 		with _state_machine:
 			# x:67 y:70
 			OperatableStateMachine.add('Init',
-										_sm_init_1,
-										transitions={'done': 'Action_find', 'no_param': 'say no object given'},
+										_sm_init_3,
+										transitions={'done': 'Action_findPerson', 'no_param': 'say no object given'},
 										autonomy={'done': Autonomy.Inherit, 'no_param': Autonomy.Inherit},
 										remapping={'Action': 'Action', 'person': 'person', 'name': 'name'})
-
-			# x:270 y:71
-			OperatableStateMachine.add('Action_find',
-										self.use_behavior(Action_findSM, 'Action_find'),
-										transitions={'done': 'Ask Confirmation', 'pas_done': 'reset Head'},
-										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
-										remapping={'className': 'person', 'entity': 'entity'})
 
 			# x:401 y:658
 			OperatableStateMachine.add('Do not find person',
@@ -180,16 +213,9 @@ class ActionWrapper_Find_PersonSM(Behavior):
 			# x:918 y:47
 			OperatableStateMachine.add('Say found',
 										SaraSayKey(Format=lambda x: "I have found " + x + "!", emotion=1, block=True),
-										transitions={'done': 'finished'},
+										transitions={'done': 'get ID'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'name'})
-
-			# x:596 y:24
-			OperatableStateMachine.add('Ask Confirmation',
-										_sm_ask_confirmation_0,
-										transitions={'yes': 'Say found', 'no': 'Retry', 'error': 'reset Head'},
-										autonomy={'yes': Autonomy.Inherit, 'no': Autonomy.Inherit, 'error': Autonomy.Inherit},
-										remapping={'name': 'name'})
 
 			# x:642 y:221
 			OperatableStateMachine.add('Retry',
@@ -207,7 +233,7 @@ class ActionWrapper_Find_PersonSM(Behavior):
 			# x:324 y:491
 			OperatableStateMachine.add('action_turn',
 										self.use_behavior(action_turnSM, 'action_turn'),
-										transitions={'finished': 'Action_find', 'failed': 'reset Head'},
+										transitions={'finished': 'Action_findPerson', 'failed': 'reset Head'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
 
@@ -222,6 +248,34 @@ class ActionWrapper_Find_PersonSM(Behavior):
 										SaraSay(sentence="You didn't told me what to find.", emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:286 y:79
+			OperatableStateMachine.add('Action_findPerson',
+										self.use_behavior(Action_findPersonSM, 'Action_findPerson'),
+										transitions={'done': 'confirm and look at', 'pas_done': 'reset Head'},
+										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
+										remapping={'className': 'className', 'entity': 'entity'})
+
+			# x:1263 y:52
+			OperatableStateMachine.add('set param',
+										SetRosParam(ParamName="behavior/FoundPerson/Id"),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'ID'})
+
+			# x:1071 y:50
+			OperatableStateMachine.add('get ID',
+										CalculationState(calculation=lambda x: x.ID),
+										transitions={'done': 'set param'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'entity', 'output_value': 'ID'})
+
+			# x:596 y:24
+			OperatableStateMachine.add('confirm and look at',
+										_sm_confirm_and_look_at_2,
+										transitions={'yes': 'Say found', 'no': 'Retry', 'error': 'reset Head'},
+										autonomy={'yes': Autonomy.Inherit, 'no': Autonomy.Inherit, 'error': Autonomy.Inherit},
+										remapping={'name': 'name', 'entity': 'entity'})
 
 
 		return _state_machine
