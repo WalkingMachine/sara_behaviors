@@ -89,7 +89,7 @@ class Action_MoveSM(Behavior):
 		with _state_machine:
 			# x:46 y:147
 			OperatableStateMachine.add('set head',
-										SaraSetHeadAngle(pitch=0.3, yaw=0),
+										SaraSetHeadAngle(pitch=0.9, yaw=0),
 										transitions={'done': 'Move'},
 										autonomy={'done': Autonomy.Off})
 
