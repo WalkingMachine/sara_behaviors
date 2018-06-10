@@ -23,6 +23,9 @@ from behavior_action_turn.action_turn_sm import action_turnSM
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from sara_flexbe_states.sara_say import SaraSay
 from behavior_wonderlanduniqueenity.wonderlanduniqueenity_sm import WonderlandUniqueEnitySM
+from behavior_action_lookatfacebase.action_lookatfacebase_sm import action_lookAtFaceBaseSM
+from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerbal
+from behavior_action_point_at.action_point_at_sm import Action_point_atSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -50,8 +53,10 @@ class ActionWrapper_GuideSM(Behavior):
 		self.add_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn')
 		self.add_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn_2')
 		self.add_behavior(WonderlandUniqueEnitySM, 'Try to find area/WonderlandUniqueEnity')
-		self.add_behavior(action_turnSM, 'Container/Move head and base end /move head and base at the end/action_turn')
-		self.add_behavior(action_turnSM, 'Container/Move head and base end /move head and base at the end/action_turn_2')
+		self.add_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn')
+		self.add_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn_2')
+		self.add_behavior(action_lookAtFaceBaseSM, 'action_lookAtFaceBase')
+		self.add_behavior(Action_point_atSM, 'Action_point_at')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -69,7 +74,7 @@ class ActionWrapper_GuideSM(Behavior):
 
 
 	def create(self):
-		# x:774 y:800, x:781 y:419, x:797 y:103
+		# x:1391 y:740, x:781 y:419, x:797 y:103
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Guide",'table', 'kitchen']
 		_state_machine.userdata.relative = False
@@ -103,7 +108,7 @@ class ActionWrapper_GuideSM(Behavior):
 
 			# x:51 y:114
 			OperatableStateMachine.add('action_turn',
-										self.use_behavior(action_turnSM, 'Container/Move head and base end /move head and base at the end/action_turn'),
+										self.use_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn'),
 										transitions={'finished': 'turn right head', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
@@ -122,7 +127,7 @@ class ActionWrapper_GuideSM(Behavior):
 
 			# x:45 y:348
 			OperatableStateMachine.add('action_turn_2',
-										self.use_behavior(action_turnSM, 'Container/Move head and base end /move head and base at the end/action_turn_2'),
+										self.use_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn_2'),
 										transitions={'finished': 'left to rigth', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
@@ -228,7 +233,7 @@ class ActionWrapper_GuideSM(Behavior):
 		with _sm_wait_to_compte_6:
 			# x:77 y:195
 			OperatableStateMachine.add('one more wait',
-										WaitState(wait_time=20),
+										WaitState(wait_time=60),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
@@ -272,25 +277,25 @@ class ActionWrapper_GuideSM(Behavior):
 
 			# x:35 y:595
 			OperatableStateMachine.add('head left right',
-										SaraSetHeadAngle(pitch=0, yaw=-1.57),
+										SaraSetHeadAngle(pitch=0, yaw=1.57),
 										transitions={'done': 'wait turn head'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:308 y:537
 			OperatableStateMachine.add('wait turn head',
-										WaitState(wait_time=8),
+										WaitState(wait_time=10),
 										transitions={'done': 'head right left'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:495 y:604
 			OperatableStateMachine.add('head right left',
-										SaraSetHeadAngle(pitch=0, yaw=1.57),
+										SaraSetHeadAngle(pitch=0, yaw=-1.57),
 										transitions={'done': 'wait wait wait'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:271 y:711
 			OperatableStateMachine.add('wait wait wait',
-										WaitState(wait_time=8),
+										WaitState(wait_time=10),
 										transitions={'done': 'head left right'},
 										autonomy={'done': Autonomy.Off})
 
@@ -333,7 +338,7 @@ class ActionWrapper_GuideSM(Behavior):
 		with _sm_container_10:
 			# x:230 y:160
 			OperatableStateMachine.add('wait long',
-										WaitState(wait_time=15),
+										WaitState(wait_time=40),
 										transitions={'done': 'check'},
 										autonomy={'done': Autonomy.Off})
 
@@ -455,12 +460,12 @@ class ActionWrapper_GuideSM(Behavior):
 
 
 		# x:626 y:228, x:607 y:71, x:230 y:458, x:330 y:458
-		_sm_container_15 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['ID'], conditions=[
+		_sm_operator_is_still_there_15 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['ID'], conditions=[
 										('finished', [('find a human', 'finished')]),
 										('failed', [('Move head and base end ', 'failed')])
 										])
 
-		with _sm_container_15:
+		with _sm_operator_is_still_there_15:
 			# x:207 y:54
 			OperatableStateMachine.add('Move head and base end ',
 										_sm_move_head_and_base_end__3,
@@ -536,7 +541,7 @@ class ActionWrapper_GuideSM(Behavior):
 			# x:581 y:163
 			OperatableStateMachine.add('check person behind',
 										_sm_check_person_behind_12,
-										transitions={'finished': 'Container', 'failed': 'say lost'},
+										transitions={'finished': 'say found', 'failed': 'say lost'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
@@ -550,6 +555,12 @@ class ActionWrapper_GuideSM(Behavior):
 			OperatableStateMachine.add('say check',
 										SaraSay(sentence="I check if my operator is still there", emotion=1, block=True),
 										transitions={'done': 'check person behind'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:443 y:187
+			OperatableStateMachine.add('say found',
+										SaraSay(sentence="Great. You are still there.", emotion=1, block=True),
+										transitions={'done': 'Container'},
 										autonomy={'done': Autonomy.Off})
 
 
@@ -597,7 +608,7 @@ class ActionWrapper_GuideSM(Behavior):
 			# x:88 y:517
 			OperatableStateMachine.add('Try to reach',
 										_sm_try_to_reach_17,
-										transitions={'finished': 'Container', 'failed': 'failed'},
+										transitions={'finished': 'operator is still there', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'waypoint': 'waypoint', 'relative': 'relative', 'areaName': 'area_name', 'ID': 'ID'})
 
@@ -621,10 +632,10 @@ class ActionWrapper_GuideSM(Behavior):
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'area_to_search': 'area', 'containers': 'containers', 'area_name': 'area_name', 'waypoint': 'waypoint'})
 
-			# x:93 y:604
-			OperatableStateMachine.add('Container',
-										_sm_container_15,
-										transitions={'finished': 'sayreachtheentity', 'failed': 'say lost operator'},
+			# x:75 y:649
+			OperatableStateMachine.add('operator is still there',
+										_sm_operator_is_still_there_15,
+										transitions={'finished': 'getentitybyID', 'failed': 'say lost operator'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
@@ -640,18 +651,53 @@ class ActionWrapper_GuideSM(Behavior):
 										transitions={'done': 'Try to reach'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:542 y:745
+			# x:1140 y:749
 			OperatableStateMachine.add('head to middle',
 										SaraSetHeadAngle(pitch=0, yaw=0),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:287 y:723
+			# x:971 y:655
 			OperatableStateMachine.add('sayreachtheentity',
 										SaraSayKey(Format=lambda x: "Here is the "+x, emotion=1, block=True),
 										transitions={'done': 'head to middle'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'area_name'})
+
+			# x:98 y:802
+			OperatableStateMachine.add('action_lookAtFaceBase',
+										self.use_behavior(action_lookAtFaceBaseSM, 'action_lookAtFaceBase'),
+										transitions={'finished': 'get entity to point', 'failed': 'get entity to point'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'Entity': 'Entity'})
+
+			# x:114 y:730
+			OperatableStateMachine.add('getentitybyID',
+										GetEntityByID(),
+										transitions={'found': 'action_lookAtFaceBase', 'not_found': 'sayreachtheentity'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'ID': 'ID', 'Entity': 'Entity'})
+
+			# x:421 y:776
+			OperatableStateMachine.add('get entity to point',
+										WonderlandGetEntityVerbal(),
+										transitions={'one': 'find the point', 'multiple': 'sayreachtheentity', 'none': 'sayreachtheentity', 'error': 'sayreachtheentity'},
+										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
+										remapping={'name': 'area_name', 'containers': 'containers', 'entities': 'entities'})
+
+			# x:814 y:792
+			OperatableStateMachine.add('Action_point_at',
+										self.use_behavior(Action_point_atSM, 'Action_point_at'),
+										transitions={'finished': 'sayreachtheentity', 'failed': 'sayreachtheentity'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'targetPoint': 'targetPoint'})
+
+			# x:655 y:827
+			OperatableStateMachine.add('find the point',
+										CalculationState(calculation=lambda x: x.position),
+										transitions={'done': 'Action_point_at'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'entities', 'output_value': 'targetPoint'})
 
 
 		return _state_machine
