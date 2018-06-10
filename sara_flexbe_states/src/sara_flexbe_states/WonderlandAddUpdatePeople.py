@@ -71,7 +71,8 @@ class WonderlandAddUpdatePeople(EventState):
         wraps = []
         for entity in self.message.entities:
             if entity.name == "person":
-                wrap = Wrapper(self.my_pose, entity, 0.5)
+                wrap = Wrapper()
+                wrap.init(self.mypose, entity, self.frontality_level)
 
                 wraps.append(wrap)
 
@@ -218,7 +219,7 @@ class WonderlandAddUpdatePeople(EventState):
 
 
 class Wrapper:
-    def __init__(self, my_pose, entity, frontality_level):
+    def init(self, my_pose, entity, frontality_level):
 
         self.entity = entity
 
