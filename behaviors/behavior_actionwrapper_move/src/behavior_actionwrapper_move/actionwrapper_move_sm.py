@@ -181,7 +181,7 @@ class ActionWrapper_MoveSM(Behavior):
 
 			# x:46 y:307
 			OperatableStateMachine.add('Say reached',
-										SaraSayKey(Format=lambda x: "I have reach the " + x + "!", emotion=1, block=True),
+										SaraSayKey(Format=lambda x: "I'm here.", emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'areaName'})
@@ -280,7 +280,7 @@ class ActionWrapper_MoveSM(Behavior):
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'command': 'Action', 'containers': 'containers', 'area': 'area'})
 
-			# x:325 y:269
+			# x:325 y:306
 			OperatableStateMachine.add('Set Finished',
 										Set_a_step(step=3),
 										transitions={'done': 'finished'},
@@ -289,7 +289,7 @@ class ActionWrapper_MoveSM(Behavior):
 			# x:76 y:355
 			OperatableStateMachine.add('Try to reach',
 										_sm_try_to_reach_3,
-										transitions={'finished': 'Set Finished', 'failed': 'Set Finished', 'critical_fail': 'critical_fail'},
+										transitions={'finished': 'Set Finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'waypoint': 'waypoint', 'relative': 'relative', 'areaName': 'area_name'})
 
