@@ -65,7 +65,7 @@ class ActionWrapper_PickSM(Behavior):
 
 
 	def create(self):
-		# x:629 y:497, x:743 y:359, x:715 y:440
+		# x:629 y:497, x:771 y:302, x:715 y:440
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Pick","bottle"]
 
@@ -318,7 +318,7 @@ class ActionWrapper_PickSM(Behavior):
 			# x:29 y:261
 			OperatableStateMachine.add('Get object',
 										_sm_get_object_1,
-										transitions={'failed': 'find object', 'found': 'action_look_at_face', 'not_found': 'failed'},
+										transitions={'failed': 'find object', 'found': 'action_look_at_face', 'not_found': 'find object'},
 										autonomy={'failed': Autonomy.Inherit, 'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'ID': 'ID', 'Object': 'Object'})
 
