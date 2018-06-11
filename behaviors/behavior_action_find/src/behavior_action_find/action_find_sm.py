@@ -192,7 +192,7 @@ class Action_findSM(Behavior):
 
 			# x:149 y:306
 			OperatableStateMachine.add('wait',
-										WaitState(wait_time=60),
+										WaitState(wait_time=30),
 										transitions={'done': 'not_found'},
 										autonomy={'done': Autonomy.Off})
 
