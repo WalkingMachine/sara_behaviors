@@ -10,9 +10,9 @@ import roslib; roslib.load_manifest('behavior_action_guiding_person')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from behavior_get_operator.get_operator_sm import Get_operatorSM
 from sara_flexbe_states.sara_say import SaraSay
-from flexbe_navigation_states.move_base_state import MoveBaseState
 from sara_flexbe_states.GetRosParam import GetRosParam
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
+from sara_flexbe_states.sara_move_base import SaraMoveBase
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -87,18 +87,18 @@ class Action_Guiding_PersonSM(Behavior):
 
 		# x:30 y:365, x:130 y:365, x:230 y:365, x:330 y:365, x:430 y:365
 		_sm_deplacement_et_verification_de_presence_1 = ConcurrencyContainer(outcomes=['arrived', 'failed'], input_keys=['Position'], conditions=[
-										('arrived', [('sara_move', 'arrived')]),
-										('failed', [('sara_move', 'failed')]),
-										('failed', [('verifie presence', 'not found')])
+										('failed', [('verifie presence', 'not found')]),
+										('arrived', [('saramove', 'arrived')]),
+										('failed', [('saramove', 'failed')])
 										])
 
 		with _sm_deplacement_et_verification_de_presence_1:
-			# x:30 y:101
-			OperatableStateMachine.add('sara_move',
-										MoveBaseState(),
+			# x:70 y:106
+			OperatableStateMachine.add('saramove',
+										SaraMoveBase(),
 										transitions={'arrived': 'arrived', 'failed': 'failed'},
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'waypoint': 'Position'})
+										remapping={'pose': 'Position'})
 
 			# x:255 y:90
 			OperatableStateMachine.add('verifie presence',
