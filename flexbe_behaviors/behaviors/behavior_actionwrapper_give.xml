@@ -12,6 +12,8 @@
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Action_Give" />
+	<contains name="Action_findPerson" />
 
 	<!-- Available Parameters -->
 
