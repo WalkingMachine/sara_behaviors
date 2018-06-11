@@ -36,15 +36,15 @@ class WonderlandPatchPerson(EventState):
 
         data = {}
 
-        if entity.wonderlandId is None and entity.face.id is None:
+        if entity.wonderlandId is None and entity.ID is None:
             Logger.logwarn('Need wonderland ID or face ID !')
             return 'bad_request'
 
         if entity.wonderlandId is not None:
             data.update({'peopleId': entity.wonderlandId})
 
-        if entity.face.id is not None:
-            data.update({'peopleRecognitionId': entity.face.id})
+        if entity.ID is not None:
+            data.update({'peopleRecognitionId': entity.ID})
 
         if entity.color is not None:
             data.update({'peopleColor': entity.color})

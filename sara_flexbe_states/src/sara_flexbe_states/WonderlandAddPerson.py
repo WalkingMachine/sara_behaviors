@@ -37,8 +37,8 @@ class WonderlandAddPerson(EventState):
 
         data = {}
 
-        if entity.face.id is not None:
-            data.update({'peopleRecognitionId': entity.face.id})
+        if entity.ID is not None:
+            data.update({'peopleRecognitionId': entity.ID})
 
         if entity.color is not None:
             data.update({'peopleColor': entity.color})

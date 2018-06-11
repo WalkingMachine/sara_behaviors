@@ -102,7 +102,7 @@ class GenerateEntity(EventState):
         entity.velocity.y = self.velocity_y
         entity.velocity.z = self.velocity_z
         entity.containerId = self.containerId
-        entity.face.id = self.face_id
+        entity.ID = self.face_id
         entity.face.gender = self.face_gender
         entity.face.genderProbability = self.face_genderProbability
         entity.face.emotion = self.face_emotion
