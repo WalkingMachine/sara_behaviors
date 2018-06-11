@@ -77,8 +77,8 @@ class Scenario_SPRSM(Behavior):
 		_state_machine.userdata.half_turn = 3.1416
 		_state_machine.userdata.person = "person"
 		_state_machine.userdata.operator_param = "behavior/Operaror/Id"
-		_state_machine.userdata.join = ["Move", "out point"]
-		_state_machine.userdata.leave = ["Move", "spr point"]
+		_state_machine.userdata.join = ["Move", "spr/waypoint1"]
+		_state_machine.userdata.leave = ["Move", "general/out"]
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -122,7 +122,7 @@ class Scenario_SPRSM(Behavior):
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
-			# x:758 y:87
+			# x:758 y:76
 			OperatableStateMachine.add('Listen',
 										GetSpeech(watchdog=10),
 										transitions={'done': 'Engine', 'nothing': 'Listen', 'fail': 'Listen'},
@@ -138,7 +138,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:356 y:382
 			OperatableStateMachine.add('Say Answer',
-										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
+										SaraSayKey(Format=lambda x: str(x), emotion=1, block=True),
 										transitions={'done': 'Loop Questions'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'answer'})
@@ -227,7 +227,7 @@ class Scenario_SPRSM(Behavior):
 										remapping={'Action': 'join'})
 
 
-		# x:489 y:56, x:261 y:327
+		# x:489 y:56, x:604 y:278
 		_sm_waiting_and_turn_5 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['half_turn'])
 
 		with _sm_waiting_and_turn_5:
@@ -237,14 +237,14 @@ class Scenario_SPRSM(Behavior):
 										transitions={'done': 'Wait 10s'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:201 y:52
+			# x:272 y:121
 			OperatableStateMachine.add('action_turn',
 										self.use_behavior(action_turnSM, 'Waiting And Turn/action_turn'),
 										transitions={'finished': 'finished', 'failed': 'Cant turn'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'half_turn'})
 
-			# x:237 y:190
+			# x:437 y:240
 			OperatableStateMachine.add('Cant turn',
 										SaraSay(sentence="I can't turn !", emotion=1, block=True),
 										transitions={'done': 'failed'},
@@ -253,6 +253,12 @@ class Scenario_SPRSM(Behavior):
 			# x:63 y:178
 			OperatableStateMachine.add('Wait 10s',
 										WaitState(wait_time=10),
+										transitions={'done': 'Look In Front Of'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:61 y:260
+			OperatableStateMachine.add('Look In Front Of',
+										SaraSetHeadAngle(pitch=0, yaw=0),
 										transitions={'done': 'action_turn'},
 										autonomy={'done': Autonomy.Off})
 
@@ -405,13 +411,13 @@ class Scenario_SPRSM(Behavior):
 										transitions={'done': 'Set Story Step'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:462 y:35
+			# x:482 y:46
 			OperatableStateMachine.add('WaitForBegining',
 										ContinueButton(),
 										transitions={'true': 'Reset Persons', 'false': 'Reset Persons'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
 
-			# x:725 y:45
+			# x:759 y:45
 			OperatableStateMachine.add('Reset Persons',
 										WonderlandClearPeoples(),
 										transitions={'done': 'done', 'error': 'error'},
@@ -420,7 +426,7 @@ class Scenario_SPRSM(Behavior):
 			# x:247 y:49
 			OperatableStateMachine.add('Set Story Step',
 										Set_a_step(step=0),
-										transitions={'done': 'WaitForBegining'},
+										transitions={'done': 'Reset Persons'},
 										autonomy={'done': Autonomy.Off})
 
 
@@ -429,7 +435,7 @@ class Scenario_SPRSM(Behavior):
 			# x:34 y:130
 			OperatableStateMachine.add('Init Scenario',
 										_sm_init_scenario_10,
-										transitions={'done': 'Set Join', 'error': 'failed'},
+										transitions={'done': 'Set Analyse', 'error': 'failed'},
 										autonomy={'done': Autonomy.Inherit, 'error': Autonomy.Inherit})
 
 			# x:517 y:124
