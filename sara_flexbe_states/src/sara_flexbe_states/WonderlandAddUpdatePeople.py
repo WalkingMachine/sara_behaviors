@@ -47,49 +47,31 @@ class WonderlandAddUpdatePeople(EventState):
             self._sub.remove_last_msg('/entities')
 
         if self.message is not None and self.my_pose is not None:
-            found_entities = self.list()
+            for person in self.message.entities:
+                if person.name == "person":
+                    result = self.add_person(person)
 
-            for person in found_entities:
-                result = self.add_person(person)
+                    # If people already exist
+                    if result == 1:
+                        result = self.update_person(person)
 
-                # If people already exist
-                if result == 1:
-                    result = self.update_person(person)
+                        # Error during person update.
+                        if result != 0:
+                            Logger.logerr("An error happen during people update.")
 
-                    # Error during person update.
-                    if result != 0:
-                        Logger.logerr("An error happen during people update.")
-
-                # Error during person add.
-                elif result < 0:
-                    Logger.logerr("An error happen during people add.")
+                    # Error during person add.
+                    elif result < 0:
+                        Logger.logerr("An error happen during people add.")
 
         return 'done'
-
-    def list_persons(self):
-        found_entities = []
-        wraps = []
-        for entity in self.message.entities:
-            if entity.name == "person":
-                wrap = Wrapper()
-                wrap.init(self.mypose, entity, self.frontality_level)
-
-                wraps.append(wrap)
-
-        wraps.sort(key=Wrapper.key)
-
-        for wrap in wraps:
-            found_entities.append(wrap.entity)
-
-        return found_entities
 
     def add_person(self, entity):
         data = {}
 
         # Prepare request
 
-        if entity.face.id is not None:
-            data.update({'peopleRecognitionId': entity.face.id})
+        if entity.ID is not None:
+            data.update({'peopleRecognitionId': entity.ID})
 
         if entity.color is not None:
             data.update({'peopleColor': entity.color})
@@ -156,15 +138,15 @@ class WonderlandAddUpdatePeople(EventState):
 
         # Prepare request
 
-        if entity.wonderlandId is None and entity.face.id is None:
+        if entity.wonderlandId is None and entity.ID is None:
             Logger.logwarn('Need wonderland ID or face ID !')
             return 'bad_request'
 
         if entity.wonderlandId is not None:
             data.update({'peopleId': entity.wonderlandId})
 
-        if entity.face.id is not None:
-            data.update({'peopleRecognitionId': entity.face.id})
+        if entity.ID is not None:
+            data.update({'peopleRecognitionId': entity.ID})
 
         if entity.color is not None:
             data.update({'peopleColor': entity.color})
@@ -216,27 +198,3 @@ class WonderlandAddUpdatePeople(EventState):
         except requests.exceptions.RequestException as e:
             Logger.logerr(e)
             return -1
-
-
-class Wrapper:
-    def init(self, my_pose, entity, frontality_level):
-
-        self.entity = entity
-
-        x = entity.position.x - my_pose.position.x
-        y = entity.position.y - my_pose.position.y
-
-        quaternion = [my_pose.orientation.x, my_pose.orientation.y, my_pose.orientation.z, my_pose.orientation.w]
-        euler = euler_from_quaternion(quaternion)
-        A = euler[2]
-
-        a = tan(A)
-        b = y - x * a
-
-        self.dist = (abs(y - a * x - b) / (1 + b ** 2) ** 0.5) * frontality_level
-        self.dist += (((entity.position.x - my_pose.position.x) ** 2 + (
-                entity.position.y - my_pose.position.y) ** 2) ** 0.5) * (1 - frontality_level)
-        self.dist /= entity.probability**2
-
-    def key(self):
-        return self.dist
