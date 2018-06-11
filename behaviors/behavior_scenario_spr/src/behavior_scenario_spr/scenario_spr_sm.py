@@ -12,6 +12,8 @@ from sara_flexbe_states.story import Set_Story
 from sara_flexbe_states.continue_button import ContinueButton
 from sara_flexbe_states.WonderlandClearPeoples import WonderlandClearPeoples
 from sara_flexbe_states.set_a_step import Set_a_step
+from sara_flexbe_states.moveit_move import MoveitMove
+from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.WonderlandAddUpdatePeople import WonderlandAddUpdatePeople
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
@@ -21,14 +23,12 @@ from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetRosParamKey import SetRosParamKey
-from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.log_key_state import LogKeyState
+from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.sara_nlu_spr import SaraNLUspr
-from sara_flexbe_states.GetRosParam import GetRosParam
 from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
-from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from behavior_action_turn.action_turn_sm import action_turnSM
 from behavior_actionwrapper_move.actionwrapper_move_sm import ActionWrapper_MoveSM
 # Additional imports can be added inside the following tags
@@ -86,29 +86,29 @@ class Scenario_SPRSM(Behavior):
 		# [/MANUAL_CREATE]
 
 		# x:30 y:458
-		_sm_follow_head_0 = OperatableStateMachine(outcomes=['end'])
+		_sm_follow_head_0 = OperatableStateMachine(outcomes=['end'], input_keys=['person'])
 
 		with _sm_follow_head_0:
-			# x:110 y:69
-			OperatableStateMachine.add('Get Operator ID',
-										GetRosParam(ParamName="behavior/Operaror/Id"),
-										transitions={'done': 'Get The Operator', 'failed': 'Get Operator ID'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'Value': 'ID'})
+			# x:214 y:48
+			OperatableStateMachine.add('list all entities',
+										list_entities_by_name(frontality_level=0.5),
+										transitions={'found': 'Get Nearest', 'not_found': 'list all entities'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'name': 'person', 'entity_list': 'entity_list', 'number': 'number'})
 
-			# x:445 y:318
+			# x:456 y:51
+			OperatableStateMachine.add('Get Nearest',
+										CalculationState(calculation=lambda x: x[0]),
+										transitions={'done': 'action_look_at_face'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'entity_list', 'output_value': 'Entity'})
+
+			# x:374 y:203
 			OperatableStateMachine.add('action_look_at_face',
 										self.use_behavior(action_look_at_faceSM, 'Questions/Follow Head/action_look_at_face'),
-										transitions={'finished': 'Get The Operator', 'failed': 'Get The Operator'},
+										transitions={'finished': 'list all entities', 'failed': 'list all entities'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Entity': 'Entity'})
-
-			# x:466 y:66
-			OperatableStateMachine.add('Get The Operator',
-										GetEntityByID(),
-										transitions={'found': 'action_look_at_face', 'not_found': 'Get The Operator'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'ID': 'ID', 'Entity': 'Entity'})
 
 
 		# x:12 y:125, x:1130 y:515
@@ -163,32 +163,44 @@ class Scenario_SPRSM(Behavior):
 		with _sm_rotate_2:
 			# x:103 y:61
 			OperatableStateMachine.add('Look Left',
-										SaraSetHeadAngle(pitch=0.1, yaw=0.785),
+										SaraSetHeadAngle(pitch=0.1, yaw=0.5),
 										transitions={'done': 'Rotate Left'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:495 y:60
+			# x:794 y:54
 			OperatableStateMachine.add('Look Right',
-										SaraSetHeadAngle(pitch=0.1, yaw=-0.785),
+										SaraSetHeadAngle(pitch=0.1, yaw=-0.5),
 										transitions={'done': 'Rotate Right'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:325 y:61
 			OperatableStateMachine.add('Rotate Left',
 										WaitState(wait_time=4),
-										transitions={'done': 'Look Right'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:721 y:60
-			OperatableStateMachine.add('Rotate Right',
-										WaitState(wait_time=8),
 										transitions={'done': 'Look Center'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:945 y:60
-			OperatableStateMachine.add('Look Center',
+			# x:961 y:65
+			OperatableStateMachine.add('Rotate Right',
+										WaitState(wait_time=4),
+										transitions={'done': 'Look Center 2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:1115 y:62
+			OperatableStateMachine.add('Look Center 2',
 										SaraSetHeadAngle(pitch=0.1, yaw=0),
 										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:484 y:54
+			OperatableStateMachine.add('Look Center',
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										transitions={'done': 'Rotate Center'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:657 y:49
+			OperatableStateMachine.add('Rotate Center',
+										WaitState(wait_time=4),
+										transitions={'done': 'Look Right'},
 										autonomy={'done': Autonomy.Off})
 
 
@@ -264,7 +276,7 @@ class Scenario_SPRSM(Behavior):
 
 
 		# x:472 y:69, x:476 y:113, x:470 y:196, x:330 y:458, x:430 y:458
-		_sm_questions_6 = ConcurrencyContainer(outcomes=['finished', 'failed'], conditions=[
+		_sm_questions_6 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['person'], conditions=[
 										('finished', [('NLU', 'finished')]),
 										('failed', [('NLU', 'failed')]),
 										('finished', [('Follow Head', 'end')])
@@ -281,10 +293,11 @@ class Scenario_SPRSM(Behavior):
 			OperatableStateMachine.add('Follow Head',
 										_sm_follow_head_0,
 										transitions={'end': 'finished'},
-										autonomy={'end': Autonomy.Inherit})
+										autonomy={'end': Autonomy.Inherit},
+										remapping={'person': 'person'})
 
 
-		# x:379 y:234, x:60 y:571
+		# x:372 y:215, x:60 y:571
 		_sm_find_operator_7 = OperatableStateMachine(outcomes=['not_found', 'done'], input_keys=['person', 'operator_param'])
 
 		with _sm_find_operator_7:
@@ -314,19 +327,19 @@ class Scenario_SPRSM(Behavior):
 										transitions={'done': 'Find Operator'},
 										autonomy={'done': Autonomy.Off})
 
+			# x:35 y:495
+			OperatableStateMachine.add('Operator Id',
+										LogKeyState(text="Operator find. Id: {}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'operator'})
+
 			# x:30 y:205
 			OperatableStateMachine.add('Find Operator',
 										list_entities_by_name(frontality_level=0.5),
 										transitions={'found': 'Get operator id', 'not_found': 'not_found'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'name': 'person', 'entity_list': 'entity_list', 'number': 'number'})
-
-			# x:35 y:495
-			OperatableStateMachine.add('Operator Id',
-										LogKeyState(text="Operator find. Id: ", severity=Logger.REPORT_HINT),
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'data': 'operator'})
 
 
 		# x:703 y:198, x:88 y:199
@@ -401,7 +414,7 @@ class Scenario_SPRSM(Behavior):
 										autonomy={'finished': Autonomy.Inherit})
 
 
-		# x:1163 y:221, x:937 y:218
+		# x:1203 y:11, x:1006 y:366
 		_sm_init_scenario_10 = OperatableStateMachine(outcomes=['done', 'error'])
 
 		with _sm_init_scenario_10:
@@ -411,7 +424,7 @@ class Scenario_SPRSM(Behavior):
 										transitions={'done': 'Set Story Step'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:482 y:46
+			# x:559 y:44
 			OperatableStateMachine.add('WaitForBegining',
 										ContinueButton(),
 										transitions={'true': 'Reset Persons', 'false': 'Reset Persons'},
@@ -426,8 +439,22 @@ class Scenario_SPRSM(Behavior):
 			# x:247 y:49
 			OperatableStateMachine.add('Set Story Step',
 										Set_a_step(step=0),
-										transitions={'done': 'Reset Persons'},
+										transitions={'done': 'setIDLE'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:388 y:208
+			OperatableStateMachine.add('Reset Arm',
+										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										transitions={'done': 'Reset Persons', 'failed': 'error'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'target'})
+
+			# x:427 y:40
+			OperatableStateMachine.add('setIDLE',
+										SetKey(Value="IdlePose"),
+										transitions={'done': 'Reset Arm'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'target'})
 
 
 
@@ -453,7 +480,7 @@ class Scenario_SPRSM(Behavior):
 			# x:899 y:126
 			OperatableStateMachine.add('Find Operator',
 										_sm_find_operator_7,
-										transitions={'not_found': 'failed', 'done': 'Questions'},
+										transitions={'not_found': 'Analyse Crowd', 'done': 'Questions'},
 										autonomy={'not_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'person': 'person', 'operator_param': 'operator_param'})
 
@@ -461,7 +488,8 @@ class Scenario_SPRSM(Behavior):
 			OperatableStateMachine.add('Questions',
 										_sm_questions_6,
 										transitions={'finished': 'Set Go Out', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'person': 'person'})
 
 			# x:343 y:49
 			OperatableStateMachine.add('Set Story Waiting',
@@ -494,13 +522,13 @@ class Scenario_SPRSM(Behavior):
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'half_turn': 'half_turn'})
 
-			# x:1354 y:46
+			# x:1281 y:36
 			OperatableStateMachine.add('Set Go Out',
 										Set_a_step(step=11),
-										transitions={'done': 'Leave Arena'},
+										transitions={'done': 'Say And Of Game'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:1300 y:130
+			# x:1498 y:153
 			OperatableStateMachine.add('Leave Arena',
 										self.use_behavior(ActionWrapper_MoveSM, 'Leave Arena'),
 										transitions={'finished': 'finished', 'failed': 'finished', 'critical_fail': 'finished'},
@@ -519,6 +547,12 @@ class Scenario_SPRSM(Behavior):
 										transitions={'failed': 'failed', 'finished': 'Set Story Waiting'},
 										autonomy={'failed': Autonomy.Inherit, 'finished': Autonomy.Inherit},
 										remapping={'join': 'join'})
+
+			# x:1302 y:140
+			OperatableStateMachine.add('Say And Of Game',
+										SaraSay(sentence="The game is finish. I can't do the next step so I will leave the arena. Thank you for playing with me.", emotion=1, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine
