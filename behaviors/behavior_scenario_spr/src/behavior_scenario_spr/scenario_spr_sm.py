@@ -462,7 +462,7 @@ class Scenario_SPRSM(Behavior):
 			# x:34 y:130
 			OperatableStateMachine.add('Init Scenario',
 										_sm_init_scenario_10,
-										transitions={'done': 'Set Analyse', 'error': 'failed'},
+										transitions={'done': 'Set Join', 'error': 'failed'},
 										autonomy={'done': Autonomy.Inherit, 'error': Autonomy.Inherit})
 
 			# x:517 y:124
@@ -528,7 +528,7 @@ class Scenario_SPRSM(Behavior):
 										transitions={'done': 'Say And Of Game'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:1498 y:153
+			# x:1517 y:148
 			OperatableStateMachine.add('Leave Arena',
 										self.use_behavior(ActionWrapper_MoveSM, 'Leave Arena'),
 										transitions={'finished': 'finished', 'failed': 'finished', 'critical_fail': 'finished'},
@@ -551,7 +551,7 @@ class Scenario_SPRSM(Behavior):
 			# x:1302 y:140
 			OperatableStateMachine.add('Say And Of Game',
 										SaraSay(sentence="The game is finish. I can't do the next step so I will leave the arena. Thank you for playing with me.", emotion=1, block=True),
-										transitions={'done': 'finished'},
+										transitions={'done': 'Leave Arena'},
 										autonomy={'done': Autonomy.Off})
 
 
