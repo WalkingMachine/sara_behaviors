@@ -8,16 +8,19 @@
 
 import roslib; roslib.load_manifest('behavior_scenario_gpsr')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from behavior_action_executor.action_executor_sm import Action_ExecutorSM
-from sara_flexbe_states.get_speech import GetSpeech
-from sara_flexbe_states.sara_nlu_gpsr import SaraNLUgpsr
-from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
 from flexbe_states.calculation_state import CalculationState
+from behavior_action_executor.action_executor_sm import Action_ExecutorSM
+from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.for_loop import ForLoop
+from sara_flexbe_states.sara_nlu_gpsr import SaraNLUgpsr
+from sara_flexbe_states.get_speech import GetSpeech
+from sara_flexbe_states.list_entities_by_name import list_entities_by_name
+from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -41,8 +44,9 @@ class Scenario_GPSRSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_ExecutorSM, 'Action_Executor')
 		self.add_behavior(Action_ExecutorSM, 'Do the actions/Action_Executor')
+		self.add_behavior(action_look_at_faceSM, 'Interact operator/look at op/action_look_at_face')
+		self.add_behavior(Action_ExecutorSM, 'Action_Executor')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -54,9 +58,10 @@ class Scenario_GPSRSM(Behavior):
 
 
 	def create(self):
-		# x:461 y:37, x:739 y:154
+		# x:199 y:478, x:449 y:199
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.ActionGoToStart = ["Move", "spr/waypoint1"]
+		_state_machine.userdata.PositionBras = "IdlePose"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -64,9 +69,101 @@ class Scenario_GPSRSM(Behavior):
 		# [/MANUAL_CREATE]
 
 		# x:30 y:324
-		_sm_fail_state_0 = OperatableStateMachine(outcomes=['finished'])
+		_sm_look_at_op_0 = OperatableStateMachine(outcomes=['fail'])
 
-		with _sm_fail_state_0:
+		with _sm_look_at_op_0:
+			# x:61 y:31
+			OperatableStateMachine.add('set name',
+										SetKey(Value="person"),
+										transitions={'done': 'list persons'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'name'})
+
+			# x:44 y:110
+			OperatableStateMachine.add('list persons',
+										list_entities_by_name(frontality_level=0.5),
+										transitions={'found': 'get closest', 'not_found': 'list persons'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
+
+			# x:45 y:188
+			OperatableStateMachine.add('get closest',
+										CalculationState(calculation=lambda x: x[0]),
+										transitions={'done': 'action_look_at_face'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'entity_list', 'output_value': 'Entity'})
+
+			# x:246 y:182
+			OperatableStateMachine.add('action_look_at_face',
+										self.use_behavior(action_look_at_faceSM, 'Interact operator/look at op/action_look_at_face'),
+										transitions={'finished': 'list persons', 'failed': 'list persons'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'Entity': 'Entity'})
+
+
+		# x:307 y:35, x:335 y:491
+		_sm_get_commands_1 = OperatableStateMachine(outcomes=['fail', 'understood'], output_keys=['ActionForms'])
+
+		with _sm_get_commands_1:
+			# x:50 y:48
+			OperatableStateMachine.add('say ready',
+										SaraSay(sentence="I'm ready for your commands.", emotion=1, block=False),
+										transitions={'done': 'GetSpeech'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:32 y:392
+			OperatableStateMachine.add('SaraNLUgpsr',
+										SaraNLUgpsr(),
+										transitions={'understood': 'say understood', 'not_understood': 'say sorry', 'fail': 'say sorry'},
+										autonomy={'understood': Autonomy.Off, 'not_understood': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'sentence': 'sentence', 'ActionForms': 'ActionForms'})
+
+			# x:231 y:301
+			OperatableStateMachine.add('say sorry',
+										SaraSay(sentence="Sorry, I could not understand what you said.", emotion=1, block=True),
+										transitions={'done': 'GetSpeech'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:30 y:491
+			OperatableStateMachine.add('say understood',
+										SaraSay(sentence="Ok", emotion=1, block=True),
+										transitions={'done': 'understood'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:39 y:184
+			OperatableStateMachine.add('GetSpeech',
+										GetSpeech(watchdog=5),
+										transitions={'done': 'SaraNLUgpsr', 'nothing': 'GetSpeech', 'fail': 'fail'},
+										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'words': 'sentence'})
+
+
+		# x:320 y:82, x:322 y:143, x:265 y:407, x:306 y:225, x:430 y:324
+		_sm_interact_operator_2 = ConcurrencyContainer(outcomes=['fail', 'understood'], output_keys=['ActionForms'], conditions=[
+										('understood', [('Get Commands', 'understood')]),
+										('fail', [('Get Commands', 'fail')]),
+										('fail', [('look at op', 'fail')])
+										])
+
+		with _sm_interact_operator_2:
+			# x:95 y:45
+			OperatableStateMachine.add('Get Commands',
+										_sm_get_commands_1,
+										transitions={'fail': 'fail', 'understood': 'understood'},
+										autonomy={'fail': Autonomy.Inherit, 'understood': Autonomy.Inherit},
+										remapping={'ActionForms': 'ActionForms'})
+
+			# x:99 y:198
+			OperatableStateMachine.add('look at op',
+										_sm_look_at_op_0,
+										transitions={'fail': 'fail'},
+										autonomy={'fail': Autonomy.Inherit})
+
+
+		# x:30 y:324
+		_sm_fail_state_3 = OperatableStateMachine(outcomes=['finished'])
+
+		with _sm_fail_state_3:
 			# x:248 y:81
 			OperatableStateMachine.add('say failed',
 										SaraSay(sentence="I failed. I'm going back.", emotion=1, block=True),
@@ -75,9 +172,9 @@ class Scenario_GPSRSM(Behavior):
 
 
 		# x:588 y:141, x:590 y:545, x:642 y:410
-		_sm_do_the_actions_1 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical fail'], input_keys=['ActionForms', 'OriginalPose'])
+		_sm_do_the_actions_4 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical fail'], input_keys=['ActionForms', 'OriginalPose'])
 
-		with _sm_do_the_actions_1:
+		with _sm_do_the_actions_4:
 			# x:85 y:33
 			OperatableStateMachine.add('set i',
 										SetKey(Value=0),
@@ -114,96 +211,78 @@ class Scenario_GPSRSM(Behavior):
 										remapping={'Action': 'ActionForm'})
 
 
-		# x:372 y:70, x:45 y:492
-		_sm_get_commands_2 = OperatableStateMachine(outcomes=['fail', 'understood'], output_keys=['ActionForms'])
-
-		with _sm_get_commands_2:
-			# x:33 y:40
-			OperatableStateMachine.add('GetSpeech',
-										GetSpeech(watchdog=5),
-										transitions={'done': 'SaraNLUgpsr', 'nothing': 'GetSpeech', 'fail': 'fail'},
-										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
-										remapping={'words': 'sentence'})
-
-			# x:30 y:226
-			OperatableStateMachine.add('SaraNLUgpsr',
-										SaraNLUgpsr(),
-										transitions={'understood': 'say understood', 'not_understood': 'say sorry', 'fail': 'say sorry'},
-										autonomy={'understood': Autonomy.Off, 'not_understood': Autonomy.Off, 'fail': Autonomy.Off},
-										remapping={'sentence': 'sentence', 'ActionForms': 'ActionForms'})
-
-			# x:179 y:137
-			OperatableStateMachine.add('say sorry',
-										SaraSay(sentence="Sorry, I could not understand what you said.", emotion=1, block=True),
-										transitions={'done': 'GetSpeech'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:12 y:379
-			OperatableStateMachine.add('say understood',
-										SaraSay(sentence="Ok", emotion=1, block=True),
-										transitions={'done': 'understood'},
-										autonomy={'done': Autonomy.Off})
-
-
 
 		with _state_machine:
-			# x:103 y:133
-			OperatableStateMachine.add('Action_Executor',
-										self.use_behavior(Action_ExecutorSM, 'Action_Executor'),
-										transitions={'finished': 'GetOriginalPose', 'failed': 'critical', 'critical_fail': 'critical'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
-										remapping={'Action': 'ActionGoToStart'})
+			# x:36 y:26
+			OperatableStateMachine.add('bras en lair',
+										MoveitMove(move=True, waitForExecution=False, group="RightArm"),
+										transitions={'done': 'say start', 'failed': 'say start'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'PositionBras'})
 
-			# x:44 y:380
-			OperatableStateMachine.add('Get Commands',
-										_sm_get_commands_2,
-										transitions={'fail': 'critical', 'understood': 'Do the actions'},
-										autonomy={'fail': Autonomy.Inherit, 'understood': Autonomy.Inherit},
-										remapping={'ActionForms': 'ActionForms'})
-
-			# x:52 y:266
+			# x:30 y:335
 			OperatableStateMachine.add('GetOriginalPose',
 										Get_Robot_Pose(),
-										transitions={'done': 'Get Commands'},
+										transitions={'done': 'Interact operator'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'OriginalPose'})
 
-			# x:415 y:377
+			# x:481 y:320
 			OperatableStateMachine.add('Do the actions',
-										_sm_do_the_actions_1,
+										_sm_do_the_actions_4,
 										transitions={'finished': 'say succseed', 'failed': 'Fail state', 'critical fail': 'critical'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical fail': Autonomy.Inherit},
 										remapping={'ActionForms': 'ActionForms', 'OriginalPose': 'OriginalPose'})
 
-			# x:680 y:380
+			# x:431 y:30
 			OperatableStateMachine.add('Fail state',
-										_sm_fail_state_0,
+										_sm_fail_state_3,
 										transitions={'finished': 'Action_Executor'},
 										autonomy={'finished': Autonomy.Inherit})
 
-			# x:480 y:142
+			# x:290 y:201
 			OperatableStateMachine.add('critical',
 										SaraSay(sentence="Critical failure! I'm stopping right there.", emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:276 y:31
+			# x:44 y:475
 			OperatableStateMachine.add('win',
 										SaraSay(sentence="I did it. I'm the best robot.", emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:75 y:26
+			# x:46 y:401
 			OperatableStateMachine.add('for 3',
 										ForLoop(repeat=3),
 										transitions={'do': 'GetOriginalPose', 'end': 'win'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
-			# x:290 y:502
+			# x:495 y:413
 			OperatableStateMachine.add('say succseed',
 										SaraSay(sentence="I succeed my mission. I'm going back", emotion=1, block=True),
 										transitions={'done': 'for 3'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:230 y:323
+			OperatableStateMachine.add('Interact operator',
+										_sm_interact_operator_2,
+										transitions={'fail': 'critical', 'understood': 'Do the actions'},
+										autonomy={'fail': Autonomy.Inherit, 'understood': Autonomy.Inherit},
+										remapping={'ActionForms': 'ActionForms'})
+
+			# x:18 y:194
+			OperatableStateMachine.add('Action_Executor',
+										self.use_behavior(Action_ExecutorSM, 'Action_Executor'),
+										transitions={'finished': 'GetOriginalPose', 'failed': 'critical', 'critical_fail': 'critical'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
+										remapping={'Action': 'ActionGoToStart'})
+
+			# x:40 y:117
+			OperatableStateMachine.add('say start',
+										SaraSay(sentence="I'm ready to start the GPSR scenario.", emotion=1, block=True),
+										transitions={'done': 'Action_Executor'},
 										autonomy={'done': Autonomy.Off})
 
 
