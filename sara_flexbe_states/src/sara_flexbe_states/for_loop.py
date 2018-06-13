@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-
 from flexbe_core import EventState, Logger
-import rospy
 
 
 class ForLoop(EventState):
@@ -10,7 +8,6 @@ class ForLoop(EventState):
 
     -- repeat     int      number of repetitions
 
-    
     <= index     current index
 
     <= do        loop
@@ -20,18 +17,18 @@ class ForLoop(EventState):
     def __init__(self, repeat):
         """Constructor"""
 
-        super(ForLoop, self).__init__(outcomes = ['do','end'], output_keys = ['index'])
+        super(ForLoop, self).__init__(outcomes=['do', 'end'], output_keys=['index'])
         self.repeat = repeat
-        self.index = 1
+        self.index = 0
 
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
 
-        if ( self.index <= self.repeat ):
-            self.index = self.index+1
-            userdata.index = self.index
+        userdata.index = self.index
+
+        if self.index < self.repeat:
+            self.index += 1
             return 'do'
         else:
-            self.index = 1
+            self.index = 0
             return 'end'
-

@@ -35,15 +35,10 @@ class WonderlandAddPerson(EventState):
 
         entity = userdata.entity
 
-        if entity.face.id is None:
-            Logger.logwarn('Need face ID !')
-            return 'bad_request'
+        data = {}
 
-        if entity.wonderlandId is None and entity.face.id is None:
-            Logger.logwarn('Need wonderland ID or face ID !')
-            return 'bad_request'
-
-        data = {'peopleRecognitionId': entity.face.id}
+        if entity.ID is not None:
+            data.update({'peopleRecognitionId': entity.ID})
 
         if entity.color is not None:
             data.update({'peopleColor': entity.color})
@@ -52,13 +47,19 @@ class WonderlandAddPerson(EventState):
             data.update({'peoplePose': entity.pose})
 
         if entity.poseProbability is not None:
-            data.update({'peoplePoseAccuracy': entity.color})
+            data.update({'peoplePoseAccuracy': entity.poseProbability})
 
         if entity.face.gender is not None:
             data.update({'peopleGender': entity.face.gender})
 
         if entity.face.genderProbability is not None:
             data.update({'peopleGenderAccuracy': entity.face.genderProbability})
+
+        if entity.face.emotion is not None:
+            data.update({'peopleEmotion': entity.face.emotion})
+
+        if entity.face.emotionProbability is not None:
+            data.update({'peopleEmotionAccuracy': entity.face.emotionProbability})
 
         if entity.face.emotion is not None:
             data.update({'peopleEmotion': entity.face.emotion})
@@ -83,8 +84,8 @@ class WonderlandAddPerson(EventState):
             elif 400 <= response.status_code < 500:
                 Logger.logwarn(response.status_code)
                 data = json.loads(response.content)
-                if 'peopleRecognitionId' in data and data['peopleRecognitionId'][
-                    0] == u'people with this peopleRecognitionId already exists.':
+                if 'peopleRecognitionId' in data and data['peopleRecognitionId'][0]\
+                        == u'people with this peopleRecognitionId already exists.':
                     return 'already_exit'
                 else:
                     return 'bad_request'

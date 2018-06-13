@@ -60,7 +60,7 @@ class WonderlandGetPersonByRecognitionId(EventState):
         entity = Entity()
 
         entity.wonderlandId = data['peopleId']
-        entity.face.id = data['peopleRecognitionId']
+        entity.ID = data['peopleRecognitionId']
 
         entity.name = 'person'
         entity.category = 'person'
