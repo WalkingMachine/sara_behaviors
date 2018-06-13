@@ -8,10 +8,10 @@
 
 import roslib; roslib.load_manifest('behavior_actionwrapper_give')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.sara_say import SaraSay
-from behavior_action_give.action_give_sm import Action_GiveSM
-from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.GetRosParam import GetRosParam
+from behavior_action_give.action_give_sm import Action_GiveSM
+from sara_flexbe_states.sara_say import SaraSay
+from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.get_speech import GetSpeech
@@ -23,8 +23,8 @@ from behavior_action_findperson.action_findperson_sm import Action_findPersonSM
 
 
 '''
-Created on 2018-June-2
-@author: Veronica
+Created on Sat June 2 2018
+@author: Véronica
 '''
 class ActionWrapper_GiveSM(Behavior):
     '''
@@ -51,7 +51,7 @@ class ActionWrapper_GiveSM(Behavior):
         # Behavior comments:
 
         # O 333 0 
-        # Give|n1- to who
+        # Give|n1- to whom
 
 
 
@@ -133,8 +133,7 @@ class ActionWrapper_GiveSM(Behavior):
             OperatableStateMachine.add('Action_Give',
                                         self.use_behavior(Action_GiveSM, 'Action_Give'),
                                         transitions={'Given': 'finished', 'Person_not_found': 'person_lost', 'No_object_in_hand': 'failed', 'fail': 'critical_fail'},
-                                        autonomy={'Given': Autonomy.Inherit, 'Person_not_found': Autonomy.Inherit, 'No_object_in_hand': Autonomy.Inherit, 'fail': Autonomy.Inherit},
-                                        remapping={'person_id': 'ID'})
+                                        autonomy={'Given': Autonomy.Inherit, 'Person_not_found': Autonomy.Inherit, 'No_object_in_hand': Autonomy.Inherit, 'fail': Autonomy.Inherit})
 
             # x:501 y:66
             OperatableStateMachine.add('Nobody_here',

@@ -15,7 +15,7 @@ class list_entities_by_name(EventState):
 
         -- frontality_level        float        How much we should priorise the normal ovel the distance when calculating proximity. 1 is only normal and 0 is only distance. e.g.  0.5 is a good value.
         #< name                    string       name to compare entities with
-        #> found_entities          object       list of founf entities
+        #> found_entities          object       list of found entities
 
         <= found            entities are found
         <= not_found        no one is found
@@ -39,7 +39,7 @@ class list_entities_by_name(EventState):
     def execute(self, userdata):
 
         if self._subpos.has_msg(self._topic):
-            self.mypose = userdata.pose = self._subpos.get_last_msg(self._topic)
+            self.mypose = self._subpos.get_last_msg(self._topic)
 
         if self._sub.has_msg('/entities'):
             Logger.loginfo('getting message')
