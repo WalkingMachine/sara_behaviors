@@ -18,9 +18,9 @@ from flexbe_states.calculation_state import CalculationState
 from behavior_action_move.action_move_sm import Action_MoveSM
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.SetRosParam import SetRosParam
-from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.binary_calculation_state import BinaryCalculationState
+from flexbe_states.check_condition_state import CheckConditionState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -159,7 +159,7 @@ class Get_operatorSM(Behavior):
 										list_entities_by_name(frontality_level=0.5),
 										transitions={'found': 'Get closest', 'not_found': 'say where are you'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'name': 'Name', 'list_entities_by_name': 'list_entities_by_name', 'number': 'number'})
+										remapping={'name': 'Name', 'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:461 y:475
 			OperatableStateMachine.add('Move to person',
@@ -182,17 +182,10 @@ class Get_operatorSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Operator', 'output_value': 'ID'})
 
-			# x:781 y:353
-			OperatableStateMachine.add('yes?',
-										RegexTester(regex="./yes.*"),
-										transitions={'true': 'get ID', 'false': 'for 3_2'},
-										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-										remapping={'text': 'words', 'result': 'result'})
-
 			# x:784 y:433
 			OperatableStateMachine.add('get speech',
 										GetSpeech(watchdog=5),
-										transitions={'done': 'yes?', 'nothing': 'for 3_2', 'fail': 'NotFound'},
+										transitions={'done': 'Yes ?', 'nothing': 'for 3_2', 'fail': 'NotFound'},
 										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'words': 'words'})
 
@@ -208,7 +201,14 @@ class Get_operatorSM(Behavior):
 										BinaryCalculationState(calculation="X[Y-1]"),
 										transitions={'done': 'ask if operator'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'X': 'list_entities_by_name', 'Y': 'index2', 'Z': 'Operator'})
+										remapping={'X': 'entity_list', 'Y': 'index2', 'Z': 'Operator'})
+
+			# x:744 y:332
+			OperatableStateMachine.add('Yes ?',
+										CheckConditionState(predicate=lambda x: "yes" in x),
+										transitions={'true': 'get ID', 'false': 'for 3_2'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'words'})
 
 
 		return _state_machine
