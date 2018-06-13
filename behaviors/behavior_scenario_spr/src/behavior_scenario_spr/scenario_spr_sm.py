@@ -14,9 +14,9 @@ from sara_flexbe_states.WonderlandClearPeoples import WonderlandClearPeoples
 from sara_flexbe_states.set_a_step import Set_a_step
 from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_states.WonderlandAddUpdatePeople import WonderlandAddUpdatePeople
-from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
+from flexbe_states.wait_state import WaitState
+from sara_flexbe_states.WonderlandAddUpdatePeople import WonderlandAddUpdatePeople
 from sara_flexbe_states.WonderlandGetPersonStat import WonderlandGetPersonStat
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
@@ -163,19 +163,19 @@ class Scenario_SPRSM(Behavior):
 		with _sm_rotate_2:
 			# x:103 y:61
 			OperatableStateMachine.add('Look Left',
-										SaraSetHeadAngle(pitch=0.1, yaw=0.5),
+										SaraSetHeadAngle(pitch=0.2, yaw=0.5),
 										transitions={'done': 'Rotate Left'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:794 y:54
 			OperatableStateMachine.add('Look Right',
-										SaraSetHeadAngle(pitch=0.1, yaw=-0.5),
+										SaraSetHeadAngle(pitch=0.2, yaw=-0.5),
 										transitions={'done': 'Rotate Right'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:325 y:61
 			OperatableStateMachine.add('Rotate Left',
-										WaitState(wait_time=4),
+										WaitState(wait_time=8),
 										transitions={'done': 'Look Center'},
 										autonomy={'done': Autonomy.Off})
 
@@ -193,7 +193,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:484 y:54
 			OperatableStateMachine.add('Look Center',
-										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										SaraSetHeadAngle(pitch=0.2, yaw=0),
 										transitions={'done': 'Rotate Center'},
 										autonomy={'done': Autonomy.Off})
 
@@ -204,27 +204,10 @@ class Scenario_SPRSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:30 y:458
-		_sm_analyse_3 = OperatableStateMachine(outcomes=['finished'])
-
-		with _sm_analyse_3:
-			# x:156 y:47
-			OperatableStateMachine.add('People Sync',
-										WonderlandAddUpdatePeople(),
-										transitions={'done': 'Wait'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:480 y:59
-			OperatableStateMachine.add('Wait',
-										WaitState(wait_time=2),
-										transitions={'done': 'People Sync'},
-										autonomy={'done': Autonomy.Off})
-
-
 		# x:30 y:458, x:230 y:458
-		_sm_join_area_4 = OperatableStateMachine(outcomes=['failed', 'finished'], input_keys=['join'])
+		_sm_join_area_3 = OperatableStateMachine(outcomes=['failed', 'finished'], input_keys=['join'])
 
-		with _sm_join_area_4:
+		with _sm_join_area_3:
 			# x:95 y:40
 			OperatableStateMachine.add('Say Join Area',
 										SaraSay(sentence="I will join the playing room !", emotion=1, block=True),
@@ -240,9 +223,9 @@ class Scenario_SPRSM(Behavior):
 
 
 		# x:489 y:56, x:604 y:278
-		_sm_waiting_and_turn_5 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['half_turn'])
+		_sm_waiting_and_turn_4 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['half_turn'])
 
-		with _sm_waiting_and_turn_5:
+		with _sm_waiting_and_turn_4:
 			# x:50 y:51
 			OperatableStateMachine.add('Want Play',
 										SaraSay(sentence="Hum, I want to play riddles !", emotion=1, block=True),
@@ -276,13 +259,13 @@ class Scenario_SPRSM(Behavior):
 
 
 		# x:472 y:69, x:476 y:113, x:470 y:196, x:330 y:458, x:430 y:458
-		_sm_questions_6 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['person'], conditions=[
+		_sm_questions_5 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['person'], conditions=[
 										('finished', [('NLU', 'finished')]),
 										('failed', [('NLU', 'failed')]),
 										('finished', [('Follow Head', 'end')])
 										])
 
-		with _sm_questions_6:
+		with _sm_questions_5:
 			# x:85 y:58
 			OperatableStateMachine.add('NLU',
 										_sm_nlu_1,
@@ -298,9 +281,9 @@ class Scenario_SPRSM(Behavior):
 
 
 		# x:372 y:215, x:60 y:571
-		_sm_find_operator_7 = OperatableStateMachine(outcomes=['not_found', 'done'], input_keys=['person', 'operator_param'])
+		_sm_find_operator_6 = OperatableStateMachine(outcomes=['not_found', 'done'], input_keys=['person', 'operator_param'])
 
-		with _sm_find_operator_7:
+		with _sm_find_operator_6:
 			# x:51 y:40
 			OperatableStateMachine.add('Ask Player',
 										SaraSay(sentence="Who wan't to play with me ?", emotion=1, block=True),
@@ -343,9 +326,9 @@ class Scenario_SPRSM(Behavior):
 
 
 		# x:703 y:198, x:88 y:199
-		_sm_tell_basic_stats_8 = OperatableStateMachine(outcomes=['finished', 'failed'])
+		_sm_tell_basic_stats_7 = OperatableStateMachine(outcomes=['finished', 'failed'])
 
-		with _sm_tell_basic_stats_8:
+		with _sm_tell_basic_stats_7:
 			# x:50 y:40
 			OperatableStateMachine.add('wait',
 										WaitState(wait_time=0),
@@ -381,7 +364,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:219 y:249
 			OperatableStateMachine.add('Generate Sentence 2',
-										FlexibleCalculationState(calculation=lambda x: "There is " + str(x[1]) + " women and " + str(x[0]) + " men.", input_keys=['men','women','others']),
+										FlexibleCalculationState(calculation=lambda x: "I recognize is " + str(x[1]) + " women and " + str(x[0]) + " men.", input_keys=['men','women','others']),
 										transitions={'done': 'Tell Stats 2'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'men': 'men', 'women': 'women', 'others': 'others', 'output_value': 'sentence'})
@@ -394,30 +377,27 @@ class Scenario_SPRSM(Behavior):
 										remapping={'sentence': 'sentence'})
 
 
-		# x:485 y:49, x:480 y:193, x:230 y:458
-		_sm_analyse_crowd_9 = ConcurrencyContainer(outcomes=['finished'], conditions=[
-										('finished', [('Analyse', 'finished')]),
-										('finished', [('Rotate', 'finished')])
-										])
+		# x:1000 y:294
+		_sm_analyse_crowd_8 = OperatableStateMachine(outcomes=['finished'])
 
-		with _sm_analyse_crowd_9:
-			# x:229 y:43
-			OperatableStateMachine.add('Analyse',
-										_sm_analyse_3,
-										transitions={'finished': 'finished'},
-										autonomy={'finished': Autonomy.Inherit})
-
+		with _sm_analyse_crowd_8:
 			# x:234 y:182
 			OperatableStateMachine.add('Rotate',
 										_sm_rotate_2,
-										transitions={'finished': 'finished'},
+										transitions={'finished': 'Add Update Persons'},
 										autonomy={'finished': Autonomy.Inherit})
+
+			# x:589 y:226
+			OperatableStateMachine.add('Add Update Persons',
+										WonderlandAddUpdatePeople(),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:1203 y:11, x:1006 y:366
-		_sm_init_scenario_10 = OperatableStateMachine(outcomes=['done', 'error'])
+		_sm_init_scenario_9 = OperatableStateMachine(outcomes=['done', 'error'])
 
-		with _sm_init_scenario_10:
+		with _sm_init_scenario_9:
 			# x:30 y:42
 			OperatableStateMachine.add('Generate Vizbox Story',
 										Set_Story(titre="Speech and Person Recognition", storyline=["Waiting Begining","Join Game Room","Waiting Crowd Placement","Analysing Crowd","Begin Game","Find Operator","Question 1","Question 2","Question 3","Question 4","Question 5", "Leave Arena"]),
@@ -461,32 +441,32 @@ class Scenario_SPRSM(Behavior):
 		with _state_machine:
 			# x:34 y:130
 			OperatableStateMachine.add('Init Scenario',
-										_sm_init_scenario_10,
+										_sm_init_scenario_9,
 										transitions={'done': 'Set Join', 'error': 'failed'},
 										autonomy={'done': Autonomy.Inherit, 'error': Autonomy.Inherit})
 
 			# x:517 y:124
 			OperatableStateMachine.add('Analyse Crowd',
-										_sm_analyse_crowd_9,
+										_sm_analyse_crowd_8,
 										transitions={'finished': 'Set Begin Game'},
 										autonomy={'finished': Autonomy.Inherit})
 
 			# x:715 y:127
 			OperatableStateMachine.add('Tell basic stats',
-										_sm_tell_basic_stats_8,
+										_sm_tell_basic_stats_7,
 										transitions={'finished': 'Set Find Operator', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 			# x:899 y:126
 			OperatableStateMachine.add('Find Operator',
-										_sm_find_operator_7,
+										_sm_find_operator_6,
 										transitions={'not_found': 'Analyse Crowd', 'done': 'Questions'},
 										autonomy={'not_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'person': 'person', 'operator_param': 'operator_param'})
 
 			# x:1120 y:126
 			OperatableStateMachine.add('Questions',
-										_sm_questions_6,
+										_sm_questions_5,
 										transitions={'finished': 'Set Go Out', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'person': 'person'})
@@ -517,7 +497,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:332 y:127
 			OperatableStateMachine.add('Waiting And Turn',
-										_sm_waiting_and_turn_5,
+										_sm_waiting_and_turn_4,
 										transitions={'finished': 'Set Analyse', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'half_turn': 'half_turn'})
@@ -543,7 +523,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:177 y:120
 			OperatableStateMachine.add('Join Area',
-										_sm_join_area_4,
+										_sm_join_area_3,
 										transitions={'failed': 'failed', 'finished': 'Set Story Waiting'},
 										autonomy={'failed': Autonomy.Inherit, 'finished': Autonomy.Inherit},
 										remapping={'join': 'join'})
