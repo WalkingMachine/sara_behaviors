@@ -58,7 +58,7 @@ class Scenario_GPSRSM(Behavior):
 
 
 	def create(self):
-		# x:199 y:478, x:449 y:199
+		# x:209 y:596, x:451 y:313
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.ActionGoToStart = ["Move", "spr/waypoint1"]
 		_state_machine.userdata.PositionBras = "IdlePose"
@@ -166,7 +166,7 @@ class Scenario_GPSRSM(Behavior):
 		with _sm_fail_state_3:
 			# x:248 y:81
 			OperatableStateMachine.add('say failed',
-										SaraSay(sentence="I failed. I'm going back.", emotion=1, block=True),
+										SaraSay(sentence="I failed. I'm going back to tell my master.", emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
@@ -220,14 +220,14 @@ class Scenario_GPSRSM(Behavior):
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'PositionBras'})
 
-			# x:30 y:335
+			# x:14 y:426
 			OperatableStateMachine.add('GetOriginalPose',
 										Get_Robot_Pose(),
 										transitions={'done': 'Interact operator'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'OriginalPose'})
 
-			# x:481 y:320
+			# x:474 y:404
 			OperatableStateMachine.add('Do the actions',
 										_sm_do_the_actions_4,
 										transitions={'finished': 'say succseed', 'failed': 'Fail state', 'critical fail': 'critical'},
@@ -240,32 +240,32 @@ class Scenario_GPSRSM(Behavior):
 										transitions={'finished': 'Action_Executor'},
 										autonomy={'finished': Autonomy.Inherit})
 
-			# x:290 y:201
+			# x:246 y:318
 			OperatableStateMachine.add('critical',
-										SaraSay(sentence="Critical failure! I'm stopping right there.", emotion=1, block=True),
+										SaraSay(sentence="Critical failure! I require medical assistance.", emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:44 y:475
+			# x:35 y:583
 			OperatableStateMachine.add('win',
 										SaraSay(sentence="I did it. I'm the best robot.", emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:46 y:401
+			# x:34 y:505
 			OperatableStateMachine.add('for 3',
 										ForLoop(repeat=3),
 										transitions={'do': 'GetOriginalPose', 'end': 'win'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
-			# x:495 y:413
+			# x:491 y:497
 			OperatableStateMachine.add('say succseed',
 										SaraSay(sentence="I succeed my mission. I'm going back", emotion=1, block=True),
 										transitions={'done': 'for 3'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:230 y:323
+			# x:219 y:411
 			OperatableStateMachine.add('Interact operator',
 										_sm_interact_operator_2,
 										transitions={'fail': 'critical', 'understood': 'Do the actions'},
