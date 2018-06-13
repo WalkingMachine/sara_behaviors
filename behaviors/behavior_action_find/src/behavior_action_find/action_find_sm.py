@@ -11,9 +11,9 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
-from flexbe_states.wait_state import WaitState
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetKey import SetKey
+from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
 # Additional imports can be added inside the following tags
@@ -135,15 +135,9 @@ class Action_findSM(Behavior):
 			# x:181 y:178
 			OperatableStateMachine.add('find_entity',
 										list_entities_by_name(frontality_level=0.5),
-										transitions={'found': 'Get Entity', 'not_found': 'WaitState'},
+										transitions={'found': 'Get Entity', 'not_found': 'find_entity'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})
-
-			# x:194 y:40
-			OperatableStateMachine.add('WaitState',
-										WaitState(wait_time=1),
-										transitions={'done': 'find_entity'},
-										autonomy={'done': Autonomy.Off})
 
 			# x:454 y:178
 			OperatableStateMachine.add('Get Entity',
@@ -174,11 +168,12 @@ class Action_findSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:372 y:27, x:370 y:220, x:368 y:100, x:330 y:458, x:460 y:465
+		# x:372 y:27, x:370 y:220, x:368 y:100, x:352 y:305, x:460 y:465, x:530 y:458
 		_sm_find_entity_while_turning360_4 = ConcurrencyContainer(outcomes=['found', 'not_found'], input_keys=['className'], output_keys=['entity'], conditions=[
 										('not_found', [('Rotation360', 'end')]),
 										('found', [('Find Entity', 'found')]),
-										('not_found', [('Find Entity', 'not_found')])
+										('not_found', [('Find Entity', 'not_found')]),
+										('not_found', [('wait', 'done')])
 										])
 
 		with _sm_find_entity_while_turning360_4:
@@ -194,6 +189,12 @@ class Action_findSM(Behavior):
 										_sm_rotation360_1,
 										transitions={'end': 'not_found'},
 										autonomy={'end': Autonomy.Inherit})
+
+			# x:149 y:306
+			OperatableStateMachine.add('wait',
+										WaitState(wait_time=30),
+										transitions={'done': 'not_found'},
+										autonomy={'done': Autonomy.Off})
 
 
 

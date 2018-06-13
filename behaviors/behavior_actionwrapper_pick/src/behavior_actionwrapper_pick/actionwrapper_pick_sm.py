@@ -13,8 +13,8 @@ from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from behavior_action_pick.action_pick_sm import Action_pickSM
-from flexbe_states.calculation_state import CalculationState
 from behavior_action_find.action_find_sm import Action_findSM
+from flexbe_states.calculation_state import CalculationState
 from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
@@ -24,6 +24,7 @@ from sara_flexbe_states.sara_move_base import SaraMoveBase
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.SetRosParam import SetRosParam
+from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -48,7 +49,7 @@ class ActionWrapper_PickSM(Behavior):
 
 		# references to used behaviors
 		self.add_behavior(Action_pickSM, 'Action_pick')
-		self.add_behavior(Action_findSM, 'Get object/Action_find')
+		self.add_behavior(Action_findSM, 'find object/Action_find')
 		self.add_behavior(action_look_at_faceSM, 'action_look_at_face')
 
 		# Additional initialization code can be added inside the following tags
@@ -64,7 +65,7 @@ class ActionWrapper_PickSM(Behavior):
 
 
 	def create(self):
-		# x:629 y:497, x:743 y:359, x:715 y:440
+		# x:629 y:497, x:771 y:302, x:715 y:440
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Pick","bottle"]
 
@@ -95,10 +96,29 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:40 y:700
-		_sm_get_closer_1 = OperatableStateMachine(outcomes=['done'], input_keys=['Object'])
+		# x:30 y:458, x:130 y:458, x:230 y:458
+		_sm_get_object_1 = OperatableStateMachine(outcomes=['failed', 'found', 'not_found'], output_keys=['ID', 'Object'])
 
-		with _sm_get_closer_1:
+		with _sm_get_object_1:
+			# x:35 y:40
+			OperatableStateMachine.add('get param',
+										GetRosParam(ParamName="/behavior/FoundEntity/Id"),
+										transitions={'done': 'get obj', 'failed': 'failed'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'Value': 'ID'})
+
+			# x:207 y:223
+			OperatableStateMachine.add('get obj',
+										GetEntityByID(),
+										transitions={'found': 'found', 'not_found': 'not_found'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'ID': 'ID', 'Entity': 'Object'})
+
+
+		# x:40 y:700
+		_sm_get_closer_2 = OperatableStateMachine(outcomes=['done'], input_keys=['Object'])
+
+		with _sm_get_closer_2:
 			# x:59 y:36
 			OperatableStateMachine.add('set targetpose',
 										SetKey(Value="PreGripPose"),
@@ -108,7 +128,7 @@ class ActionWrapper_PickSM(Behavior):
 
 			# x:39 y:367
 			OperatableStateMachine.add('set dist',
-										SetKey(Value=0.8),
+										SetKey(Value=0.7),
 										transitions={'done': 'get close pos'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'distance'})
@@ -161,15 +181,15 @@ class ActionWrapper_PickSM(Behavior):
 
 
 		# x:421 y:110, x:272 y:201
-		_sm_get_object_2 = OperatableStateMachine(outcomes=['not_found', 'done'], input_keys=['Action'], output_keys=['ObjectName', 'ID', 'Object'])
+		_sm_find_object_3 = OperatableStateMachine(outcomes=['not_found', 'done'], input_keys=['Action', 'ObjectName'], output_keys=['ID', 'Object'])
 
-		with _sm_get_object_2:
-			# x:39 y:40
-			OperatableStateMachine.add('get object name',
-										CalculationState(calculation=lambda x: x[1]),
-										transitions={'done': 'Action_find'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'Action', 'output_value': 'ObjectName'})
+		with _sm_find_object_3:
+			# x:27 y:148
+			OperatableStateMachine.add('Action_find',
+										self.use_behavior(Action_findSM, 'find object/Action_find'),
+										transitions={'done': 'get closest ID', 'failed': 'not_found'},
+										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'className': 'ObjectName', 'entity': 'Object'})
 
 			# x:36 y:274
 			OperatableStateMachine.add('get closest ID',
@@ -178,18 +198,11 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Object', 'output_value': 'ID'})
 
-			# x:27 y:148
-			OperatableStateMachine.add('Action_find',
-										self.use_behavior(Action_findSM, 'Get object/Action_find'),
-										transitions={'done': 'get closest ID', 'failed': 'not_found'},
-										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'className': 'ObjectName', 'entity': 'Object'})
-
 
 		# x:59 y:308, x:443 y:109
-		_sm_check_form_3 = OperatableStateMachine(outcomes=['done', 'fail'], input_keys=['Action'])
+		_sm_check_form_4 = OperatableStateMachine(outcomes=['done', 'fail'], input_keys=['Action'])
 
-		with _sm_check_form_3:
+		with _sm_check_form_4:
 			# x:31 y:40
 			OperatableStateMachine.add('check if gripper full',
 										GetRosParam(ParamName="behavior/Gripper_Content"),
@@ -200,7 +213,7 @@ class ActionWrapper_PickSM(Behavior):
 			# x:30 y:121
 			OperatableStateMachine.add('cond',
 										CheckConditionState(predicate=lambda x: x[1] == ''),
-										transitions={'true': 'not told', 'false': 'object given'},
+										transitions={'true': 'not told', 'false': 'done'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'Action'})
 
@@ -217,24 +230,17 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'ObjectInGripper'})
 
-			# x:36 y:191
-			OperatableStateMachine.add('object given',
-										SaraSayKey(Format=lambda x: "I need to pick a "+x[1], emotion=1, block=True),
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'Action'})
-
 
 
 		with _state_machine:
-			# x:42 y:31
+			# x:84 y:30
 			OperatableStateMachine.add('Check Form',
-										_sm_check_form_3,
-										transitions={'done': 'Get object', 'fail': 'failed'},
+										_sm_check_form_4,
+										transitions={'done': 'get name', 'fail': 'failed'},
 										autonomy={'done': Autonomy.Inherit, 'fail': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
 
-			# x:32 y:336
+			# x:31 y:493
 			OperatableStateMachine.add('Action_pick',
 										self.use_behavior(Action_pickSM, 'Action_pick'),
 										transitions={'success': 'got it', 'unreachable': 'for 1', 'not found': 'say lost', 'dropped': 'say missed'},
@@ -248,24 +254,24 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'ObjectName'})
 
-			# x:34 y:117
-			OperatableStateMachine.add('Get object',
-										_sm_get_object_2,
+			# x:257 y:144
+			OperatableStateMachine.add('find object',
+										_sm_find_object_3,
 										transitions={'not_found': 'failed', 'done': 'action_look_at_face'},
 										autonomy={'not_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Action': 'Action', 'ObjectName': 'ObjectName', 'ID': 'ID', 'Object': 'Object'})
 
-			# x:21 y:212
+			# x:25 y:389
 			OperatableStateMachine.add('action_look_at_face',
 										self.use_behavior(action_look_at_faceSM, 'action_look_at_face'),
 										transitions={'finished': 'Action_pick', 'failed': 'Action_pick'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Entity': 'Object'})
 
-			# x:223 y:218
+			# x:261 y:239
 			OperatableStateMachine.add('Get closer',
-										_sm_get_closer_1,
-										transitions={'done': 'Get object'},
+										_sm_get_closer_2,
+										transitions={'done': 'find object'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'Object': 'Object'})
 
@@ -301,6 +307,20 @@ class ActionWrapper_PickSM(Behavior):
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'ObjectName'})
+
+			# x:40 y:128
+			OperatableStateMachine.add('get name',
+										CalculationState(calculation=lambda x: x[1]),
+										transitions={'done': 'Get object'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'Action', 'output_value': 'ObjectName'})
+
+			# x:29 y:261
+			OperatableStateMachine.add('Get object',
+										_sm_get_object_1,
+										transitions={'failed': 'find object', 'found': 'action_look_at_face', 'not_found': 'find object'},
+										autonomy={'failed': Autonomy.Inherit, 'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
+										remapping={'ID': 'ID', 'Object': 'Object'})
 
 
 		return _state_machine
