@@ -47,4 +47,4 @@ class SaraNLUspr(EventState):
         return "understood"
 
     def on_enter(self, userdata):
-        Logger.loginfo('Enter SaraNLU')
+        Logger.loginfo('Enter SaraNLUgpsr')
