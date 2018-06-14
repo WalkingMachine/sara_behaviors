@@ -52,7 +52,7 @@ class ActionWrapper_CountSM(Behavior):
 
 
 	def create(self):
-		# x:254 y:640, x:328 y:266, x:230 y:365
+		# x:254 y:640, x:565 y:232, x:530 y:448
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Count", "bottle", "behavior/Count/CountedObject"]
 
