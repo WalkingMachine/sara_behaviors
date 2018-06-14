@@ -35,15 +35,21 @@ class StoryboardSetStoryFromAction(EventState):
             elif action[0].lower() == "find":
                 story.append("Find the " + action[1])
             elif action[0].lower() == "findPerson":
-                story.append("Find " + action[1])
+                if action[1] == "":
+                    story.append("Find a person")
+                else
+                    story.append("Find " + action[1])
             elif action[0].lower() == "guide":
                 story.append("Guide to " + action[1])
             elif action[0].lower() == "pick":
                 story.append("Pick the " + action[1])
             elif action[0].lower() == "give":
-                story.append("Give to " + action[1])
+                if action[1] == "":
+                    story.append("Give to a person")
+                else
+                    story.append("Give to " + action[1])
             elif action[0].lower() == "say":
-                story.append("Say something")
+                story.append("Talk")
             elif action[0].lower() == "ask":
                 story.append("Ask a question")
             elif action[0].lower() == "follow":
