@@ -15,12 +15,16 @@ from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
 from flexbe_states.calculation_state import CalculationState
 from behavior_action_executor.action_executor_sm import Action_ExecutorSM
+from sara_flexbe_states.StoryboardSetStepKey import StoryboardSetStepKey
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.sara_nlu_gpsr import SaraNLUgpsr
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
+from sara_flexbe_states.StoryboardSetStoryKey import StoryboardSetStoryFromAction
+from sara_flexbe_states.set_a_step import Set_a_step
+from flexbe_states.log_key_state import LogKeyState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -62,6 +66,7 @@ class Scenario_GPSRSM(Behavior):
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.ActionGoToStart = ["Move", "spr/waypoint1"]
 		_state_machine.userdata.PositionBras = "IdlePose"
+		_state_machine.userdata.title = "GPSR"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -102,7 +107,7 @@ class Scenario_GPSRSM(Behavior):
 
 
 		# x:307 y:35, x:335 y:491
-		_sm_get_commands_1 = OperatableStateMachine(outcomes=['fail', 'understood'], output_keys=['ActionForms'])
+		_sm_get_commands_1 = OperatableStateMachine(outcomes=['fail', 'understood'], output_keys=['ActionForms', 'sentence'])
 
 		with _sm_get_commands_1:
 			# x:50 y:48
@@ -139,7 +144,7 @@ class Scenario_GPSRSM(Behavior):
 
 
 		# x:320 y:82, x:322 y:143, x:265 y:407, x:306 y:225, x:430 y:324
-		_sm_interact_operator_2 = ConcurrencyContainer(outcomes=['fail', 'understood'], output_keys=['ActionForms'], conditions=[
+		_sm_interact_operator_2 = ConcurrencyContainer(outcomes=['fail', 'understood'], output_keys=['ActionForms', 'sentence'], conditions=[
 										('understood', [('Get Commands', 'understood')]),
 										('fail', [('Get Commands', 'fail')]),
 										('fail', [('look at op', 'fail')])
@@ -151,7 +156,7 @@ class Scenario_GPSRSM(Behavior):
 										_sm_get_commands_1,
 										transitions={'fail': 'fail', 'understood': 'understood'},
 										autonomy={'fail': Autonomy.Inherit, 'understood': Autonomy.Inherit},
-										remapping={'ActionForms': 'ActionForms'})
+										remapping={'ActionForms': 'ActionForms', 'sentence': 'sentence'})
 
 			# x:99 y:198
 			OperatableStateMachine.add('look at op',
@@ -182,7 +187,7 @@ class Scenario_GPSRSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'index'})
 
-			# x:62 y:236
+			# x:48 y:339
 			OperatableStateMachine.add('GetForm',
 										FlexibleCalculationState(calculation=lambda x: x[0][x[1]], input_keys=["ActionForms", "index"]),
 										transitions={'done': 'Action_Executor'},
@@ -192,7 +197,7 @@ class Scenario_GPSRSM(Behavior):
 			# x:57 y:131
 			OperatableStateMachine.add('is form?',
 										FlexibleCheckConditionState(predicate=lambda x: x[0][x[1]] != None, input_keys=["ActionForms", "index"]),
-										transitions={'true': 'GetForm', 'false': 'finished'},
+										transitions={'true': 'set setp', 'false': 'finished'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'ActionForms': 'ActionForms', 'index': 'index'})
 
@@ -203,12 +208,19 @@ class Scenario_GPSRSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'index', 'output_value': 'index'})
 
-			# x:64 y:352
+			# x:72 y:479
 			OperatableStateMachine.add('Action_Executor',
 										self.use_behavior(Action_ExecutorSM, 'Do the actions/Action_Executor'),
 										transitions={'finished': '++i', 'failed': 'failed', 'critical_fail': 'critical fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'ActionForm'})
+
+			# x:45 y:241
+			OperatableStateMachine.add('set setp',
+										StoryboardSetStepKey(),
+										transitions={'done': 'GetForm'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'step': 'index'})
 
 
 
@@ -227,7 +239,7 @@ class Scenario_GPSRSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'OriginalPose'})
 
-			# x:474 y:404
+			# x:657 y:405
 			OperatableStateMachine.add('Do the actions',
 										_sm_do_the_actions_4,
 										transitions={'finished': 'say succseed', 'failed': 'Fail state', 'critical fail': 'critical'},
@@ -259,18 +271,18 @@ class Scenario_GPSRSM(Behavior):
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
-			# x:491 y:497
+			# x:671 y:539
 			OperatableStateMachine.add('say succseed',
 										SaraSay(sentence="I succeed my mission. I'm going back", emotion=1, block=True),
 										transitions={'done': 'for 3'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:219 y:411
+			# x:196 y:438
 			OperatableStateMachine.add('Interact operator',
 										_sm_interact_operator_2,
-										transitions={'fail': 'critical', 'understood': 'Do the actions'},
+										transitions={'fail': 'critical', 'understood': 'log'},
 										autonomy={'fail': Autonomy.Inherit, 'understood': Autonomy.Inherit},
-										remapping={'ActionForms': 'ActionForms'})
+										remapping={'ActionForms': 'ActionForms', 'sentence': 'sentence'})
 
 			# x:18 y:194
 			OperatableStateMachine.add('Action_Executor',
@@ -284,6 +296,26 @@ class Scenario_GPSRSM(Behavior):
 										SaraSay(sentence="I'm ready to start the GPSR scenario.", emotion=1, block=True),
 										transitions={'done': 'Action_Executor'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:476 y:522
+			OperatableStateMachine.add('set story',
+										StoryboardSetStoryFromAction(),
+										transitions={'done': 'Do the actions'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'titre': 'title', 'actionList': 'ActionForms'})
+
+			# x:359 y:454
+			OperatableStateMachine.add('set step',
+										Set_a_step(step=0),
+										transitions={'done': 'set story'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:321 y:647
+			OperatableStateMachine.add('log',
+										LogKeyState(text="{}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'set step'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'ActionForms'})
 
 
 		return _state_machine
