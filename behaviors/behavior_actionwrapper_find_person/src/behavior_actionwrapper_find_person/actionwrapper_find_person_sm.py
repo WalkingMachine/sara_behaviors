@@ -20,6 +20,7 @@ from behavior_action_findperson.action_findperson_sm import Action_findPersonSM
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_states.get_speech import GetSpeech
 from flexbe_states.log_key_state import LogKeyState
+from flexbe_states.wait_state import WaitState
 from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -84,16 +85,16 @@ class ActionWrapper_Find_PersonSM(Behavior):
 										remapping={'Entity': 'entity'})
 
 
-		# x:30 y:458, x:130 y:458, x:230 y:458
-		_sm_ask_confirmation_1 = OperatableStateMachine(outcomes=['yes', 'no', 'error'], input_keys=['name'])
+		# x:297 y:737, x:531 y:481, x:378 y:120, x:739 y:299
+		_sm_ask_confirmation_1 = OperatableStateMachine(outcomes=['yes', 'no', 'error', 'noname'], input_keys=['name'])
 
 		with _sm_ask_confirmation_1:
-			# x:45 y:101
-			OperatableStateMachine.add('Repeat the question',
-										ForLoop(repeat=5),
-										transitions={'do': 'Ask Person', 'end': 'error'},
-										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
-										remapping={'index': 'index'})
+			# x:473 y:44
+			OperatableStateMachine.add('check if ask name',
+										CheckConditionState(predicate=lambda x: x[1] != ""),
+										transitions={'true': 'Repeat the question', 'false': 'wait 2'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'name'})
 
 			# x:35 y:303
 			OperatableStateMachine.add('Get Yes or No',
@@ -137,24 +138,44 @@ class ActionWrapper_Find_PersonSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'data': 'words'})
 
+			# x:529 y:253
+			OperatableStateMachine.add('say hi',
+										SaraSay(sentence="Hi there", emotion=1, block=True),
+										transitions={'done': 'noname'},
+										autonomy={'done': Autonomy.Off})
 
-		# x:479 y:277, x:492 y:167, x:508 y:57, x:330 y:458, x:430 y:458, x:530 y:458, x:630 y:458, x:730 y:458
-		_sm_confirm_and_look_at_2 = ConcurrencyContainer(outcomes=['yes', 'no', 'error'], input_keys=['name', 'entity'], conditions=[
+			# x:534 y:159
+			OperatableStateMachine.add('wait 2',
+										WaitState(wait_time=2),
+										transitions={'done': 'say hi'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:45 y:101
+			OperatableStateMachine.add('Repeat the question',
+										ForLoop(repeat=5),
+										transitions={'do': 'Ask Person', 'end': 'error'},
+										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+										remapping={'index': 'index'})
+
+
+		# x:479 y:277, x:492 y:167, x:508 y:57, x:330 y:458, x:430 y:458, x:530 y:458, x:630 y:458, x:470 y:354, x:840 y:558
+		_sm_confirm_and_look_at_2 = ConcurrencyContainer(outcomes=['yes', 'no', 'error', 'noname'], input_keys=['name', 'entity'], conditions=[
 										('yes', [('Ask Confirmation', 'yes')]),
 										('no', [('Ask Confirmation', 'no')]),
 										('error', [('Ask Confirmation', 'error')]),
-										('error', [('look at', 'finished')])
+										('error', [('look at', 'finished')]),
+										('noname', [('Ask Confirmation', 'noname')])
 										])
 
 		with _sm_confirm_and_look_at_2:
 			# x:30 y:40
 			OperatableStateMachine.add('Ask Confirmation',
 										_sm_ask_confirmation_1,
-										transitions={'yes': 'yes', 'no': 'no', 'error': 'error'},
-										autonomy={'yes': Autonomy.Inherit, 'no': Autonomy.Inherit, 'error': Autonomy.Inherit},
+										transitions={'yes': 'yes', 'no': 'no', 'error': 'error', 'noname': 'noname'},
+										autonomy={'yes': Autonomy.Inherit, 'no': Autonomy.Inherit, 'error': Autonomy.Inherit, 'noname': Autonomy.Inherit},
 										remapping={'name': 'name'})
 
-			# x:30 y:107
+			# x:30 y:122
 			OperatableStateMachine.add('look at',
 										_sm_look_at_0,
 										transitions={'finished': 'error'},
@@ -210,7 +231,7 @@ class ActionWrapper_Find_PersonSM(Behavior):
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:918 y:47
+			# x:919 y:8
 			OperatableStateMachine.add('Say found',
 										SaraSayKey(Format=lambda x: "I have found " + x + "!", emotion=1, block=True),
 										transitions={'done': 'get ID'},
@@ -245,7 +266,7 @@ class ActionWrapper_Find_PersonSM(Behavior):
 
 			# x:47 y:654
 			OperatableStateMachine.add('say no object given',
-										SaraSay(sentence="You didn't told me what to find.", emotion=1, block=True),
+										SaraSay(sentence="You didn't told me whom to find.", emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
@@ -273,8 +294,8 @@ class ActionWrapper_Find_PersonSM(Behavior):
 			# x:596 y:24
 			OperatableStateMachine.add('confirm and look at',
 										_sm_confirm_and_look_at_2,
-										transitions={'yes': 'Say found', 'no': 'Retry', 'error': 'reset Head'},
-										autonomy={'yes': Autonomy.Inherit, 'no': Autonomy.Inherit, 'error': Autonomy.Inherit},
+										transitions={'yes': 'Say found', 'no': 'Retry', 'error': 'reset Head', 'noname': 'get ID'},
+										autonomy={'yes': Autonomy.Inherit, 'no': Autonomy.Inherit, 'error': Autonomy.Inherit, 'noname': Autonomy.Inherit},
 										remapping={'name': 'name', 'entity': 'entity'})
 
 
