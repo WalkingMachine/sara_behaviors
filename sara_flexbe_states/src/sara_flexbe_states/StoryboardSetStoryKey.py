@@ -5,7 +5,7 @@ import rospy
 from vizbox.msg import Story
 
 
-class StoryboardSetStoryKey(EventState):
+class StoryboardSetStoryFromAction(EventState):
     """
        set_story
     -- titre    string     the title
@@ -16,7 +16,7 @@ class StoryboardSetStoryKey(EventState):
 
     def __init__(self):
         """set the story"""
-        super(StoryboardSetStoryKey, self).__init__(outcomes=['done'], input_keys=['titre', 'actionList'])
+        super(StoryboardSetStoryFromAction, self).__init__(outcomes=['done'], input_keys=['titre', 'actionList'])
         self.pub = rospy.Publisher("/story", Story)
 
 
@@ -29,31 +29,35 @@ class StoryboardSetStoryKey(EventState):
 
         story = []
         for action in userdata.actionList:
-            if action[0] is "Move":
+            print(action[0].lower())
+            if action[0].lower() == "move":
                 story.append("Move to the "+action[1])
-            else if action[0] is "Find":
+            elif action[0].lower() == "find":
                 story.append("Find the " + action[1])
-            else if action[0] is "FindPerson":
+            elif action[0].lower() == "findPerson":
                 story.append("Find " + action[1])
-            else if action[0] is "Guide":
+            elif action[0].lower() == "guide":
                 story.append("Guide to " + action[1])
-            else if action[0] is "Pick":
+            elif action[0].lower() == "pick":
                 story.append("Pick the " + action[1])
-            else if action[0] is "Give":
+            elif action[0].lower() == "give":
                 story.append("Give to " + action[1])
-            else if action[0] is "Say":
+            elif action[0].lower() == "say":
                 story.append("Say something")
-            else if action[0] is "Ask":
+            elif action[0].lower() == "ask":
                 story.append("Ask a question")
-            else if action[0] is "Follow":
+            elif action[0].lower() == "follow":
                 story.append("Follow " + action[1])
-            else if action[0] is "Count":
+            elif action[0].lower() == "count":
                 story.append("Count the number of " + action[1])
-            else if action[0] is "Place":
+            elif action[0].lower() == "place":
                 story.append("Place on the " + action[1])
-            else if action[0] is "Answer":
+            elif action[0].lower() == "answer":
                 story.append("Answer a question")
+            else:
+                print("nothing")
 
+        print( str(story))
         self.msg.storyline = story
 
         self.pub.publish(self.msg)
