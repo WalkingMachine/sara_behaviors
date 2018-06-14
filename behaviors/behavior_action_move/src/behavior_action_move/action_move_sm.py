@@ -102,13 +102,13 @@ class Action_MoveSM(Behavior):
 
 			# x:271 y:347
 			OperatableStateMachine.add('stuck',
-										SaraSay(sentence="I'm getting stuck.", emotion=1, block=False),
+										SaraSay(sentence="I'm getting stuck.", emotion=1, block=True),
 										transitions={'done': 'for'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:58 y:339
 			OperatableStateMachine.add('try again',
-										SaraSay(sentence="I'm still going.", emotion=1, block=True),
+										SaraSay(sentence="I'm still going.", emotion=1, block=False),
 										transitions={'done': 'set head'},
 										autonomy={'done': Autonomy.Off})
 
