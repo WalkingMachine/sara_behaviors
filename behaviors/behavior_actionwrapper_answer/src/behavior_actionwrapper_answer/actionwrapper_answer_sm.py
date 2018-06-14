@@ -18,6 +18,7 @@ from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.for_loop import ForLoop
 from flexbe_states.check_condition_state import CheckConditionState
 from behavior_action_turn.action_turn_sm import action_turnSM
+from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -57,7 +58,7 @@ class ActionWrapper_AnswerSM(Behavior):
 
 
 	def create(self):
-		# x:317 y:570, x:691 y:132, x:589 y:443
+		# x:317 y:570, x:757 y:138, x:589 y:443
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'])
 
 		# Additional creation code can be added inside the following tags
@@ -185,13 +186,13 @@ class ActionWrapper_AnswerSM(Behavior):
 			# x:374 y:60
 			OperatableStateMachine.add('noPerson',
 										SaraSay(sentence="I can't find any person here.", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause1'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:338 y:399
+			# x:332 y:298
 			OperatableStateMachine.add('NotUnderstandEnd',
 										SaraSay(sentence="Sorry. I can't understand your answer.", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:39 y:384
@@ -201,10 +202,10 @@ class ActionWrapper_AnswerSM(Behavior):
 										autonomy={'understood': Autonomy.Off, 'not_understood': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'sentence': 'operatorQuestion', 'answer': 'answer'})
 
-			# x:353 y:454
+			# x:334 y:408
 			OperatableStateMachine.add('CannotAnswer',
 										SaraSay(sentence="Sorry. I can't answer your question.", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause3'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:27 y:465
@@ -237,8 +238,36 @@ class ActionWrapper_AnswerSM(Behavior):
 			# x:299 y:169
 			OperatableStateMachine.add('turnToFindAnotherPersonOnce',
 										_sm_turntofindanotherpersononce_0,
-										transitions={'end': 'failed', 'finished': 'Action_findPerson', 'failed': 'failed'},
+										transitions={'end': 'cause1', 'finished': 'Action_findPerson', 'failed': 'cause1'},
 										autonomy={'end': Autonomy.Inherit, 'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+
+			# x:541 y:89
+			OperatableStateMachine.add('cause1',
+										SetKey(Value="I did not find any person"),
+										transitions={'done': 'SetRosParam'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:523 y:253
+			OperatableStateMachine.add('cause2',
+										SetKey(Value="I did not understand the question."),
+										transitions={'done': 'SetRosParam'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:515 y:350
+			OperatableStateMachine.add('cause3',
+										SetKey(Value="I was unable to answer the question."),
+										transitions={'done': 'SetRosParam'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:630 y:196
+			OperatableStateMachine.add('SetRosParam',
+										SetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'Key'})
 
 
 		return _state_machine
