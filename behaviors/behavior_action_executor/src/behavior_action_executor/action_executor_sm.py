@@ -124,7 +124,7 @@ class Action_ExecutorSM(Behavior):
 										self.use_behavior(ActionWrapper_GiveSM, 'ActionWrapper_Give'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
-										remapping={'Action': 'Action'})
+										remapping={'Action': 'Action', 'person_name': 'Action'})
 
 			# x:467 y:413
 			OperatableStateMachine.add('ActionWrapper_Move',
@@ -162,9 +162,9 @@ class Action_ExecutorSM(Behavior):
 
 			# x:42 y:269
 			OperatableStateMachine.add('decide Action',
-										DecisionState(outcomes=["answer", "ask", "count", "find", "findPerson", "follow", "give", "move", "pick", "place", "say"], conditions=lambda x: x),
-										transitions={'answer': 'ActionWrapper_Answer', 'ask': 'ActionWrapper_Ask', 'count': 'ActionWrapper_Count', 'find': 'ActionWrapper_Find', 'findPerson': 'ActionWrapper_Find_Person', 'follow': 'ActionWrapper_Follow', 'give': 'ActionWrapper_Give', 'move': 'ActionWrapper_Move', 'pick': 'ActionWrapper_Pick', 'place': 'ActionWrapper_Place', 'say': 'ActionWrapper_Say'},
-										autonomy={'answer': Autonomy.Off, 'ask': Autonomy.Off, 'count': Autonomy.Off, 'find': Autonomy.Off, 'findPerson': Autonomy.Off, 'follow': Autonomy.Off, 'give': Autonomy.Off, 'move': Autonomy.Off, 'pick': Autonomy.Off, 'place': Autonomy.Off, 'say': Autonomy.Off},
+										DecisionState(outcomes=["answer", "ask", "count", "find", "findperson", "follow", "give", "move", "pick", "place", "say"], conditions=lambda x: x),
+										transitions={'answer': 'ActionWrapper_Answer', 'ask': 'ActionWrapper_Ask', 'count': 'ActionWrapper_Count', 'find': 'ActionWrapper_Find', 'follow': 'ActionWrapper_Follow', 'give': 'ActionWrapper_Give', 'move': 'ActionWrapper_Move', 'pick': 'ActionWrapper_Pick', 'place': 'ActionWrapper_Place', 'say': 'ActionWrapper_Say', 'findperson': 'ActionWrapper_Find_Person'},
+										autonomy={'answer': Autonomy.Off, 'ask': Autonomy.Off, 'count': Autonomy.Off, 'find': Autonomy.Off, 'follow': Autonomy.Off, 'give': Autonomy.Off, 'move': Autonomy.Off, 'pick': Autonomy.Off, 'place': Autonomy.Off, 'say': Autonomy.Off, 'findperson': Autonomy.Off},
 										remapping={'input_value': 'name'})
 
 

@@ -27,6 +27,7 @@ from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
 from sara_flexbe_states.StoryboardSetStoryKey import StoryboardSetStoryFromAction
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -92,7 +93,7 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:44 y:110
 			OperatableStateMachine.add('list persons',
-										list_entities_by_name(frontality_level=0.5),
+										list_entities_by_name(frontality_level=0.5, distance_max=10),
 										transitions={'found': 'get closest', 'not_found': 'list persons'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
@@ -278,9 +279,9 @@ class Scenario_GPSRSM(Behavior):
 		_sm_initialisation_6 = OperatableStateMachine(outcomes=['done'], input_keys=['PositionBras', 'EntryName'])
 
 		with _sm_initialisation_6:
-			# x:38 y:44
+			# x:47 y:25
 			OperatableStateMachine.add('set container',
-										SetKey(Value=""),
+										SetKey(Value=None),
 										transitions={'done': 'get entry door'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'containers'})
@@ -301,7 +302,7 @@ class Scenario_GPSRSM(Behavior):
 			# x:31 y:119
 			OperatableStateMachine.add('get entry door',
 										WonderlandGetEntityVerbal(),
-										transitions={'one': 'get pos', 'multiple': 'get pos', 'none': 'done', 'error': 'done'},
+										transitions={'one': 'get pos', 'multiple': 'get pos', 'none': 'say no entry', 'error': 'say no entry'},
 										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
 										remapping={'name': 'EntryName', 'containers': 'containers', 'entities': 'entitie'})
 
@@ -328,6 +329,12 @@ class Scenario_GPSRSM(Behavior):
 			# x:284 y:527
 			OperatableStateMachine.add('say start',
 										SaraSay(sentence="I'm ready to start the GPSR scenario.", emotion=1, block=True),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:273 y:103
+			OperatableStateMachine.add('say no entry',
+										SaraSay(sentence="Wait. There is no entry door? What!", emotion=1, block=True),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
@@ -383,7 +390,7 @@ class Scenario_GPSRSM(Behavior):
 			# x:29 y:186
 			OperatableStateMachine.add('Action_Executor',
 										self.use_behavior(Action_ExecutorSM, 'Action_Executor'),
-										transitions={'finished': 'GetOriginalPose', 'failed': 'critical', 'critical_fail': 'critical'},
+										transitions={'finished': 'lift head', 'failed': 'critical', 'critical_fail': 'critical'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'ActionGoToStart'})
 
@@ -413,6 +420,12 @@ class Scenario_GPSRSM(Behavior):
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'ExitName': 'ExitName'})
+
+			# x:30 y:288
+			OperatableStateMachine.add('lift head',
+										SaraSetHeadAngle(pitch=0, yaw=0),
+										transitions={'done': 'GetOriginalPose'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

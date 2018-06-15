@@ -91,7 +91,7 @@ class Scenario_SPRSM(Behavior):
 		with _sm_follow_head_0:
 			# x:214 y:48
 			OperatableStateMachine.add('list all entities',
-										list_entities_by_name(frontality_level=0.5),
+										list_entities_by_name(frontality_level=0.5, distance_max=10),
 										transitions={'found': 'Get Nearest', 'not_found': 'list all entities'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'name': 'person', 'entity_list': 'entity_list', 'number': 'number'})
@@ -319,7 +319,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:30 y:205
 			OperatableStateMachine.add('Find Operator',
-										list_entities_by_name(frontality_level=0.5),
+										list_entities_by_name(frontality_level=0.5, distance_max=10),
 										transitions={'found': 'Get operator id', 'not_found': 'not_found'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'name': 'person', 'entity_list': 'entity_list', 'number': 'number'})
