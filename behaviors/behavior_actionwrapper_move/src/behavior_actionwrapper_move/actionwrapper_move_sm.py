@@ -18,6 +18,7 @@ from behavior_wonderlanduniqueenity.wonderlanduniqueenity_sm import WonderlandUn
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from behavior_action_move.action_move_sm import Action_MoveSM
 from sara_flexbe_states.story import Set_Story
+from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -60,7 +61,7 @@ class ActionWrapper_MoveSM(Behavior):
 
 
 	def create(self):
-		# x:470 y:280, x:374 y:185, x:408 y:396
+		# x:518 y:366, x:823 y:208, x:541 y:500
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Move",'table','kitchen']
 		_state_machine.userdata.relative = False
@@ -162,7 +163,7 @@ class ActionWrapper_MoveSM(Behavior):
 										remapping={'data': 'containers'})
 
 
-		# x:38 y:481, x:447 y:470, x:230 y:365
+		# x:38 y:481, x:447 y:470, x:239 y:470
 		_sm_try_to_reach_3 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['waypoint', 'relative', 'areaName'])
 
 		with _sm_try_to_reach_3:
@@ -270,11 +271,11 @@ class ActionWrapper_MoveSM(Behavior):
 			# x:69 y:234
 			OperatableStateMachine.add('Try to find area',
 										_sm_try_to_find_area_4,
-										transitions={'found': 'Try to reach', 'not_found': 'failed'},
+										transitions={'found': 'Try to reach', 'not_found': 'cause1'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'area_to_search': 'area', 'containers': 'containers', 'area_name': 'area_name', 'waypoint': 'waypoint'})
 
-			# x:499 y:334
+			# x:636 y:355
 			OperatableStateMachine.add('Set Finished',
 										Set_a_step(step=3),
 										transitions={'done': 'finished'},
@@ -283,7 +284,7 @@ class ActionWrapper_MoveSM(Behavior):
 			# x:76 y:355
 			OperatableStateMachine.add('Try to reach',
 										_sm_try_to_reach_3,
-										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
+										transitions={'finished': 'finished', 'failed': 'cause2', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'waypoint': 'waypoint', 'relative': 'relative', 'areaName': 'area_name'})
 
@@ -292,6 +293,27 @@ class ActionWrapper_MoveSM(Behavior):
 										Set_Story(titre="Move to Location", storyline=["Decompose Command","Find Area","Join Area","Finished"]),
 										transitions={'done': 'Decompose Command'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:447 y:97
+			OperatableStateMachine.add('cause1',
+										SetKey(Value="I did not found the area to reach"),
+										transitions={'done': 'paramoffailure'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'FailureCause'})
+
+			# x:616 y:159
+			OperatableStateMachine.add('paramoffailure',
+										SetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'FailureCause'})
+
+			# x:452 y:235
+			OperatableStateMachine.add('cause2',
+										SetKey(Value="I am unable to go to the place"),
+										transitions={'done': 'paramoffailure'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'FailureCause'})
 
 
 		return _state_machine

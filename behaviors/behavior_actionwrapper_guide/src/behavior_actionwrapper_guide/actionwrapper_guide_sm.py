@@ -26,6 +26,7 @@ from behavior_wonderlanduniqueenity.wonderlanduniqueenity_sm import WonderlandUn
 from behavior_action_lookatfacebase.action_lookatfacebase_sm import action_lookAtFaceBaseSM
 from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerbal
 from behavior_action_point_at.action_point_at_sm import Action_point_atSM
+from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -74,7 +75,7 @@ class ActionWrapper_GuideSM(Behavior):
 
 
 	def create(self):
-		# x:1391 y:740, x:781 y:419, x:797 y:103
+		# x:1023 y:473, x:791 y:291, x:797 y:103
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Guide",'table', 'kitchen']
 		_state_machine.userdata.relative = False
@@ -591,113 +592,141 @@ class ActionWrapper_GuideSM(Behavior):
 
 
 		with _state_machine:
-			# x:86 y:45
+			# x:54 y:24
 			OperatableStateMachine.add('Get Person Id',
 										GetRosParam(ParamName="behavior/FoundPerson/Id"),
 										transitions={'done': 'GetPerson', 'failed': 'Cant Find Person'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'ID'})
 
-			# x:61 y:242
+			# x:20 y:138
 			OperatableStateMachine.add('Decompose Command',
 										_sm_decompose_command_18,
 										transitions={'done': 'Try to find area'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'command': 'Action', 'containers': 'containers', 'area': 'area'})
 
-			# x:88 y:517
+			# x:41 y:333
 			OperatableStateMachine.add('Try to reach',
 										_sm_try_to_reach_17,
-										transitions={'finished': 'operator is still there', 'failed': 'failed'},
+										transitions={'finished': 'operator is still there', 'failed': 'cause2'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'waypoint': 'waypoint', 'relative': 'relative', 'areaName': 'area_name', 'ID': 'ID'})
 
-			# x:477 y:234
+			# x:360 y:109
 			OperatableStateMachine.add('Cant Find Person',
 										SaraSay(sentence="I can't find a person.", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause1'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:88 y:129
+			# x:52 y:82
 			OperatableStateMachine.add('GetPerson',
 										GetEntityByID(),
 										transitions={'found': 'Decompose Command', 'not_found': 'Cant Find Person'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ID': 'ID', 'Entity': 'Entity'})
 
-			# x:77 y:331
+			# x:36 y:209
 			OperatableStateMachine.add('Try to find area',
 										_sm_try_to_find_area_16,
 										transitions={'found': 'sayfollowme', 'not_found': 'Cant Find Person'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'area_to_search': 'area', 'containers': 'containers', 'area_name': 'area_name', 'waypoint': 'waypoint'})
 
-			# x:75 y:649
+			# x:33 y:405
 			OperatableStateMachine.add('operator is still there',
 										_sm_operator_is_still_there_15,
 										transitions={'finished': 'getentitybyID', 'failed': 'say lost operator'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
-			# x:523 y:560
+			# x:347 y:370
 			OperatableStateMachine.add('say lost operator',
-										SaraSay(sentence="I have reach my goal but I'm not sure if my operator is there", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										SaraSay(sentence="I have reach my goal but I lost the person I was guiding.", emotion=1, block=True),
+										transitions={'done': 'cause3'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:88 y:425
+			# x:49 y:276
 			OperatableStateMachine.add('sayfollowme',
 										SaraSay(sentence="Follow me please.", emotion=1, block=True),
 										transitions={'done': 'Try to reach'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:1140 y:749
+			# x:808 y:451
 			OperatableStateMachine.add('head to middle',
 										SaraSetHeadAngle(pitch=0, yaw=0),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:971 y:655
+			# x:553 y:450
 			OperatableStateMachine.add('sayreachtheentity',
 										SaraSayKey(Format=lambda x: "Here is the "+x, emotion=1, block=True),
 										transitions={'done': 'head to middle'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'area_name'})
 
-			# x:98 y:802
+			# x:26 y:529
 			OperatableStateMachine.add('action_lookAtFaceBase',
 										self.use_behavior(action_lookAtFaceBaseSM, 'action_lookAtFaceBase'),
 										transitions={'finished': 'get entity to point', 'failed': 'get entity to point'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Entity': 'Entity'})
 
-			# x:114 y:730
+			# x:57 y:471
 			OperatableStateMachine.add('getentitybyID',
 										GetEntityByID(),
 										transitions={'found': 'action_lookAtFaceBase', 'not_found': 'sayreachtheentity'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ID': 'ID', 'Entity': 'Entity'})
 
-			# x:421 y:776
+			# x:249 y:562
 			OperatableStateMachine.add('get entity to point',
 										WonderlandGetEntityVerbal(),
 										transitions={'one': 'find the point', 'multiple': 'sayreachtheentity', 'none': 'sayreachtheentity', 'error': 'sayreachtheentity'},
 										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
 										remapping={'name': 'area_name', 'containers': 'containers', 'entities': 'entities'})
 
-			# x:814 y:792
+			# x:708 y:529
 			OperatableStateMachine.add('Action_point_at',
 										self.use_behavior(Action_point_atSM, 'Action_point_at'),
 										transitions={'finished': 'sayreachtheentity', 'failed': 'sayreachtheentity'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'targetPoint': 'targetPoint'})
 
-			# x:655 y:827
+			# x:539 y:558
 			OperatableStateMachine.add('find the point',
 										CalculationState(calculation=lambda x: x.position),
 										transitions={'done': 'Action_point_at'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'entities', 'output_value': 'targetPoint'})
+
+			# x:547 y:121
+			OperatableStateMachine.add('cause1',
+										SetKey(Value="I didn't find any persone"),
+										transitions={'done': 'setrosparamfail'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:535 y:239
+			OperatableStateMachine.add('cause2',
+										SetKey(Value="I did not reach the area"),
+										transitions={'done': 'setrosparamfail'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:559 y:337
+			OperatableStateMachine.add('cause3',
+										SetKey(Value="I lost the person I was guiding."),
+										transitions={'done': 'setrosparamfail'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:656 y:250
+			OperatableStateMachine.add('setrosparamfail',
+										SetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'Key'})
 
 
 		return _state_machine

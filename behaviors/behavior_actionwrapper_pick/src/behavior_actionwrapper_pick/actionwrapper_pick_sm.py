@@ -59,13 +59,13 @@ class ActionWrapper_PickSM(Behavior):
 
 		# Behavior comments:
 
-		# O 506 16 
+		# O 797 34 
 		# Pick|n1- object
 
 
 
 	def create(self):
-		# x:629 y:497, x:771 y:302, x:715 y:440
+		# x:629 y:497, x:880 y:203, x:715 y:440
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Pick","bottle"]
 
@@ -199,8 +199,8 @@ class ActionWrapper_PickSM(Behavior):
 										remapping={'input_value': 'Object', 'output_value': 'ID'})
 
 
-		# x:59 y:308, x:443 y:109
-		_sm_check_form_4 = OperatableStateMachine(outcomes=['done', 'fail'], input_keys=['Action'])
+		# x:59 y:308, x:387 y:59, x:384 y:139
+		_sm_check_form_4 = OperatableStateMachine(outcomes=['done', 'fail_full', 'full_no_object'], input_keys=['Action'])
 
 		with _sm_check_form_4:
 			# x:31 y:40
@@ -220,13 +220,13 @@ class ActionWrapper_PickSM(Behavior):
 			# x:222 y:119
 			OperatableStateMachine.add('not told',
 										SaraSay(sentence="Hum! They didn't told me what to pick", emotion=1, block=True),
-										transitions={'done': 'fail'},
+										transitions={'done': 'full_no_object'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:213 y:43
 			OperatableStateMachine.add('say full',
 										SaraSayKey(Format=lambda x: "Wait. There is already a "+ x + "in my gripper.", emotion=1, block=True),
-										transitions={'done': 'fail'},
+										transitions={'done': 'fail_full'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'ObjectInGripper'})
 
@@ -236,8 +236,8 @@ class ActionWrapper_PickSM(Behavior):
 			# x:84 y:30
 			OperatableStateMachine.add('Check Form',
 										_sm_check_form_4,
-										transitions={'done': 'get name', 'fail': 'failed'},
-										autonomy={'done': Autonomy.Inherit, 'fail': Autonomy.Inherit},
+										transitions={'done': 'get name', 'fail_full': 'cause1', 'full_no_object': 'cause2'},
+										autonomy={'done': Autonomy.Inherit, 'fail_full': Autonomy.Inherit, 'full_no_object': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
 
 			# x:31 y:493
@@ -250,14 +250,14 @@ class ActionWrapper_PickSM(Behavior):
 			# x:271 y:440
 			OperatableStateMachine.add('say lost',
 										SaraSayKey(Format=lambda x: "Hum! I lost sight of the "+x, emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause4'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'ObjectName'})
 
 			# x:257 y:144
 			OperatableStateMachine.add('find object',
 										_sm_find_object_3,
-										transitions={'not_found': 'failed', 'done': 'action_look_at_face'},
+										transitions={'not_found': 'cause3', 'done': 'action_look_at_face'},
 										autonomy={'not_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Action': 'Action', 'ObjectName': 'ObjectName', 'ID': 'ID', 'Object': 'Object'})
 
@@ -282,16 +282,16 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
-			# x:399 y:336
+			# x:364 y:318
 			OperatableStateMachine.add('say giveup',
 										SaraSay(sentence="I give up", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause4'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:271 y:388
 			OperatableStateMachine.add('say missed',
 										SaraSay(sentence="Oops! I missed.", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause4'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:273 y:487
@@ -321,6 +321,41 @@ class ActionWrapper_PickSM(Behavior):
 										transitions={'failed': 'find object', 'found': 'action_look_at_face', 'not_found': 'find object'},
 										autonomy={'failed': Autonomy.Inherit, 'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'ID': 'ID', 'Object': 'Object'})
+
+			# x:511 y:20
+			OperatableStateMachine.add('cause1',
+										SetKey(Value="My gripper was already full."),
+										transitions={'done': 'setrosparam'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:512 y:81
+			OperatableStateMachine.add('cause2',
+										SetKey(Value="I didn't know what to pick."),
+										transitions={'done': 'setrosparam'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:511 y:143
+			OperatableStateMachine.add('cause3',
+										SetKey(Value="I didn't found the object."),
+										transitions={'done': 'setrosparam'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:690 y:197
+			OperatableStateMachine.add('setrosparam',
+										SetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'Key'})
+
+			# x:527 y:315
+			OperatableStateMachine.add('cause4',
+										SetKey(Value="I was unable to pick the object."),
+										transitions={'done': 'setrosparam'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
 
 
 		return _state_machine

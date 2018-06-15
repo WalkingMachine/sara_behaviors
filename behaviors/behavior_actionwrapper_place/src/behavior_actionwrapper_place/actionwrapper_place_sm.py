@@ -19,6 +19,7 @@ from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.log_state import LogState
 from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.SetRosParam import SetRosParam
+from sara_flexbe_states.SetKey import SetKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -60,7 +61,7 @@ class ActionWrapper_PlaceSM(Behavior):
 
 
 	def create(self):
-		# x:702 y:576, x:675 y:139, x:656 y:30
+		# x:702 y:576, x:764 y:158, x:766 y:33
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Place", "table"]
 		_state_machine.userdata.Empty = None
@@ -75,7 +76,7 @@ class ActionWrapper_PlaceSM(Behavior):
 			# x:44 y:28
 			OperatableStateMachine.add('gripper contain',
 										GetRosParam(ParamName="behavior/GripperContent"),
-										transitions={'done': 'if contain something', 'failed': 'failed'},
+										transitions={'done': 'if contain something', 'failed': 'cause1'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'content'})
 
@@ -89,7 +90,7 @@ class ActionWrapper_PlaceSM(Behavior):
 			# x:222 y:497
 			OperatableStateMachine.add('Action_place',
 										self.use_behavior(Action_placeSM, 'Action_place'),
-										transitions={'finished': 'empty hand', 'failed': 'failed'},
+										transitions={'finished': 'empty hand', 'failed': 'cause3'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pos': 'MapPosition'})
 
@@ -117,7 +118,7 @@ class ActionWrapper_PlaceSM(Behavior):
 			# x:209 y:98
 			OperatableStateMachine.add('say nothing in gripper',
 										SaraSay(sentence="It seems I have nothing in my gripper", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause1'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:28 y:236
@@ -137,14 +138,14 @@ class ActionWrapper_PlaceSM(Behavior):
 			# x:33 y:167
 			OperatableStateMachine.add('cond',
 										CheckConditionState(predicate=lambda x: x[1] != ''),
-										transitions={'true': 'construction phrase', 'false': 'failed'},
+										transitions={'true': 'construction phrase', 'false': 'cause2'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'Action'})
 
 			# x:257 y:413
 			OperatableStateMachine.add('log tf error',
 										LogState(text="tf error", severity=Logger.REPORT_HINT),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause3'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:42 y:502
@@ -160,6 +161,34 @@ class ActionWrapper_PlaceSM(Behavior):
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'Empty'})
+
+			# x:448 y:54
+			OperatableStateMachine.add('cause1',
+										SetKey(Value="I didn't have any object in my gripper"),
+										transitions={'done': 'setrosparamcause'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:422 y:149
+			OperatableStateMachine.add('cause2',
+										SetKey(Value="I didn't know where to place the object."),
+										transitions={'done': 'setrosparamcause'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:575 y:158
+			OperatableStateMachine.add('setrosparamcause',
+										SetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'Key'})
+
+			# x:449 y:325
+			OperatableStateMachine.add('cause3',
+										SetKey(Value="I was unable to calculate how to place the object."),
+										transitions={'done': 'setrosparamcause'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
 
 
 		return _state_machine
