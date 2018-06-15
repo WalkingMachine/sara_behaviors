@@ -59,7 +59,7 @@ class ActionWrapper_GiveSM(Behavior):
 
 	def create(self):
 		# x:965 y:192, x:1057 y:494, x:1048 y:308
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action', 'person_name'])
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = []
 		_state_machine.userdata.person_name = " "
 		_state_machine.userdata.Empty = None
@@ -153,10 +153,10 @@ class ActionWrapper_GiveSM(Behavior):
 
 			# x:703 y:336
 			OperatableStateMachine.add('person_lost',
-										SaraSayKey(Format=lambda x: "I've lost "+x+"!", emotion=1, block=True),
+										SaraSayKey(Format=lambda x: "I've lost "+x[1]+"!", emotion=1, block=True),
 										transitions={'done': 'cause2'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'person_name'})
+										remapping={'sentence': 'Action'})
 
 			# x:159 y:259
 			OperatableStateMachine.add('get_person',
