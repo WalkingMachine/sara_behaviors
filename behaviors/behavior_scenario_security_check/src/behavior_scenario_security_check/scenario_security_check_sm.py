@@ -8,14 +8,14 @@
 
 import roslib; roslib.load_manifest('behavior_scenario_security_check')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.sara_sound import SaraSound
 from behavior_action_move.action_move_sm import Action_MoveSM
 from sara_flexbe_states.continue_button import ContinueButton
+from sara_flexbe_states.sara_say import SaraSay
 from behavior_action_pass_door.action_pass_door_sm import Action_Pass_DoorSM
 from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerbal
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.log_key_state import LogKeyState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
