@@ -108,7 +108,7 @@ class Action_MoveSM(Behavior):
 
 			# x:58 y:339
 			OperatableStateMachine.add('try again',
-										SaraSay(sentence="I'm still going.", emotion=1, block=False),
+										SaraSay(sentence="But I'm still going.", emotion=1, block=False),
 										transitions={'done': 'set head'},
 										autonomy={'done': Autonomy.Off})
 

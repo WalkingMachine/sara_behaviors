@@ -31,33 +31,33 @@ class StoryboardSetStoryFromAction(EventState):
         for action in userdata.actionList:
             print(action[0].lower())
             if action[0].lower() == "move":
-                story.append("Move to the "+action[1])
+                story.append("Move to the "+str(action[1]))
             elif action[0].lower() == "find":
-                story.append("Find the " + action[1])
+                story.append("Find the " + str(action[1]))
             elif action[0].lower() == "findPerson":
-                if action[1] == "":
+                if len(action) == 1 or str(action[1]) == "":
                     story.append("Find a person")
                 else:
-                    story.append("Find " + action[1])
+                    story.append("Find " + str(action[1]))
             elif action[0].lower() == "guide":
-                story.append("Guide to " + action[1])
+                story.append("Guide to " + str(action[1]))
             elif action[0].lower() == "pick":
-                story.append("Pick the " + action[1])
+                story.append("Pick the " + str(action[1]))
             elif action[0].lower() == "give":
-                if action[1] == "":
+                if len(action) == 1 or action[1] == "":
                     story.append("Give to a person")
                 else:
-                    story.append("Give to " + action[1])
+                    story.append("Give to " + str(action[1]))
             elif action[0].lower() == "say":
                 story.append("Talk")
             elif action[0].lower() == "ask":
                 story.append("Ask a question")
             elif action[0].lower() == "follow":
-                story.append("Follow " + action[1])
+                story.append("Follow " + str(action[1]))
             elif action[0].lower() == "count":
-                story.append("Count the number of " + action[1])
+                story.append("Count the number of " + str(action[1]))
             elif action[0].lower() == "place":
-                story.append("Place on the " + action[1])
+                story.append("Place on the " + str(action[1]))
             elif action[0].lower() == "answer":
                 story.append("Answer a question")
             else:

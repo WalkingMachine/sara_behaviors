@@ -20,6 +20,9 @@ from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
 from behavior_action_executor.action_executor_sm import Action_ExecutorSM
 from sara_flexbe_states.StoryboardSetStepKey import StoryboardSetStepKey
+from sara_flexbe_states.GetRosParam import GetRosParam
+from sara_flexbe_states.sara_say_key import SaraSayKey
+from behavior_actionwrapper_move.actionwrapper_move_sm import ActionWrapper_MoveSM
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.sara_nlu_gpsr import SaraNLUgpsr
 from sara_flexbe_states.get_speech import GetSpeech
@@ -53,6 +56,7 @@ class Scenario_GPSRSM(Behavior):
 		# references to used behaviors
 		self.add_behavior(Action_Pass_DoorSM, 'Initialisation/Action_Pass_Door')
 		self.add_behavior(Action_ExecutorSM, 'Do the actions/Action_Executor')
+		self.add_behavior(ActionWrapper_MoveSM, 'Fail state/ActionWrapper_Move')
 		self.add_behavior(action_look_at_faceSM, 'Interact operator/look at op/action_look_at_face')
 		self.add_behavior(Action_ExecutorSM, 'Action_Executor')
 		self.add_behavior(Action_Pass_DoorSM, 'End/Action_Pass_Door')
@@ -217,15 +221,36 @@ class Scenario_GPSRSM(Behavior):
 										autonomy={'fail': Autonomy.Inherit})
 
 
-		# x:30 y:324
-		_sm_fail_state_4 = OperatableStateMachine(outcomes=['finished'])
+		# x:356 y:519, x:581 y:195
+		_sm_fail_state_4 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['ActionGoToStart'])
 
 		with _sm_fail_state_4:
-			# x:248 y:81
+			# x:36 y:29
 			OperatableStateMachine.add('say failed',
 										SaraSay(sentence="I failed. I'm going back to tell my master.", emotion=1, block=True),
-										transitions={'done': 'finished'},
+										transitions={'done': 'ActionWrapper_Move'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:22 y:505
+			OperatableStateMachine.add('get error',
+										GetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
+										transitions={'done': 'say error', 'failed': 'finished'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'Value': 'Error'})
+
+			# x:110 y:584
+			OperatableStateMachine.add('say error',
+										SaraSayKey(Format=lambda x: "Sorry, I failed because "+x, emotion=1, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'Error'})
+
+			# x:21 y:163
+			OperatableStateMachine.add('ActionWrapper_Move',
+										self.use_behavior(ActionWrapper_MoveSM, 'Fail state/ActionWrapper_Move'),
+										transitions={'finished': 'get error', 'failed': 'failed', 'critical_fail': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
+										remapping={'Action': 'ActionGoToStart'})
 
 
 		# x:588 y:141, x:590 y:545, x:642 y:410
@@ -341,12 +366,11 @@ class Scenario_GPSRSM(Behavior):
 
 
 		with _state_machine:
-			# x:36 y:26
-			OperatableStateMachine.add('Initialisation',
-										_sm_initialisation_6,
-										transitions={'done': 'Action_Executor'},
-										autonomy={'done': Autonomy.Inherit},
-										remapping={'PositionBras': 'PositionBras', 'EntryName': 'EntryName'})
+			# x:30 y:288
+			OperatableStateMachine.add('lift head',
+										SaraSetHeadAngle(pitch=0.3, yaw=0),
+										transitions={'done': 'GetOriginalPose'},
+										autonomy={'done': Autonomy.Off})
 
 			# x:767 y:196
 			OperatableStateMachine.add('Do the actions',
@@ -355,11 +379,12 @@ class Scenario_GPSRSM(Behavior):
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical fail': Autonomy.Inherit},
 										remapping={'ActionForms': 'ActionForms', 'OriginalPose': 'OriginalPose'})
 
-			# x:246 y:186
+			# x:376 y:115
 			OperatableStateMachine.add('Fail state',
 										_sm_fail_state_4,
-										transitions={'finished': 'Action_Executor'},
-										autonomy={'finished': Autonomy.Inherit})
+										transitions={'finished': 'lift head', 'failed': 'critical'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'ActionGoToStart': 'ActionGoToStart'})
 
 			# x:238 y:272
 			OperatableStateMachine.add('critical',
@@ -421,11 +446,12 @@ class Scenario_GPSRSM(Behavior):
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'ExitName': 'ExitName'})
 
-			# x:30 y:288
-			OperatableStateMachine.add('lift head',
-										SaraSetHeadAngle(pitch=0, yaw=0),
-										transitions={'done': 'GetOriginalPose'},
-										autonomy={'done': Autonomy.Off})
+			# x:36 y:26
+			OperatableStateMachine.add('Initialisation',
+										_sm_initialisation_6,
+										transitions={'done': 'Action_Executor'},
+										autonomy={'done': Autonomy.Inherit},
+										remapping={'PositionBras': 'PositionBras', 'EntryName': 'EntryName'})
 
 
 		return _state_machine

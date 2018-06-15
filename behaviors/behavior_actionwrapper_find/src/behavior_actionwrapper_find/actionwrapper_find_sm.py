@@ -156,7 +156,7 @@ class ActionWrapper_FindSM(Behavior):
 
 			# x:769 y:347
 			OperatableStateMachine.add('set cause in rosparam',
-										SetRosParam(ParamName=behavior/GPSR/CauseOfFailure),
+										SetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'Key'})
