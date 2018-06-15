@@ -17,6 +17,7 @@ from behavior_action_findperson.action_findperson_sm import Action_findPersonSM
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.SetRosParamKey import SetRosParamKey
 from flexbe_states.log_key_state import LogKeyState
+from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -55,7 +56,7 @@ class ActionWrapper_AskSM(Behavior):
 
 
 	def create(self):
-		# x:790 y:531, x:242 y:489, x:477 y:525
+		# x:790 y:531, x:135 y:509, x:477 y:525
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Ask", "How are you today?", "Answer"]
 
@@ -110,7 +111,7 @@ class ActionWrapper_AskSM(Behavior):
 			# x:222 y:305
 			OperatableStateMachine.add('NoPerson',
 										SaraSay(sentence="I did not find any person. ", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause1'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:169 y:194
@@ -129,7 +130,7 @@ class ActionWrapper_AskSM(Behavior):
 			# x:533 y:462
 			OperatableStateMachine.add('saraSorry',
 										SaraSay(sentence="Sorry, I can't understand your response.", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:694 y:144
@@ -158,6 +159,27 @@ class ActionWrapper_AskSM(Behavior):
 										transitions={'done': 'thank you'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'data': 'response'})
+
+			# x:224 y:385
+			OperatableStateMachine.add('cause1',
+										SetKey(Value="I didn't find any person"),
+										transitions={'done': 'set cause failure'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:332 y:489
+			OperatableStateMachine.add('cause2',
+										SetKey(Value="I did not understand the answer"),
+										transitions={'done': 'set cause failure'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:194 y:465
+			OperatableStateMachine.add('set cause failure',
+										SetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'Key'})
 
 
 		return _state_machine

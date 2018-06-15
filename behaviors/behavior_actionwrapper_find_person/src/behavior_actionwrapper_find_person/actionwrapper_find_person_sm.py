@@ -62,7 +62,7 @@ class ActionWrapper_Find_PersonSM(Behavior):
 
 
 	def create(self):
-		# x:1399 y:61, x:265 y:777, x:1004 y:649
+		# x:1399 y:61, x:331 y:776, x:1004 y:649
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["FindPerson","Rachel"]
 		_state_machine.userdata.rotation = -1.57
@@ -225,10 +225,10 @@ class ActionWrapper_Find_PersonSM(Behavior):
 										autonomy={'done': Autonomy.Inherit, 'no_param': Autonomy.Inherit},
 										remapping={'Action': 'Action', 'person': 'person', 'name': 'name'})
 
-			# x:401 y:658
+			# x:536 y:609
 			OperatableStateMachine.add('Do not find person',
 										SaraSay(sentence="I did not find a person.", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:919 y:8
@@ -266,8 +266,8 @@ class ActionWrapper_Find_PersonSM(Behavior):
 
 			# x:47 y:654
 			OperatableStateMachine.add('say no object given',
-										SaraSay(sentence="You didn't told me whom to find.", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										SaraSay(sentence="You didn't told me who to find.", emotion=1, block=True),
+										transitions={'done': 'cause1'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:286 y:79
@@ -297,6 +297,27 @@ class ActionWrapper_Find_PersonSM(Behavior):
 										transitions={'yes': 'Say found', 'no': 'Retry', 'error': 'reset Head', 'noname': 'get ID'},
 										autonomy={'yes': Autonomy.Inherit, 'no': Autonomy.Inherit, 'error': Autonomy.Inherit, 'noname': Autonomy.Inherit},
 										remapping={'name': 'name', 'entity': 'entity'})
+
+			# x:196 y:660
+			OperatableStateMachine.add('cause1',
+										SetKey(Value="I didn't know who to find."),
+										transitions={'done': 'setrosparamfailure'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:410 y:641
+			OperatableStateMachine.add('cause2',
+										SetKey(Value="I did not find any person."),
+										transitions={'done': 'setrosparamfailure'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:274 y:682
+			OperatableStateMachine.add('setrosparamfailure',
+										SetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'Key'})
 
 
 		return _state_machine

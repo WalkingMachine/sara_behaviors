@@ -17,6 +17,7 @@ from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.get_speech import GetSpeech
 from behavior_action_findperson.action_findperson_sm import Action_findPersonSM
 from sara_flexbe_states.SetRosParam import SetRosParam
+from sara_flexbe_states.SetKey import SetKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -57,8 +58,8 @@ class ActionWrapper_GiveSM(Behavior):
 
 
 	def create(self):
-		# x:965 y:192, x:993 y:500, x:975 y:314
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action', 'person_name'])
+		# x:965 y:192, x:1057 y:494, x:1048 y:308
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = []
 		_state_machine.userdata.person_name = " "
 		_state_machine.userdata.Empty = None
@@ -131,10 +132,10 @@ class ActionWrapper_GiveSM(Behavior):
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'gripperContent'})
 
-			# x:576 y:259
+			# x:507 y:234
 			OperatableStateMachine.add('Action_Give',
 										self.use_behavior(Action_GiveSM, 'Action_Give'),
-										transitions={'Given': 'empty hand', 'Person_not_found': 'person_lost', 'No_object_in_hand': 'failed', 'fail': 'critical_fail'},
+										transitions={'Given': 'empty hand', 'Person_not_found': 'person_lost', 'No_object_in_hand': 'cause1', 'fail': 'cause3'},
 										autonomy={'Given': Autonomy.Inherit, 'Person_not_found': Autonomy.Inherit, 'No_object_in_hand': Autonomy.Inherit, 'fail': Autonomy.Inherit})
 
 			# x:501 y:66
@@ -143,19 +144,19 @@ class ActionWrapper_GiveSM(Behavior):
 										transitions={'done': 'empty hand'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:594 y:425
+			# x:487 y:395
 			OperatableStateMachine.add('getID',
 										CalculationState(calculation=lambda x: x.ID),
 										transitions={'done': 'Action_Give'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'entity', 'output_value': 'ID'})
 
-			# x:738 y:446
+			# x:703 y:336
 			OperatableStateMachine.add('person_lost',
-										SaraSayKey(Format=lambda x: "I've lost "+x+"!", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										SaraSayKey(Format=lambda x: "I've lost "+x[1]+"!", emotion=1, block=True),
+										transitions={'done': 'cause2'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'person_name'})
+										remapping={'sentence': 'Action'})
 
 			# x:159 y:259
 			OperatableStateMachine.add('get_person',
@@ -167,10 +168,10 @@ class ActionWrapper_GiveSM(Behavior):
 			# x:53 y:480
 			OperatableStateMachine.add('no_object',
 										SaraSay(sentence="There is nothing in my gripper.", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause1'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:462 y:428
+			# x:332 y:379
 			OperatableStateMachine.add('confirm giving',
 										SaraSay(sentence="Let me give you this object.", emotion=1, block=True),
 										transitions={'done': 'getID'},
@@ -182,6 +183,34 @@ class ActionWrapper_GiveSM(Behavior):
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'Empty'})
+
+			# x:729 y:501
+			OperatableStateMachine.add('cause1',
+										SetKey(Value="There was nothing in my gripper."),
+										transitions={'done': 'setcausefailure'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:810 y:399
+			OperatableStateMachine.add('cause2',
+										SetKey(Value="I lost the person."),
+										transitions={'done': 'setcausefailure'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:867 y:299
+			OperatableStateMachine.add('cause3',
+										SetKey(Value="I was unable to give the object."),
+										transitions={'done': 'setcausefailure'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:859 y:478
+			OperatableStateMachine.add('setcausefailure',
+										SetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'Key'})
 
 
 		return _state_machine
