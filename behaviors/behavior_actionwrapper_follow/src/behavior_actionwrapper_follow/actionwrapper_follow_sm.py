@@ -17,6 +17,8 @@ from behavior_action_follow.action_follow_sm import Action_followSM
 from sara_flexbe_states.get_speech import GetSpeech
 from flexbe_states.check_condition_state import CheckConditionState
 from behavior_action_lookatfacebase.action_lookatfacebase_sm import action_lookAtFaceBaseSM
+from sara_flexbe_states.SetKey import SetKey
+from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -65,7 +67,7 @@ class ActionWrapper_FollowSM(Behavior):
 
 
 	def create(self):
-		# x:763 y:423, x:705 y:133, x:896 y:268
+		# x:763 y:423, x:866 y:181, x:896 y:268
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Follow", "rachel"]
 		_state_machine.userdata.distance = 1
@@ -141,7 +143,7 @@ class ActionWrapper_FollowSM(Behavior):
 			# x:432 y:129
 			OperatableStateMachine.add('Say Lost',
 										SaraSayKey(Format=lambda x: "I have lost " + x + " !", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause1'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'name'})
 
@@ -168,7 +170,7 @@ class ActionWrapper_FollowSM(Behavior):
 			# x:416 y:250
 			OperatableStateMachine.add('Cant Follow',
 										SaraSayKey(Format=lambda x: "I can't follow you, " + x + " !", emotion=1, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'cause2'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'name'})
 
@@ -185,6 +187,27 @@ class ActionWrapper_FollowSM(Behavior):
 										transitions={'finished': 'Tell Way', 'failed': 'Say Lost'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Entity': 'Entity'})
+
+			# x:556 y:151
+			OperatableStateMachine.add('cause1',
+										SetKey(Value="I lost the person I was following."),
+										transitions={'done': 'setrosparamcause'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:557 y:210
+			OperatableStateMachine.add('cause2',
+										SetKey(Value="I was unable to follow the person."),
+										transitions={'done': 'setrosparamcause'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Key'})
+
+			# x:673 y:181
+			OperatableStateMachine.add('setrosparamcause',
+										SetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'Key'})
 
 
 		return _state_machine
