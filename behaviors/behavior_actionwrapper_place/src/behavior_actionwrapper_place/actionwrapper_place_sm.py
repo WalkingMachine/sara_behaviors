@@ -18,6 +18,7 @@ from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.log_state import LogState
 from flexbe_states.log_key_state import LogKeyState
+from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -59,9 +60,10 @@ class ActionWrapper_PlaceSM(Behavior):
 
 
 	def create(self):
-		# x:504 y:506, x:675 y:139, x:656 y:30
+		# x:702 y:576, x:675 y:139, x:656 y:30
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Place", "table"]
+		_state_machine.userdata.Empty = None
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -87,7 +89,7 @@ class ActionWrapper_PlaceSM(Behavior):
 			# x:222 y:497
 			OperatableStateMachine.add('Action_place',
 										self.use_behavior(Action_placeSM, 'Action_place'),
-										transitions={'finished': 'finished', 'failed': 'failed'},
+										transitions={'finished': 'empty hand', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pos': 'MapPosition'})
 
@@ -151,6 +153,13 @@ class ActionWrapper_PlaceSM(Behavior):
 										transitions={'done': 'Action_place'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'data': 'MapPosition'})
+
+			# x:493 y:535
+			OperatableStateMachine.add('empty hand',
+										SetRosParam(ParamName="behavior/GripperContent"),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Value': 'Empty'})
 
 
 		return _state_machine

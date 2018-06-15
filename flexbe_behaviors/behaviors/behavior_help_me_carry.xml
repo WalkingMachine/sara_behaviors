@@ -12,10 +12,10 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Action_follow" />
 	<contains name="Action_Guiding_Person" />
 	<contains name="Action_Receive_Bag" />
 	<contains name="Action_Move" />
+	<contains name="Action_follow" />
 
 	<!-- Available Parameters -->
 

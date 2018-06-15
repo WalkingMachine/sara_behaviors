@@ -60,9 +60,20 @@ Demande le id de la personne a suivre
         # [/MANUAL_CREATE]
 
 		# x:30 y:365
-		_sm_turn_head_0 = OperatableStateMachine(outcomes=['fail'])
+		_sm_delai_0 = OperatableStateMachine(outcomes=['finished'])
 
-		with _sm_turn_head_0:
+		with _sm_delai_0:
+			# x:129 y:168
+			OperatableStateMachine.add('delay',
+										WaitState(wait_time=15),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+
+		# x:30 y:365
+		_sm_turn_head_1 = OperatableStateMachine(outcomes=['fail'])
+
+		with _sm_turn_head_1:
 			# x:75 y:47
 			OperatableStateMachine.add('turn r',
 										SaraSetHeadAngle(pitch=0, yaw=-1.5),
@@ -101,9 +112,9 @@ Demande le id de la personne a suivre
 
 
 		# x:30 y:365
-		_sm_search_1 = OperatableStateMachine(outcomes=['found'], input_keys=['ID'])
+		_sm_search_2 = OperatableStateMachine(outcomes=['found'], input_keys=['ID'])
 
-		with _sm_search_1:
+		with _sm_search_2:
 			# x:91 y:163
 			OperatableStateMachine.add('get en',
 										GetEntityByID(),
@@ -112,38 +123,44 @@ Demande le id de la personne a suivre
 										remapping={'ID': 'ID', 'Entity': 'Entity'})
 
 
-		# x:30 y:365, x:530 y:244, x:230 y:365
-		_sm_find_back_2 = ConcurrencyContainer(outcomes=['back'], input_keys=['ID'], conditions=[
+		# x:30 y:365, x:530 y:244, x:230 y:365, x:330 y:365, x:430 y:365
+		_sm_find_back_3 = ConcurrencyContainer(outcomes=['back', 'not_found'], input_keys=['ID'], conditions=[
 										('back', [('search', 'found')]),
-										('back', [('Turn head', 'fail')])
+										('back', [('Turn head', 'fail')]),
+										('not_found', [('Delai', 'finished')])
 										])
 
-		with _sm_find_back_2:
+		with _sm_find_back_3:
 			# x:145 y:108
 			OperatableStateMachine.add('search',
-										_sm_search_1,
+										_sm_search_2,
 										transitions={'found': 'back'},
 										autonomy={'found': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
 			# x:469 y:136
 			OperatableStateMachine.add('Turn head',
-										_sm_turn_head_0,
+										_sm_turn_head_1,
 										transitions={'fail': 'back'},
 										autonomy={'fail': Autonomy.Inherit})
 
+			# x:281 y:192
+			OperatableStateMachine.add('Delai',
+										_sm_delai_0,
+										transitions={'finished': 'not_found'},
+										autonomy={'finished': Autonomy.Inherit})
+
 
 		# x:30 y:458
-		_sm_look_at_3 = OperatableStateMachine(outcomes=['fail'], input_keys=['ID'])
+		_sm_look_at_4 = OperatableStateMachine(outcomes=['fail'], input_keys=['ID'])
 
-		with _sm_look_at_3:
+		with _sm_look_at_4:
 			# x:110 y:102
 			OperatableStateMachine.add('get entity',
 										GetEntityByID(),
 										transitions={'found': 'action_look_at_face', 'not_found': 'sorry'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ID': 'ID', 'Entity': 'Entity'})
-
 
 			# x:422 y:129
 			OperatableStateMachine.add('action_look_at_face',
@@ -154,9 +171,9 @@ Demande le id de la personne a suivre
 
 			# x:248 y:264
 			OperatableStateMachine.add('Find back',
-										_sm_find_back_2,
-										transitions={'back': 'Found you'},
-										autonomy={'back': Autonomy.Inherit},
+										_sm_find_back_3,
+										transitions={'back': 'Found you', 'not_found': 'fail'},
+										autonomy={'back': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
 			# x:470 y:272
@@ -173,9 +190,9 @@ Demande le id de la personne a suivre
 
 
 		# x:30 y:365
-		_sm_follow_4 = OperatableStateMachine(outcomes=['failed'], input_keys=['ID'])
+		_sm_follow_5 = OperatableStateMachine(outcomes=['failed'], input_keys=['ID'])
 
-		with _sm_follow_4:
+		with _sm_follow_5:
 			# x:65 y:167
 			OperatableStateMachine.add('follow',
 										SaraFollow(distance=1.2),
@@ -185,22 +202,22 @@ Demande le id de la personne a suivre
 
 
 		# x:368 y:271, x:423 y:158, x:230 y:458
-		_sm_follow_5 = ConcurrencyContainer(outcomes=['not_found'], input_keys=['ID'], conditions=[
+		_sm_follow_6 = ConcurrencyContainer(outcomes=['not_found'], input_keys=['ID'], conditions=[
 										('not_found', [('Look at', 'fail')]),
 										('not_found', [('Follow', 'failed')])
 										])
 
-		with _sm_follow_5:
+		with _sm_follow_6:
 			# x:185 y:134
 			OperatableStateMachine.add('Follow',
-										_sm_follow_4,
+										_sm_follow_5,
 										transitions={'failed': 'not_found'},
 										autonomy={'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
 			# x:123 y:236
 			OperatableStateMachine.add('Look at',
-										_sm_look_at_3,
+										_sm_look_at_4,
 										transitions={'fail': 'not_found'},
 										autonomy={'fail': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
@@ -210,7 +227,7 @@ Demande le id de la personne a suivre
 		with _state_machine:
 			# x:150 y:130
 			OperatableStateMachine.add('Follow',
-										_sm_follow_5,
+										_sm_follow_6,
 										transitions={'not_found': 'failed'},
 										autonomy={'not_found': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
