@@ -178,7 +178,7 @@ Demande le id de la personne a suivre
 
 			# x:470 y:272
 			OperatableStateMachine.add('sorry',
-										SaraSay(sentence="Sorry, I lost you. Please wait for me!", emotion=1, block=False),
+										SaraSay(sentence="Sorry, I lost you. Please wait for me! Make sure to let me see your face, please.", emotion=1, block=False),
 										transitions={'done': 'Find back'},
 										autonomy={'done': Autonomy.Off})
 

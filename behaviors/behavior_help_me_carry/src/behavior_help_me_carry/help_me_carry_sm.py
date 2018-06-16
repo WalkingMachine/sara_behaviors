@@ -68,7 +68,7 @@ class HelpmecarrySM(Behavior):
 
 		# Behavior comments:
 
-		# O 512 503 
+		# O 678 543 
 		# Une fois que le robot arrive a destination, il informe quil laissera le sac sur le sol.
 
 		# ! 226 45 
@@ -430,7 +430,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:19 y:268
 			OperatableStateMachine.add('wait',
-										WaitState(wait_time=5),
+										WaitState(wait_time=2),
 										transitions={'done': 'close'},
 										autonomy={'done': Autonomy.Off})
 
