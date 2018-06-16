@@ -23,7 +23,7 @@ class MoveitMove(EventState):
         self.move = move
         self.waitForExecution = waitForExecution
         self.group = MoveGroupCommander(group)
-        self.tol = 0.05
+        self.tol = 0.06
         self.result = None
         self.count = 0
 

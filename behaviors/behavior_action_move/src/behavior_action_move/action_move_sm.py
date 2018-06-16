@@ -95,7 +95,7 @@ class Action_MoveSM(Behavior):
 
 			# x:271 y:449
 			OperatableStateMachine.add('for',
-										ForLoop(repeat=1),
+										ForLoop(repeat=2),
 										transitions={'do': 'set straight face', 'end': 'sorry'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
