@@ -81,6 +81,12 @@ class SaraFollow(EventState):
 
             length = ((self.Entity.position.x - self.MyPose.position.x) ** 2 + (
                         self.Entity.position.y - self.MyPose.position.y) ** 2) ** 0.5
+
+            if lenght < self.distance:
+
+                return
+
+
             GoalPose.position.x = self.Entity.position.x - (
                         self.Entity.position.x - self.MyPose.position.x) / length * self.distance
             GoalPose.position.y = self.Entity.position.y - (
