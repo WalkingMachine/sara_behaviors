@@ -15,7 +15,7 @@ class GetClosestObstacle(EventState):
     <= done         Angle de l'obstacle
     """
 
-    def __init__(self, topic="/scan"):
+    def __init__(self, topic="/scan", maximumDistance=2):
         '''
         Constructor
         '''
@@ -23,15 +23,15 @@ class GetClosestObstacle(EventState):
 
         self._topic = topic
         self._sub = ProxySubscriberCached({self._topic: Angle})
+        self.maximumDistance = maximumDistance
 
-    def execute(self, topic="/minDistance"):
+    def execute(self):
         '''
         Execute this state
         '''
-        self._topic = topic
 
         Angle = 0
-        previousMinimum = topic
+        previousMinimum = self.maximumDistance
         i = 0
 
         msg = self._sub.get_last_msg(self._topic)
