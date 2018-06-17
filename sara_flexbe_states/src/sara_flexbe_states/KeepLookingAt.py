@@ -35,7 +35,7 @@ class KeepLookingAt(EventState):
     def __init__(self):
         """Constructor"""
 
-        super(SaraFollow, self).__init__(outcomes=['failed'],
+        super(KeepLookingAt, self).__init__(outcomes=['failed'],
                                          input_keys=['ID'])
 
         self.entities_topic = "/entities"
@@ -46,7 +46,7 @@ class KeepLookingAt(EventState):
 
         # Reference from and reference to
         self.service = get_directionRequest()
-        self.service.reference = "sara_head"
+        self.service.reference = "head_xtion_link"
         self.service.origine = "base_link"
 
         self.Entity = None
@@ -65,21 +65,29 @@ class KeepLookingAt(EventState):
             for entity in message.entities:
                 if entity.ID == userdata.ID:
                     self.Entity = entity
+                    print("entity found: "+str(entity.ID))
 
         # If entity is defined, get the direction to it
         if self.Entity:
+
+            if (self.Entity.name == "person"):
+                if (self.Entity.face.id != ""):
+                    self.Entity.position.z += self.Entity.face.boundingBox.Center.z
+                else:
+                    self.Entity.position.z += 1.6
+
             ms = Float64()
             serv = rospy.ServiceProxy('/get_direction', get_direction)
-            self.service.point = self.Entity.Pos.position
+            self.service.point = self.Entity.position
             resp = serv(self.service)
             # Publish to both Yaw and Pitch controllers
-            ms.data = resp.pitch
+            ms.data = min(max(-resp.pitch, -0.9), 1)
             self.pubp.publish(ms)
-            ms.data = resp.yaw
+            ms.data = min(max(resp.yaw, -1.8), 1.8)
             self.puby.publish(ms)
-
+            return
+        return "failed"
 
     def on_enter(self, userdata):
-        """Clean the costmap"""
         self.Entity = None
 
