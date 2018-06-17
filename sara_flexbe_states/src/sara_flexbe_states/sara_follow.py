@@ -82,7 +82,7 @@ class SaraFollow(EventState):
             length = ((self.Entity.position.x - self.MyPose.position.x) ** 2 + (
                         self.Entity.position.y - self.MyPose.position.y) ** 2) ** 0.5
 
-            if lenght < self.distance:
+            if length < self.distance:
 
                 return
 
@@ -133,9 +133,9 @@ class SaraFollow(EventState):
 
         if self.LastGoal:
             dist = ((self.LastGoal.position.x - pose.position.x) ** 2
-                    + (self.LastGoal.position.x - pose.position.x) ** 2
-                    + (self.LastGoal.position.x - pose.position.x) ** 2) ** 0.5
+                    + (self.LastGoal.position.y - pose.position.y) ** 2) ** 0.5
             if dist < 0.5:
+                Logger.loginfo("the new goal is within last goal limit")
                 return
         self.LastGoal = pose
 
