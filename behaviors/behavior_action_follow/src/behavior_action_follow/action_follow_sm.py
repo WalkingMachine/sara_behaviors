@@ -52,7 +52,7 @@ Demande le id de la personne a suivre
 	def create(self):
 		# x:572 y:135
 		_state_machine = OperatableStateMachine(outcomes=['failed'], input_keys=['ID'])
-		_state_machine.userdata.ID = 22
+		_state_machine.userdata.ID = 4
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -65,7 +65,7 @@ Demande le id de la personne a suivre
 		with _sm_delai_0:
 			# x:129 y:168
 			OperatableStateMachine.add('delay',
-										WaitState(wait_time=15),
+										WaitState(wait_time=25),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
