@@ -160,5 +160,6 @@
 <run_depend>behavior_actionwrapper_guide</run_depend>
   <run_depend>behavior_action_guide2</run_depend>
   <run_depend>behavior_lookatclosest</run_depend>
+  <run_depend>behavior_scenario_mvp_storing_groceries</run_depend>
 
 </package>

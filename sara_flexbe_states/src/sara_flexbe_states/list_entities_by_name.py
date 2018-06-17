@@ -18,7 +18,7 @@ class list_entities_by_name(EventState):
         #> found_entities          object       list of found entities
 
         <= found            entities are found
-        <= not_found        no one is found
+        <= none_found        no one is found
 
     '''
 
@@ -26,7 +26,7 @@ class list_entities_by_name(EventState):
         '''
         Constructor
         '''
-        super(list_entities_by_name, self).__init__(outcomes=['found', 'not_found'], output_keys=['entity_list', 'number'], input_keys=['name'])
+        super(list_entities_by_name, self).__init__(outcomes=['found', 'none_found'], output_keys=['entity_list', 'number'], input_keys=['name'])
         self._sub = ProxySubscriberCached({'/entities': Entities})
 
         self._topic = "/robot_pose"
@@ -55,7 +55,7 @@ class list_entities_by_name(EventState):
             if len(found_entities) != 0:
                 return 'found'
             else:
-                return 'not_found'
+                return 'none_found'
 
     def list(self, name):
         found_entities = []
