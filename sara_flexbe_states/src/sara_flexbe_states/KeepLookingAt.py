@@ -18,10 +18,10 @@ from wm_direction_to_point.srv import get_direction, get_directionRequest
 
 """
 Created on 11/19/2015
-Modified on 06/15/2018
+Modified on 06/17/2018
 @author: Spyros Maniatopoulos
 
-@mofificator: Veronica, Philippe et Huynh-Anh
+@mofificator: Veronica, Philippe, Huynh-Anh et Alexandre
 """
 
 class KeepLookingAt(EventState):
@@ -32,7 +32,7 @@ class KeepLookingAt(EventState):
 
     """
 
-    def __init__(self, angle):
+    def __init__(self):
         """Constructor"""
 
         super(SaraFollow, self).__init__(outcomes=['failed'],
@@ -44,6 +44,7 @@ class KeepLookingAt(EventState):
         self.pubp = rospy.Publisher("/sara_head_pitch_controller/command", Float64, queue_size=1)
         self.puby = rospy.Publisher("/sara_head_yaw_controller/command", Float64, queue_size=1)
 
+        # Reference from and reference to
         self.service = get_directionRequest()
         self.service.reference = "sara_head"
         self.service.origine = "base_link"
@@ -56,26 +57,22 @@ class KeepLookingAt(EventState):
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
 
-        # self.count += 1
-        # if self.count > 10:
-        #     self.count = 0
-        #     return
-
         self.Entity = None
 
-        # Get the entity's position
+        # Get the entity's object in the latest detections
         if self._sub.has_msg(self.entities_topic):
             message = self._sub.get_last_msg(self.entities_topic)
             for entity in message.entities:
                 if entity.ID == userdata.ID:
                     self.Entity = entity
 
+        # If entity is defined, get the direction to it
         if self.Entity:
             ms = Float64()
             serv = rospy.ServiceProxy('/get_direction', get_direction)
-            self.service.point = userdata.targetPoint
+            self.service.point = self.Entity.Pos.position
             resp = serv(self.service)
-
+            # Publish to both Yaw and Pitch controllers
             ms.data = resp.pitch
             self.pubp.publish(ms)
             ms.data = resp.yaw
