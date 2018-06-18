@@ -8,11 +8,13 @@
 	<date>Sun Jun 17 2018</date>
 	<description>
 		Will search for each category of objects and put them together
+
 	</description>
 
 
 	<!-- Contained Behaviors -->
 	<contains name="Action_pick" />
+	<contains name="action_turn" />
 	<contains name="Action_place" />
 
 	<!-- Available Parameters -->
