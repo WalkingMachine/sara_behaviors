@@ -13,8 +13,8 @@ from behavior_action_pick.action_pick_sm import Action_pickSM
 from sara_flexbe_states.binary_calculation_state import BinaryCalculationState
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.sara_say_key import SaraSayKey
 from behavior_action_place.action_place_sm import Action_placeSM
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
@@ -67,21 +67,21 @@ class scenario_MVP_storing_groceriesSM(Behavior):
 		
 		# [/MANUAL_CREATE]
 
-		# x:508 y:61
-		_sm_i_really_wanted_to_get_this_$object_0 = OperatableStateMachine(outcomes=['done'], input_keys=['entity_list', 'j'])
+		# x:624 y:210
+		_sm_i_really_wanted_to_get_this_$object_0 = OperatableStateMachine(outcomes=['finished'], input_keys=['entity_list', 'j'])
 
 		with _sm_i_really_wanted_to_get_this_$object_0:
-			# x:30 y:95
+			# x:96 y:37
 			OperatableStateMachine.add('getEntityName',
 										BinaryCalculationState(calculation=lambda x: x[y].name),
-										transitions={'done': 'this $object'},
+										transitions={'done': 'I really wanted to get this'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'X': 'entity_list', 'Y': 'j', 'Z': 'name'})
 
-			# x:261 y:51
-			OperatableStateMachine.add('this $object',
+			# x:309 y:42
+			OperatableStateMachine.add('I really wanted to get this',
 										SaraSayKey(Format=I really wanted to get this {}., emotion=3, block=True),
-										transitions={'done': 'done'},
+										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'name'})
 
@@ -121,8 +121,8 @@ class scenario_MVP_storing_groceriesSM(Behavior):
 			# x:33 y:116
 			OperatableStateMachine.add('list_entities_by_name',
 										list_entities_by_name(frontality_level=0.5, distance_max=10),
-										transitions={'found': 'ForEverySimilarItems', 'not_found': 'not_found'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										transitions={'found': 'ForEverySimilarItems', 'none_found': 'not_found'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'category', 'entity_list': 'entity_list', 'number': 'nbrEntities'})
 
 
@@ -138,7 +138,7 @@ class scenario_MVP_storing_groceriesSM(Behavior):
 			# x:569 y:277
 			OperatableStateMachine.add('Action_pick',
 										self.use_behavior(Action_pickSM, 'Action_pick'),
-										transitions={'success': 'say name', 'unreachable': 'I really wanted to get this $object', 'not found': 'Can't find', 'dropped': 'Oops'},
+										transitions={'success': 'say name', 'unreachable': 'I really wanted to get this $object', 'not found': 'Cannot find', 'dropped': 'Oops'},
 										autonomy={'success': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not found': Autonomy.Inherit, 'dropped': Autonomy.Inherit},
 										remapping={'objectID': 'entityID'})
 
@@ -149,21 +149,14 @@ class scenario_MVP_storing_groceriesSM(Behavior):
 										autonomy={'end': Autonomy.Inherit, 'not_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'categories': 'categories', 'i': 'i', 'entity_list': 'entity_list', 'j': 'j', 'category': 'category', 'entityID': 'entityID', 'name': 'name'})
 
-			# x:743 y:93
-			OperatableStateMachine.add('I really wanted to get this $object',
-										_sm_i_really_wanted_to_get_this_$object_0,
-										transitions={'done': 'ForEachCategory'},
-										autonomy={'done': Autonomy.Inherit},
-										remapping={'entity_list': 'entity_list', 'j': 'j'})
-
-			# x:818 y:193
+			# x:759 y:198
 			OperatableStateMachine.add('Oops',
 										SaraSay(sentence=Oops! I dropped it., emotion=3, block=True),
 										transitions={'done': 'I really wanted to get this $object'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:904 y:247
-			OperatableStateMachine.add('Can't find',
+			# x:893 y:235
+			OperatableStateMachine.add('Cannot find',
 										SaraSay(sentence=Looks like I can no longer find it!, emotion=3, block=True),
 										transitions={'done': 'I really wanted to get this $object'},
 										autonomy={'done': Autonomy.Off})
@@ -216,6 +209,13 @@ class scenario_MVP_storing_groceriesSM(Behavior):
 										transitions={'do': 'ForEachEntity', 'end': 'finished'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'i'})
+
+			# x:725 y:84
+			OperatableStateMachine.add('I really wanted to get this $object',
+										_sm_i_really_wanted_to_get_this_$object_0,
+										transitions={'finished': 'ForEachCategory'},
+										autonomy={'finished': Autonomy.Inherit},
+										remapping={'entity_list': 'entity_list', 'j': 'j'})
 
 
 		return _state_machine
