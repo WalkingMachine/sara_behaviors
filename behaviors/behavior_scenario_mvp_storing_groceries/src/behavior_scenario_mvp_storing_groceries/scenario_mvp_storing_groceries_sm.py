@@ -12,15 +12,18 @@ from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerb
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.SetKey import SetKey
+from sara_flexbe_states.list_entities_by_name import list_entities_by_name
+from behavior_action_turn.action_turn_sm import action_turnSM
+from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.binary_calculation_state import BinaryCalculationState
 from sara_flexbe_states.for_loop import ForLoop
-from sara_flexbe_states.list_entities_by_name import list_entities_by_name
+from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.pose_gen_euler_key import GenPoseEulerKey
 from behavior_action_pick.action_pick_sm import Action_pickSM
-from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_say_key import SaraSayKey
-from behavior_action_turn.action_turn_sm import action_turnSM
 from behavior_action_place.action_place_sm import Action_placeSM
+from flexbe_states.wait_state import WaitState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -34,7 +37,6 @@ Created on Sun Jun 17 2018
 class scenario_MVP_storing_groceriesSM(Behavior):
 	'''
 	Will search for each category of objects and put them together
-
 	'''
 
 
@@ -45,10 +47,13 @@ class scenario_MVP_storing_groceriesSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_pickSM, 'Pick & react to errors/Action_pick')
-		self.add_behavior(action_turnSM, 'LookAt cupboard/action_turn')
-		self.add_behavior(Action_placeSM, 'place near same name or cat /Action_place')
-		self.add_behavior(action_turnSM, 'Look for Table's objects/action_turn')
+		self.add_behavior(action_turnSM, 'Look for Table s objects/searchTable/action_turn')
+		self.add_behavior(action_turnSM, 'Pick and place all objects/ForEachEntity/storingGroceries_tryFacingTable/FaceTable')
+		self.add_behavior(Action_pickSM, 'Pick and place all objects/Pick and react to errors/Action_pick')
+		self.add_behavior(Action_placeSM, 'Pick and place all objects/place near same name or cat /Action_place')
+		self.add_behavior(action_turnSM, 'Pick and place all objects/FaceCupboard')
+		self.add_behavior(action_turnSM, 'Pick and place all objects/FaceCupboard2')
+		self.add_behavior(action_turnSM, 'FaceCupboard')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -60,14 +65,14 @@ class scenario_MVP_storing_groceriesSM(Behavior):
 		# O 216 14 
 		# Still need the |ntableRelativePos by|nlooking for multiple|n same y objects
 
-		# O 274 417 
+		# O 376 416 
 		# Add offset |nfor each category|nplaceXpos=i*offset+cbPos|nif side == x
 
 
 
 	def create(self):
 		lengthCategories = 5
-		# x:113 y:483, x:22 y:219
+		# x:113 y:483, x:22 y:261
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['nomArmoire'])
 		_state_machine.userdata.nomTable = "table"
 		_state_machine.userdata.empty = ""
@@ -101,40 +106,38 @@ class scenario_MVP_storing_groceriesSM(Behavior):
 										remapping={'sentence': 'name'})
 
 
-		# x:762 y:247, x:130 y:293
-		_sm_look_for_table's_objects_1 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['empty'], output_keys=['nbrQuartTour'])
+		# x:400 y:54, x:521 y:307
+		_sm_storinggroceries_tryfacingtable_1 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['rotToTable', 'cupboardPos'])
 
-		with _sm_look_for_table's_objects_1:
-			# x:43 y:30
-			OperatableStateMachine.add('setRotation',
-										SetKey(Value=90),
-										transitions={'done': 'action_turn'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'rotation'})
-
-			# x:414 y:35
-			OperatableStateMachine.add('list_entities_by_name',
-										list_entities_by_name(frontality_level=0.5, distance_max=10),
-										transitions={'found': 'getApproxTablePos', 'none_found': 'action_turn'},
-										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
-										remapping={'name': 'empty', 'entity_list': 'entity_list', 'number': 'number'})
-
-			# x:628 y:94
-			OperatableStateMachine.add('getApproxTablePos',
-										CalculationState(calculation=lambda x: x[0].position),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'entity_list', 'output_value': 'approxTablePos'})
-
-			# x:223 y:43
-			OperatableStateMachine.add('action_turn',
-										self.use_behavior(action_turnSM, 'Look for Table's objects/action_turn'),
-										transitions={'finished': 'list_entities_by_name', 'failed': 'failed'},
+		with _sm_storinggroceries_tryfacingtable_1:
+			# x:120 y:57
+			OperatableStateMachine.add('FaceTable',
+										self.use_behavior(action_turnSM, 'Pick and place all objects/ForEachEntity/storingGroceries_tryFacingTable/FaceTable'),
+										transitions={'finished': 'finished', 'failed': 'Have problem turning'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'rotation': 'rotation'})
+										remapping={'rotation': 'rotToTable'})
+
+			# x:68 y:406
+			OperatableStateMachine.add('Have problem turning',
+										SaraSay(sentence="I just desoriented myself. I'll try to rectify.", emotion=3, block=True),
+										transitions={'done': 'faceCupboard'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:434 y:161
+			OperatableStateMachine.add('faceCupboard',
+										SaraMoveBase(),
+										transitions={'arrived': 'FaceTable', 'failed': 'Can't rectify'},
+										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'pose': 'cupboardPos'})
+
+			# x:402 y:392
+			OperatableStateMachine.add('Can't rectify',
+										SaraSay(sentence="I'm sorry, I failed", emotion=3, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
 
 
-		# x:741 y:442, x:712 y:520
+		# x:30 y:293, x:130 y:293
 		_sm_place_near_same_name_or_cat__2 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['shelfPos', 'placeYoffset', 'category', 'name', 'zero'])
 
 		with _sm_place_near_same_name_or_cat__2:
@@ -161,7 +164,7 @@ class scenario_MVP_storing_groceriesSM(Behavior):
 
 			# x:482 y:422
 			OperatableStateMachine.add('Action_place',
-										self.use_behavior(Action_placeSM, 'place near same name or cat /Action_place'),
+										self.use_behavior(Action_placeSM, 'Pick and place all objects/place near same name or cat /Action_place'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pos': 'shelfPos'})
@@ -195,32 +198,13 @@ class scenario_MVP_storing_groceriesSM(Behavior):
 										remapping={'input_value': 'posSimilar', 'output_value': 'xpos'})
 
 
-		# x:140 y:296, x:406 y:297
-		_sm_lookat_cupboard_3 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['nbrQuartTour'])
+		# x:30 y:307, x:130 y:307
+		_sm_pick_and_react_to_errors_3 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['name', 'category', 'entity_list', 'j', 'entityID', 'rotToTable'])
 
-		with _sm_lookat_cupboard_3:
-			# x:30 y:40
-			OperatableStateMachine.add('get rotation',
-										CalculationState(calculation=lambda x: -(x*90)),
-										transitions={'done': 'action_turn'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'nbrQuartTour', 'output_value': 'rotation'})
-
-			# x:215 y:31
-			OperatableStateMachine.add('action_turn',
-										self.use_behavior(action_turnSM, 'LookAt cupboard/action_turn'),
-										transitions={'finished': 'finished', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'rotation': 'rotation'})
-
-
-		# x:301 y:468, x:73 y:99
-		_sm_pick_&_react_to_errors_4 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['name', 'category', 'entity_list', 'j', 'entityID'])
-
-		with _sm_pick_&_react_to_errors_4:
+		with _sm_pick_and_react_to_errors_3:
 			# x:30 y:240
 			OperatableStateMachine.add('Action_pick',
-										self.use_behavior(Action_pickSM, 'Pick & react to errors/Action_pick'),
+										self.use_behavior(Action_pickSM, 'Pick and place all objects/Pick and react to errors/Action_pick'),
 										transitions={'success': 'say name', 'unreachable': 'I really wanted to get this object', 'not found': 'Cannot find', 'dropped': 'Oops'},
 										autonomy={'success': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not found': Autonomy.Inherit, 'dropped': Autonomy.Inherit},
 										remapping={'objectID': 'entityID'})
@@ -259,50 +243,216 @@ class scenario_MVP_storing_groceriesSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:208 y:217, x:19 y:210, x:753 y:219
-		_sm_foreachentity_5 = OperatableStateMachine(outcomes=['end', 'not_found', 'done'], input_keys=['categories', 'i'], output_keys=['entity_list', 'j', 'category', 'entityID', 'name'])
+		# x:409 y:296, x:340 y:196, x:801 y:287, x:43 y:204
+		_sm_foreachentity_4 = OperatableStateMachine(outcomes=['end', 'not_found', 'done', 'failed'], input_keys=['categories', 'i', 'rotToTable', 'cupboardPos'], output_keys=['entity_list', 'j', 'category', 'entityID', 'name'])
 
-		with _sm_foreachentity_5:
-			# x:30 y:40
-			OperatableStateMachine.add('getCategory',
-										BinaryCalculationState(calculation=lambda x: x[y]),
-										transitions={'done': 'list_entities_by_name'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'X': 'categories', 'Y': 'i', 'Z': 'category'})
+		with _sm_foreachentity_4:
+			# x:24 y:48
+			OperatableStateMachine.add('storingGroceries_tryFacingTable',
+										_sm_storinggroceries_tryfacingtable_1,
+										transitions={'finished': 'getCategory', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'rotToTable': 'rotToTable', 'cupboardPos': 'cupboardPos'})
 
-			# x:259 y:122
+			# x:445 y:121
 			OperatableStateMachine.add('ForEverySimilarItems',
 										ForLoop(repeat=nbrEntities),
 										transitions={'do': 'getEntityId', 'end': 'end'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'j'})
 
-			# x:363 y:189
+			# x:502 y:227
 			OperatableStateMachine.add('getEntityId',
 										BinaryCalculationState(calculation=lambda x: x[j].id),
 										transitions={'done': 'getEntityName'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'X': 'entity_list', 'Y': 'j', 'Z': 'entityID'})
 
-			# x:565 y:155
+			# x:696 y:152
 			OperatableStateMachine.add('getEntityName',
 										BinaryCalculationState(calculation=lambda x: x[j].name),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'X': 'entity_list', 'Y': 'j', 'Z': 'name'})
 
-			# x:33 y:116
+			# x:155 y:168
 			OperatableStateMachine.add('list_entities_by_name',
 										list_entities_by_name(frontality_level=0.5, distance_max=10),
 										transitions={'found': 'ForEverySimilarItems', 'none_found': 'not_found'},
 										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'category', 'entity_list': 'entity_list', 'number': 'nbrEntities'})
 
+			# x:326 y:47
+			OperatableStateMachine.add('getCategory',
+										BinaryCalculationState(calculation=lambda x: x[y]),
+										transitions={'done': 'list_entities_by_name'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'X': 'categories', 'Y': 'i', 'Z': 'category'})
+
+
+		# x:826 y:181, x:130 y:293
+		_sm_searchtable_5 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['empty'], output_keys=['nbrQuartTour'])
+
+		with _sm_searchtable_5:
+			# x:38 y:43
+			OperatableStateMachine.add('setRotation',
+										SetKey(Value=90),
+										transitions={'done': 'nbrQuartTour'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'rotation'})
+
+			# x:492 y:50
+			OperatableStateMachine.add('list_entities_by_name',
+										list_entities_by_name(frontality_level=0.5, distance_max=10),
+										transitions={'found': 'getApproxTablePos', 'none_found': 'Three turns done?'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
+										remapping={'name': 'empty', 'entity_list': 'entity_list', 'number': 'number'})
+
+			# x:666 y:74
+			OperatableStateMachine.add('getApproxTablePos',
+										CalculationState(calculation=lambda x: x[0].position),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'entity_list', 'output_value': 'approxTablePos'})
+
+			# x:186 y:40
+			OperatableStateMachine.add('action_turn',
+										self.use_behavior(action_turnSM, 'Look for Table s objects/searchTable/action_turn'),
+										transitions={'finished': 'incrementNbrQuartTour', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'rotation': 'rotation'})
+
+			# x:30 y:149
+			OperatableStateMachine.add('nbrQuartTour',
+										SetKey(Value=0),
+										transitions={'done': 'action_turn'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'nbrQuartTour'})
+
+			# x:332 y:25
+			OperatableStateMachine.add('incrementNbrQuartTour',
+										CalculationState(calculation=lambda x: x+1),
+										transitions={'done': 'list_entities_by_name'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'nbrQuartTour', 'output_value': 'nbrQuartTour'})
+
+			# x:341 y:161
+			OperatableStateMachine.add('Three turns done?',
+										CheckConditionState(predicate=x>=3),
+										transitions={'true': 'failed', 'false': 'action_turn'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'nbrQuartTour'})
+
+
+		# x:30 y:293, x:130 y:293
+		_sm_try_to_open_the_door_6 = OperatableStateMachine(outcomes=['finished', 'failed'])
+
+		with _sm_try_to_open_the_door_6:
+			# x:52 y:85
+			OperatableStateMachine.add('PLACEHOLDER',
+										WaitState(wait_time=0),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+
+		# x:30 y:293
+		_sm_pick_and_place_all_objects_7 = OperatableStateMachine(outcomes=['end'], input_keys=['categories', 'cbXpos', 'hauteur3rdShelfFromFloor', 'cbZpos', 'zero', 'placeYoffset', 'rotToTable', 'rotToCupboard', 'cupboardPos'])
+
+		with _sm_pick_and_place_all_objects_7:
+			# x:30 y:36
+			OperatableStateMachine.add('To be sure that all objects were picked',
+										ForLoop(repeat=2),
+										transitions={'do': 'ForEachCategory', 'end': 'end'},
+										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+										remapping={'index': 'tryIndex'})
+
+			# x:172 y:166
+			OperatableStateMachine.add('GenPoseEulerKey',
+										GenPoseEulerKey(),
+										transitions={'done': 'ForEachEntity'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'xpos': 'cbXpos', 'ypos': 'hauteur3rdShelfFromFloor', 'zpos': 'cbZpos', 'yaw': 'zero', 'pitch': 'zero', 'roll': 'zero', 'pose': 'shelfPos'})
+
+			# x:585 y:262
+			OperatableStateMachine.add('Pick and react to errors',
+										_sm_pick_and_react_to_errors_3,
+										transitions={'done': 'FaceCupboard', 'failed': 'FaceCupboard2'},
+										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'name': 'name', 'category': 'category', 'entity_list': 'entity_list', 'j': 'j', 'entityID': 'entityID', 'rotToTable': 'rotToTable'})
+
+			# x:612 y:40
+			OperatableStateMachine.add('failed to place',
+										SaraSayKey(Format="Oops. Looks like I failed to place this {}. Maybe I'm not flexible enough", emotion=3, block=True),
+										transitions={'done': 'ForEachEntity'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'name'})
+
+			# x:827 y:109
+			OperatableStateMachine.add('place near same name or cat ',
+										_sm_place_near_same_name_or_cat__2,
+										transitions={'finished': 'ForEachEntity', 'failed': 'failed to place'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'shelfPos': 'shelfPos', 'placeYoffset': 'placeYoffset', 'category': 'category', 'name': 'name', 'zero': 'zero'})
+
+			# x:295 y:84
+			OperatableStateMachine.add('ForEachCategory',
+										ForLoop(repeat=lengthCategories),
+										transitions={'do': 'GenPoseEulerKey', 'end': 'To be sure that all objects were picked'},
+										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+										remapping={'index': 'i'})
+
+			# x:804 y:201
+			OperatableStateMachine.add('FaceCupboard',
+										self.use_behavior(action_turnSM, 'Pick and place all objects/FaceCupboard'),
+										transitions={'finished': 'place near same name or cat ', 'failed': 'FaceCupboard'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'rotation': 'rotToCupboard'})
+
+			# x:418 y:16
+			OperatableStateMachine.add('FaceCupboard2',
+										self.use_behavior(action_turnSM, 'Pick and place all objects/FaceCupboard2'),
+										transitions={'finished': 'ForEachCategory', 'failed': 'FaceCupboard2'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'rotation': 'rotToCupboard'})
+
+			# x:335 y:268
+			OperatableStateMachine.add('ForEachEntity',
+										_sm_foreachentity_4,
+										transitions={'end': 'ForEachCategory', 'not_found': 'ForEachCategory', 'done': 'Pick and react to errors', 'failed': 'end'},
+										autonomy={'end': Autonomy.Inherit, 'not_found': Autonomy.Inherit, 'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'categories': 'categories', 'i': 'i', 'rotToTable': 'rotToTable', 'cupboardPos': 'cupboardPos', 'entity_list': 'entity_list', 'j': 'j', 'category': 'category', 'entityID': 'entityID', 'name': 'name'})
+
+
+		# x:768 y:153, x:229 y:313
+		_sm_look_for_table_s_objects_8 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['empty'], output_keys=['rotToCupboard', 'rotToTable'])
+
+		with _sm_look_for_table_s_objects_8:
+			# x:25 y:0
+			OperatableStateMachine.add('searchTable',
+										_sm_searchtable_5,
+										transitions={'done': 'setRotToTable', 'failed': 'failed'},
+										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'empty': 'empty', 'nbrQuartTour': 'nbrQuartTour'})
+
+			# x:321 y:37
+			OperatableStateMachine.add('setRotToTable',
+										CalculationState(calculation=lambda x: x*90),
+										transitions={'done': 'setRotToCupboard'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'nbrQuartTour', 'output_value': 'rotToTable'})
+
+			# x:495 y:78
+			OperatableStateMachine.add('setRotToCupboard',
+										CalculationState(calculation=lambda x: -x),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'rotToTable', 'output_value': 'rotToCupboard'})
+
 
 		# x:30 y:296, x:130 y:296, x:619 y:302
-		_sm_get_cupboardpos_6 = OperatableStateMachine(outcomes=['none', 'error', 'done'], input_keys=['empty', 'nomArmoire'], output_keys=['tablePos', 'distance', 'cbXpos', 'cbZpos'])
+		_sm_get_cupboardpos_9 = OperatableStateMachine(outcomes=['none', 'error', 'done'], input_keys=['empty', 'nomArmoire'], output_keys=['distance', 'cbXpos', 'cbZpos', 'cupboardPos'])
 
-		with _sm_get_cupboardpos_6:
+		with _sm_get_cupboardpos_9:
 			# x:30 y:55
 			OperatableStateMachine.add('GetListeofCupboard',
 										WonderlandGetEntityVerbal(),
@@ -350,79 +500,61 @@ class scenario_MVP_storing_groceriesSM(Behavior):
 		with _state_machine:
 			# x:43 y:27
 			OperatableStateMachine.add('Get CupBoardPos',
-										_sm_get_cupboardpos_6,
-										transitions={'none': 'failed', 'error': 'failed', 'done': 'Look for Table's objects'},
+										_sm_get_cupboardpos_9,
+										transitions={'none': 'failed', 'error': 'failed', 'done': 'Look for Table s objects'},
 										autonomy={'none': Autonomy.Inherit, 'error': Autonomy.Inherit, 'done': Autonomy.Inherit},
-										remapping={'empty': 'empty', 'nomArmoire': 'nomArmoire', 'tablePos': 'cupboardPos', 'distance': 'distance', 'cbXpos': 'cbXpos', 'cbZpos': 'cbZpos'})
-
-			# x:484 y:404
-			OperatableStateMachine.add('ForEachEntity',
-										_sm_foreachentity_5,
-										transitions={'end': 'ForEachCategory', 'not_found': 'ForEachCategory', 'done': 'Pick & react to errors'},
-										autonomy={'end': Autonomy.Inherit, 'not_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
-										remapping={'categories': 'categories', 'i': 'i', 'entity_list': 'entity_list', 'j': 'j', 'category': 'category', 'entityID': 'entityID', 'name': 'name'})
-
-			# x:346 y:349
-			OperatableStateMachine.add('GenPoseEulerKey',
-										GenPoseEulerKey(),
-										transitions={'done': 'ForEachEntity'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'xpos': 'cbXpos', 'ypos': 'hauteur3rdShelfFromFloor', 'zpos': 'cbZpos', 'yaw': 'zero', 'pitch': 'zero', 'roll': 'zero', 'pose': 'shelfPos'})
-
-			# x:766 y:421
-			OperatableStateMachine.add('Pick & react to errors',
-										_sm_pick_&_react_to_errors_4,
-										transitions={'done': 'LookAt cupboard', 'failed': 'ForEachCategory'},
-										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'name': 'name', 'category': 'category', 'entity_list': 'entity_list', 'j': 'j', 'entityID': 'entityID'})
-
-			# x:764 y:77
-			OperatableStateMachine.add('failed to place',
-										SaraSayKey(Format="Oops. Looks like I failed to place this {}. Maybe I'm not flexible enough", emotion=3, block=True),
-										transitions={'done': 'ForEachEntity'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'name'})
-
-			# x:1011 y:306
-			OperatableStateMachine.add('LookAt cupboard',
-										_sm_lookat_cupboard_3,
-										transitions={'finished': 'place near same name or cat ', 'failed': 'LookAt cupboard'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'nbrQuartTour': 'nbrQuartTour'})
-
-			# x:974 y:54
-			OperatableStateMachine.add('place near same name or cat ',
-										_sm_place_near_same_name_or_cat__2,
-										transitions={'finished': 'ForEachEntity', 'failed': 'failed to place'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'shelfPos': 'shelfPos', 'placeYoffset': 'placeYoffset', 'category': 'category', 'name': 'name', 'zero': 'zero'})
-
-			# x:449 y:249
-			OperatableStateMachine.add('ForEachCategory',
-										ForLoop(repeat=lengthCategories),
-										transitions={'do': 'GenPoseEulerKey', 'end': 'To be sure that all objects were picked'},
-										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
-										remapping={'index': 'i'})
-
-			# x:184 y:249
-			OperatableStateMachine.add('To be sure that all objects were picked',
-										ForLoop(repeat=2),
-										transitions={'do': 'ForEachCategory', 'end': 'finished'},
-										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
-										remapping={'index': 'tryIndex'})
+										remapping={'empty': 'empty', 'nomArmoire': 'nomArmoire', 'distance': 'distance', 'cbXpos': 'cbXpos', 'cbZpos': 'cbZpos', 'cupboardPos': 'cupboardPos'})
 
 			# x:215 y:94
-			OperatableStateMachine.add('Look for Table's objects',
-										_sm_look_for_table's_objects_1,
-										transitions={'finished': 'To be sure that all objects were picked', 'failed': 'Cannot find table'},
+			OperatableStateMachine.add('Look for Table s objects',
+										_sm_look_for_table_s_objects_8,
+										transitions={'finished': 'FaceCupboard', 'failed': 'Cannot find table'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'empty': 'empty', 'nbrQuartTour': 'nbrQuartTour'})
+										remapping={'empty': 'empty', 'rotToCupboard': 'rotToCupboard', 'rotToTable': 'rotToTable'})
 
-			# x:456 y:43
+			# x:475 y:27
 			OperatableStateMachine.add('Cannot find table',
-										SaraSay(sentence="I didn't find the table, let me try again.", emotion=3, block=True),
+										SaraSay(sentence="I did not find the table, let me try again.", emotion=3, block=True),
 										transitions={'done': 'Get CupBoardPos'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:496 y:317
+			OperatableStateMachine.add('Pick and place all objects',
+										_sm_pick_and_place_all_objects_7,
+										transitions={'end': 'finished'},
+										autonomy={'end': Autonomy.Inherit},
+										remapping={'categories': 'categories', 'cbXpos': 'cbXpos', 'hauteur3rdShelfFromFloor': 'hauteur3rdShelfFromFloor', 'cbZpos': 'cbZpos', 'zero': 'zero', 'placeYoffset': 'placeYoffset', 'rotToTable': 'rotToTable', 'rotToCupboard': 'rotToCupboard', 'cupboardPos': 'cupboardPos'})
+
+			# x:553 y:169
+			OperatableStateMachine.add('Try to open the door',
+										_sm_try_to_open_the_door_6,
+										transitions={'finished': 'Pick and place all objects', 'failed': 'Can you open it for me?'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+
+			# x:293 y:193
+			OperatableStateMachine.add('Can you open it for me?',
+										SaraSay(sentence="I'm not able to open the door. Can someone do it for me please?", emotion=1, block=True),
+										transitions={'done': 'wait for open door'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:139 y:208
+			OperatableStateMachine.add('wait for open door',
+										WaitState(wait_time=6),
+										transitions={'done': 'Thanks'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:185 y:301
+			OperatableStateMachine.add('Thanks',
+										SaraSay(sentence="Thank you.", emotion=1, block=True),
+										transitions={'done': 'Pick and place all objects'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:462 y:86
+			OperatableStateMachine.add('FaceCupboard',
+										self.use_behavior(action_turnSM, 'FaceCupboard'),
+										transitions={'finished': 'Try to open the door', 'failed': 'FaceCupboard'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'rotation': 'rotToCupboard'})
 
 
 		return _state_machine
