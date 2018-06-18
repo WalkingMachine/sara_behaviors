@@ -30,6 +30,7 @@ class ContinueButton(EventState):
         Logger.loginfo('Waiting for the continue button')
         if self._sub.has_msg(self._topic):
             message = self._sub.get_last_msg(self._topic)
+            self._sub.remove_last_msg(self._topic)
             if message.data:
                 return 'true'
             else:

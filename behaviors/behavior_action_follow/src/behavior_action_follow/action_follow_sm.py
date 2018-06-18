@@ -51,7 +51,7 @@ Demande le id de la personne a suivre
 	def create(self):
 		# x:572 y:135
 		_state_machine = OperatableStateMachine(outcomes=['failed'], input_keys=['ID'])
-		_state_machine.userdata.ID = 2
+		_state_machine.userdata.ID = 7
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]

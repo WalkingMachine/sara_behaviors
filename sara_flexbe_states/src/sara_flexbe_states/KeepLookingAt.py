@@ -81,11 +81,19 @@ class KeepLookingAt(EventState):
             self.service.point = self.Entity.position
             resp = serv(self.service)
             # Publish to both Yaw and Pitch controllers
-            ms.data = min(max(-resp.pitch, -0.9), 1)
+            ms.data = min(max(-resp.pitch, -0), 1)
             self.pubp.publish(ms)
-            ms.data = min(max(resp.yaw, -1.8), 1.8)
+            ms.data = min(max(resp.yaw, -1.2), 1.2)
             self.puby.publish(ms)
             return
+
+
+        ms = Float64()
+        ms.data = 0.3
+        self.pubp.publish(ms)
+        ms.data = 0
+        self.puby.publish(ms)
+
         return "failed"
 
     def on_enter(self, userdata):
