@@ -11,7 +11,7 @@ import math
 
 class list_entities_by_name(EventState):
     '''
-        will list entities seen by the camera
+        will list entities seen by the camera ("" list all entities)
 
         -- frontality_level        float        How much we should priorise the normal ovel the distance when calculating proximity. 1 is only normal and 0 is only distance. e.g.  0.5 is a good value.
         #< name                    string       name to compare entities with
@@ -64,7 +64,7 @@ class list_entities_by_name(EventState):
             x = entity.position.x - self.mypose.position.x
             y = entity.position.y - self.mypose.position.y
             dist = (x**2 + y**2)**0.5
-            if (entity.name == name or entity.category == name) and dist < self.distance_max:
+            if (name=="" or entity.name == name or entity.category == name) and dist < self.distance_max:
                 wrap = wrapper()
                 wrap.init(self.mypose, entity, self.frontality_level)
 
