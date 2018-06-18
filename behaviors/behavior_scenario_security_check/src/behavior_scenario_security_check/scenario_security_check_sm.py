@@ -56,11 +56,11 @@ class Scenario_Security_CheckSM(Behavior):
 	def create(self):
 		# x:1166 y:631
 		_state_machine = OperatableStateMachine(outcomes=['finished'])
-		_state_machine.userdata.relative = True
-		_state_machine.userdata.EntryName = "rips/waypoint1"
+		_state_machine.userdata.relative = False
+		_state_machine.userdata.EntryName = "door1/enter"
 		_state_machine.userdata.container = None
-		_state_machine.userdata.TestName = "rips/waypoint2"
-		_state_machine.userdata.ExitName = "rips/waypoint3"
+		_state_machine.userdata.TestName = "Dining Room"
+		_state_machine.userdata.ExitName = "door2/exit"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -69,12 +69,11 @@ class Scenario_Security_CheckSM(Behavior):
 
 
 		with _state_machine:
-			# x:49 y:34
-			OperatableStateMachine.add('set not relative',
-										SetKey(Value=False),
-										transitions={'done': 'get entry'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'relative'})
+			# x:189 y:9
+			OperatableStateMachine.add('Bouton to start',
+										ContinueButton(),
+										transitions={'true': 'set not relative', 'false': 'Bouton to start'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
 
 			# x:37 y:612
 			OperatableStateMachine.add('Failed',
@@ -88,18 +87,12 @@ class Scenario_Security_CheckSM(Behavior):
 										transitions={'done': 'Bouton continuer'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:25 y:489
+			# x:24 y:498
 			OperatableStateMachine.add('Move to test zone',
 										self.use_behavior(Action_MoveSM, 'Move to test zone'),
 										transitions={'finished': 'say ready', 'failed': 'Failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'TestPose', 'relative': 'relative'})
-
-			# x:189 y:9
-			OperatableStateMachine.add('Bouton to start',
-										ContinueButton(),
-										transitions={'true': 'set not relative', 'false': 'Bouton to start'},
-										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
 
 			# x:226 y:489
 			OperatableStateMachine.add('say ready',
@@ -141,13 +134,6 @@ class Scenario_Security_CheckSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'DoorPose1', 'output_value': 'DoorPose1'})
 
-			# x:17 y:335
-			OperatableStateMachine.add('get test zone',
-										WonderlandGetEntityVerbal(),
-										transitions={'one': 'get waypoint test', 'multiple': 'get waypoint test', 'none': 'get waypoint test', 'error': 'get waypoint test'},
-										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'name': 'TestName', 'containers': 'container', 'entities': 'TestPose'})
-
 			# x:25 y:413
 			OperatableStateMachine.add('get waypoint test',
 										CalculationState(calculation=lambda x: x.waypoint),
@@ -181,6 +167,20 @@ class Scenario_Security_CheckSM(Behavior):
 										SaraSay(sentence="Thank you, See you later.", emotion=1, block=True),
 										transitions={'done': 'get exit zone'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:17 y:335
+			OperatableStateMachine.add('get test zone',
+										WonderlandGetEntityVerbal(),
+										transitions={'one': 'get waypoint test', 'multiple': 'get waypoint test', 'none': 'get waypoint test', 'error': 'get waypoint test'},
+										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
+										remapping={'name': 'TestName', 'containers': 'container', 'entities': 'TestPose'})
+
+			# x:49 y:34
+			OperatableStateMachine.add('set not relative',
+										SetKey(Value=False),
+										transitions={'done': 'get entry'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'relative'})
 
 
 		return _state_machine

@@ -3,7 +3,7 @@
 <behavior name="A Go Home">
 
 	<executable package_path="behavior_a_go_home.a_go_home_sm" class="AGoHomeSM" />
-	<tagstring></tagstring>
+	<tagstring>carry</tagstring>
 	<author>Philippe La Madeleine</author>
 	<date>Mon May 14 2018</date>
 	<description>
