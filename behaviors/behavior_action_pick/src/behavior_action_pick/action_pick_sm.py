@@ -155,10 +155,10 @@ class Action_pickSM(Behavior):
 										autonomy={'not_found': Autonomy.Inherit, 'finished': Autonomy.Inherit},
 										remapping={'objectID': 'objectID', 'posobjet': 'posobjet'})
 
-			# x:58 y:363
+			# x:47 y:279
 			OperatableStateMachine.add('gripperopen',
 										SetGripperState(width=0.15, effort=1),
-										transitions={'object': 'almost have it', 'no_object': 'almost have it'},
+										transitions={'object': 'move_approach', 'no_object': 'move_approach'},
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
@@ -169,10 +169,10 @@ class Action_pickSM(Behavior):
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
-			# x:61 y:287
+			# x:41 y:368
 			OperatableStateMachine.add('move_approach',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'gripperopen', 'failed': 'cant reach'},
+										transitions={'done': 'almost have it', 'failed': 'cant reach'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'pose_app'})
 
@@ -245,7 +245,7 @@ class Action_pickSM(Behavior):
 			# x:62 y:190
 			OperatableStateMachine.add('PreGrip',
 										_sm_pregrip_0,
-										transitions={'fail': 'cant reach', 'failed': 'cant reach', 'done': 'move_approach'},
+										transitions={'fail': 'cant reach', 'failed': 'cant reach', 'done': 'gripperopen'},
 										autonomy={'fail': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'PreGripPose': 'PreGripPose', 'posobjet': 'posobjet', 'pose_app': 'pose_app', 'grippose': 'grippose', 'pose_lift': 'pose_lift', 'pose_ret': 'pose_ret'})
 
