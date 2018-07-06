@@ -63,10 +63,10 @@ class Action_Receive_BagSM(Behavior):
 
 
 		with _state_machine:
-			# x:120 y:63
+			# x:95 y:61
 			OperatableStateMachine.add('setTarget1',
 										SetKey(Value="Help_me_carry"),
-										transitions={'done': 'Go_to_receive_bag_pose'},
+										transitions={'done': 'opengripper'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'target'})
 
@@ -91,10 +91,10 @@ class Action_Receive_BagSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'target'})
 
-			# x:78 y:177
+			# x:163 y:277
 			OperatableStateMachine.add('Go_to_receive_bag_pose',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'opengripper', 'failed': 'failed'},
+										transitions={'done': 'Torque_Reader', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'target'})
 
@@ -111,10 +111,10 @@ class Action_Receive_BagSM(Behavior):
 										transitions={'done': 'setTarget2'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:208 y:269
+			# x:81 y:178
 			OperatableStateMachine.add('opengripper',
 										SetGripperState(width=0.25, effort=1),
-										transitions={'object': 'Torque_Reader', 'no_object': 'Torque_Reader'},
+										transitions={'object': 'Go_to_receive_bag_pose', 'no_object': 'Go_to_receive_bag_pose'},
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 

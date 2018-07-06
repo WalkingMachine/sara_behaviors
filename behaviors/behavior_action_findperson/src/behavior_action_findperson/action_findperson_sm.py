@@ -136,7 +136,7 @@ class Action_findPersonSM(Behavior):
 		with _sm_find_entity_1:
 			# x:181 y:178
 			OperatableStateMachine.add('find_entity',
-										list_entities_by_name(frontality_level=0.5),
+										list_entities_by_name(frontality_level=0.5, distance_max=4),
 										transitions={'found': 'Get Entity', 'not_found': 'WaitState'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})

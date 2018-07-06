@@ -15,6 +15,10 @@ from sara_flexbe_states.sara_set_expression import SetExpression
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_rel_move_base import SaraRelMoveBase
 from sara_flexbe_states.sara_move_base import SaraMoveBase
+from sara_flexbe_states.SetKey import SetKey
+from sara_flexbe_states.sara_set_head_angle_key import SaraSetHeadAngleKey
+from flexbe_states.calculation_state import CalculationState
+from sara_flexbe_states.GetClosestObstacle import GetClosestObstacle
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -59,10 +63,43 @@ class Action_MoveSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-		# x:566 y:38, x:553 y:248
-		_sm_move_0 = OperatableStateMachine(outcomes=['arrived', 'failed'], input_keys=['relative', 'pose'])
+		# x:130 y:365
+		_sm_look_around_0 = OperatableStateMachine(outcomes=['failed'])
 
-		with _sm_move_0:
+		with _sm_look_around_0:
+			# x:78 y:40
+			OperatableStateMachine.add('set pitch',
+										SetKey(Value=0.9),
+										transitions={'done': 'get angle'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'pitch'})
+
+			# x:348 y:210
+			OperatableStateMachine.add('set head',
+										SaraSetHeadAngleKey(),
+										transitions={'done': 'get angle'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'yaw': 'yaw', 'pitch': 'pitch'})
+
+			# x:204 y:248
+			OperatableStateMachine.add('limit yaw',
+										CalculationState(calculation=lambda x: max(min(x,1), -1)),
+										transitions={'done': 'set head'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'yaw', 'output_value': 'yaw'})
+
+			# x:191 y:126
+			OperatableStateMachine.add('get angle',
+										GetClosestObstacle(topic="/scan", maximumDistance=2),
+										transitions={'done': 'limit yaw'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Angle': 'yaw'})
+
+
+		# x:30 y:365, x:130 y:365
+		_sm_move_1 = OperatableStateMachine(outcomes=['arrived', 'failed'], input_keys=['relative', 'pose'])
+
+		with _sm_move_1:
 			# x:40 y:24
 			OperatableStateMachine.add('check rel',
 										CheckConditionState(predicate=lambda x: x==True),
@@ -85,17 +122,39 @@ class Action_MoveSM(Behavior):
 										remapping={'pose': 'pose'})
 
 
+		# x:30 y:365, x:130 y:365, x:230 y:365, x:330 y:365, x:430 y:365
+		_sm_move_concurent_2 = ConcurrencyContainer(outcomes=['arrived', 'failed'], input_keys=['relative', 'pose'], conditions=[
+										('arrived', [('Move', 'arrived')]),
+										('failed', [('Move', 'failed')]),
+										('failed', [('Look around', 'failed')])
+										])
+
+		with _sm_move_concurent_2:
+			# x:30 y:40
+			OperatableStateMachine.add('Move',
+										_sm_move_1,
+										transitions={'arrived': 'arrived', 'failed': 'failed'},
+										autonomy={'arrived': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'relative': 'relative', 'pose': 'pose'})
+
+			# x:268 y:74
+			OperatableStateMachine.add('Look around',
+										_sm_look_around_0,
+										transitions={'failed': 'failed'},
+										autonomy={'failed': Autonomy.Inherit})
+
+
 
 		with _state_machine:
 			# x:46 y:147
 			OperatableStateMachine.add('set head',
 										SaraSetHeadAngle(pitch=0.9, yaw=0),
-										transitions={'done': 'Move'},
+										transitions={'done': 'Move concurent'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:271 y:449
 			OperatableStateMachine.add('for',
-										ForLoop(repeat=1),
+										ForLoop(repeat=2),
 										transitions={'do': 'set straight face', 'end': 'sorry'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
@@ -108,7 +167,7 @@ class Action_MoveSM(Behavior):
 
 			# x:58 y:339
 			OperatableStateMachine.add('try again',
-										SaraSay(sentence="I'm still going.", emotion=1, block=False),
+										SaraSay(sentence="But I'm still going.", emotion=1, block=False),
 										transitions={'done': 'set head'},
 										autonomy={'done': Autonomy.Off})
 
@@ -137,8 +196,8 @@ class Action_MoveSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 			# x:252 y:146
-			OperatableStateMachine.add('Move',
-										_sm_move_0,
+			OperatableStateMachine.add('Move concurent',
+										_sm_move_concurent_2,
 										transitions={'arrived': 'set blink', 'failed': 'set sad face'},
 										autonomy={'arrived': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'relative': 'relative', 'pose': 'pose'})

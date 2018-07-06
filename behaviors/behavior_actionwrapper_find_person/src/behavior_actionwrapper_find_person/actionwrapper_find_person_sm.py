@@ -48,6 +48,7 @@ class ActionWrapper_Find_PersonSM(Behavior):
 		self.add_behavior(action_turnSM, 'action_turn')
 		self.add_behavior(Action_findPersonSM, 'Action_findPerson')
 		self.add_behavior(action_look_at_faceSM, 'confirm and look at/look at/action_look_at_face')
+		self.add_behavior(Action_findPersonSM, 'Action_findPerson_2')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -64,7 +65,7 @@ class ActionWrapper_Find_PersonSM(Behavior):
 	def create(self):
 		# x:1399 y:61, x:331 y:776, x:1004 y:649
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
-		_state_machine.userdata.Action = ["FindPerson","Rachel"]
+		_state_machine.userdata.Action = ["FindPerson",""]
 		_state_machine.userdata.rotation = -1.57
 		_state_machine.userdata.className = "person"
 
@@ -189,7 +190,7 @@ class ActionWrapper_Find_PersonSM(Behavior):
 		with _sm_init_3:
 			# x:30 y:40
 			OperatableStateMachine.add('cond',
-										CheckConditionState(predicate=lambda x: x[1] is not None and x[1] != ''),
+										CheckConditionState(predicate=lambda x: x[1] != None and x[1] != ''),
 										transitions={'true': 'ReadParameters', 'false': 'no_param'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'Action'})
@@ -221,7 +222,7 @@ class ActionWrapper_Find_PersonSM(Behavior):
 			# x:67 y:70
 			OperatableStateMachine.add('Init',
 										_sm_init_3,
-										transitions={'done': 'Action_findPerson', 'no_param': 'say no object given'},
+										transitions={'done': 'Action_findPerson', 'no_param': 'Action_findPerson_2'},
 										autonomy={'done': Autonomy.Inherit, 'no_param': Autonomy.Inherit},
 										remapping={'Action': 'Action', 'person': 'person', 'name': 'name'})
 
@@ -264,12 +265,6 @@ class ActionWrapper_Find_PersonSM(Behavior):
 										transitions={'done': 'Do not find person'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:47 y:654
-			OperatableStateMachine.add('say no object given',
-										SaraSay(sentence="You didn't told me who to find.", emotion=1, block=True),
-										transitions={'done': 'cause1'},
-										autonomy={'done': Autonomy.Off})
-
 			# x:286 y:79
 			OperatableStateMachine.add('Action_findPerson',
 										self.use_behavior(Action_findPersonSM, 'Action_findPerson'),
@@ -298,14 +293,7 @@ class ActionWrapper_Find_PersonSM(Behavior):
 										autonomy={'yes': Autonomy.Inherit, 'no': Autonomy.Inherit, 'error': Autonomy.Inherit, 'noname': Autonomy.Inherit},
 										remapping={'name': 'name', 'entity': 'entity'})
 
-			# x:196 y:660
-			OperatableStateMachine.add('cause1',
-										SetKey(Value="I didn't know who to find."),
-										transitions={'done': 'setrosparamfailure'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'Key'})
-
-			# x:410 y:641
+			# x:439 y:612
 			OperatableStateMachine.add('cause2',
 										SetKey(Value="I did not find any person."),
 										transitions={'done': 'setrosparamfailure'},
@@ -318,6 +306,19 @@ class ActionWrapper_Find_PersonSM(Behavior):
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'Key'})
+
+			# x:48 y:246
+			OperatableStateMachine.add('Action_findPerson_2',
+										self.use_behavior(Action_findPersonSM, 'Action_findPerson_2'),
+										transitions={'done': 'say found person', 'pas_done': 'reset Head'},
+										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
+										remapping={'className': 'className', 'entity': 'entity'})
+
+			# x:147 y:357
+			OperatableStateMachine.add('say found person',
+										SaraSay(sentence="I found the person.", emotion=1, block=True),
+										transitions={'done': 'get ID'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

@@ -12,8 +12,6 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="ActionWrapper_Pick" />
-	<contains name="ActionWrapper_Place" />
 
 	<!-- Available Parameters -->
 

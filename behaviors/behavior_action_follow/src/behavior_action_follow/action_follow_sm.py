@@ -9,11 +9,11 @@
 import roslib; roslib.load_manifest('behavior_action_follow')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.sara_follow import SaraFollow
+from sara_flexbe_states.KeepLookingAt import KeepLookingAt
+from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
-from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.wait_state import WaitState
-from sara_flexbe_states.sara_say import SaraSay
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -38,7 +38,6 @@ Demande le id de la personne a suivre
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(action_look_at_faceSM, 'Follow/Look at/action_look_at_face')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -52,7 +51,7 @@ Demande le id de la personne a suivre
 	def create(self):
 		# x:572 y:135
 		_state_machine = OperatableStateMachine(outcomes=['failed'], input_keys=['ID'])
-		_state_machine.userdata.ID = 22
+		_state_machine.userdata.ID = 7
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -65,7 +64,7 @@ Demande le id de la personne a suivre
 		with _sm_delai_0:
 			# x:129 y:168
 			OperatableStateMachine.add('delay',
-										WaitState(wait_time=15),
+										WaitState(wait_time=25),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
@@ -155,19 +154,24 @@ Demande le id de la personne a suivre
 		_sm_look_at_4 = OperatableStateMachine(outcomes=['fail'], input_keys=['ID'])
 
 		with _sm_look_at_4:
-			# x:110 y:102
-			OperatableStateMachine.add('get entity',
-										GetEntityByID(),
-										transitions={'found': 'action_look_at_face', 'not_found': 'sorry'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'ID': 'ID', 'Entity': 'Entity'})
+			# x:231 y:115
+			OperatableStateMachine.add('look',
+										KeepLookingAt(),
+										transitions={'failed': 'sorry'},
+										autonomy={'failed': Autonomy.Off},
+										remapping={'ID': 'ID'})
 
-			# x:422 y:129
-			OperatableStateMachine.add('action_look_at_face',
-										self.use_behavior(action_look_at_faceSM, 'Follow/Look at/action_look_at_face'),
-										transitions={'finished': 'get entity', 'failed': 'sorry'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'Entity': 'Entity'})
+			# x:470 y:272
+			OperatableStateMachine.add('sorry',
+										SaraSay(sentence="Sorry, I lost you. Please wait for me! Make sure to let me see your face, please.", emotion=1, block=False),
+										transitions={'done': 'Find back'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:103 y:276
+			OperatableStateMachine.add('Found you',
+										SaraSay(sentence="Here you are!", emotion=1, block=False),
+										transitions={'done': 'look'},
+										autonomy={'done': Autonomy.Off})
 
 			# x:248 y:264
 			OperatableStateMachine.add('Find back',
@@ -175,18 +179,6 @@ Demande le id de la personne a suivre
 										transitions={'back': 'Found you', 'not_found': 'fail'},
 										autonomy={'back': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
-
-			# x:470 y:272
-			OperatableStateMachine.add('sorry',
-										SaraSay(sentence="Sorry, I lost you. Please wait for me!", emotion=1, block=False),
-										transitions={'done': 'Find back'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:103 y:276
-			OperatableStateMachine.add('Found you',
-										SaraSay(sentence="Here you are!", emotion=1, block=False),
-										transitions={'done': 'get entity'},
-										autonomy={'done': Autonomy.Off})
 
 
 		# x:30 y:365

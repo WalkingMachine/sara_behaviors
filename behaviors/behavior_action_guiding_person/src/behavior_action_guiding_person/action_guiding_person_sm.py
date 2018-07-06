@@ -10,9 +10,9 @@ import roslib; roslib.load_manifest('behavior_action_guiding_person')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from behavior_get_operator.get_operator_sm import Get_operatorSM
 from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.GetRosParam import GetRosParam
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
-from sara_flexbe_states.sara_move_base import SaraMoveBase
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -48,7 +48,7 @@ class Action_Guiding_PersonSM(Behavior):
 		# O 218 87 
 		# trouve la personne et sassure quelle reste proche
 
-		# O 318 259 
+		# O 279 289 
 		# si elle disparait, on la retrouve!!
 
 		# O 278 118 /deplacement et verification de presence/verifie presence
@@ -72,7 +72,7 @@ class Action_Guiding_PersonSM(Behavior):
 		with _sm_verifie_presence_0:
 			# x:90 y:107
 			OperatableStateMachine.add('getID',
-										GetRosParam(ParamName="OperatorID"),
+										GetRosParam(ParamName="behavior/Operator/Id"),
 										transitions={'done': 'getOperator', 'failed': 'not found'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'ID'})
@@ -85,7 +85,7 @@ class Action_Guiding_PersonSM(Behavior):
 										remapping={'ID': 'ID', 'Entity': 'Operator'})
 
 
-		# x:30 y:365, x:130 y:365, x:230 y:365, x:330 y:365, x:430 y:365
+		# x:208 y:123, x:289 y:206, x:75 y:376, x:330 y:365, x:430 y:365
 		_sm_deplacement_et_verification_de_presence_1 = ConcurrencyContainer(outcomes=['arrived', 'failed'], input_keys=['Position'], conditions=[
 										('failed', [('verifie presence', 'not found')]),
 										('arrived', [('saramove', 'arrived')]),
@@ -116,7 +116,7 @@ class Action_Guiding_PersonSM(Behavior):
 										autonomy={'Found': Autonomy.Inherit, 'NotFound': Autonomy.Inherit},
 										remapping={'Operator': 'Operator'})
 
-			# x:208 y:184
+			# x:162 y:210
 			OperatableStateMachine.add('foundyou!',
 										SaraSay(sentence="Operator, please follow me", emotion=1, block=True),
 										transitions={'done': 'deplacement et verification de presence'},

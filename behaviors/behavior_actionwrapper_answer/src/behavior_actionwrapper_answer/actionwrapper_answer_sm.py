@@ -12,13 +12,13 @@ from sara_flexbe_states.SetKey import SetKey
 from behavior_action_findperson.action_findperson_sm import Action_findPersonSM
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_nlu_spr import SaraNLUspr
-from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.for_loop import ForLoop
 from flexbe_states.check_condition_state import CheckConditionState
 from behavior_action_turn.action_turn_sm import action_turnSM
 from sara_flexbe_states.SetRosParam import SetRosParam
+from flexbe_states.log_key_state import LogKeyState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -198,7 +198,7 @@ class ActionWrapper_AnswerSM(Behavior):
 			# x:39 y:384
 			OperatableStateMachine.add('SendToNLU',
 										SaraNLUspr(),
-										transitions={'understood': 'findResponseString', 'not_understood': 'CannotAnswer', 'fail': 'CannotAnswer'},
+										transitions={'understood': 'log answer', 'not_understood': 'CannotAnswer', 'fail': 'CannotAnswer'},
 										autonomy={'understood': Autonomy.Off, 'not_understood': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'sentence': 'operatorQuestion', 'answer': 'answer'})
 
@@ -208,19 +208,12 @@ class ActionWrapper_AnswerSM(Behavior):
 										transitions={'done': 'cause3'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:27 y:465
-			OperatableStateMachine.add('findResponseString',
-										CalculationState(calculation=lambda x: x.data),
-										transitions={'done': 'sayAnswer'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'answer', 'output_value': 'stringAnswer'})
-
-			# x:38 y:546
+			# x:31 y:579
 			OperatableStateMachine.add('sayAnswer',
 										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'stringAnswer'})
+										remapping={'sentence': 'answer'})
 
 			# x:23 y:208
 			OperatableStateMachine.add('IfQuestionForSARA',
@@ -268,6 +261,13 @@ class ActionWrapper_AnswerSM(Behavior):
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'Key'})
+
+			# x:40 y:469
+			OperatableStateMachine.add('log answer',
+										LogKeyState(text="{}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'sayAnswer'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'answer'})
 
 
 		return _state_machine

@@ -110,7 +110,7 @@ class Get_operatorSM(Behavior):
 		with _state_machine:
 			# x:64 y:35
 			OperatableStateMachine.add('Get previous ID',
-										GetRosParam(ParamName="OperatorID"),
+										GetRosParam(ParamName="behavior/Operator/Id"),
 										transitions={'done': 'Get Operator', 'failed': 'for 3'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'ID'})
@@ -156,7 +156,7 @@ class Get_operatorSM(Behavior):
 
 			# x:49 y:511
 			OperatableStateMachine.add('Get persons',
-										list_entities_by_name(frontality_level=0.5),
+										list_entities_by_name(frontality_level=0.5, distance_max=10),
 										transitions={'found': 'Get closest', 'not_found': 'say where are you'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'name': 'Name', 'entity_list': 'entity_list', 'number': 'number'})
@@ -170,7 +170,7 @@ class Get_operatorSM(Behavior):
 
 			# x:783 y:161
 			OperatableStateMachine.add('set new ID',
-										SetRosParam(ParamName="OperatorID"),
+										SetRosParam(ParamName="behavior/Operator/Id"),
 										transitions={'done': 'Found'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'ID'})

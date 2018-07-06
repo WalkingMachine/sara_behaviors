@@ -22,7 +22,7 @@ class list_entities_by_name(EventState):
 
     '''
 
-    def __init__(self, frontality_level):
+    def __init__(self, frontality_level, distance_max=10):
         '''
         Constructor
         '''
@@ -34,6 +34,7 @@ class list_entities_by_name(EventState):
         self.frontality_level = frontality_level
         self.mypose = None
         self.message = None
+        self.distance_max = distance_max
 
 
     def execute(self, userdata):
@@ -60,7 +61,10 @@ class list_entities_by_name(EventState):
         found_entities = []
         wraps = []
         for entity in self.message.entities:
-            if entity.name == name:
+            x = entity.position.x - self.mypose.position.x
+            y = entity.position.y - self.mypose.position.y
+            dist = (x**2 + y**2)**0.5
+            if (entity.name == name or entity.category == name) and dist < self.distance_max:
                 wrap = wrapper()
                 wrap.init(self.mypose, entity, self.frontality_level)
 

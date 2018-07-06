@@ -12,9 +12,9 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Action_Pass_Door" />
 	<contains name="Action_Executor" />
-	<contains name="action_look_at_face" />
+	<contains name="ActionWrapper_Move" />
+	<contains name="Action_Pass_Door" />
 
 	<!-- Available Parameters -->
 
