@@ -1,0 +1,25 @@
+<package>
+  <name>behavior_presentation_robotique_zone_1</name>
+  <version>1.0.0</version>
+  <description>
+     Presentation_Robotique_Zone_1
+  </description>
+  <maintainer email="todo@todo.com">Philippe La Madeleine</maintainer>
+  <license>BSD</license>
+
+  <url>http://ros.org/wiki/behavior_presentation_robotique_zone_1</url>
+  <author>Philippe La Madeleine</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>rospy</run_depend>
+  <run_depend>flexbe_core</run_depend>
+  <run_depend>sara_flexbe_states</run_depend>
+  <run_depend>flexbe_navigation_states</run_depend>
+  <run_depend>flexbe_manipulation_states</run_depend>
+  <run_depend>flexbe_utility_states</run_depend>
+  <run_depend>flexbe_states</run_depend>
+  <run_depend>flexbe_mirror</run_depend>
+  <run_depend>flexbe_testing</run_depend>
+
+</package>
