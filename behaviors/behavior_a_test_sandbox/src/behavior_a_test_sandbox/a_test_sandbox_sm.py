@@ -51,7 +51,7 @@ class ATestSandboxSM(Behavior):
 		_state_machine.userdata.actionList = [["Find", "bottle"], ["move", "kitchen"]]
 		_state_machine.userdata.titre = "test"
 		_state_machine.userdata.relative = False
-		_state_machine.userdata.pitch = 0.8
+		_state_machine.userdata.pitch = -0.8
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
