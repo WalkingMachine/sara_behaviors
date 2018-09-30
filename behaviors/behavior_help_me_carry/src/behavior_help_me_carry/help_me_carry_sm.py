@@ -223,7 +223,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:36 y:119
 			OperatableStateMachine.add('head angle',
-										SaraSetHeadAngle(pitch=0.3, yaw=0),
+										SaraSetHeadAngle(pitch=-0.3, yaw=0),
 										transitions={'done': 'get persons'},
 										autonomy={'done': Autonomy.Off})
 
@@ -564,7 +564,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:46 y:508
 			OperatableStateMachine.add('SET HEAD',
-										SaraSetHeadAngle(pitch=0.2, yaw=0),
+										SaraSetHeadAngle(pitch=-0.2, yaw=0),
 										transitions={'done': 'Action_Guide2'},
 										autonomy={'done': Autonomy.Off})
 

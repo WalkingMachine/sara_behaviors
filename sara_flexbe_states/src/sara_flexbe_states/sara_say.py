@@ -4,14 +4,15 @@ from flexbe_core import EventState, Logger
 import rospy
 from wm_tts.msg import say
 from wm_tts.srv import say_service
+from std_msgs.msg import UInt8
 
 class SaraSay(EventState):
     """
     Make sara say something
 
-    -- sentence     string      what to say
+    -- Format      string   how to say it
     -- emotion     int       how to feel
-    -- block      bool       wait the end before continue
+    >= sentence              what key to say
 
     <= done                what's said is said
     """
@@ -20,22 +21,38 @@ class SaraSay(EventState):
         """Constructor"""
 
         super(SaraSay, self).__init__(outcomes = ['done'])
-        self.msg = say(sentence, emotion)
-        self.block = block
-        if not self.block:
-            self.pub = rospy.Publisher("/say", say, queue_size=1)
 
+        # Get parameters
+        self.msg = say()
+        self.msg.sentence = sentence
+        self.msg.emotion = emotion
+        self.block = block
+        self.lastEmotion = None
+
+        # Set topics
+        self.emotion_topic = "sara_face/Emotion"
+        self.say_topic = "/say"
+        self.say_service = "/wm_say"
+        self.emotion_pub = rospy.Publisher(self.emotion_topic, UInt8, queue_size=1)
+
+        # Prepare wm_tts
+        if self.block:
+            Logger.loginfo('Waiting for wm_tts')
+            rospy.wait_for_service(self.say_service)
+            self.serv = rospy.ServiceProxy(self.say_service, say_service)
+        else:
+            self.pub = rospy.Publisher(self.say_topic, say, queue_size=1)
 
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
-        if self.block:
-            rospy.wait_for_service('/wm_say')
-            serv = rospy.ServiceProxy('/wm_say', say_service)
-            serv(self.msg)
+        if(self.msg.emotion>0 and self.msg.emotion != self.lastEmotion):
+            self.emotion_pub.publish(self.msg.emotion)
+            self.lastEmotion = self.msg.emotion
 
+        Logger.loginfo('Say: '+str(self.msg))
+        if self.block:
+            self.serv(self.msg)
         else:
             self.pub.publish(self.msg)
-            Logger.loginfo('Publishing done')
 
         return 'done'
-

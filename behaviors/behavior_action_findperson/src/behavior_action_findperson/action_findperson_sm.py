@@ -83,7 +83,7 @@ class Action_findPersonSM(Behavior):
 
 			# x:421 y:54
 			OperatableStateMachine.add('Look Right',
-										SaraSetHeadAngle(pitch=0.1, yaw=-1.5),
+										SaraSetHeadAngle(pitch=-0.1, yaw=-1.5),
 										transitions={'done': 'Rotate Right'},
 										autonomy={'done': Autonomy.Off})
 
@@ -101,19 +101,19 @@ class Action_findPersonSM(Behavior):
 
 			# x:77 y:128
 			OperatableStateMachine.add('Look Left',
-										SaraSetHeadAngle(pitch=0.1, yaw=1.5),
+										SaraSetHeadAngle(pitch=-0.1, yaw=1.5),
 										transitions={'done': 'Rotate Left'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:426 y:240
 			OperatableStateMachine.add('Look Left 2',
-										SaraSetHeadAngle(pitch=0.1, yaw=1.5),
+										SaraSetHeadAngle(pitch=-0.1, yaw=1.5),
 										transitions={'done': 'Rotate Left 2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:805 y:226
 			OperatableStateMachine.add('Look Right 2',
-										SaraSetHeadAngle(pitch=0.1, yaw=-1.5),
+										SaraSetHeadAngle(pitch=-0.1, yaw=-1.5),
 										transitions={'done': 'Rotate Right 2'},
 										autonomy={'done': Autonomy.Off})
 

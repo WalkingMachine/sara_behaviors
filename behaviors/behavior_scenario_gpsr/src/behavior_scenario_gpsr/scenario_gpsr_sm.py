@@ -488,7 +488,7 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:30 y:288
 			OperatableStateMachine.add('lift head',
-										SaraSetHeadAngle(pitch=0.3, yaw=0),
+										SaraSetHeadAngle(pitch=-0.3, yaw=0),
 										transitions={'done': 'GetOriginalPose'},
 										autonomy={'done': Autonomy.Off})
 

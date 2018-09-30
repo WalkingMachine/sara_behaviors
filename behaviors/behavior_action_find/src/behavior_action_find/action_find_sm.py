@@ -93,7 +93,7 @@ class Action_findSM(Behavior):
 
 			# x:16 y:282
 			OperatableStateMachine.add('Look Right',
-										SaraSetHeadAngle(pitch=0.9, yaw=1),
+										SaraSetHeadAngle(pitch=-0.9, yaw=1),
 										transitions={'done': 'Rotate Right'},
 										autonomy={'done': Autonomy.Off})
 
@@ -111,13 +111,13 @@ class Action_findSM(Behavior):
 
 			# x:22 y:134
 			OperatableStateMachine.add('Look Left',
-										SaraSetHeadAngle(pitch=0.9, yaw=-1),
+										SaraSetHeadAngle(pitch=-0.9, yaw=-1),
 										transitions={'done': 'Rotate Left'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:203 y:361
 			OperatableStateMachine.add('Look Left 2',
-										SaraSetHeadAngle(pitch=0.9, yaw=-1),
+										SaraSetHeadAngle(pitch=-0.9, yaw=-1),
 										transitions={'done': 'Rotate Left 2'},
 										autonomy={'done': Autonomy.Off})
 
@@ -201,13 +201,13 @@ class Action_findSM(Behavior):
 		with _state_machine:
 			# x:55 y:41
 			OperatableStateMachine.add('Look Front Center',
-										SaraSetHeadAngle(pitch=0.7, yaw=0),
+										SaraSetHeadAngle(pitch=-0.7, yaw=0),
 										transitions={'done': 'Find Entity WHILE Turning360'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:345 y:156
 			OperatableStateMachine.add('Look Center Not Found',
-										SaraSetHeadAngle(pitch=0.7, yaw=0),
+										SaraSetHeadAngle(pitch=-0.7, yaw=0),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
