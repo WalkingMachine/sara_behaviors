@@ -26,6 +26,7 @@ class MoveitMove(EventState):
         self.tol = 0.06
         self.result = None
         self.count = 0
+        self.countlimit = 0
 
     def execute(self, userdata):
 

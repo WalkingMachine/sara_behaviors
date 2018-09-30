@@ -61,7 +61,7 @@ class ActionWrapper_GiveSM(Behavior):
 		# x:965 y:192, x:1057 y:494, x:1048 y:308
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = []
-		_state_machine.userdata.person_name = " "
+		_state_machine.userdata.person_name = "operator"
 		_state_machine.userdata.Empty = None
 
 		# Additional creation code can be added inside the following tags
@@ -69,7 +69,7 @@ class ActionWrapper_GiveSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-		# x:30 y:326, x:130 y:326, x:230 y:326
+		# x:585 y:427, x:621 y:290, x:649 y:229
 		_sm_get_person_0 = OperatableStateMachine(outcomes=['true', 'done', 'pas_done'], input_keys=['Action'], output_keys=['entity'])
 
 		with _sm_get_person_0:
