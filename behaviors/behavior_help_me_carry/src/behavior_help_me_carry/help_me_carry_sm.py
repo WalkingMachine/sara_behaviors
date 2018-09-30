@@ -137,8 +137,8 @@ class HelpmecarrySM(Behavior):
 			# x:30 y:112
 			OperatableStateMachine.add('FindId',
 										list_entities_by_name(frontality_level=0.5, distance_max=10),
-										transitions={'found': 'GetID', 'not_found': 'not_found'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										transitions={'found': 'GetID', 'none_found': 'FindId'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'name', 'entity_list': 'Entities_list', 'number': 'number'})
 
 			# x:30 y:186
@@ -230,8 +230,8 @@ class HelpmecarrySM(Behavior):
 			# x:32 y:206
 			OperatableStateMachine.add('get persons',
 										list_entities_by_name(frontality_level=0.5, distance_max=2),
-										transitions={'found': 'get closest', 'not_found': 'get persons'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										transitions={'found': 'get closest', 'none_found': 'head angle'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'Person', 'entity_list': 'entity_list', 'number': 'number'})
 
 
@@ -571,8 +571,8 @@ class HelpmecarrySM(Behavior):
 			# x:39 y:297
 			OperatableStateMachine.add('list',
 										list_entities_by_name(frontality_level=0.5, distance_max=2),
-										transitions={'found': 'get closest ID', 'not_found': 'set 0'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										transitions={'found': 'get closest ID', 'none_found': 'list'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:70 y:194
