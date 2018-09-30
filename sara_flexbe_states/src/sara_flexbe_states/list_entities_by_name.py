@@ -11,14 +11,14 @@ import math
 
 class list_entities_by_name(EventState):
     '''
-        will list entities seen by the camera
+        will list entities seen by the camera ("" list all entities)
 
         -- frontality_level        float        How much we should priorise the normal ovel the distance when calculating proximity. 1 is only normal and 0 is only distance. e.g.  0.5 is a good value.
         #< name                    string       name to compare entities with
         #> found_entities          object       list of found entities
 
         <= found            entities are found
-        <= not_found        no one is found
+        <= none_found        no one is found
 
     '''
 
@@ -26,7 +26,7 @@ class list_entities_by_name(EventState):
         '''
         Constructor
         '''
-        super(list_entities_by_name, self).__init__(outcomes=['found', 'not_found'], output_keys=['entity_list', 'number'], input_keys=['name'])
+        super(list_entities_by_name, self).__init__(outcomes=['found', 'none_found'], output_keys=['entity_list', 'number'], input_keys=['name'])
         self._sub = ProxySubscriberCached({'/entities': Entities})
 
         self._topic = "/robot_pose"
@@ -55,7 +55,7 @@ class list_entities_by_name(EventState):
             if len(found_entities) != 0:
                 return 'found'
             else:
-                return 'not_found'
+                return 'none_found'
 
     def list(self, name):
         found_entities = []
@@ -64,7 +64,7 @@ class list_entities_by_name(EventState):
             x = entity.position.x - self.mypose.position.x
             y = entity.position.y - self.mypose.position.y
             dist = (x**2 + y**2)**0.5
-            if (entity.name == name or entity.category == name) and dist < self.distance_max:
+            if (name=="" or entity.name == name or entity.category == name) and dist < self.distance_max:
                 wrap = wrapper()
                 wrap.init(self.mypose, entity, self.frontality_level)
 
