@@ -76,8 +76,8 @@ class Action_countSM(Behavior):
 			# x:5 y:229
 			OperatableStateMachine.add('count',
 										list_entities_by_name(frontality_level=0, distance_max=2),
-										transitions={'found': 'add', 'not_found': 'add'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										transitions={'found': 'add', 'none_found': 'add'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:10 y:326
@@ -102,8 +102,8 @@ class Action_countSM(Behavior):
 			# x:245 y:224
 			OperatableStateMachine.add('count2',
 										list_entities_by_name(frontality_level=0, distance_max=2),
-										transitions={'found': 'add2', 'not_found': 'add2'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										transitions={'found': 'add2', 'none_found': 'add2'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:252 y:321
@@ -134,8 +134,8 @@ class Action_countSM(Behavior):
 			# x:443 y:237
 			OperatableStateMachine.add('count3',
 										list_entities_by_name(frontality_level=0, distance_max=2),
-										transitions={'found': 'add3', 'not_found': 'add3'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										transitions={'found': 'add3', 'none_found': 'add3'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:457 y:334

@@ -157,8 +157,8 @@ class Get_operatorSM(Behavior):
 			# x:49 y:511
 			OperatableStateMachine.add('Get persons',
 										list_entities_by_name(frontality_level=0.5, distance_max=10),
-										transitions={'found': 'Get closest', 'not_found': 'say where are you'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										transitions={'found': 'Get closest', 'none_found': 'say where are you'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'Name', 'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:461 y:475
