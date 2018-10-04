@@ -58,9 +58,9 @@ class Check_reachabilitySM(Behavior):
 		with _state_machine:
 			# x:74 y:58
 			OperatableStateMachine.add('gen',
-										GenGripperPose(x=0, y=0, z=0, t=0),
-										transitions={'done': 'first check'},
-										autonomy={'done': Autonomy.Off},
+										GenGripperPose(l=0, z=0, planar=false),
+										transitions={'done': 'first check', 'fail': 'too_far'},
+										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'pose_in': 'pose', 'pose_out': 'pose_out'})
 
 			# x:68 y:411

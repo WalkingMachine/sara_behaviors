@@ -60,8 +60,8 @@ class LookAtClosestSM(Behavior):
 			# x:49 y:113
 			OperatableStateMachine.add('list',
 										list_entities_by_name(frontality_level=0.8, distance_max=10),
-										transitions={'found': 'getclosest', 'not_found': 'list'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										transitions={'found': 'getclosest', 'none_found': 'list'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'ObjectName', 'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:296 y:131

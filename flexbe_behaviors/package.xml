@@ -162,5 +162,6 @@
   <run_depend>behavior_lookatclosest</run_depend>
   <run_depend>behavior_scenario_mvp_storing_groceries</run_depend>
   <run_depend>behavior_presentation_robotique_zone_1</run_depend>
+  <run_depend>behavior_action_lookaroundtofind</run_depend>
 
 </package>
