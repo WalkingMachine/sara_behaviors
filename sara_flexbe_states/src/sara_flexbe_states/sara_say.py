@@ -6,8 +6,11 @@ from flexbe_core.proxy import ProxyServiceCaller
 from flexbe_core.proxy import ProxyActionClient
 
 import rospy
+
+from flexbe_core import EventState, Logger
+
 from wm_tts.msg import say
-from wm_tts.srv import say_service
+from wm_tts.srv import say_service, say_serviceRequest
 from std_msgs.msg import UInt8
 
 class SaraSay(EventState):
@@ -54,18 +57,16 @@ class SaraSay(EventState):
             self.lastEmotion = self.msg.emotion
 
         Logger.loginfo('Say: '+str(self.msg))
-        if self.block:
-            # before:
-            # self.serv(self.msg)
-
-            # after:
+        if self.block: # call service
             try:
-                self._response = self.serv.call(self.say_service, self.msg)
-                Logger.loginfo("Execute Known Trajectory Service requested: \n" + str(self.say_service))
+                message_say = say_serviceRequest()
+                message_say.say.sentence = self.msg.sentence
+                message_say.say.emotion = self.msg.emotion
+                self._response = self.serv.call(self.say_service, message_say)
             except rospy.ServiceException as exc:
-                Logger.logwarn("Execute Known Trajectory Service did not process request: \n" + str(exc))
+                Logger.logwarn("Execute did not process request: \n" + str(exc))
 
-        else:
+        else: #publisher
             self.pub.publish(self.say_topic, self.msg)
 
         return 'done'
