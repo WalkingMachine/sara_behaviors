@@ -159,6 +159,6 @@
 <run_depend>behavior_action_lookatfacebase</run_depend>
 <run_depend>behavior_actionwrapper_guide</run_depend>
   <run_depend>behavior_action_guide2</run_depend>
-  <run_depend>behavior_lookatclosest</run_depend>
+  <run_depend>behavior_restaurant2018</run_depend>
 
 </package>
