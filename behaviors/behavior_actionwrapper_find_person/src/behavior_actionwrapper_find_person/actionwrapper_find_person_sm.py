@@ -268,13 +268,13 @@ class ActionWrapper_Find_PersonSM(Behavior):
 			# x:286 y:79
 			OperatableStateMachine.add('Action_findPerson',
 										self.use_behavior(Action_findPersonSM, 'Action_findPerson'),
-										transitions={'done': 'confirm and look at', 'pas_done': 'reset Head'},
+										transitions={'done': 'say hello', 'pas_done': 'reset Head'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
 										remapping={'className': 'className', 'entity': 'entity'})
 
 			# x:1263 y:52
 			OperatableStateMachine.add('set param',
-										SetRosParam(ParamName="behavior/FoundPerson/Id"),
+										SetRosParam(ParamName="/behavior/FoundPerson/Id"),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'ID'})
@@ -316,8 +316,14 @@ class ActionWrapper_Find_PersonSM(Behavior):
 
 			# x:147 y:357
 			OperatableStateMachine.add('say found person',
-										SaraSay(sentence="I found the person.", emotion=1, block=True),
+										SaraSay(sentence="I found a person.", emotion=1, block=True),
 										transitions={'done': 'get ID'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:479 y:54
+			OperatableStateMachine.add('say hello',
+										SaraSay(sentence="Hello.", emotion=1, block=True),
+										transitions={'done': 'confirm and look at'},
 										autonomy={'done': Autonomy.Off})
 
 

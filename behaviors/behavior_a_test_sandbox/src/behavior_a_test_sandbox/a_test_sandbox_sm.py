@@ -8,10 +8,12 @@
 
 import roslib; roslib.load_manifest('behavior_a_test_sandbox')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.moveit_move import MoveitMove
+from behavior_actionwrapper_find_person.actionwrapper_find_person_sm import ActionWrapper_Find_PersonSM
 from flexbe_states.log_state import LogState
-from sara_flexbe_states.pose_gen_euler import GenPoseEuler
-from behavior_action_move.action_move_sm import Action_MoveSM
+from sara_flexbe_states.moveit_move import MoveitMove
+from sara_flexbe_states.sara_say_key import SaraSayKey
+from behavior_actionwrapper_follow.actionwrapper_follow_sm import ActionWrapper_FollowSM
+from sara_flexbe_states.get_speech import GetSpeech
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -35,7 +37,8 @@ class ATestSandboxSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_MoveSM, 'Action_Move')
+		self.add_behavior(ActionWrapper_Find_PersonSM, 'ActionWrapper_Find_Person')
+		self.add_behavior(ActionWrapper_FollowSM, 'ActionWrapper_Follow')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -55,6 +58,9 @@ class ATestSandboxSM(Behavior):
 		_state_machine.userdata.titre = "test"
 		_state_machine.userdata.relative = False
 		_state_machine.userdata.pitch = -0.8
+		_state_machine.userdata.Action1 = ["Find", "philippe"]
+		_state_machine.userdata.Action2 = ["Follow", "philippe"]
+		_state_machine.userdata.pose = "Dining room"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -63,12 +69,12 @@ class ATestSandboxSM(Behavior):
 
 
 		with _state_machine:
-			# x:129 y:286
-			OperatableStateMachine.add('gen',
-										GenPoseEuler(x=1, y=0, z=0, roll=0, pitch=0, yaw=0),
-										transitions={'done': 'Action_Move'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose': 'pose'})
+			# x:177 y:558
+			OperatableStateMachine.add('ActionWrapper_Find_Person',
+										self.use_behavior(ActionWrapper_Find_PersonSM, 'ActionWrapper_Find_Person'),
+										transitions={'finished': 'ActionWrapper_Follow', 'failed': 'failed', 'critical_fail': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
+										remapping={'Action': 'Action1'})
 
 			# x:416 y:237
 			OperatableStateMachine.add('Failure',
@@ -89,19 +95,33 @@ class ATestSandboxSM(Behavior):
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'Pose2'})
 
-			# x:295 y:355
-			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(Action_MoveSM, 'Action_Move'),
-										transitions={'finished': 'finished', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'pose', 'relative': 'relative'})
-
 			# x:313 y:56
 			OperatableStateMachine.add('move',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
 										transitions={'done': 'Move2', 'failed': 'Failure'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'Pose1'})
+
+			# x:395 y:469
+			OperatableStateMachine.add('sa',
+										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
+										transitions={'done': 'gg'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'words'})
+
+			# x:563 y:592
+			OperatableStateMachine.add('ActionWrapper_Follow',
+										self.use_behavior(ActionWrapper_FollowSM, 'ActionWrapper_Follow'),
+										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
+										remapping={'Action': 'Action2'})
+
+			# x:271 y:471
+			OperatableStateMachine.add('gg',
+										GetSpeech(watchdog=10),
+										transitions={'done': 'sa', 'nothing': 'gg', 'fail': 'gg'},
+										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'words': 'words'})
 
 
 		return _state_machine

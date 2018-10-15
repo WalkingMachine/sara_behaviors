@@ -86,8 +86,8 @@ class Presentation_Robotique_Zone_1SM(Behavior):
 			# x:149 y:295
 			OperatableStateMachine.add('get entities',
 										list_entities_by_name(frontality_level=0, distance_max=2),
-										transitions={'found': 'get closest', 'not_found': 'get entities'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										transitions={'found': 'get closest', 'none_found': 'get entities'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:309 y:44

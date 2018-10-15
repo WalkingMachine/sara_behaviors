@@ -8,7 +8,6 @@
 
 import roslib; roslib.load_manifest('behavior_help_me_carry')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.continue_button import ContinueButton
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.get_speech import GetSpeech
@@ -19,6 +18,7 @@ from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from behavior_action_guide2.action_guide2_sm import Action_Guide2SM
 from behavior_action_receive_bag.action_receive_bag_sm import Action_Receive_BagSM
+from behavior_lookatclosest.lookatclosest_sm import LookAtClosestSM
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from behavior_action_move.action_move_sm import Action_MoveSM
 from sara_flexbe_states.moveit_move import MoveitMove
@@ -30,6 +30,7 @@ from sara_flexbe_states.SetRosParam import SetRosParam
 from behavior_action_pass_door.action_pass_door_sm import Action_Pass_DoorSM
 from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerbal
 from behavior_actionwrapper_move.actionwrapper_move_sm import ActionWrapper_MoveSM
+from sara_flexbe_states.continue_button import ContinueButton
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -55,7 +56,8 @@ class HelpmecarrySM(Behavior):
 		# references to used behaviors
 		self.add_behavior(action_look_at_faceSM, 'GetNewPerson/Get ope/look at closest/action_look_at_face')
 		self.add_behavior(Action_Guide2SM, 'GetNewPerson/Action_Guide2')
-		self.add_behavior(Action_Receive_BagSM, 'Recevoir sac/Action_Receive_Bag')
+		self.add_behavior(Action_Receive_BagSM, 'Recevoir sac/Receive bag/Action_Receive_Bag')
+		self.add_behavior(LookAtClosestSM, 'Recevoir sac/Look at/LookAtClosest')
 		self.add_behavior(Action_MoveSM, 'Retour maison/Action_Move')
 		self.add_behavior(Action_followSM, 'Getting ID Operator and follow /Follow/Action_follow')
 		self.add_behavior(Action_Pass_DoorSM, 'Enter arena/Action_Pass_Door')
@@ -89,8 +91,8 @@ class HelpmecarrySM(Behavior):
 		_state_machine.userdata.Relative = False
 		_state_machine.userdata.Pose_Init = "IdlePose"
 		_state_machine.userdata.dropPose = "DropBagPose"
-		_state_machine.userdata.EntryDoor = "rips/waypoint1"
-		_state_machine.userdata.ExitDoor = "rips/waypoint3"
+		_state_machine.userdata.EntryDoor = "door1/enter"
+		_state_machine.userdata.ExitDoor = "door1/exit"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -137,7 +139,7 @@ class HelpmecarrySM(Behavior):
 			# x:30 y:112
 			OperatableStateMachine.add('FindId',
 										list_entities_by_name(frontality_level=0.5, distance_max=10),
-										transitions={'found': 'GetID', 'none_found': 'FindId'},
+										transitions={'found': 'GetID', 'none_found': 'not_found'},
 										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'name', 'entity_list': 'Entities_list', 'number': 'number'})
 
@@ -171,14 +173,14 @@ class HelpmecarrySM(Behavior):
 										autonomy={'arrete': Autonomy.Inherit, 'fail': Autonomy.Inherit})
 
 
-		# x:57 y:371, x:360 y:132
+		# x:57 y:371, x:419 y:55
 		_sm_waiting_for_operator_3 = OperatableStateMachine(outcomes=['done', 'failed'])
 
 		with _sm_waiting_for_operator_3:
 			# x:57 y:67
 			OperatableStateMachine.add('getSpeech',
 										GetSpeech(watchdog=15),
-										transitions={'done': 'UnderstandingOpe', 'nothing': 'start', 'fail': 'failed'},
+										transitions={'done': 'UnderstandingOpe', 'nothing': 'failed', 'fail': 'failed'},
 										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'words': 'words'})
 
@@ -188,7 +190,7 @@ class HelpmecarrySM(Behavior):
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:39 y:162
+			# x:203 y:180
 			OperatableStateMachine.add('UnderstandingOpe',
 										RegexTester(regex=".*follow.*"),
 										transitions={'true': 'start', 'false': 'failed'},
@@ -196,10 +198,65 @@ class HelpmecarrySM(Behavior):
 										remapping={'text': 'words', 'result': 'result'})
 
 
-		# x:147 y:579
-		_sm_look_at_closest_4 = OperatableStateMachine(outcomes=['failed'], output_keys=['Entity'])
+		# x:130 y:365
+		_sm_look_at_4 = OperatableStateMachine(outcomes=['failed'])
 
-		with _sm_look_at_closest_4:
+		with _sm_look_at_4:
+			# x:105 y:160
+			OperatableStateMachine.add('LookAtClosest',
+										self.use_behavior(LookAtClosestSM, 'Recevoir sac/Look at/LookAtClosest'),
+										transitions={'failed': 'failed'},
+										autonomy={'failed': Autonomy.Inherit})
+
+
+		# x:280 y:296, x:248 y:549
+		_sm_receive_bag_5 = OperatableStateMachine(outcomes=['failed', 'done'], input_keys=['Closed_Gripper_Width', 'Open_Gripper_Width'])
+
+		with _sm_receive_bag_5:
+			# x:77 y:40
+			OperatableStateMachine.add('sac',
+										SaraSay(sentence="Ok. Tell me, when you are ready", emotion=1, block=True),
+										transitions={'done': 'getspeech2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:18 y:427
+			OperatableStateMachine.add('Action_Receive_Bag',
+										self.use_behavior(Action_Receive_BagSM, 'Recevoir sac/Receive bag/Action_Receive_Bag'),
+										transitions={'finished': 'bringit', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'Closed_Gripper_Width': 'Closed_Gripper_Width', 'Open_Gripper_Width': 'Open_Gripper_Width', 'Closed_Gripper_Width': 'Closed_Gripper_Width'})
+
+			# x:66 y:125
+			OperatableStateMachine.add('getspeech2',
+										GetSpeech(watchdog=5),
+										transitions={'done': 'takebag', 'nothing': 'getspeech2', 'fail': 'failed'},
+										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'words': 'words'})
+
+			# x:41 y:235
+			OperatableStateMachine.add('takebag',
+										RegexTester(regex=".*((take)|(bag)|(ready)).*"),
+										transitions={'true': 'PutBAg', 'false': 'getspeech2'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'text': 'words', 'result': 'result'})
+
+			# x:42 y:531
+			OperatableStateMachine.add('bringit',
+										SaraSay(sentence="I will bring it inside", emotion=1, block=True),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:42 y:326
+			OperatableStateMachine.add('PutBAg',
+										SaraSay(sentence="Could you put the bag in my hand?, please", emotion=1, block=False),
+										transitions={'done': 'Action_Receive_Bag'},
+										autonomy={'done': Autonomy.Off})
+
+
+		# x:147 y:579
+		_sm_look_at_closest_6 = OperatableStateMachine(outcomes=['failed'], output_keys=['Entity'])
+
+		with _sm_look_at_closest_6:
 			# x:40 y:39
 			OperatableStateMachine.add('set person',
 										SetKey(Value="person"),
@@ -236,9 +293,9 @@ class HelpmecarrySM(Behavior):
 
 
 		# x:30 y:365
-		_sm_get_op_5 = OperatableStateMachine(outcomes=['true'])
+		_sm_get_op_7 = OperatableStateMachine(outcomes=['true'])
 
-		with _sm_get_op_5:
+		with _sm_get_op_7:
 			# x:76 y:40
 			OperatableStateMachine.add('Say Joke',
 										SaraSay(sentence="Can someone come help me, I only have one arm.", emotion=1, block=True),
@@ -261,30 +318,30 @@ class HelpmecarrySM(Behavior):
 
 
 		# x:65 y:357, x:130 y:365, x:230 y:365
-		_sm_get_ope_6 = ConcurrencyContainer(outcomes=['true'], output_keys=['Entity'], conditions=[
+		_sm_get_ope_8 = ConcurrencyContainer(outcomes=['true'], output_keys=['Entity'], conditions=[
 										('true', [('get op', 'true')]),
 										('true', [('look at closest', 'failed')])
 										])
 
-		with _sm_get_ope_6:
+		with _sm_get_ope_8:
 			# x:37 y:35
 			OperatableStateMachine.add('get op',
-										_sm_get_op_5,
+										_sm_get_op_7,
 										transitions={'true': 'true'},
 										autonomy={'true': Autonomy.Inherit})
 
 			# x:238 y:109
 			OperatableStateMachine.add('look at closest',
-										_sm_look_at_closest_4,
+										_sm_look_at_closest_6,
 										transitions={'failed': 'true'},
 										autonomy={'failed': Autonomy.Inherit},
 										remapping={'Entity': 'Entity'})
 
 
 		# x:37 y:417, x:236 y:263
-		_sm_init_sara_7 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['Pose_Init'], output_keys=['Origin'])
+		_sm_init_sara_9 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['Pose_Init'], output_keys=['Origin'])
 
-		with _sm_init_sara_7:
+		with _sm_init_sara_9:
 			# x:30 y:40
 			OperatableStateMachine.add('get_pose',
 										Get_Robot_Pose(),
@@ -307,9 +364,9 @@ class HelpmecarrySM(Behavior):
 
 
 		# x:116 y:484, x:437 y:194
-		_sm_exitarena_8 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['ExitDoor'])
+		_sm_exitarena_10 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['ExitDoor'])
 
-		with _sm_exitarena_8:
+		with _sm_exitarena_10:
 			# x:56 y:31
 			OperatableStateMachine.add('set cont',
 										SetKey(Value=""),
@@ -340,9 +397,9 @@ class HelpmecarrySM(Behavior):
 
 
 		# x:151 y:747, x:521 y:498
-		_sm_enter_arena_9 = OperatableStateMachine(outcomes=['done', 'fail'], input_keys=['EntryDoor'])
+		_sm_enter_arena_11 = OperatableStateMachine(outcomes=['done', 'fail'], input_keys=['EntryDoor'])
 
-		with _sm_enter_arena_9:
+		with _sm_enter_arena_11:
 			# x:155 y:35
 			OperatableStateMachine.add('set cont',
 										SetKey(Value=""),
@@ -392,9 +449,9 @@ class HelpmecarrySM(Behavior):
 
 
 		# x:372 y:428, x:389 y:477
-		_sm_getting_id_operator_and_follow__10 = OperatableStateMachine(outcomes=['failed', 'done'], output_keys=['Position'])
+		_sm_getting_id_operator_and_follow__12 = OperatableStateMachine(outcomes=['failed', 'done'], output_keys=['Position'])
 
-		with _sm_getting_id_operator_and_follow__10:
+		with _sm_getting_id_operator_and_follow__12:
 			# x:70 y:115
 			OperatableStateMachine.add('Waiting for operator',
 										_sm_waiting_for_operator_3,
@@ -437,9 +494,9 @@ class HelpmecarrySM(Behavior):
 
 
 		# x:247 y:123, x:282 y:200, x:230 y:365
-		_sm_drop_le_sac_11 = OperatableStateMachine(outcomes=['failed', 'no_object', 'done'], input_keys=['Idle', 'dropPose'])
+		_sm_drop_le_sac_13 = OperatableStateMachine(outcomes=['failed', 'no_object', 'done'], input_keys=['Idle', 'dropPose'])
 
-		with _sm_drop_le_sac_11:
+		with _sm_drop_le_sac_13:
 			# x:22 y:114
 			OperatableStateMachine.add('dropbag',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
@@ -476,9 +533,9 @@ class HelpmecarrySM(Behavior):
 
 
 		# x:555 y:54, x:568 y:190
-		_sm_retour_maison_12 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['PoseOrigin', 'Relative'])
+		_sm_retour_maison_14 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['PoseOrigin', 'Relative'])
 
-		with _sm_retour_maison_12:
+		with _sm_retour_maison_14:
 			# x:54 y:63
 			OperatableStateMachine.add('keydistance',
 										SetKey(Value=0),
@@ -507,57 +564,35 @@ class HelpmecarrySM(Behavior):
 										remapping={'pose': 'pose_out', 'relative': 'Relative'})
 
 
-		# x:305 y:329, x:335 y:117, x:311 y:458
-		_sm_recevoir_sac_13 = OperatableStateMachine(outcomes=['failed', 'fail', 'done'], input_keys=['Closed_Gripper_Width', 'Open_Gripper_Width'])
+		# x:30 y:365, x:130 y:365, x:230 y:365, x:330 y:365, x:430 y:365
+		_sm_recevoir_sac_15 = ConcurrencyContainer(outcomes=['failed', 'done'], input_keys=['Closed_Gripper_Width', 'Open_Gripper_Width'], conditions=[
+										('failed', [('Receive bag', 'failed')]),
+										('done', [('Receive bag', 'done')]),
+										('failed', [('Look at', 'failed')])
+										])
 
-		with _sm_recevoir_sac_13:
-			# x:77 y:40
-			OperatableStateMachine.add('sac',
-										SaraSay(sentence="Tell me, when you are ready", emotion=1, block=True),
-										transitions={'done': 'getspeech2'},
-										autonomy={'done': Autonomy.Off})
+		with _sm_recevoir_sac_15:
+			# x:84 y:156
+			OperatableStateMachine.add('Receive bag',
+										_sm_receive_bag_5,
+										transitions={'failed': 'failed', 'done': 'done'},
+										autonomy={'failed': Autonomy.Inherit, 'done': Autonomy.Inherit},
+										remapping={'Closed_Gripper_Width': 'Closed_Gripper_Width', 'Open_Gripper_Width': 'Open_Gripper_Width'})
 
-			# x:30 y:342
-			OperatableStateMachine.add('Action_Receive_Bag',
-										self.use_behavior(Action_Receive_BagSM, 'Recevoir sac/Action_Receive_Bag'),
-										transitions={'finished': 'bringit', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'Closed_Gripper_Width': 'Closed_Gripper_Width', 'Open_Gripper_Width': 'Open_Gripper_Width', 'Closed_Gripper_Width': 'Closed_Gripper_Width'})
-
-			# x:57 y:103
-			OperatableStateMachine.add('getspeech2',
-										GetSpeech(watchdog=5),
-										transitions={'done': 'takebag', 'nothing': 'getspeech2', 'fail': 'fail'},
-										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
-										remapping={'words': 'words'})
-
-			# x:55 y:179
-			OperatableStateMachine.add('takebag',
-										RegexTester(regex=".*((take)|(bag)|(ready)).*"),
-										transitions={'true': 'PutBAg', 'false': 'getspeech2'},
-										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-										remapping={'text': 'words', 'result': 'result'})
-
-			# x:53 y:445
-			OperatableStateMachine.add('bringit',
-										SaraSay(sentence="I will bring it inside", emotion=1, block=True),
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:63 y:247
-			OperatableStateMachine.add('PutBAg',
-										SaraSay(sentence="Could you put the bag in my hand?, please", emotion=1, block=False),
-										transitions={'done': 'Action_Receive_Bag'},
-										autonomy={'done': Autonomy.Off})
+			# x:262 y:154
+			OperatableStateMachine.add('Look at',
+										_sm_look_at_4,
+										transitions={'failed': 'failed'},
+										autonomy={'failed': Autonomy.Inherit})
 
 
 		# x:728 y:533, x:722 y:468
-		_sm_getnewperson_14 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['Position'])
+		_sm_getnewperson_16 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['Position'])
 
-		with _sm_getnewperson_14:
+		with _sm_getnewperson_16:
 			# x:52 y:77
 			OperatableStateMachine.add('Get ope',
-										_sm_get_ope_6,
+										_sm_get_ope_8,
 										transitions={'true': 'set name'},
 										autonomy={'true': Autonomy.Inherit},
 										remapping={'Entity': 'Entity'})
@@ -606,11 +641,11 @@ class HelpmecarrySM(Behavior):
 
 
 		with _state_machine:
-			# x:37 y:25
-			OperatableStateMachine.add('ContinueButton',
-										ContinueButton(),
-										transitions={'true': 'say ready', 'false': 'say ready'},
-										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
+			# x:219 y:39
+			OperatableStateMachine.add('say ready',
+										SaraSay(sentence="I will follow when you ask me.", emotion=1, block=True),
+										transitions={'done': 'INIT SARA'},
+										autonomy={'done': Autonomy.Off})
 
 			# x:827 y:439
 			OperatableStateMachine.add('finish',
@@ -620,65 +655,65 @@ class HelpmecarrySM(Behavior):
 
 			# x:53 y:641
 			OperatableStateMachine.add('GetNewPerson',
-										_sm_getnewperson_14,
+										_sm_getnewperson_16,
 										transitions={'done': 'ExitArena', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Position': 'Position'})
 
 			# x:48 y:349
 			OperatableStateMachine.add('Recevoir sac',
-										_sm_recevoir_sac_13,
-										transitions={'failed': 'failed', 'fail': 'Retour maison', 'done': 'Retour maison'},
-										autonomy={'failed': Autonomy.Inherit, 'fail': Autonomy.Inherit, 'done': Autonomy.Inherit},
+										_sm_recevoir_sac_15,
+										transitions={'failed': 'failed', 'done': 'Retour maison'},
+										autonomy={'failed': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Closed_Gripper_Width': 'Closed_Gripper_Width', 'Open_Gripper_Width': 'Open_Gripper_Width'})
 
 			# x:36 y:448
 			OperatableStateMachine.add('Retour maison',
-										_sm_retour_maison_12,
+										_sm_retour_maison_14,
 										transitions={'done': 'drop le sac', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'PoseOrigin': 'Origin', 'Relative': 'Relative'})
 
 			# x:49 y:556
 			OperatableStateMachine.add('drop le sac',
-										_sm_drop_le_sac_11,
+										_sm_drop_le_sac_13,
 										transitions={'failed': 'failed', 'no_object': 'failed', 'done': 'GetNewPerson'},
 										autonomy={'failed': Autonomy.Inherit, 'no_object': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Idle': 'Pose_Init', 'dropPose': 'dropPose'})
 
 			# x:21 y:250
 			OperatableStateMachine.add('Getting ID Operator and follow ',
-										_sm_getting_id_operator_and_follow__10,
+										_sm_getting_id_operator_and_follow__12,
 										transitions={'failed': 'failed', 'done': 'Recevoir sac'},
 										autonomy={'failed': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Position': 'Position'})
 
 			# x:148 y:177
 			OperatableStateMachine.add('Enter arena',
-										_sm_enter_arena_9,
+										_sm_enter_arena_11,
 										transitions={'done': 'Getting ID Operator and follow ', 'fail': 'failed'},
 										autonomy={'done': Autonomy.Inherit, 'fail': Autonomy.Inherit},
 										remapping={'EntryDoor': 'EntryDoor'})
 
 			# x:312 y:650
 			OperatableStateMachine.add('ExitArena',
-										_sm_exitarena_8,
+										_sm_exitarena_10,
 										transitions={'finished': 'finish', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'ExitDoor': 'ExitDoor'})
 
 			# x:41 y:109
 			OperatableStateMachine.add('INIT SARA',
-										_sm_init_sara_7,
+										_sm_init_sara_9,
 										transitions={'done': 'Getting ID Operator and follow ', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Pose_Init': 'Pose_Init', 'Origin': 'Origin'})
 
-			# x:219 y:39
-			OperatableStateMachine.add('say ready',
-										SaraSay(sentence="I will follow when you ask me.", emotion=1, block=True),
-										transitions={'done': 'INIT SARA'},
-										autonomy={'done': Autonomy.Off})
+			# x:37 y:25
+			OperatableStateMachine.add('ContinueButton',
+										ContinueButton(),
+										transitions={'true': 'say ready', 'false': 'say ready'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
 
 
 		return _state_machine

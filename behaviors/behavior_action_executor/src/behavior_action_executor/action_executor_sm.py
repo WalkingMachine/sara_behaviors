@@ -68,7 +68,7 @@ class Action_ExecutorSM(Behavior):
 	def create(self):
 		# x:887 y:426, x:1209 y:79, x:1066 y:156
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
-		_state_machine.userdata.Action = ["Move", "table", "living room"]
+		_state_machine.userdata.Action = ["Move", "dining table"]
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -124,7 +124,7 @@ class Action_ExecutorSM(Behavior):
 										self.use_behavior(ActionWrapper_GiveSM, 'ActionWrapper_Give'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
-										remapping={'Action': 'Action', 'person_name': 'Action'})
+										remapping={'Action': 'Action'})
 
 			# x:467 y:413
 			OperatableStateMachine.add('ActionWrapper_Move',
@@ -163,8 +163,8 @@ class Action_ExecutorSM(Behavior):
 			# x:42 y:269
 			OperatableStateMachine.add('decide Action',
 										DecisionState(outcomes=["answer", "ask", "count", "find", "findperson", "follow", "give", "move", "pick", "place", "say"], conditions=lambda x: x),
-										transitions={'answer': 'ActionWrapper_Answer', 'ask': 'ActionWrapper_Ask', 'count': 'ActionWrapper_Count', 'find': 'ActionWrapper_Find', 'follow': 'ActionWrapper_Follow', 'give': 'ActionWrapper_Give', 'move': 'ActionWrapper_Move', 'pick': 'ActionWrapper_Pick', 'place': 'ActionWrapper_Place', 'say': 'ActionWrapper_Say', 'findperson': 'ActionWrapper_Find_Person'},
-										autonomy={'answer': Autonomy.Off, 'ask': Autonomy.Off, 'count': Autonomy.Off, 'find': Autonomy.Off, 'follow': Autonomy.Off, 'give': Autonomy.Off, 'move': Autonomy.Off, 'pick': Autonomy.Off, 'place': Autonomy.Off, 'say': Autonomy.Off, 'findperson': Autonomy.Off},
+										transitions={'answer': 'ActionWrapper_Answer', 'ask': 'ActionWrapper_Ask', 'count': 'ActionWrapper_Count', 'find': 'ActionWrapper_Find', 'findperson': 'ActionWrapper_Find_Person', 'follow': 'ActionWrapper_Follow', 'give': 'ActionWrapper_Give', 'move': 'ActionWrapper_Move', 'pick': 'ActionWrapper_Pick', 'place': 'ActionWrapper_Place', 'say': 'ActionWrapper_Say'},
+										autonomy={'answer': Autonomy.Off, 'ask': Autonomy.Off, 'count': Autonomy.Off, 'find': Autonomy.Off, 'findperson': Autonomy.Off, 'follow': Autonomy.Off, 'give': Autonomy.Off, 'move': Autonomy.Off, 'pick': Autonomy.Off, 'place': Autonomy.Off, 'say': Autonomy.Off},
 										remapping={'input_value': 'name'})
 
 

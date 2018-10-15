@@ -18,6 +18,7 @@ from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.SetRosParamKey import SetRosParamKey
 from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.SetRosParam import SetRosParam
+from flexbe_states.check_condition_state import CheckConditionState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -56,7 +57,7 @@ class ActionWrapper_AskSM(Behavior):
 
 
 	def create(self):
-		# x:790 y:531, x:135 y:509, x:477 y:525
+		# x:808 y:575, x:135 y:509, x:477 y:525
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Ask", "How are you today?", "Answer"]
 
@@ -64,6 +65,32 @@ class ActionWrapper_AskSM(Behavior):
 		# [MANUAL_CREATE]
 		
 		# [/MANUAL_CREATE]
+
+		# x:675 y:219, x:771 y:50
+		_sm_confirm_0 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['answer'])
+
+		with _sm_confirm_0:
+			# x:80 y:48
+			OperatableStateMachine.add('heard',
+										SaraSayKey(Format=lambda x: "I heard "+x+". Is that correct?", emotion=1, block=True),
+										transitions={'done': 'get speech'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'sentence': 'answer'})
+
+			# x:201 y:61
+			OperatableStateMachine.add('get speech',
+										GetSpeech(watchdog=5),
+										transitions={'done': 'check yes', 'nothing': 'failed', 'fail': 'finished'},
+										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'words': 'words'})
+
+			# x:501 y:98
+			OperatableStateMachine.add('check yes',
+										CheckConditionState(predicate=lambda x: "yes" in x and not "no" in x),
+										transitions={'true': 'finished', 'false': 'failed'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'words'})
+
 
 
 		with _state_machine:
@@ -88,10 +115,10 @@ class ActionWrapper_AskSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'question'})
 
-			# x:526 y:150
+			# x:515 y:190
 			OperatableStateMachine.add('GetTheResponse',
 										GetSpeech(watchdog=7),
-										transitions={'done': 'getRosparmName', 'nothing': 'looping', 'fail': 'looping'},
+										transitions={'done': 'Confirm', 'nothing': 'looping', 'fail': 'looping'},
 										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'words': 'response'})
 
@@ -120,7 +147,7 @@ class ActionWrapper_AskSM(Behavior):
 										transitions={'done': 'trouveLaQuestion'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:540 y:300
+			# x:540 y:305
 			OperatableStateMachine.add('looping',
 										ForLoop(repeat=2),
 										transitions={'do': 'NotUnderstand', 'end': 'saraSorry'},
@@ -133,27 +160,27 @@ class ActionWrapper_AskSM(Behavior):
 										transitions={'done': 'cause2'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:694 y:144
+			# x:776 y:209
 			OperatableStateMachine.add('getRosparmName',
 										CalculationState(calculation=lambda x: x[2]),
 										transitions={'done': 'SetRosParamKey'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'RosParamName'})
 
-			# x:702 y:241
+			# x:778 y:301
 			OperatableStateMachine.add('SetRosParamKey',
 										SetRosParamKey(),
 										transitions={'done': 'log'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'response', 'ParamName': 'RosParamName'})
 
-			# x:764 y:437
+			# x:787 y:482
 			OperatableStateMachine.add('thank you',
 										SaraSay(sentence="Thank you for your answer.", emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:755 y:343
+			# x:789 y:390
 			OperatableStateMachine.add('log',
 										LogKeyState(text="{}", severity=Logger.REPORT_HINT),
 										transitions={'done': 'thank you'},
@@ -180,6 +207,13 @@ class ActionWrapper_AskSM(Behavior):
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'Key'})
+
+			# x:769 y:88
+			OperatableStateMachine.add('Confirm',
+										_sm_confirm_0,
+										transitions={'finished': 'getRosparmName', 'failed': 'AskTheQuestion'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'answer': 'response'})
 
 
 		return _state_machine
