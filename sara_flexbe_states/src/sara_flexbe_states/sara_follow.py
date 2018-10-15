@@ -26,42 +26,40 @@ class SaraFollow(EventState):
     """
     Make Sara follow an entity using move_base.
     -- Distance     float       distance to keep between sara and the entity
+    -- ReplanPeriod   float       Time in seconds between each replanning for movebase
 
     ># ID     int      entity ID.
 
     """
 
-    def __init__(self, distance):
+    def __init__(self, distance=1, ReplanPeriod=0.5):
         """Constructor"""
 
         super(SaraFollow, self).__init__(outcomes=['failed'],
                                          input_keys=['ID'])
 
+        # Prepare the action client for move_base
         self._action_topic = "/move_base"
-
         self._client = ProxyActionClient({self._action_topic: MoveBaseAction})
 
+        # Initialise the subscribers
         self.entities_topic = "/entities"
         self._pose_topic = "/robot_pose"
         self._sub = ProxySubscriberCached({self._pose_topic: Pose, self.entities_topic: Entities})
 
-        self.distance = distance
+        # Get the parameters
+        self.targetDistance = distance
+        self.ReplanPeriod = ReplanPeriod
+
+        # Initialise the status variables
         self.MyPose = None
-        self.Entity = None
-        self.count = 0
-        self.LastGoal = None
+        self.lastPlanTime = 0
 
     def execute(self, userdata):
         """Wait for action result and return outcome accordingly"""
 
-        # self.count += 1
-        # if self.count > 10:
-        #     self.count = 0
-        #     return
-
-
-
-        self.Entity = None
+        # Initialise the Entity
+        Entity = None
 
         # Get my last position
         if self._sub.has_msg(self._pose_topic):
@@ -72,36 +70,16 @@ class SaraFollow(EventState):
             message = self._sub.get_last_msg(self.entities_topic)
             for entity in message.entities:
                 if entity.ID == userdata.ID:
-                    self.Entity = entity
+                    Entity = entity
 
-        if self.MyPose and self.Entity:
+        # If both my pose and the entyties are known, we start following.
+        if self.MyPose and Entity:
+            # Calculate a new goal if the desired period has passed.
+            if self.lastPlanTime+self.ReplanPeriod < rospy.get_time():
+                self.lastPlanTime = rospy.get_time()
+                self.setGoal(self.generateGoal(self.MyPose.position, Entity.position))
 
-            # Calculate the safe distance to reach
-            GoalPose = Pose()
-
-            length = ((self.Entity.position.x - self.MyPose.position.x) ** 2 + (
-                        self.Entity.position.y - self.MyPose.position.y) ** 2) ** 0.5
-
-            if length < self.distance:
-
-                return
-
-
-            GoalPose.position.x = self.Entity.position.x - (
-                        self.Entity.position.x - self.MyPose.position.x) / length * self.distance
-            GoalPose.position.y = self.Entity.position.y - (
-                        self.Entity.position.y - self.MyPose.position.y) / length * self.distance
-
-            angle = math.atan2((self.Entity.position.y - self.MyPose.position.y), (self.Entity.position.x - self.MyPose.position.x))
-            qt = quaternion_from_euler(0, 0, angle)
-            GoalPose.orientation.w = qt[3]
-            GoalPose.orientation.x = qt[0]
-            GoalPose.orientation.y = qt[1]
-            GoalPose.orientation.z = qt[2]
-
-            self.setGoal(GoalPose)
-
-
+            # Check if movebase can reach the goal
             if self._client.has_result(self._action_topic):
                 status = self._client.get_state(self._action_topic)
                 if status in [GoalStatus.PREEMPTED, GoalStatus.REJECTED,
@@ -117,6 +95,7 @@ class SaraFollow(EventState):
         serv()
         self.MyPose = None
         self.Entity = None
+        self.Counter = 0
 
     def on_exit(self, userdata):
         if not self._client.has_result(self._action_topic):
@@ -127,22 +106,40 @@ class SaraFollow(EventState):
         pose = self._client.get_feedback(self._action_topic)
         self.setGoal(pose)
 
+
+
+    def generateGoal(self, MyPosition, EntityPosition):
+        # Calculate the safe distance to reach
+        GoalPose = Pose()
+
+        # Calculate the diference in position
+        dx = EntityPosition.x - MyPosition.x
+        dy = EntityPosition.y - MyPosition.y
+
+        # Calculate the desired distance to the person.
+        # If the person is too close, the robot must not go backward.
+        distanceToPerson = max(self.targetDistance, (dx ** 2 + dy ** 2) ** 0.5)
+
+        # Calculate the desired position to reach.
+        GoalPose.position.x = EntityPosition.x - dx / distanceToPerson * self.targetDistance
+        GoalPose.position.y = EntityPosition.y - dy / distanceToPerson * self.targetDistance
+
+        # Calculate the desired direction.
+        angle = math.atan2(dy, dx)
+        qt = quaternion_from_euler(0, 0, angle)
+        GoalPose.orientation.w = qt[3]
+        GoalPose.orientation.x = qt[0]
+        GoalPose.orientation.y = qt[1]
+        GoalPose.orientation.z = qt[2]
+
+        return GoalPose
+
+
     def setGoal(self, pose):
 
-
-
-        if self.LastGoal:
-            dist = ((self.LastGoal.position.x - pose.position.x) ** 2
-                    + (self.LastGoal.position.y - pose.position.y) ** 2) ** 0.5
-            if dist < 0.5:
-                Logger.loginfo("the new goal is within last goal limit")
-                return
-        self.LastGoal = pose
-
+        # Generate the goal
         goal = MoveBaseGoal()
-
         goal.target_pose.pose = pose
-
         goal.target_pose.header.frame_id = "map"
 
         # Send the action goal for execution
