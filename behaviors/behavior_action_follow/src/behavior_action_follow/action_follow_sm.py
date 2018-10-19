@@ -211,7 +211,7 @@ Demande le id de la personne a suivre
 		with _sm_follow_5:
 			# x:65 y:167
 			OperatableStateMachine.add('follow',
-										SaraFollow(distance=1),
+										SaraFollow(distance=1.5, ReplanPeriod=1),
 										transitions={'failed': 'follow'},
 										autonomy={'failed': Autonomy.Off},
 										remapping={'ID': 'ID'})

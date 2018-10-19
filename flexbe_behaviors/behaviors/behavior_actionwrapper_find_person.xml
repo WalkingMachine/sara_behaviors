@@ -12,9 +12,8 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="action_turn" />
 	<contains name="Action_findPerson" />
-	<contains name="action_look_at_face" />
+	<contains name="action_turn" />
 
 	<!-- Available Parameters -->
 

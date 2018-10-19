@@ -12,8 +12,9 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="ActionWrapper_Find_Person" />
+	<contains name="ActionWrapper_Move" />
 	<contains name="ActionWrapper_Follow" />
+	<contains name="ActionWrapper_Find_Person" />
 
 	<!-- Available Parameters -->
 

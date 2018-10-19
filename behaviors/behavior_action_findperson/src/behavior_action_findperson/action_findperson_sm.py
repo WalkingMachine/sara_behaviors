@@ -11,11 +11,10 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
-from flexbe_states.wait_state import WaitState
 from flexbe_states.calculation_state import CalculationState
+from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.SetKey import SetKey
 from behavior_action_turn.action_turn_sm import action_turnSM
-from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -40,8 +39,6 @@ class Action_findPersonSM(Behavior):
 
 		# references to used behaviors
 		self.add_behavior(action_turnSM, 'Container/Rotation/action_turn')
-		self.add_behavior(action_look_at_faceSM, 'action_look_at_face')
-		self.add_behavior(action_look_at_faceSM, 'action_look_at_face_2')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -53,7 +50,7 @@ class Action_findPersonSM(Behavior):
 
 
 	def create(self):
-		# x:897 y:607, x:514 y:143
+		# x:72 y:443, x:514 y:143
 		_state_machine = OperatableStateMachine(outcomes=['done', 'pas_done'], input_keys=['className'], output_keys=['entity'])
 		_state_machine.userdata.className = "person"
 		_state_machine.userdata.entity = None
@@ -141,18 +138,18 @@ class Action_findPersonSM(Behavior):
 										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})
 
-			# x:194 y:40
-			OperatableStateMachine.add('WaitState',
-										WaitState(wait_time=1),
-										transitions={'done': 'find_entity'},
-										autonomy={'done': Autonomy.Off})
-
 			# x:454 y:178
 			OperatableStateMachine.add('Get Entity',
 										CalculationState(calculation=lambda x: x[0]),
 										transitions={'done': 'found'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'entity_list', 'output_value': 'entity'})
+
+			# x:194 y:40
+			OperatableStateMachine.add('WaitState',
+										WaitState(wait_time=1),
+										transitions={'done': 'find_entity'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:372 y:27, x:370 y:220, x:368 y:100, x:330 y:458
@@ -184,22 +181,16 @@ class Action_findPersonSM(Behavior):
 										transitions={'done': 'Container'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:39 y:313
-			OperatableStateMachine.add('Look Center Found',
-										SaraSetHeadAngle(pitch=0.1, yaw=0),
-										transitions={'done': 'Log Entity'},
-										autonomy={'done': Autonomy.Off})
-
 			# x:278 y:138
 			OperatableStateMachine.add('Look Center Not Found',
 										SaraSetHeadAngle(pitch=0.1, yaw=0),
 										transitions={'done': 'pas_done'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:57 y:389
+			# x:58 y:326
 			OperatableStateMachine.add('Log Entity',
 										LogKeyState(text="Found entity: {}", severity=Logger.REPORT_HINT),
-										transitions={'done': 'action_look_at_face'},
+										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'data': 'entity'})
 
@@ -213,28 +204,8 @@ class Action_findPersonSM(Behavior):
 			# x:67 y:222
 			OperatableStateMachine.add('WaitState',
 										WaitState(wait_time=1),
-										transitions={'done': 'Look Center Found'},
+										transitions={'done': 'Log Entity'},
 										autonomy={'done': Autonomy.Off})
-
-			# x:104 y:573
-			OperatableStateMachine.add('action_look_at_face',
-										self.use_behavior(action_look_at_faceSM, 'action_look_at_face'),
-										transitions={'finished': 'WaitState 1', 'failed': 'WaitState 1'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'Entity': 'entity'})
-
-			# x:474 y:598
-			OperatableStateMachine.add('WaitState 1',
-										WaitState(wait_time=2),
-										transitions={'done': 'action_look_at_face_2'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:639 y:586
-			OperatableStateMachine.add('action_look_at_face_2',
-										self.use_behavior(action_look_at_faceSM, 'action_look_at_face_2'),
-										transitions={'finished': 'done', 'failed': 'done'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'Entity': 'entity'})
 
 
 		return _state_machine
