@@ -135,7 +135,7 @@ class ActionWrapper_AnswerSM(Behavior):
 		with _sm_ifquestionforsara_2:
 			# x:30 y:40
 			OperatableStateMachine.add('AskIfQuestion',
-										SaraSay(sentence="Hello. Do you have a question for me?", emotion=1, block=True),
+										SaraSay(sentence="Do you have a question for me?", emotion=1, block=True),
 										transitions={'done': 'getResponse'},
 										autonomy={'done': Autonomy.Off})
 

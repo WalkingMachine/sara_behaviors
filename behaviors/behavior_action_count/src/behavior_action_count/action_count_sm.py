@@ -69,15 +69,15 @@ class Action_countSM(Behavior):
 		with _sm_move_head_0:
 			# x:19 y:95
 			OperatableStateMachine.add('set left',
-										SaraSetHeadAngle(pitch=0.6, yaw=1.2),
+										SaraSetHeadAngle(pitch=-0.6, yaw=1.2),
 										transitions={'done': 'wait1'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:5 y:229
 			OperatableStateMachine.add('count',
 										list_entities_by_name(frontality_level=0, distance_max=2),
-										transitions={'found': 'add', 'not_found': 'add'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										transitions={'found': 'add', 'none_found': 'add'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:10 y:326
@@ -89,7 +89,7 @@ class Action_countSM(Behavior):
 
 			# x:241 y:88
 			OperatableStateMachine.add('set center',
-										SaraSetHeadAngle(pitch=0.6, yaw=0),
+										SaraSetHeadAngle(pitch=-0.6, yaw=0),
 										transitions={'done': 'wait 2'},
 										autonomy={'done': Autonomy.Off})
 
@@ -102,8 +102,8 @@ class Action_countSM(Behavior):
 			# x:245 y:224
 			OperatableStateMachine.add('count2',
 										list_entities_by_name(frontality_level=0, distance_max=2),
-										transitions={'found': 'add2', 'not_found': 'add2'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										transitions={'found': 'add2', 'none_found': 'add2'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:252 y:321
@@ -121,7 +121,7 @@ class Action_countSM(Behavior):
 
 			# x:445 y:90
 			OperatableStateMachine.add('set right',
-										SaraSetHeadAngle(pitch=0.6, yaw=-1.2),
+										SaraSetHeadAngle(pitch=-0.6, yaw=-1.2),
 										transitions={'done': 'wait 3'},
 										autonomy={'done': Autonomy.Off})
 
@@ -134,8 +134,8 @@ class Action_countSM(Behavior):
 			# x:443 y:237
 			OperatableStateMachine.add('count3',
 										list_entities_by_name(frontality_level=0, distance_max=2),
-										transitions={'found': 'add3', 'not_found': 'add3'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										transitions={'found': 'add3', 'none_found': 'add3'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:457 y:334
@@ -213,7 +213,7 @@ class Action_countSM(Behavior):
 
 			# x:419 y:254
 			OperatableStateMachine.add('Look Center Found',
-										SaraSetHeadAngle(pitch=0.4, yaw=0),
+										SaraSetHeadAngle(pitch=-0.4, yaw=0),
 										transitions={'done': 'Log Count'},
 										autonomy={'done': Autonomy.Off})
 

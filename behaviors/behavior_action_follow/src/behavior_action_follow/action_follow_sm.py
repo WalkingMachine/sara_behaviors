@@ -51,7 +51,7 @@ Demande le id de la personne a suivre
 	def create(self):
 		# x:572 y:135
 		_state_machine = OperatableStateMachine(outcomes=['failed'], input_keys=['ID'])
-		_state_machine.userdata.ID = 7
+		_state_machine.userdata.ID = 20
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -73,40 +73,64 @@ Demande le id de la personne a suivre
 		_sm_turn_head_1 = OperatableStateMachine(outcomes=['fail'])
 
 		with _sm_turn_head_1:
-			# x:75 y:47
+			# x:54 y:55
 			OperatableStateMachine.add('turn r',
 										SaraSetHeadAngle(pitch=0, yaw=-1.5),
 										transitions={'done': 'w3'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:673 y:293
+			# x:749 y:183
 			OperatableStateMachine.add('wait1',
-										WaitState(wait_time=8),
+										WaitState(wait_time=5),
 										transitions={'done': 'turn right'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:369 y:464
+			# x:727 y:309
 			OperatableStateMachine.add('turn right',
 										SaraSetHeadAngle(pitch=0, yaw=-1.5),
 										transitions={'done': 'wait2'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:165 y:362
+			# x:582 y:311
 			OperatableStateMachine.add('wait2',
-										WaitState(wait_time=8),
-										transitions={'done': 'turn left'},
+										WaitState(wait_time=5),
+										transitions={'done': 'center2'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:240 y:48
+			# x:246 y:54
 			OperatableStateMachine.add('w3',
 										WaitState(wait_time=4),
 										transitions={'done': 'turn left'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:429 y:68
+			# x:383 y:57
 			OperatableStateMachine.add('turn left',
 										SaraSetHeadAngle(pitch=0, yaw=1.5),
+										transitions={'done': 'wait3'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:728 y:69
+			OperatableStateMachine.add('center1',
+										SaraSetHeadAngle(pitch=0, yaw=0),
 										transitions={'done': 'wait1'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:576 y:63
+			OperatableStateMachine.add('wait3',
+										WaitState(wait_time=5),
+										transitions={'done': 'center1'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:389 y:308
+			OperatableStateMachine.add('center2',
+										SaraSetHeadAngle(pitch=0, yaw=0),
+										transitions={'done': 'wait4'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:409 y:177
+			OperatableStateMachine.add('wait4',
+										WaitState(wait_time=5),
+										transitions={'done': 'turn left'},
 										autonomy={'done': Autonomy.Off})
 
 
@@ -187,7 +211,7 @@ Demande le id de la personne a suivre
 		with _sm_follow_5:
 			# x:65 y:167
 			OperatableStateMachine.add('follow',
-										SaraFollow(distance=1.2),
+										SaraFollow(distance=1.5, ReplanPeriod=1),
 										transitions={'failed': 'follow'},
 										autonomy={'failed': Autonomy.Off},
 										remapping={'ID': 'ID'})

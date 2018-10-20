@@ -90,13 +90,13 @@ class Scenario_SPRSM(Behavior):
 		with _sm_rotate_0:
 			# x:103 y:61
 			OperatableStateMachine.add('Look Left',
-										SaraSetHeadAngle(pitch=0.35, yaw=0.5),
+										SaraSetHeadAngle(pitch=-0.35, yaw=0.5),
 										transitions={'done': 'Rotate Left'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:794 y:54
 			OperatableStateMachine.add('Look Right',
-										SaraSetHeadAngle(pitch=0.35, yaw=-0.5),
+										SaraSetHeadAngle(pitch=-0.35, yaw=-0.5),
 										transitions={'done': 'Rotate Right'},
 										autonomy={'done': Autonomy.Off})
 
@@ -120,7 +120,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:484 y:54
 			OperatableStateMachine.add('Look Center',
-										SaraSetHeadAngle(pitch=0.35, yaw=0),
+										SaraSetHeadAngle(pitch=-0.35, yaw=0),
 										transitions={'done': 'Rotate Center'},
 										autonomy={'done': Autonomy.Off})
 
@@ -554,7 +554,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:1120 y:237
 			OperatableStateMachine.add('set head',
-										SaraSetHeadAngle(pitch=0.2, yaw=0),
+										SaraSetHeadAngle(pitch=-0.2, yaw=0),
 										transitions={'done': 'Set Go Out'},
 										autonomy={'done': Autonomy.Off})
 

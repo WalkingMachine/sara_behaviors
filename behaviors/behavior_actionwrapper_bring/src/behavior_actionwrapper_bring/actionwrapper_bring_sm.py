@@ -64,7 +64,7 @@ class ActionWrapper_BringSM(Behavior):
 
 
 	def create(self):
-		# x:868 y:291, x:857 y:562
+		# x:868 y:291, x:857 y:562, x:602 y:325
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Bring","cup", "living room",""]
 
@@ -214,7 +214,7 @@ class ActionWrapper_BringSM(Behavior):
 			# x:230 y:363
 			OperatableStateMachine.add('get room name',
 										CalculationState(calculation=lambda x: x[2]),
-										transitions={'done': 'get room'},
+										transitions={'done': 'say unknown'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'name'})
 
@@ -226,7 +226,7 @@ class ActionWrapper_BringSM(Behavior):
 										remapping={'sentence': 'name'})
 
 
-		# x:816 y:646, x:854 y:48
+		# x:816 y:646, x:854 y:48, x:230 y:415
 		_sm_bring_3 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['expected_pose', 'Action', 'robot_pose'])
 
 		with _sm_bring_3:
@@ -275,9 +275,9 @@ class ActionWrapper_BringSM(Behavior):
 			# x:38 y:468
 			OperatableStateMachine.add('Action_pick',
 										self.use_behavior(Action_pickSM, 'Bring/Action_pick'),
-										transitions={'success': 'Move_Back', 'too far': 'for', 'unreachable': 'finished', 'not seen': 'finished', 'critical fail': 'failed', 'missed': 'finished'},
-										autonomy={'success': Autonomy.Inherit, 'too far': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not seen': Autonomy.Inherit, 'critical fail': Autonomy.Inherit, 'missed': Autonomy.Inherit},
-										remapping={'object': 'name', 'grip_pose': 'grip_pose'})
+										transitions={'success': 'Move_Back', 'unreachable': 'finished', 'not found': 'failed', 'dropped': 'critical_fail'},
+										autonomy={'success': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not found': Autonomy.Inherit, 'dropped': Autonomy.Inherit},
+										remapping={'objectID': 'objectID'})
 
 			# x:247 y:581
 			OperatableStateMachine.add('say closer',
@@ -302,7 +302,7 @@ class ActionWrapper_BringSM(Behavior):
 			# x:133 y:161
 			OperatableStateMachine.add('log pose',
 										LogKeyState(text="{}", severity=Logger.REPORT_HINT),
-										transitions={'done': 'get object'},
+										transitions={'done': 'say unknown'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'data': 'expected_pose'})
 
@@ -353,8 +353,8 @@ class ActionWrapper_BringSM(Behavior):
 			# x:665 y:399
 			OperatableStateMachine.add('Bring',
 										_sm_bring_3,
-										transitions={'finished': 'finished', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'expected_pose': 'expected_pose', 'Action': 'Action', 'robot_pose': 'robot_pose'})
 
 			# x:303 y:379

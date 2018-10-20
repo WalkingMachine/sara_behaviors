@@ -15,6 +15,7 @@
 	<contains name="action_look_at_face" />
 	<contains name="Action_Guide2" />
 	<contains name="Action_Receive_Bag" />
+	<contains name="LookAtClosest" />
 	<contains name="Action_Move" />
 	<contains name="Action_follow" />
 	<contains name="Action_Pass_Door" />

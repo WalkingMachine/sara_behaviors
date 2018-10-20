@@ -8,17 +8,16 @@
 
 import roslib; roslib.load_manifest('behavior_action_move')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
-from sara_flexbe_states.for_loop import ForLoop
+from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_set_expression import SetExpression
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_rel_move_base import SaraRelMoveBase
 from sara_flexbe_states.sara_move_base import SaraMoveBase
-from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.sara_set_head_angle_key import SaraSetHeadAngleKey
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.GetClosestObstacle import GetClosestObstacle
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -53,7 +52,7 @@ class Action_MoveSM(Behavior):
 
 
 	def create(self):
-		# x:765 y:155, x:767 y:456
+		# x:765 y:155, x:755 y:568
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['pose', 'relative'])
 		_state_machine.userdata.pose = 0
 		_state_machine.userdata.relative = False
@@ -146,23 +145,17 @@ class Action_MoveSM(Behavior):
 
 
 		with _state_machine:
-			# x:46 y:147
-			OperatableStateMachine.add('set head',
-										SaraSetHeadAngle(pitch=0.9, yaw=0),
-										transitions={'done': 'Move concurent'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:271 y:449
-			OperatableStateMachine.add('for',
-										ForLoop(repeat=2),
-										transitions={'do': 'set straight face', 'end': 'sorry'},
-										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
-										remapping={'index': 'index'})
+			# x:54 y:27
+			OperatableStateMachine.add('SetCount',
+										SetKey(Value=2),
+										transitions={'done': 'set head'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Count'})
 
 			# x:271 y:347
 			OperatableStateMachine.add('stuck',
 										SaraSay(sentence="I'm getting stuck.", emotion=1, block=True),
-										transitions={'done': 'for'},
+										transitions={'done': 'Count--'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:58 y:339
@@ -171,7 +164,7 @@ class Action_MoveSM(Behavior):
 										transitions={'done': 'set head'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:585 y:448
+			# x:582 y:558
 			OperatableStateMachine.add('sorry',
 										SaraSay(sentence="Well. It seem's I can't go there.", emotion=1, block=True),
 										transitions={'done': 'failed'},
@@ -183,13 +176,13 @@ class Action_MoveSM(Behavior):
 										transitions={'done': 'stuck'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:50 y:447
+			# x:39 y:568
 			OperatableStateMachine.add('set straight face',
 										SetExpression(emotion=3, brightness=-1),
 										transitions={'done': 'try again'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:450 y:150
+			# x:583 y:147
 			OperatableStateMachine.add('set blink',
 										SetExpression(emotion=6, brightness=-1),
 										transitions={'done': 'finished'},
@@ -198,9 +191,35 @@ class Action_MoveSM(Behavior):
 			# x:252 y:146
 			OperatableStateMachine.add('Move concurent',
 										_sm_move_concurent_2,
-										transitions={'arrived': 'set blink', 'failed': 'set sad face'},
+										transitions={'arrived': 'reset head', 'failed': 'set sad face'},
 										autonomy={'arrived': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'relative': 'relative', 'pose': 'pose'})
+
+			# x:261 y:471
+			OperatableStateMachine.add('Count--',
+										CalculationState(calculation=lambda x: x-1),
+										transitions={'done': 'check count'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'Count', 'output_value': 'Count'})
+
+			# x:253 y:569
+			OperatableStateMachine.add('check count',
+										CheckConditionState(predicate=lambda x: x>=0),
+										transitions={'true': 'set straight face', 'false': 'sorry'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'Count'})
+
+			# x:46 y:147
+			OperatableStateMachine.add('set head',
+										SaraSetHeadAngle(pitch=-0.9, yaw=0),
+										transitions={'done': 'Move concurent'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:425 y:143
+			OperatableStateMachine.add('reset head',
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										transitions={'done': 'set blink'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

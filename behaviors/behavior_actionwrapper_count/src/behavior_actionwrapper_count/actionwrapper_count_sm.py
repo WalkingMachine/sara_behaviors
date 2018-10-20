@@ -114,7 +114,7 @@ class ActionWrapper_CountSM(Behavior):
 
 			# x:17 y:633
 			OperatableStateMachine.add('set head back',
-										SaraSetHeadAngle(pitch=0.3, yaw=0),
+										SaraSetHeadAngle(pitch=-0.3, yaw=0),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 

@@ -13,7 +13,6 @@
 
 	<!-- Contained Behaviors -->
 	<contains name="action_turn" />
-	<contains name="action_look_at_face" />
 
 	<!-- Available Parameters -->
 
