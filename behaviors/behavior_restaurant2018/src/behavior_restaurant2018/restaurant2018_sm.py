@@ -13,11 +13,12 @@ from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from flexbe_states.wait_state import WaitState
-from behavior_action_pick.action_pick_sm import Action_pickSM
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
-from behavior_action_give.action_give_sm import Action_GiveSM
 from flexbe_states.calculation_state import CalculationState
 from behavior_actionwrapper_move.actionwrapper_move_sm import ActionWrapper_MoveSM
+from flexbe_states.log_key_state import LogKeyState
+from behavior_actionwrapper_pick.actionwrapper_pick_sm import ActionWrapper_PickSM
+from behavior_actionwrapper_give.actionwrapper_give_sm import ActionWrapper_GiveSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -41,12 +42,12 @@ class restaurant2018SM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_pickSM, 'Action_pick')
-		self.add_behavior(Action_GiveSM, 'GiveToClient')
 		self.add_behavior(ActionWrapper_MoveSM, 'ReturnToClient')
 		self.add_behavior(ActionWrapper_MoveSM, 'MoveToClient')
 		self.add_behavior(ActionWrapper_MoveSM, 'MoveToStart')
 		self.add_behavior(ActionWrapper_MoveSM, 'MoveToBarman')
+		self.add_behavior(ActionWrapper_PickSM, 'ActionWrapper_Pick')
+		self.add_behavior(ActionWrapper_GiveSM, 'ActionWrapper_Give')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -55,18 +56,20 @@ class restaurant2018SM(Behavior):
 
 		# Behavior comments:
 
-		# O 544 596 
+		# O 496 664 
 		# get object on table
 
-		# O 167 584 
+		# O 112 640 
 		# Give to Client
 
 
 
 	def create(self):
-		# x:55 y:535, x:474 y:278
+		# x:30 y:589, x:474 y:278
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.name = ""
+		_state_machine.userdata.order = "bottle"
+		_state_machine.userdata.Action2 = ["Give", "client"]
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -77,7 +80,7 @@ class restaurant2018SM(Behavior):
 		with _state_machine:
 			# x:32 y:383
 			OperatableStateMachine.add('setActionClient',
-										SetKey(Value=["move","poseClient"]),
+										SetKey(Value=["move","dining table"]),
 										transitions={'done': 'setActionStart'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'actionClient'})
@@ -102,25 +105,18 @@ class restaurant2018SM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'order'})
 
-			# x:776 y:344
+			# x:782 y:363
 			OperatableStateMachine.add('WaitForItems',
 										WaitState(wait_time=10),
 										transitions={'done': 'listVisibleEntities'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:547 y:531
-			OperatableStateMachine.add('Action_pick',
-										self.use_behavior(Action_pickSM, 'Action_pick'),
-										transitions={'success': 'ReturnToClient', 'unreachable': 'failed', 'not found': 'failed', 'dropped': 'failed'},
-										autonomy={'success': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not found': Autonomy.Inherit, 'dropped': Autonomy.Inherit},
-										remapping={'objectID': 'objectID'})
-
 			# x:793 y:482
 			OperatableStateMachine.add('listVisibleEntities',
-										list_entities_by_name(frontality_level=0.5, distance_max=5),
-										transitions={'found': 'closerElement', 'not_found': 'failed'},
+										list_entities_by_name(frontality_level=0.5, distance_max=10),
+										transitions={'found': 'logkey', 'not_found': 'listVisibleEntities'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
+										remapping={'name': 'order', 'entity_list': 'entity_list', 'number': 'number'})
 
 			# x:828 y:92
 			OperatableStateMachine.add('RepeatOrder',
@@ -129,23 +125,17 @@ class restaurant2018SM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'order'})
 
-			# x:137 y:516
-			OperatableStateMachine.add('GiveToClient',
-										self.use_behavior(Action_GiveSM, 'GiveToClient'),
-										transitions={'Given': 'finished', 'Person_not_found': 'failed', 'No_object_in_hand': 'failed', 'fail': 'failed'},
-										autonomy={'Given': Autonomy.Inherit, 'Person_not_found': Autonomy.Inherit, 'No_object_in_hand': Autonomy.Inherit, 'fail': Autonomy.Inherit})
-
-			# x:684 y:510
+			# x:685 y:529
 			OperatableStateMachine.add('closerElement',
-										CalculationState(calculation=lambda x: x[0].id),
-										transitions={'done': 'Action_pick'},
+										CalculationState(calculation=lambda x: ["pick", x[0].name]),
+										transitions={'done': 'ActionWrapper_Pick'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'entity_list', 'output_value': 'objectID'})
+										remapping={'input_value': 'entity_list', 'output_value': 'Action'})
 
-			# x:312 y:522
+			# x:301 y:581
 			OperatableStateMachine.add('ReturnToClient',
 										self.use_behavior(ActionWrapper_MoveSM, 'ReturnToClient'),
-										transitions={'finished': 'GiveToClient', 'failed': 'failed', 'critical_fail': 'failed'},
+										transitions={'finished': 'ActionWrapper_Give', 'failed': 'failed', 'critical_fail': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'actionClient'})
 
@@ -179,8 +169,8 @@ class restaurant2018SM(Behavior):
 
 			# x:56 y:144
 			OperatableStateMachine.add('setActionBarman',
-										SetKey(Value=["move","poseBarman"]),
-										transitions={'done': 'MoveToStart'},
+										SetKey(Value=["move","bar"]),
+										transitions={'done': 'ReturnToClient'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'actionBarman'})
 
@@ -189,6 +179,27 @@ class restaurant2018SM(Behavior):
 										WaitState(wait_time=5),
 										transitions={'done': 'MoveToClient'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:828 y:595
+			OperatableStateMachine.add('logkey',
+										LogKeyState(text="List:{}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'closerElement'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'entity_list'})
+
+			# x:498 y:597
+			OperatableStateMachine.add('ActionWrapper_Pick',
+										self.use_behavior(ActionWrapper_PickSM, 'ActionWrapper_Pick'),
+										transitions={'finished': 'ReturnToClient', 'failed': 'failed', 'critical_fail': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
+										remapping={'Action': 'Action'})
+
+			# x:103 y:579
+			OperatableStateMachine.add('ActionWrapper_Give',
+										self.use_behavior(ActionWrapper_GiveSM, 'ActionWrapper_Give'),
+										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
+										remapping={'Action': 'Action2'})
 
 
 		return _state_machine
