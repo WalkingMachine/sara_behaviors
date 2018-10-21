@@ -8,10 +8,8 @@
 
 import roslib; roslib.load_manifest('behavior_action_lookaroundtofind')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.list_entities_by_name import list_entities_by_name
-from behavior_action_turn.action_turn_sm import action_turnSM
-from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_states.for_loop import ForLoop
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
+from flexbe_states.wait_state import WaitState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -35,7 +33,6 @@ class Action_lookAroundToFindSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(action_turnSM, 'action_turn')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -47,9 +44,8 @@ class Action_lookAroundToFindSM(Behavior):
 
 
 	def create(self):
-		# x:382 y:411, x:794 y:39
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['name'])
-		_state_machine.userdata.name = "apple"
+		# x:476 y:530
+		_state_machine = OperatableStateMachine(outcomes=['finished'])
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -58,40 +54,53 @@ class Action_lookAroundToFindSM(Behavior):
 
 
 		with _state_machine:
-			# x:204 y:72
-			OperatableStateMachine.add('look1',
-										list_entities_by_name(frontality_level=0.5, distance_max=10),
-										transitions={'found': 'finished', 'none_found': 'search_around'},
-										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
-										remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
+			# x:215 y:156
+			OperatableStateMachine.add('center',
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										transitions={'done': 'w2'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:738 y:258
-			OperatableStateMachine.add('action_turn',
-										self.use_behavior(action_turnSM, 'action_turn'),
-										transitions={'finished': 'list_entities_by_name', 'failed': 'search_around'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'rotation': 'rotation'})
+			# x:394 y:262
+			OperatableStateMachine.add('right',
+										SaraSetHeadAngle(pitch=0.1, yaw=-1.5),
+										transitions={'done': 'w3'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:766 y:153
-			OperatableStateMachine.add('SetRotation',
-										SetKey(Value=90),
-										transitions={'done': 'action_turn'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'rotation'})
+			# x:206 y:372
+			OperatableStateMachine.add('center2',
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										transitions={'done': 'w4'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:624 y:381
-			OperatableStateMachine.add('list_entities_by_name',
-										list_entities_by_name(frontality_level=0.5, distance_max=10),
-										transitions={'found': 'finished', 'none_found': 'search_around'},
-										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
-										remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
+			# x:47 y:153
+			OperatableStateMachine.add('w1',
+										WaitState(wait_time=4),
+										transitions={'done': 'center'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:522 y:87
-			OperatableStateMachine.add('search_around',
-										ForLoop(repeat=3),
-										transitions={'do': 'SetRotation', 'end': 'failed'},
-										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
-										remapping={'index': 'index'})
+			# x:413 y:159
+			OperatableStateMachine.add('w2',
+										WaitState(wait_time=4),
+										transitions={'done': 'right'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:415 y:370
+			OperatableStateMachine.add('w3',
+										WaitState(wait_time=4),
+										transitions={'done': 'center2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:39 y:371
+			OperatableStateMachine.add('w4',
+										WaitState(wait_time=4),
+										transitions={'done': 'left'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:29 y:274
+			OperatableStateMachine.add('left',
+										SaraSetHeadAngle(pitch=0.1, yaw=1.5),
+										transitions={'done': 'w1'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

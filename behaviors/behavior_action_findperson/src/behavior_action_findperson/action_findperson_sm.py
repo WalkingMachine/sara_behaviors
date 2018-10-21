@@ -60,70 +60,70 @@ class Action_findPersonSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-		# x:422 y:153
+		# x:706 y:647
 		_sm_rotation_0 = OperatableStateMachine(outcomes=['end'])
 
 		with _sm_rotation_0:
-			# x:83 y:39
+			# x:51 y:38
 			OperatableStateMachine.add('Set 180 degres',
 										SetKey(Value=3.1416),
-										transitions={'done': 'Look Left'},
+										transitions={'done': 'Look Center'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'rotation'})
 
-			# x:837 y:101
+			# x:613 y:470
 			OperatableStateMachine.add('action_turn',
 										self.use_behavior(action_turnSM, 'Container/Rotation/action_turn'),
-										transitions={'finished': 'Look Right 2', 'failed': 'end'},
+										transitions={'finished': 'Look Right', 'failed': 'Look Right'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
 
 			# x:421 y:54
 			OperatableStateMachine.add('Look Right',
 										SaraSetHeadAngle(pitch=0.1, yaw=-1.5),
-										transitions={'done': 'Rotate Right'},
+										transitions={'done': 'w2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:265 y:56
-			OperatableStateMachine.add('Rotate Left',
-										WaitState(wait_time=8),
+			OperatableStateMachine.add('w1',
+										WaitState(wait_time=4),
 										transitions={'done': 'Look Right'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:630 y:56
-			OperatableStateMachine.add('Rotate Right',
-										WaitState(wait_time=12),
-										transitions={'done': 'action_turn'},
+			OperatableStateMachine.add('w2',
+										WaitState(wait_time=4),
+										transitions={'done': 'center'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:77 y:128
-			OperatableStateMachine.add('Look Left',
-										SaraSetHeadAngle(pitch=0.1, yaw=1.5),
-										transitions={'done': 'Rotate Left'},
+			# x:250 y:177
+			OperatableStateMachine.add('Look Center',
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										transitions={'done': 'w1'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:426 y:240
+			# x:618 y:304
 			OperatableStateMachine.add('Look Left 2',
 										SaraSetHeadAngle(pitch=0.1, yaw=1.5),
-										transitions={'done': 'Rotate Left 2'},
+										transitions={'done': 'w4'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:805 y:226
-			OperatableStateMachine.add('Look Right 2',
-										SaraSetHeadAngle(pitch=0.1, yaw=-1.5),
-										transitions={'done': 'Rotate Right 2'},
+			# x:612 y:138
+			OperatableStateMachine.add('center',
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										transitions={'done': 'w3'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:152 y:234
-			OperatableStateMachine.add('Rotate Left 2',
-										WaitState(wait_time=12),
-										transitions={'done': 'end'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:637 y:231
-			OperatableStateMachine.add('Rotate Right 2',
-										WaitState(wait_time=8),
+			# x:635 y:214
+			OperatableStateMachine.add('w3',
+										WaitState(wait_time=4),
 										transitions={'done': 'Look Left 2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:636 y:394
+			OperatableStateMachine.add('w4',
+										WaitState(wait_time=4),
+										transitions={'done': 'action_turn'},
 										autonomy={'done': Autonomy.Off})
 
 

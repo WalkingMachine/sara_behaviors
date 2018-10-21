@@ -17,13 +17,12 @@ from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.SetRosParam import SetRosParam
-from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
-from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
-from behavior_action_move.action_move_sm import Action_MoveSM
+from sara_flexbe_states.sara_follow import SaraFollow
 from sara_flexbe_states.torque_reader import ReadTorque
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.wait_state import WaitState
+from sara_flexbe_states.KeepLookingAt import KeepLookingAt
+from flexbe_states.calculation_state import CalculationState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -47,7 +46,6 @@ class Action_GiveSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_MoveSM, 'give/Follow/Action_Move')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -67,10 +65,22 @@ class Action_GiveSM(Behavior):
 		
 		# [/MANUAL_CREATE]
 
-		# x:299 y:300, x:263 y:535
-		_sm_give_0 = OperatableStateMachine(outcomes=['failed', 'given'], input_keys=['Object'])
+		# x:130 y:365
+		_sm_lookat_0 = OperatableStateMachine(outcomes=['failed'], input_keys=['ID'])
 
-		with _sm_give_0:
+		with _sm_lookat_0:
+			# x:114 y:127
+			OperatableStateMachine.add('look',
+										KeepLookingAt(),
+										transitions={'failed': 'look'},
+										autonomy={'failed': Autonomy.Off},
+										remapping={'ID': 'ID'})
+
+
+		# x:299 y:300, x:263 y:535
+		_sm_give_1 = OperatableStateMachine(outcomes=['failed', 'given'], input_keys=['Object'])
+
+		with _sm_give_1:
 			# x:67 y:27
 			OperatableStateMachine.add('SetPose',
 										SetKey(Value="ShowGripper"),
@@ -119,82 +129,54 @@ class Action_GiveSM(Behavior):
 										remapping={'target': 'target'})
 
 
-		# x:326 y:455, x:291 y:228
-		_sm_follow_1 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['ID'])
+		# x:596 y:480
+		_sm_follow_2 = OperatableStateMachine(outcomes=['finished'], input_keys=['ID'])
 
-		with _sm_follow_1:
-			# x:39 y:30
-			OperatableStateMachine.add('not rel',
-										SetKey(Value=False),
-										transitions={'done': 'set dist'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'relative'})
-
-			# x:43 y:279
-			OperatableStateMachine.add('get person',
-										GetEntityByID(),
-										transitions={'found': 'get pos', 'not_found': 'get person'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'ID': 'ID', 'Entity': 'Entity'})
-
-			# x:60 y:372
-			OperatableStateMachine.add('get pos',
-										CalculationState(calculation=lambda x: x.position),
-										transitions={'done': 'reac'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'Entity', 'output_value': 'pose_in'})
-
-			# x:56 y:458
-			OperatableStateMachine.add('reac',
-										Get_Reacheable_Waypoint(),
-										transitions={'done': 'Action_Move'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose_in': 'pose_in', 'distance': 'distance', 'pose_out': 'pose_out'})
-
-			# x:30 y:115
-			OperatableStateMachine.add('set dist',
-										SetKey(Value=1),
-										transitions={'done': 'get person'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'distance'})
-
-			# x:254 y:329
-			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(Action_MoveSM, 'give/Follow/Action_Move'),
-										transitions={'finished': 'get person', 'failed': 'Action_Move'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'pose_out', 'relative': 'relative'})
+		with _sm_follow_2:
+			# x:180 y:123
+			OperatableStateMachine.add('follow',
+										SaraFollow(distance=1.5, ReplanPeriod=0.5),
+										transitions={'failed': 'follow'},
+										autonomy={'failed': Autonomy.Off},
+										remapping={'ID': 'ID'})
 
 
-		# x:313 y:247, x:301 y:177, x:103 y:293, x:303 y:113, x:88 y:385, x:311 y:57, x:93 y:335
-		_sm_give_2 = ConcurrencyContainer(outcomes=['failed', 'given', 'continue'], input_keys=['ID', 'Object'], conditions=[
+		# x:313 y:247, x:301 y:177, x:103 y:293, x:343 y:113, x:397 y:411, x:311 y:27, x:630 y:365, x:730 y:365
+		_sm_give_3 = ConcurrencyContainer(outcomes=['failed', 'given', 'continue'], input_keys=['ID', 'Object'], conditions=[
 										('failed', [('Give', 'failed')]),
 										('given', [('Give', 'given')]),
 										('given', [('Follow', 'finished')]),
-										('failed', [('Follow', 'failed')])
+										('failed', [('LookAt', 'failed')])
 										])
 
-		with _sm_give_2:
+		with _sm_give_3:
 			# x:91 y:50
 			OperatableStateMachine.add('Follow',
-										_sm_follow_1,
-										transitions={'finished': 'given', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										_sm_follow_2,
+										transitions={'finished': 'given'},
+										autonomy={'finished': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
 			# x:84 y:164
 			OperatableStateMachine.add('Give',
-										_sm_give_0,
+										_sm_give_1,
 										transitions={'failed': 'failed', 'given': 'given'},
 										autonomy={'failed': Autonomy.Inherit, 'given': Autonomy.Inherit},
 										remapping={'Object': 'Object'})
+
+			# x:175 y:371
+			OperatableStateMachine.add('LookAt',
+										_sm_lookat_0,
+										transitions={'failed': 'failed'},
+										autonomy={'failed': Autonomy.Inherit},
+										remapping={'ID': 'ID'})
 
 
 
 		with _state_machine:
 			# x:77 y:29
 			OperatableStateMachine.add('Get hand contaent',
-										GetRosParam(ParamName="GripperContent"),
+										GetRosParam(ParamName="behavior/GripperContent"),
 										transitions={'done': 'is object in hand?', 'failed': 'fail'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'Object'})
@@ -275,7 +257,7 @@ class Action_GiveSM(Behavior):
 
 			# x:515 y:515
 			OperatableStateMachine.add('give',
-										_sm_give_2,
+										_sm_give_3,
 										transitions={'failed': 'log movebase fail', 'given': 'set idle pose', 'continue': 'give'},
 										autonomy={'failed': Autonomy.Inherit, 'given': Autonomy.Inherit, 'continue': Autonomy.Inherit},
 										remapping={'ID': 'ID', 'Object': 'Object'})

@@ -87,7 +87,7 @@ class Action_findSM(Behavior):
 			# x:42 y:34
 			OperatableStateMachine.add('Set 180 degres',
 										SetKey(Value=3.1416),
-										transitions={'done': 'Look Left'},
+										transitions={'done': 'rotate center'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'rotation'})
 

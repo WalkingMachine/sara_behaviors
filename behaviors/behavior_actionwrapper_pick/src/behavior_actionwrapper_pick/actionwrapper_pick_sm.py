@@ -128,7 +128,7 @@ class ActionWrapper_PickSM(Behavior):
 
 			# x:39 y:367
 			OperatableStateMachine.add('set dist',
-										SetKey(Value=0.7),
+										SetKey(Value=0.8),
 										transitions={'done': 'get close pos'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'distance'})

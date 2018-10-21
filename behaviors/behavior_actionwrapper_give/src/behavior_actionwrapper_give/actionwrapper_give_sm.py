@@ -58,19 +58,20 @@ class ActionWrapper_GiveSM(Behavior):
 
 
 	def create(self):
-		# x:965 y:192, x:1057 y:494, x:1048 y:308
+		# x:965 y:192, x:723 y:729, x:1048 y:308
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = []
 		_state_machine.userdata.person_name = "operator"
 		_state_machine.userdata.Empty = None
+		_state_machine.userdata.className = "person"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
         
         # [/MANUAL_CREATE]
 
-		# x:585 y:427, x:621 y:290, x:649 y:229
-		_sm_get_person_0 = OperatableStateMachine(outcomes=['true', 'done', 'pas_done'], input_keys=['Action'], output_keys=['entity'])
+		# x:585 y:427, x:704 y:287, x:702 y:47
+		_sm_get_person_0 = OperatableStateMachine(outcomes=['true', 'done', 'pas_done'], input_keys=['Action', 'className'], output_keys=['entity'])
 
 		with _sm_get_person_0:
 			# x:30 y:40
@@ -106,14 +107,14 @@ class ActionWrapper_GiveSM(Behavior):
 										self.use_behavior(Action_findPersonSM, 'get_person/Action_findPerson_2'),
 										transitions={'done': 'done', 'pas_done': 'pas_done'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
-										remapping={'className': 'Action', 'entity': 'person_name'})
+										remapping={'className': 'className', 'entity': 'entity'})
 
 			# x:30 y:187
 			OperatableStateMachine.add('Action_findPerson',
 										self.use_behavior(Action_findPersonSM, 'get_person/Action_findPerson'),
 										transitions={'done': 'is_person', 'pas_done': 'Action_findPerson_2'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
-										remapping={'className': 'Action', 'entity': 'entity'})
+										remapping={'className': 'className', 'entity': 'entity'})
 
 			# x:46 y:116
 			OperatableStateMachine.add('get ',
@@ -138,13 +139,13 @@ class ActionWrapper_GiveSM(Behavior):
 										transitions={'Given': 'empty hand', 'Person_not_found': 'person_lost', 'No_object_in_hand': 'cause1', 'fail': 'cause3'},
 										autonomy={'Given': Autonomy.Inherit, 'Person_not_found': Autonomy.Inherit, 'No_object_in_hand': Autonomy.Inherit, 'fail': Autonomy.Inherit})
 
-			# x:501 y:66
+			# x:363 y:301
 			OperatableStateMachine.add('Nobody_here',
 										SaraSay(sentence="I can't find a person. Goodbye.", emotion=1, block=True),
-										transitions={'done': 'empty hand'},
+										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:487 y:395
+			# x:538 y:380
 			OperatableStateMachine.add('getID',
 										CalculationState(calculation=lambda x: x.ID),
 										transitions={'done': 'Action_Give'},
@@ -163,7 +164,7 @@ class ActionWrapper_GiveSM(Behavior):
 										_sm_get_person_0,
 										transitions={'true': 'confirm giving', 'done': 'confirm giving', 'pas_done': 'Nobody_here'},
 										autonomy={'true': Autonomy.Inherit, 'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
-										remapping={'Action': 'Action', 'entity': 'entity'})
+										remapping={'Action': 'Action', 'className': 'className', 'entity': 'entity'})
 
 			# x:53 y:480
 			OperatableStateMachine.add('no_object',

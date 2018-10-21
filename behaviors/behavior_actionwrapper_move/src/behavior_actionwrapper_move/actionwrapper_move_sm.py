@@ -63,7 +63,7 @@ class ActionWrapper_MoveSM(Behavior):
 	def create(self):
 		# x:518 y:366, x:823 y:208, x:541 y:500
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
-		_state_machine.userdata.Action = ["Move",'counter']
+		_state_machine.userdata.Action = ["Move",'operator']
 		_state_machine.userdata.relative = False
 
 		# Additional creation code can be added inside the following tags

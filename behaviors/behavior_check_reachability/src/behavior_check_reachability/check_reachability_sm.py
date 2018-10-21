@@ -45,7 +45,7 @@ class Check_reachabilitySM(Behavior):
 
 
 	def create(self):
-		# x:410 y:309, x:404 y:84
+		# x:609 y:365, x:602 y:89
 		_state_machine = OperatableStateMachine(outcomes=['ok', 'too_far'], input_keys=['pose'])
 		_state_machine.userdata.pose = 0
 
@@ -56,28 +56,28 @@ class Check_reachabilitySM(Behavior):
 
 
 		with _state_machine:
-			# x:74 y:58
+			# x:42 y:56
 			OperatableStateMachine.add('gen',
 										GenGripperPose(l=0, z=0, planar=false),
-										transitions={'done': 'first check', 'fail': 'too_far'},
+										transitions={'done': 'kinematic test', 'fail': 'too_far'},
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'pose_in': 'pose', 'pose_out': 'pose_out'})
 
-			# x:68 y:411
+			# x:195 y:347
 			OperatableStateMachine.add('third check',
 										CheckConditionState(predicate=lambda x: (x.position.x**2+x.position.y**2+(x.position.z-1))**0.5 < 1.5),
 										transitions={'true': 'kinematic test', 'false': 'too_far'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'pose_out'})
 
-			# x:69 y:171
+			# x:190 y:147
 			OperatableStateMachine.add('first check',
 										CheckConditionState(predicate=lambda x: x.position.x<0.8),
 										transitions={'true': 'second check', 'false': 'too_far'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'pose_out'})
 
-			# x:76 y:275
+			# x:196 y:253
 			OperatableStateMachine.add('second check',
 										CheckConditionState(predicate=lambda x: x.position.z>0.5),
 										transitions={'true': 'third check', 'false': 'too_far'},

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(behavior_restaurant2018)
+project(behavior_scenario_restaurant2018)
 
 find_package(catkin REQUIRED)
 
