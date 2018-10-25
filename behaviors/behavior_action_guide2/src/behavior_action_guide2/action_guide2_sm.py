@@ -13,6 +13,7 @@ from sara_flexbe_states.SetKey import SetKey
 from behavior_action_turn.action_turn_sm import action_turnSM
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
+from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from behavior_action_lookatfacebase.action_lookatfacebase_sm import action_lookAtFaceBaseSM
@@ -154,12 +155,19 @@ class Action_Guide2SM(Behavior):
 		_sm_find_human_2 = OperatableStateMachine(outcomes=['finished'], input_keys=['ID'])
 
 		with _sm_find_human_2:
-			# x:223 y:137
-			OperatableStateMachine.add('find person',
-										GetEntityByID(),
-										transitions={'found': 'finished', 'not_found': 'find person'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'ID': 'ID', 'Entity': 'Entity'})
+			# x:143 y:40
+			OperatableStateMachine.add('set name',
+										SetKey(Value="person"),
+										transitions={'done': 'list'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'name'})
+
+			# x:361 y:53
+			OperatableStateMachine.add('list',
+										list_entities_by_name(frontality_level=0.5, distance_max=3),
+										transitions={'found': 'finished', 'none_found': 'list'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
+										remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
 
 
 		# x:549 y:135, x:555 y:269, x:230 y:458
@@ -332,12 +340,19 @@ class Action_Guide2SM(Behavior):
 		_sm_find_a_human_10 = OperatableStateMachine(outcomes=['finished'], input_keys=['ID'])
 
 		with _sm_find_a_human_10:
-			# x:78 y:275
-			OperatableStateMachine.add('find the human',
-										GetEntityByID(),
-										transitions={'found': 'finished', 'not_found': 'find the human'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'ID': 'ID', 'Entity': 'Entity'})
+			# x:168 y:102
+			OperatableStateMachine.add('set name',
+										SetKey(Value="person"),
+										transitions={'done': 'list'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'name'})
+
+			# x:275 y:203
+			OperatableStateMachine.add('list',
+										list_entities_by_name(frontality_level=0.5, distance_max=3),
+										transitions={'found': 'finished', 'none_found': 'list'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
+										remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
 
 
 		# x:415 y:99, x:318 y:246, x:442 y:295
@@ -364,7 +379,7 @@ class Action_Guide2SM(Behavior):
 		_sm_try_to_reach_12 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['waypoint', 'relative', 'ID'])
 
 		with _sm_try_to_reach_12:
-			# x:252 y:161
+			# x:186 y:130
 			OperatableStateMachine.add('Container',
 										_sm_container_7,
 										transitions={'finished': 'Say reached', 'failed': 'Say not reached', 'check': 'say check'},
