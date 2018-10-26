@@ -14,27 +14,26 @@ Created on 10/25/2018
 
 class LookAtSound(EventState):
     """
-    Make Sara's head follow the strongest source of sounds.
-
+    Make Sara's head keep looking at the strongest source of sounds.
     """
 
     def __init__(self):
         """Constructor"""
 
-        super(LookAtSound, self).__init__(outcomes=['failed'])
+        super(LookAtSound, self).__init__()
 
+        # Subscriber config
         self.soundsTopic = "/direction_of_arrival"
         self._sub = ProxySubscriberCached({self.soundsTopic: PoseStamped})
 
+        # Publisher config
         self.pubPitch = rospy.Publisher("/sara_head_pitch_controller/command", Float64, queue_size=1)
         self.pubYaw = rospy.Publisher("/sara_head_yaw_controller/command", Float64, queue_size=1)
-
         self.msg = Float64()
 
     def execute(self, userdata):
-        """Wait for action result and return outcome accordingly"""
 
-        # Get the sound direction
+        # If a new sound direction is detected.
         if self._sub.has_msg(self.soundsTopic):
             message = self._sub.get_last_msg(self.soundsTopic)
             yaw, pitch, roll = euler_from_quaternion(message.pose.orientation)
@@ -46,6 +45,3 @@ class LookAtSound(EventState):
             self.pubYaw.publish(self.msg)
 
             return
-
-        return "failed"
-
