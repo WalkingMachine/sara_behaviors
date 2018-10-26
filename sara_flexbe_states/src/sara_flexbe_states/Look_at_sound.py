@@ -20,7 +20,7 @@ class LookAtSound(EventState):
     def __init__(self):
         """Constructor"""
 
-        super(LookAtSound, self).__init__()
+        super(LookAtSound, self).__init__(outcomes=['done'])
 
         # Subscriber config
         self.soundsTopic = "/direction_of_arrival"
@@ -36,7 +36,9 @@ class LookAtSound(EventState):
         # If a new sound direction is detected.
         if self._sub.has_msg(self.soundsTopic):
             message = self._sub.get_last_msg(self.soundsTopic)
-            yaw, pitch, roll = euler_from_quaternion(message.pose.orientation)
+            orientation = message.pose.orientation
+            orient_quat = [orientation.x, orientation.y, orientation.z, orientation.w]
+            roll, pitch, yaw = euler_from_quaternion(orient_quat)
 
             # Publish the head commands
             self.msg.data = min(max(-pitch, -0), 1)
@@ -44,4 +46,4 @@ class LookAtSound(EventState):
             self.msg.data = min(max(yaw, -1.2), 1.2)
             self.pubYaw.publish(self.msg)
 
-            return
+            return "done"
