@@ -8,8 +8,8 @@ action_count:
 
 action_executor:
   description: Execute une action a partir d'un ActionForm.
-  usecase:
-  modifications_suggested: KEEP?
+  usecase: GPSR
+  modifications_suggested: KEEP
   status_of_working: COMPILING
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -25,7 +25,7 @@ action_find:
 action_findperson:
   description: Find an entity arround sara, identified by entity class.
   usecase: Dans la plupart des scénarios, surtout GPSR
-  modifications_suggested: KEEP OR DELETE AFTER action_find rework
+  modifications_suggested: KEEP AND DELETE AFTER action_find rework
   status_of_working: COMPILING
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -34,7 +34,7 @@ action_follow:
   description: Suis une entité par son ID
   usecase: COMPETITION
   modifications_suggested: KEEP
-  status_of_working:
+  status_of_working: WORKING
   dependencies (behaviors): {NONE}
   dependencies (states): {SaraFollow,GetEntityByID,WaitState,SaraSetHeadAngle,KeepLookingAt,SaraSay}
 
@@ -47,18 +47,18 @@ action_give:
   dependencies (states): {GetRosParam,CheckConditionState,SetKey,list_entities_by_name,CalculationState,LogState,SaraFollow,SaraSayKey,MoveItMove,SaraSay,ReadTorque,SetGripperState,KeepLookingAt,SetRosParam}
 
 action_give_back_bag:
-  description:
-  usecase:
+  description: Behavior of giving back the  back.
+  usecase: COMPETITION (scenario_help_me_carry)
   modifications_suggested:
-  status_of_working:
-  dependencies (behaviors): {}
-  dependencies (states): {}
+  status_of_working: COMPILING
+  dependencies (behaviors): {NONE}
+  dependencies (states): {GetRosParam,CheckConditionState,list_entities_by_name,LogState,SetKey,MoveitMove,SaraSayKey,SetGripperState,SetRosParam,SaraFollow,ReadTorque,SaraSay,WaitState,KeepLookingAt,CalculationState}
 
 action_guide2:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Guide une personne vers une destination
+  usecase: GENERAL
+  modifications_suggested: RENAME to action_guide
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
@@ -71,17 +71,17 @@ action_guiding_person:
   dependencies (states): {}
 
 action_lookaroundtofind:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Regarde dans tout les sens pour chercher quelque chose. (Ne cherche pas)
+  usecase: GENERAL, pour trouver des affaires
+  modifications_suggested: KEEP, améliorer
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 action_look_at:
   description:
   usecase:
-  modifications_suggested:
+  modifications_suggested: DELETE
   status_of_working:
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -89,215 +89,215 @@ action_look_at:
 action_lookatbase:
   description:
   usecase:
-  modifications_suggested:
+  modifications_suggested: DELETE
   status_of_working:
   dependencies (behaviors): {}
   dependencies (states): {}
 
 action_look_at_face:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Regarde le visage d'une personne
+  usecase: JAMAIS, DUPLICATE
+  modifications_suggested: DELETE
+  status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
 
 action_lookatfacebase:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Regarde le visage d'une personne en utilisant la base pour tourner.
+  usecase: JAMAIS, DUPLICATE
+  modifications_suggested: DELETE
+  status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
 
 action_move:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Déplace le robot vers une destination
+  usecase: GENERAL
+  modifications_suggested: Changer les paramêtres. Devrait recevoir le nom de la destination ou une position.
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 action_pass_door:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Passe une porte
+  usecase: GENERAL
+  modifications_suggested: Changer les paramêtres. Devrait recevoir el nom de la porte.
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 action_pick:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Prend un objet
+  usecase: GENERAL
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 action_place:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Place un objet
+  usecase: GENERAL
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 action_point_at:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Pointe dans une direction avec le bras
+  usecase: GENERAL
+  modifications_suggested: REMAKE_AS_STATE
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 action_receive_bag:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Recois un sac
+  usecase: help_me_carry
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 action_turn:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Fait tourner le robot
+  usecase: Quand on fait tourner le robot
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_answer:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Répond à une question
+  usecase: GPSR
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_ask:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Pose une question
+  usecase: GPSR
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_attach:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: attache un objet
+  usecase: Sert pas
+  modifications_suggested: DELETE
+  status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_bring:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Vas chercher un objet
+  usecase: Sert pas
+  modifications_suggested: DELETE
+  status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_confirm:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Demande de valider une déclaration
+  usecase: Sert pas
+  modifications_suggested: DELETE
+  status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_count:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Compte des objets
+  usecase: GPSR
+  modifications_suggested: KEEP
+  status_of_working: COMPILING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_find:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Cherche un objet
+  usecase: GPSR
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_find_person:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Cherche une personne
+  usecase: GPSR
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_follow:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Suis une personne
+  usecase: GPSR
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_give:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Donne un objet
+  usecase: GPSR
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_guide:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Guide une personne
+  usecase: GPSR
+  modifications_suggested: KEEP
+  status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_lookat:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Regarde un objet
+  usecase: Jamais
+  modifications_suggested: DELETE
+  status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_move:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Déplace le robot vers une destination
+  usecase: GPSR
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_pick:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Ramasse un objet
+  usecase: GPSR
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_place:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Place un objet
+  usecase: GPSR
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_say:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Fait dire quelque chose
+  usecase: GPSR
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_stop:
   description:
   usecase:
-  modifications_suggested:
+  modifications_suggested: DELETE
   status_of_working:
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -305,32 +305,32 @@ actionwrapper_stop:
 actionwrapper_turn:
   description:
   usecase:
-  modifications_suggested:
+  modifications_suggested: DELETE
   status_of_working:
   dependencies (behaviors): {}
   dependencies (states): {}
 
 actionwrapper_waitfordoor:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Attend pour une porte
+  usecase: Sert pas
+  modifications_suggested: DELETE
+  status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
 
 age_statistics:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: trouve les statistiques d'age
+  usecase: Pour SPR
+  modifications_suggested: DELETE
+  status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
 
 a_go_home:
-  description:
-  usecase:
-  modifications_suggested:
-  status_of_working:
+  description: Retourne à la maison
+  usecase: Pour replacer sara au besoin
+  modifications_suggested: KEEP
+  status_of_working: WORKING
   dependencies (behaviors): {}
   dependencies (states): {}
 
@@ -578,7 +578,7 @@ testgenderage:
 wonderlandaddupdateperson:
   description: met à jours la liste des personnes du Entity_tracker vers wonderland
   usecase: pour spr
-  modifications_suggested: REDEFINE
+  modifications_suggested: REMAKE_AS_STATE
   status_of_working: UNKNOWN
   dependencies (behaviors): {}
   dependencies (states): {}
