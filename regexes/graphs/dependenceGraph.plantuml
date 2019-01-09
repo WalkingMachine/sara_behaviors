@@ -1,1170 +1,151 @@
-@startuml
- node SaraSay
 
-action_count_sm.py->SetKey
-
-action_count_sm.py->LogKeyState
-
-action_count_sm.py->SaraSetHeadAngle
-
-action_count_sm.py->list_entities_by_name
-
-action_count_sm.py->FlexibleCalculationState
-
-action_count_sm.py->WaitState
-
-action_count_sm.py->SaraSayKey
-
-action_count_sm.py->ForLoop
-
-action_count_sm.py->action_turnSM
-
-action_count_sm.py->SetRosParam
-
-action_executor_sm.py->CalculationState
-
-action_executor_sm.py->ActionWrapper_AskSM
-
-action_executor_sm.py->ActionWrapper_CountSM
-
-action_executor_sm.py->ActionWrapper_FindSM
-
-action_executor_sm.py->ActionWrapper_Find_PersonSM
-
-action_executor_sm.py->ActionWrapper_FollowSM
-
-action_executor_sm.py->ActionWrapper_GiveSM
-
-action_executor_sm.py->ActionWrapper_MoveSM
-
-action_executor_sm.py->ActionWrapper_PlaceSM
-
-action_executor_sm.py->ActionWrapper_SaySM
-
-action_executor_sm.py->ActionWrapper_AnswerSM
-
-action_executor_sm.py->ActionWrapper_PickSM
-
-action_executor_sm.py->DecisionState
-
-action_findperson_sm.py->SaraSetHeadAngle
-
-action_findperson_sm.py->LogKeyState
-
-action_findperson_sm.py->list_entities_by_name
-
-action_findperson_sm.py->CalculationState
-
-action_findperson_sm.py->WaitState
-
-action_findperson_sm.py->SetKey
-
-action_findperson_sm.py->action_turnSM
-
-action_find_sm.py->SaraSetHeadAngle
-
-action_find_sm.py->LogKeyState
-
-action_find_sm.py->list_entities_by_name
-
-action_find_sm.py->CalculationState
-
-action_find_sm.py->SetKey
-
-action_find_sm.py->WaitState
-
-action_find_sm.py->GetEntityByID
-
-action_find_sm.py->action_look_at_faceSM
-
-action_follow_sm.py->SaraFollow
-
-action_follow_sm.py->KeepLookingAt
-
-action_follow_sm.py->SaraSay
-
-action_follow_sm.py->GetEntityByID
-
-action_follow_sm.py->SaraSetHeadAngle
-
-action_follow_sm.py->WaitState
-
-action_give_back_bag_sm.py->SetKey
-
-action_give_back_bag_sm.py->SetGripperState
-
-action_give_back_bag_sm.py->SaraSay
-
-action_give_back_bag_sm.py->MoveitMove
-
-action_give_sm.py->GetRosParam
-
-action_give_sm.py->CheckConditionState
-
-action_give_sm.py->list_entities_by_name
-
-action_give_sm.py->LogState
-
-action_give_sm.py->SetKey
-
-action_give_sm.py->MoveitMove
-
-action_give_sm.py->SaraSayKey
-
-action_give_sm.py->SetGripperState
-
-action_give_sm.py->SetRosParam
-
-action_give_sm.py->SaraFollow
-
-action_give_sm.py->ReadTorque
-
-action_give_sm.py->SaraSay
-
-action_give_sm.py->WaitState
-
-action_give_sm.py->KeepLookingAt
-
-action_give_sm.py->CalculationState
-
-action_guide2_sm.py->GetEntityByID
-
-action_guide2_sm.py->SetKey
-
-action_guide2_sm.py->action_turnSM
-
-action_guide2_sm.py->WaitState
-
-action_guide2_sm.py->SaraSetHeadAngle
-
-action_guide2_sm.py->list_entities_by_name
-
-action_guide2_sm.py->SaraSay
-
-action_guide2_sm.py->SaraSayKey
-
-action_guide2_sm.py->action_lookAtFaceBaseSM
-
-action_guide2_sm.py->Action_MoveSM
-
-action_guide2_sm.py->Action_findPersonSM
-
-action_guiding_person_sm.py->Get_operatorSM
-
-action_guiding_person_sm.py->SaraSay
-
-action_guiding_person_sm.py->SaraMoveBase
-
-action_guiding_person_sm.py->GetRosParam
-
-action_guiding_person_sm.py->GetEntityByID
-
-action_lookaroundtofind_sm.py->SaraSetHeadAngle
-
-action_lookaroundtofind_sm.py->WaitState
-
-action_lookatbase_sm.py->Get_direction_to_point
-
-action_lookatbase_sm.py->CalculationState
-
-action_lookatbase_sm.py->SaraSetHeadAngleKey
-
-action_lookatbase_sm.py->SetKey
-
-action_lookatbase_sm.py->action_turnSM
-
-action_lookatfacebase_sm.py->CalculationState
-
-action_lookatfacebase_sm.py->Get_direction_to_point
-
-action_lookatfacebase_sm.py->SaraSetHeadAngleKey
-
-action_lookatfacebase_sm.py->CheckConditionState
-
-action_lookatfacebase_sm.py->GenPoseEulerKey
-
-action_lookatfacebase_sm.py->SetKey
-
-action_lookatfacebase_sm.py->LogState
-
-action_lookatfacebase_sm.py->action_turnSM
-
-action_look_at_face_sm.py->CalculationState
-
-action_look_at_face_sm.py->Get_direction_to_point
-
-action_look_at_face_sm.py->SaraSetHeadAngleKey
-
-action_look_at_face_sm.py->CheckConditionState
-
-action_look_at_face_sm.py->GenPoseEulerKey
-
-action_look_at_face_sm.py->SetKey
-
-action_look_at_face_sm.py->LogState
-
-action_look_at_sm.py->Get_direction_to_point
-
-action_look_at_sm.py->SaraSetHeadAngleKey
-
-action_look_at_sm.py->CalculationState
-
-action_move_sm.py->SetKey
-
-action_move_sm.py->SaraSay
-
-action_move_sm.py->SetExpression
-
-action_move_sm.py->CheckConditionState
-
-action_move_sm.py->SaraRelMoveBase
-
-action_move_sm.py->SaraMoveBase
-
-action_move_sm.py->SaraSetHeadAngleKey
-
-action_move_sm.py->CalculationState
-
-action_move_sm.py->GetClosestObstacle
-
-action_move_sm.py->SaraSetHeadAngle
-
-action_pass_door_sm.py->SetKey
-
-action_pass_door_sm.py->DoorDetector
-
-action_pass_door_sm.py->SaraSay
-
-action_pass_door_sm.py->Action_MoveSM
-
-action_pass_door_sm.py->GenPoseEuler
-
-action_pick_sm.py->GetEntityByID
-
-action_pick_sm.py->CalculationState
-
-action_pick_sm.py->SaraSayKey
-
-action_pick_sm.py->SetGripperState
-
-action_pick_sm.py->MoveitMove
-
-action_pick_sm.py->SaraSay
-
-action_pick_sm.py->GenGripperPose
-
-action_pick_sm.py->TF_transformation
-
-action_place_sm.py->TF_transformation
-
-action_place_sm.py->GenGripperPose
-
-action_place_sm.py->MoveitMove
-
-action_place_sm.py->SetKey
-
-action_place_sm.py->LogKeyState
-
-action_place_sm.py->SetGripperState
-
-action_place_sm.py->LogState
-
-action_place_sm.py->ReadTorque
-
-action_place_sm.py->SaraSay
-
-action_point_at_sm.py->SetGripperState
-
-action_point_at_sm.py->MoveitMove
-
-action_point_at_sm.py->CalculationState
-
-action_point_at_sm.py->point_at_gen_pose
-
-action_point_at_sm.py->LogKeyState
-
-action_point_at_sm.py->Get_direction_to_point
-
-action_receive_bag_sm.py->SetKey
-
-action_receive_bag_sm.py->MoveitMove
-
-action_receive_bag_sm.py->ReadTorque
-
-action_receive_bag_sm.py->SetGripperState
-
-action_receive_bag_sm.py->SaraSay
-
-action_turn_sm.py->SetKey
-
-action_turn_sm.py->GenPoseEulerKey
-
-action_turn_sm.py->Action_MoveSM
-
-actionwrapper_answer_sm.py->SetKey
-
-actionwrapper_answer_sm.py->Action_findPersonSM
-
-actionwrapper_answer_sm.py->SaraSay
-
-actionwrapper_answer_sm.py->SaraNLUspr
-
-actionwrapper_answer_sm.py->SaraSayKey
-
-actionwrapper_answer_sm.py->GetSpeech
-
-actionwrapper_answer_sm.py->ForLoop
-
-actionwrapper_answer_sm.py->CheckConditionState
-
-actionwrapper_answer_sm.py->action_turnSM
-
-actionwrapper_answer_sm.py->SetRosParam
-
-actionwrapper_answer_sm.py->LogKeyState
-
-actionwrapper_ask_sm.py->SetKey
-
-actionwrapper_ask_sm.py->SaraSayKey
-
-actionwrapper_ask_sm.py->CalculationState
-
-actionwrapper_ask_sm.py->GetSpeech
-
-actionwrapper_ask_sm.py->SaraSay
-
-actionwrapper_ask_sm.py->Action_findPersonSM
-
-actionwrapper_ask_sm.py->ForLoop
-
-actionwrapper_ask_sm.py->SetRosParamKey
-
-actionwrapper_ask_sm.py->LogKeyState
-
-actionwrapper_ask_sm.py->SetRosParam
-
-actionwrapper_ask_sm.py->CheckConditionState
-
-actionwrapper_attach_sm.py->CheckConditionState
-
-actionwrapper_attach_sm.py->SaraSay
-
-actionwrapper_attach_sm.py->SaraSayKey
-
-actionwrapper_attach_sm.py->WaitState
-
-actionwrapper_bring_sm.py->CheckConditionState
-
-actionwrapper_bring_sm.py->SaraSay
-
-actionwrapper_bring_sm.py->SaraSayKey
-
-actionwrapper_bring_sm.py->SetKey
-
-actionwrapper_bring_sm.py->CalculationState
-
-actionwrapper_bring_sm.py->Action_MoveSM
-
-actionwrapper_bring_sm.py->ForLoop
-
-actionwrapper_bring_sm.py->GenPoseEuler
-
-actionwrapper_bring_sm.py->Action_pickSM
-
-actionwrapper_bring_sm.py->SetGripperState
-
-actionwrapper_bring_sm.py->GetSpeech
-
-actionwrapper_bring_sm.py->RegexTester
-
-actionwrapper_bring_sm.py->MoveitMove
-
-actionwrapper_bring_sm.py->LogKeyState
-
-actionwrapper_bring_sm.py->Get_Robot_Pose
-
-actionwrapper_confirm_sm.py->WaitState
-
-actionwrapper_count_sm.py->CalculationState
-
-actionwrapper_count_sm.py->Action_countSM
-
-actionwrapper_count_sm.py->FlexibleCalculationState
-
-actionwrapper_count_sm.py->SaraSayKey
-
-actionwrapper_count_sm.py->SetRosParamKey
-
-actionwrapper_count_sm.py->SaraSetHeadAngle
-
-actionwrapper_find_person_sm.py->Action_findPersonSM
-
-actionwrapper_find_person_sm.py->SaraSay
-
-actionwrapper_find_person_sm.py->SaraSayKey
-
-actionwrapper_find_person_sm.py->ForLoop
-
-actionwrapper_find_person_sm.py->action_turnSM
-
-actionwrapper_find_person_sm.py->SaraSetHeadAngle
-
-actionwrapper_find_person_sm.py->SetRosParam
-
-actionwrapper_find_person_sm.py->CalculationState
-
-actionwrapper_find_person_sm.py->CheckConditionState
-
-actionwrapper_find_person_sm.py->GetSpeech
-
-actionwrapper_find_person_sm.py->LogKeyState
-
-actionwrapper_find_person_sm.py->WaitState
-
-actionwrapper_find_person_sm.py->KeepLookingAt
-
-actionwrapper_find_person_sm.py->SetKey
-
-actionwrapper_find_sm.py->CheckConditionState
-
-actionwrapper_find_sm.py->SaraSay
-
-actionwrapper_find_sm.py->SaraSayKey
-
-actionwrapper_find_sm.py->Action_findSM
-
-actionwrapper_find_sm.py->CalculationState
-
-actionwrapper_find_sm.py->SetRosParam
-
-actionwrapper_find_sm.py->SetKey
-
-actionwrapper_follow_sm.py->CalculationState
-
-actionwrapper_follow_sm.py->GetRosParam
-
-actionwrapper_follow_sm.py->GetEntityByID
-
-actionwrapper_follow_sm.py->SaraSayKey
-
-actionwrapper_follow_sm.py->SaraSay
-
-actionwrapper_follow_sm.py->Action_followSM
-
-actionwrapper_follow_sm.py->GetSpeech
-
-actionwrapper_follow_sm.py->CheckConditionState
-
-actionwrapper_follow_sm.py->action_lookAtFaceBaseSM
-
-actionwrapper_follow_sm.py->SetKey
-
-actionwrapper_follow_sm.py->SetRosParam
-
-actionwrapper_give_sm.py->GetRosParam
-
-actionwrapper_give_sm.py->Action_GiveSM
-
-actionwrapper_give_sm.py->SaraSay
-
-actionwrapper_give_sm.py->CalculationState
-
-actionwrapper_give_sm.py->SaraSayKey
-
-actionwrapper_give_sm.py->CheckConditionState
-
-actionwrapper_give_sm.py->GetSpeech
-
-actionwrapper_give_sm.py->Action_findPersonSM
-
-actionwrapper_give_sm.py->SetRosParam
-
-actionwrapper_give_sm.py->SetKey
-
-actionwrapper_guide_sm.py->GetRosParam
-
-actionwrapper_guide_sm.py->Set_a_step
-
-actionwrapper_guide_sm.py->CalculationState
-
-actionwrapper_guide_sm.py->SetKey
-
-actionwrapper_guide_sm.py->FlexibleCalculationState
-
-actionwrapper_guide_sm.py->FlexibleCheckConditionState
-
-actionwrapper_guide_sm.py->LogKeyState
-
-actionwrapper_guide_sm.py->Action_MoveSM
-
-actionwrapper_guide_sm.py->WaitState
-
-actionwrapper_guide_sm.py->SaraSayKey
-
-actionwrapper_guide_sm.py->SaraSetHeadAngle
-
-actionwrapper_guide_sm.py->action_turnSM
-
-actionwrapper_guide_sm.py->GetEntityByID
-
-actionwrapper_guide_sm.py->SaraSay
-
-actionwrapper_guide_sm.py->WonderlandUniqueEnitySM
-
-actionwrapper_guide_sm.py->action_lookAtFaceBaseSM
-
-actionwrapper_guide_sm.py->WonderlandGetEntityVerbal
-
-actionwrapper_guide_sm.py->Action_point_atSM
-
-actionwrapper_guide_sm.py->SetRosParam
-
-actionwrapper_lookat_sm.py->CalculationState
-
-actionwrapper_lookat_sm.py->SaraSayKey
-
-actionwrapper_lookat_sm.py->SaraSetHeadAngle
-
-actionwrapper_lookat_sm.py->CheckConditionState
-
-actionwrapper_lookat_sm.py->action_look_atSM
-
-actionwrapper_lookat_sm.py->list_entities_by_name
-
-actionwrapper_move_sm.py->CalculationState
-
-actionwrapper_move_sm.py->SetKey
-
-actionwrapper_move_sm.py->FlexibleCalculationState
-
-actionwrapper_move_sm.py->FlexibleCheckConditionState
-
-actionwrapper_move_sm.py->LogKeyState
-
-actionwrapper_move_sm.py->Set_a_step
-
-actionwrapper_move_sm.py->WonderlandUniqueEnitySM
-
-actionwrapper_move_sm.py->SaraSayKey
-
-actionwrapper_move_sm.py->Action_MoveSM
-
-actionwrapper_move_sm.py->Set_Story
-
-actionwrapper_move_sm.py->SetRosParam
-
-actionwrapper_pick_sm.py->GetRosParam
-
-actionwrapper_pick_sm.py->CheckConditionState
-
-actionwrapper_pick_sm.py->SaraSay
-
-actionwrapper_pick_sm.py->SaraSayKey
-
-actionwrapper_pick_sm.py->Action_pickSM
-
-actionwrapper_pick_sm.py->Action_findSM
-
-actionwrapper_pick_sm.py->CalculationState
-
-actionwrapper_pick_sm.py->action_look_at_faceSM
-
-actionwrapper_pick_sm.py->SetKey
-
-actionwrapper_pick_sm.py->Get_Reacheable_Waypoint
-
-actionwrapper_pick_sm.py->SaraSetHeadAngle
-
-actionwrapper_pick_sm.py->MoveitMove
-
-actionwrapper_pick_sm.py->SaraMoveBase
-
-actionwrapper_pick_sm.py->WaitState
-
-actionwrapper_pick_sm.py->ForLoop
-
-actionwrapper_pick_sm.py->SetRosParam
-
-actionwrapper_pick_sm.py->GetEntityByID
-
-actionwrapper_place_sm.py->GetRosParam
-
-actionwrapper_place_sm.py->SaraSayKey
-
-actionwrapper_place_sm.py->Action_placeSM
-
-actionwrapper_place_sm.py->GenPoseEuler
-
-actionwrapper_place_sm.py->TF_transformation
-
-actionwrapper_place_sm.py->CheckConditionState
-
-actionwrapper_place_sm.py->SaraSay
-
-actionwrapper_place_sm.py->FlexibleCalculationState
-
-actionwrapper_place_sm.py->LogState
-
-actionwrapper_place_sm.py->LogKeyState
-
-actionwrapper_place_sm.py->SetRosParam
-
-actionwrapper_place_sm.py->SetKey
-
-actionwrapper_say_sm.py->CalculationState
-
-actionwrapper_say_sm.py->SaraSayKey
-
-actionwrapper_say_sm.py->GetRosParamKey
-
-actionwrapper_stop_sm.py->StopSM
-
-actionwrapper_turn_sm.py->SaraSayKey
-
-actionwrapper_turn_sm.py->CheckConditionState
-
-actionwrapper_turn_sm.py->SaraSay
-
-actionwrapper_waitfordoor_sm.py->DoorDetector
-
-age_statistics_sm.py->TakeImageCamera
-
-age_statistics_sm.py->Found_age_statitics
-
-age_statistics_sm.py->LogKeyState
-
-age_statistics_sm.py->WaitState
-
-a_go_home_sm.py->SetKey
-
-a_go_home_sm.py->GenPoseEuler
-
-a_go_home_sm.py->SaraSay
-
-a_go_home_sm.py->Action_MoveSM
-
-a_test_sandbox_sm.py->ActionWrapper_MoveSM
-
-a_test_sandbox_sm.py->LogState
-
-a_test_sandbox_sm.py->MoveitMove
-
-a_test_sandbox_sm.py->SaraSayKey
-
-a_test_sandbox_sm.py->ActionWrapper_FollowSM
-
-a_test_sandbox_sm.py->ActionWrapper_Find_PersonSM
-
-a_test_sandbox_sm.py->GetSpeech
-
-a_test_wonderland_sm.py->LogState
-
-a_test_wonderland_sm.py->WonderlandGetEntityVerbal
-
-a_test_wonderland_sm.py->LogEntity
-
-a_test_wonderland_sm.py->WonderlandGetPersonById
-
-a_test_wonderland_sm.py->WonderlandGetEntityByID
-
-a_test_wonderland_sm.py->WonderlandGetPersonByRecognitionId
-
-check_reachability_sm.py->GenGripperPose
-
-check_reachability_sm.py->CheckConditionState
-
-check_reachability_sm.py->MoveitMove
-
-general_test_sm.py->LogState
-
-general_test_sm.py->GetRosParam
-
-get_operator_sm.py->GetRosParam
-
-get_operator_sm.py->GetEntityByID
-
-get_operator_sm.py->SaraSay
-
-get_operator_sm.py->ForLoop
-
-get_operator_sm.py->SetKey
-
-get_operator_sm.py->list_entities_by_name
-
-get_operator_sm.py->CalculationState
-
-get_operator_sm.py->Action_MoveSM
-
-get_operator_sm.py->Get_Reacheable_Waypoint
-
-get_operator_sm.py->SetRosParam
-
-get_operator_sm.py->GetSpeech
-
-get_operator_sm.py->BinaryCalculationState
-
-get_operator_sm.py->CheckConditionState
-
-get_speech_sm.py->SubscriberState
-
-get_speech_sm.py->CalculationState
-
-get_waypoint_pose_sm.py->Wonderland_get_waypoint_from_idSM
-
-get_waypoint_pose_sm.py->Wonderland_Get_Waypoint
-
-go_to_exit_sm.py->SaraSay
-
-go_to_exit_sm.py->SaraMoveBase
-
-go_to_from_waypoint_id_sm.py->Wonderland_get_waypoint_from_idSM
-
-go_to_from_waypoint_id_sm.py->Wonderland_Get_Waypoint
-
-go_to_from_waypoint_id_sm.py->SaraMoveBase
-
-go_to_room_sm.py->WaitState
-
-go_to_room_sm.py->SaraMoveBase
-
-help_me_carry_sm.py->Get_Robot_Pose
-
-help_me_carry_sm.py->MoveitMove
-
-help_me_carry_sm.py->SaraSetHeadAngle
-
-help_me_carry_sm.py->SaraSay
-
-help_me_carry_sm.py->RegexTester
-
-help_me_carry_sm.py->GetSpeech
-
-help_me_carry_sm.py->SetKey
-
-help_me_carry_sm.py->action_look_at_faceSM
-
-help_me_carry_sm.py->CalculationState
-
-help_me_carry_sm.py->list_entities_by_name
-
-help_me_carry_sm.py->Action_Guide2SM
-
-help_me_carry_sm.py->Action_Receive_BagSM
-
-help_me_carry_sm.py->LookAtClosestSM
-
-help_me_carry_sm.py->Get_Reacheable_Waypoint
-
-help_me_carry_sm.py->Action_MoveSM
-
-help_me_carry_sm.py->SetGripperState
-
-help_me_carry_sm.py->WaitState
-
-help_me_carry_sm.py->Action_followSM
-
-help_me_carry_sm.py->SetRosParam
-
-help_me_carry_sm.py->Action_Pass_DoorSM
-
-help_me_carry_sm.py->WonderlandGetEntityVerbal
-
-help_me_carry_sm.py->ActionWrapper_MoveSM
-
-help_me_carry_sm.py->ContinueButton
-
-init_sequence_sm.py->WaitState
-
-init_sequence_sm.py->SaraMoveBase
-
-init_sequence_sm.py->GenPoseQuat
-
-lookatclosest_sm.py->list_entities_by_name
-
-lookatclosest_sm.py->CalculationState
-
-lookatclosest_sm.py->KeepLookingAt
-
-new_qualif_sm.py->DoorDetectorSM
-
-new_qualif_sm.py->GenPoseQuat
-
-new_qualif_sm.py->SaraMoveBase
-
-presentation_robotique_zone_1_sm.py->list_entities_by_name
-
-presentation_robotique_zone_1_sm.py->FlexibleCalculationState
-
-presentation_robotique_zone_1_sm.py->WaitState
-
-presentation_robotique_zone_1_sm.py->CalculationState
-
-presentation_robotique_zone_1_sm.py->KeepLookingAt
-
-presentation_robotique_zone_1_sm.py->GetClosestObstacle
-
-presentation_robotique_zone_1_sm.py->SaraSetHeadAngleKey
-
-restaurant2018_sm_tmp.py->Action_MoveSM
-
-restaurant2018_sm_tmp.py->WaitState
-
-restaurant2018_sm_tmp.py->SaraSay
-
-restaurant2018_sm_tmp.py->GetSpeech
-
-restaurant2018_sm_tmp.py->SaraSayKey
-
-restaurant2018_sm_tmp.py->Action_pickSM
-
-restaurant2018_sm_tmp.py->list_entities_by_name
-
-restaurant2018_sm_tmp.py->Action_GiveSM
-
-sara_action_executor_sm.py->WaitState
-
-sara_action_executor_sm.py->FIFO_Get
-
-sara_action_executor_sm.py->LogKeyState
-
-sara_action_executor_sm.py->DecisionState
-
-sara_action_executor_sm.py->ActionWrapper_BringSM
-
-sara_action_executor_sm.py->ActionWrapper_FollowSM
-
-sara_action_executor_sm.py->ActionWrapper_MoveSM
-
-sara_action_executor_sm.py->ActionWrapper_AttachSM
-
-sara_action_executor_sm.py->ActionWrapper_LookAtSM
-
-sara_action_executor_sm.py->ActionWrapper_FindSM
-
-sara_action_executor_sm.py->ActionWrapper_PlaceSM
-
-sara_action_executor_sm.py->ActionWrapper_GiveSM
-
-sara_action_executor_sm.py->ActionWrapper_PickSM
-
-sara_action_executor_sm.py->ActionWrapper_TurnSM
-
-sara_action_executor_sm.py->CheckConditionState
-
-sara_command_manager_sm.py->GetSpeech
-
-sara_command_manager_sm.py->LU4R_Parser
-
-sara_command_manager_sm.py->SaraSay
-
-sara_command_manager_sm.py->RegexTester
-
-sara_command_manager_sm.py->SaraSound
-
-sara_main_behavior_sm.py->LogState
-
-sara_main_behavior_sm.py->SaraactionexecutorSM
-
-sara_main_behavior_sm.py->sara_command_managerSM
-
-sara_main_behavior_sm.py->CalculationState
-
-sara_main_behavior_sm.py->CheckConditionState
-
-sara_main_behavior_sm.py->SaraSay
-
-sara_main_behavior_sm.py->FIFO_New
-
-sara_main_behavior_sm.py->GetSpeech
-
-sara_main_behavior_sm.py->SaraSetHeadAngle
-
-sara_main_behavior_sm.py->MoveitMove
-
-sara_main_behavior_sm.py->SetExpression
-
-sara_main_behavior_sm.py->WaitState
-
-sara_main_behavior_sm.py->SetKey
-
-sara_main_behavior_sm.py->RegexTester
-
-sara_presentation_sm.py->SaraSayKey
-
-sara_presentation_sm.py->WaitState
-
-sara_presentation_sm.py->SaraSay
-
-sara_presentation_sm.py->RegexTester
-
-sara_presentation_sm.py->Get_speechSM
-
-sara_presentation_sm.py->SaraSound
-
-sara_presentation_sm.py->PublishUint8
-
-sara_presentation_sm.py->MoveitMove
-
-sara_presentation_sm.py->SetGripperState
-
-sara_presentation_sm.py->SaraMoveBase
-
-sara_presentation_sm.py->GenPoseEuler
-
-sara_presentation_sm.py->ForLoop
-
-sara_presentation_sm.py->SaraSetHeadAngle
-
-say_hello_sm.py->SaraSay
-
-say_hello_sm.py->WaitState
-
-scenario_gpsr_sm.py->SetKey
-
-scenario_gpsr_sm.py->MoveitMove
-
-scenario_gpsr_sm.py->Set_Story
-
-scenario_gpsr_sm.py->WonderlandGetEntityVerbal
-
-scenario_gpsr_sm.py->Action_Pass_DoorSM
-
-scenario_gpsr_sm.py->CalculationState
-
-scenario_gpsr_sm.py->SaraSay
-
-scenario_gpsr_sm.py->Set_a_step
-
-scenario_gpsr_sm.py->FlexibleCalculationState
-
-scenario_gpsr_sm.py->FlexibleCheckConditionState
-
-scenario_gpsr_sm.py->Action_ExecutorSM
-
-scenario_gpsr_sm.py->StoryboardSetStepKey
-
-scenario_gpsr_sm.py->GetRosParam
-
-scenario_gpsr_sm.py->SaraSayKey
-
-scenario_gpsr_sm.py->ActionWrapper_MoveSM
-
-scenario_gpsr_sm.py->ForLoop
-
-scenario_gpsr_sm.py->SaraNLUgpsr
-
-scenario_gpsr_sm.py->GetSpeech
-
-scenario_gpsr_sm.py->CheckConditionState
-
-scenario_gpsr_sm.py->list_entities_by_name
-
-scenario_gpsr_sm.py->KeepLookingAt
-
-scenario_gpsr_sm.py->StoryboardSetStoryFromAction
-
-scenario_gpsr_sm.py->Get_Robot_Pose
-
-scenario_gpsr_sm.py->SaraSetHeadAngle
-
-scenario_gpsr_sm.py->ContinueButton
-
-scenario_help_me_carry_sm.py->SubscriberState
-
-scenario_help_me_carry_sm.py->CalculationState
-
-scenario_help_me_carry_sm.py->RegexTester
-
-scenario_help_me_carry_sm.py->SaraSay
-
-scenario_help_me_carry_sm.py->WaitState
-
-scenario_help_me_carry_sm.py->ForLoop
-
-scenario_help_me_carry_sm.py->SaraMoveBase
-
-scenario_help_me_carry_sm.py->Get_Robot_Pose
-
-scenario_help_me_carry_sm.py->ComparePoses
-
-scenario_help_me_carry_sm.py->CheckConditionState
-
-scenario_help_me_carry_sm.py->GenPoseQuat
-
-scenario_help_me_carry_sm.py->Action_Receive_BagSM
-
-scenario_help_me_carry_sm.py->Action_Give_Back_BagSM
-
-scenario_mvp_storing_groceries_sm.py->WonderlandGetEntityVerbal
-
-scenario_mvp_storing_groceries_sm.py->CalculationState
-
-scenario_mvp_storing_groceries_sm.py->Get_Reacheable_Waypoint
-
-scenario_mvp_storing_groceries_sm.py->SetKey
-
-scenario_mvp_storing_groceries_sm.py->list_entities_by_name
-
-scenario_mvp_storing_groceries_sm.py->action_turnSM
-
-scenario_mvp_storing_groceries_sm.py->CheckConditionState
-
-scenario_mvp_storing_groceries_sm.py->SaraSay
-
-scenario_mvp_storing_groceries_sm.py->ForLoop
-
-scenario_mvp_storing_groceries_sm.py->GenPoseEulerKey
-
-scenario_mvp_storing_groceries_sm.py->Action_pickSM
-
-scenario_mvp_storing_groceries_sm.py->SaraSayKey
-
-scenario_mvp_storing_groceries_sm.py->BinaryCalculationState
-
-scenario_mvp_storing_groceries_sm.py->Action_placeSM
-
-scenario_mvp_storing_groceries_sm.py->SaraMoveBase
-
-scenario_mvp_storing_groceries_sm.py->WaitState
-
-scenario_restaurant2018_sm.py->SetKey
-
-scenario_restaurant2018_sm.py->ActionWrapper_MoveSM
-
-scenario_restaurant2018_sm.py->ActionWrapper_GiveSM
-
-scenario_restaurant2018_sm.py->WaitState
-
-scenario_restaurant2018_sm.py->SaraSay
-
-scenario_restaurant2018_sm.py->GetSpeech
-
-scenario_restaurant2018_sm.py->SaraSayKey
-
-scenario_restaurant2018_sm.py->CheckConditionState
-
-scenario_restaurant2018_sm.py->LogKeyState
-
-scenario_restaurant2018_sm.py->CalculationState
-
-scenario_restaurant2018_sm.py->Action_findSM
-
-scenario_restaurant2018_sm.py->ActionWrapper_PickSM
-
-scenario_security_check_sm.py->SetKey
-
-scenario_security_check_sm.py->SaraSound
-
-scenario_security_check_sm.py->Action_MoveSM
-
-scenario_security_check_sm.py->ContinueButton
-
-scenario_security_check_sm.py->SaraSay
-
-scenario_security_check_sm.py->Action_Pass_DoorSM
-
-scenario_security_check_sm.py->WonderlandGetEntityVerbal
-
-scenario_security_check_sm.py->CalculationState
-
-scenario_security_check_sm.py->LogKeyState
-
-scenario_spr_sm.py->ContinueButton
-
-scenario_spr_sm.py->WaitState
-
-scenario_spr_sm.py->WonderlandGetPersonStat
-
-scenario_spr_sm.py->SaraSay
-
-scenario_spr_sm.py->FlexibleCalculationState
-
-scenario_spr_sm.py->SaraSayKey
-
-scenario_spr_sm.py->CalculationState
-
-scenario_spr_sm.py->SetRosParamKey
-
-scenario_spr_sm.py->LogKeyState
-
-scenario_spr_sm.py->list_entities_by_name
-
-scenario_spr_sm.py->GetSpeech
-
-scenario_spr_sm.py->SaraNLUspr
-
-scenario_spr_sm.py->Set_a_step
-
-scenario_spr_sm.py->ForLoop
-
-scenario_spr_sm.py->KeepLookingAt
-
-scenario_spr_sm.py->action_turnSM
-
-scenario_spr_sm.py->SaraSetHeadAngle
-
-scenario_spr_sm.py->ActionWrapper_MoveSM
-
-scenario_spr_sm.py->Set_Story
-
-scenario_spr_sm.py->WonderlandClearPeoples
-
-scenario_spr_sm.py->MoveitMove
-
-scenario_spr_sm.py->SetKey
-
-scenario_spr_sm.py->WonderlandAddUpdatePeople
-
-stop_sm.py->FIFO_New
-
-test_continue_entity_sm.py->SaraSay
-
-test_continue_entity_sm.py->CalculationState
-
-test_continue_entity_sm.py->list_entities_by_name
-
-testgenderage_sm.py->TakeImageCamera
-
-testgenderage_sm.py->LogKeyState
-
-testgenderage_sm.py->WaitState
-
-testgenderage_sm.py->TestGenderAge
-
-testgenderage_sm.py->GenderAgeRecognition
-
-test_look_at_sound_sm.py->SaraSay
-
-test_look_at_sound_sm.py->LookAtSound
-
-test_look_at_sound_sm.py->GetSpeech
-
-test_look_at_sound_sm.py->WaitState
-
-test_look_at_sound_sm.py->RegexTester
-
-wonderlandaddupdateperson_sm.py->WonderlandAddPerson
-
-wonderlandaddupdateperson_sm.py->WonderlandPatchPerson
-
-wonderlanduniqueenity_sm.py->WonderlandGetEntityVerbal
-
-wonderlanduniqueenity_sm.py->SetKey
-
-wonderlanduniqueenity_sm.py->CalculationState
-
-wonderlanduniqueenity_sm.py->FlexibleCheckConditionState
-
-wonderlanduniqueenity_sm.py->LogKeyState
-
-wonderlanduniqueenity_sm.py->FlexibleCalculationState
-
-wonderlanduniqueenity_sm.py->WonderlandGetEntityByID
-
-wonderlanduniqueenity_sm.py->CheckConditionState
-
-wonderlanduniqueenity_sm.py->SaraSayKey
-
-wonderlanduniqueenity_sm.py->SaraSay
-
-@enduml
+Action_findPersonSM -> action_guide2_sm
+action_lookAtFaceBaseSM -> action_guide2_sm
+action_look_at_faceSM -> action_find_sm
+Action_MoveSM -> action_guide2_sm
+Action_MoveSM -> action_pass_door_sm
+Action_MoveSM -> action_turn_sm
+action_turnSM -> action_count_sm
+action_turnSM -> action_findperson_sm
+action_turnSM -> action_guide2_sm
+action_turnSM -> action_lookatbase_sm
+action_turnSM -> action_lookatfacebase_sm
+ActionWrapper_AnswerSM -> action_executor_sm
+ActionWrapper_AskSM -> action_executor_sm
+ActionWrapper_CountSM -> action_executor_sm
+ActionWrapper_Find_PersonSM -> action_executor_sm
+ActionWrapper_FindSM -> action_executor_sm
+ActionWrapper_FollowSM -> action_executor_sm
+ActionWrapper_GiveSM -> action_executor_sm
+ActionWrapper_MoveSM -> action_executor_sm
+ActionWrapper_PickSM -> action_executor_sm
+ActionWrapper_PlaceSM -> action_executor_sm
+ActionWrapper_SaySM -> action_executor_sm
+CalculationState -> action_executor_sm
+CalculationState -> action_findperson_sm
+CalculationState -> action_find_sm
+CalculationState -> action_give_sm
+CalculationState -> action_lookatbase_sm
+CalculationState -> action_lookatfacebase_sm
+CalculationState -> action_look_at_face_sm
+CalculationState -> action_look_at_sm
+CalculationState -> action_move_sm
+CalculationState -> action_pick_sm
+CalculationState -> action_point_at_sm
+CheckConditionState -> action_give_sm
+CheckConditionState -> action_lookatfacebase_sm
+CheckConditionState -> action_look_at_face_sm
+CheckConditionState -> action_move_sm
+DecisionState -> action_executor_sm
+DoorDetector -> action_pass_door_sm
+FlexibleCalculationState -> action_count_sm
+ForLoop -> action_count_sm
+GenGripperPose -> action_pick_sm
+GenGripperPose -> action_place_sm
+GenPoseEuler -> action_pass_door_sm
+GenPoseEulerKey -> action_lookatfacebase_sm
+GenPoseEulerKey -> action_look_at_face_sm
+GenPoseEulerKey -> action_turn_sm
+GetClosestObstacle -> action_move_sm
+Get_direction_to_point -> action_lookatbase_sm
+Get_direction_to_point -> action_lookatfacebase_sm
+Get_direction_to_point -> action_look_at_face_sm
+Get_direction_to_point -> action_look_at_sm
+Get_direction_to_point -> action_point_at_sm
+GetEntityByID -> action_find_sm
+GetEntityByID -> action_follow_sm
+GetEntityByID -> action_guide2_sm
+GetEntityByID -> action_guiding_person_sm
+GetEntityByID -> action_pick_sm
+Get_operatorSM -> action_guiding_person_sm
+GetRosParam -> action_give_sm
+GetRosParam -> action_guiding_person_sm
+KeepLookingAt -> action_follow_sm
+KeepLookingAt -> action_give_sm
+list_entities_by_name -> action_count_sm
+list_entities_by_name -> action_findperson_sm
+list_entities_by_name -> action_find_sm
+list_entities_by_name -> action_give_sm
+list_entities_by_name -> action_guide2_sm
+LogKeyState -> action_count_sm
+LogKeyState -> action_findperson_sm
+LogKeyState -> action_find_sm
+LogKeyState -> action_place_sm
+LogKeyState -> action_point_at_sm
+LogState -> action_give_sm
+LogState -> action_lookatfacebase_sm
+LogState -> action_look_at_face_sm
+LogState -> action_place_sm
+MoveitMove -> action_give_back_bag_sm
+MoveitMove -> action_give_sm
+MoveitMove -> action_pick_sm
+MoveitMove -> action_place_sm
+MoveitMove -> action_point_at_sm
+MoveitMove -> action_receive_bag_sm
+point_at_gen_pose -> action_point_at_sm
+ReadTorque -> action_give_sm
+ReadTorque -> action_place_sm
+ReadTorque -> action_receive_bag_sm
+SaraFollow -> action_follow_sm
+SaraFollow -> action_give_sm
+SaraMoveBase -> action_guiding_person_sm
+SaraMoveBase -> action_move_sm
+SaraRelMoveBase -> action_move_sm
+SaraSay -> action_follow_sm
+SaraSay -> action_give_back_bag_sm
+SaraSay -> action_give_sm
+SaraSay -> action_guide2_sm
+SaraSay -> action_guiding_person_sm
+SaraSay -> action_move_sm
+SaraSay -> action_pass_door_sm
+SaraSay -> action_pick_sm
+SaraSay -> action_place_sm
+SaraSay -> action_receive_bag_sm
+SaraSayKey -> action_count_sm
+SaraSayKey -> action_give_sm
+SaraSayKey -> action_guide2_sm
+SaraSayKey -> action_pick_sm
+SaraSetHeadAngle -> action_count_sm
+SaraSetHeadAngle -> action_findperson_sm
+SaraSetHeadAngle -> action_find_sm
+SaraSetHeadAngle -> action_follow_sm
+SaraSetHeadAngle -> action_guide2_sm
+SaraSetHeadAngle -> action_lookaroundtofind_sm
+SaraSetHeadAngle -> action_move_sm
+SaraSetHeadAngleKey -> action_lookatbase_sm
+SaraSetHeadAngleKey -> action_lookatfacebase_sm
+SaraSetHeadAngleKey -> action_look_at_face_sm
+SaraSetHeadAngleKey -> action_look_at_sm
+SaraSetHeadAngleKey -> action_move_sm
+SetExpression -> action_move_sm
+SetGripperState -> action_give_back_bag_sm
+SetGripperState -> action_give_sm
+SetGripperState -> action_pick_sm
+SetGripperState -> action_place_sm
+SetGripperState -> action_point_at_sm
+SetGripperState -> action_receive_bag_sm
+SetKey -> action_count_sm
+SetKey -> action_findperson_sm
+SetKey -> action_find_sm
+SetKey -> action_give_back_bag_sm
+SetKey -> action_give_sm
+SetKey -> action_guide2_sm
+SetKey -> action_lookatbase_sm
+SetKey -> action_lookatfacebase_sm
+SetKey -> action_look_at_face_sm
+SetKey -> action_move_sm
+SetKey -> action_pass_door_sm
+SetKey -> action_place_sm
+SetKey -> action_receive_bag_sm
+SetKey -> action_turn_sm
+SetRosParam -> action_count_sm
+SetRosParam -> action_give_sm
+TF_transformation -> action_pick_sm
+TF_transformation -> action_place_sm
+WaitState -> action_count_sm
+WaitState -> action_findperson_sm
+WaitState -> action_find_sm
+WaitState -> action_follow_sm
+WaitState -> action_give_sm
+WaitState -> action_guide2_sm
+WaitState -> action_lookaroundtofind_sm

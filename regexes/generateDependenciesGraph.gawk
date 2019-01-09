@@ -1,8 +1,12 @@
 #!/usr/bin/gawk
 
+# To generate with sorted entries
+# gawk -f regexes/generateDependenciesGraph.gawk  behaviors/behavior_action_*/src/behavior_*/*.py&& sort -u regexes/graphs/dependenceGraph.plantuml
+
 function basename(file) {
-        sub(".*/", "", file)
-            return file
+    sub(".*/", "", file);
+    sub(".py","", file);
+    return file;
 }
 function writeF(str){
     return system("echo \""str"\">>regexes/graphs/dependenceGraph.plantuml")
@@ -12,7 +16,8 @@ BEGIN{
     f=""
     umlFileName="regexes/graphs/dependenceGraph";
     file=umlFileName".plantuml";
-    system("echo \"@startuml\n node SaraSay\n\" >"file);
+    system("echo \"\" >"file);
+    # system("echo \"@startuml\n \" >"file);
 }
 {
     if(f != FILENAME){
@@ -21,10 +26,10 @@ BEGIN{
         class = basename(FILENAME);
     #NeedTo Ignore case and remove "_"
 #    writeF("node" class"\n")
-    } 
+    }
     if(match($0, /from .* import (.*)/,arr)&&!match($0, /Behavior/)){
         print "\t",arr[1];
-         writeF(class"->"arr[1]"\n");
+        writeF(arr[1]" -> "class"\n");
     }
 }
 END{
@@ -36,9 +41,10 @@ END{
 #    system("cat regexes/graphs/dependenceGraph.plantuml >>/tmp/tempUml.txt");
 #    system("awk 'BEGIN{print \\\"@startuml\n node SaraSay\\\"}{print}' "file" > "file);
 #    system("cp /tmp/tempUml.txt "file)
-    writeF("@enduml");
-    system("plantuml -tpdf "file);
-    system("eog "umlFileName".svg");
+    # writeF("@enduml");
+    # system("sort "file" > "file);
+    # system("plantuml -tsvg "file);
+    # system("eog "umlFileName".svg");
 }
 
 #In command line (for now)
