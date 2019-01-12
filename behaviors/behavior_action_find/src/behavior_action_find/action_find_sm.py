@@ -14,8 +14,7 @@ from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.wait_state import WaitState
-from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
-from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
+from sara_flexbe_states.KeepLookingAt import KeepLookingAt
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -39,7 +38,6 @@ class Action_findSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(action_look_at_faceSM, 'look for 2 sec/Look at/action_look_at_face')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -65,19 +63,12 @@ class Action_findSM(Behavior):
 		_sm_look_at_0 = OperatableStateMachine(outcomes=['end'], input_keys=['ID'])
 
 		with _sm_look_at_0:
-			# x:95 y:61
-			OperatableStateMachine.add('get entity',
-										GetEntityByID(),
-										transitions={'found': 'action_look_at_face', 'not_found': 'get entity'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'ID': 'ID', 'Entity': 'Entity'})
-
-			# x:88 y:149
-			OperatableStateMachine.add('action_look_at_face',
-										self.use_behavior(action_look_at_faceSM, 'look for 2 sec/Look at/action_look_at_face'),
-										transitions={'finished': 'action_look_at_face', 'failed': 'action_look_at_face'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'Entity': 'Entity'})
+			# x:75 y:135
+			OperatableStateMachine.add('look at',
+										KeepLookingAt(),
+										transitions={'failed': 'look at'},
+										autonomy={'failed': Autonomy.Off},
+										remapping={'ID': 'ID'})
 
 
 		# x:798 y:597

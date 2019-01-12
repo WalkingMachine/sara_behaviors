@@ -15,7 +15,6 @@ from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.SetKey import SetKey
-from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from behavior_action_guide2.action_guide2_sm import Action_Guide2SM
@@ -54,7 +53,6 @@ class HelpmecarrySM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(action_look_at_faceSM, 'GetNewPerson/Get ope/look at closest/action_look_at_face')
 		self.add_behavior(Action_Guide2SM, 'GetNewPerson/Action_Guide2')
 		self.add_behavior(Action_Receive_BagSM, 'Recevoir sac/Receive bag/Action_Receive_Bag')
 		self.add_behavior(LookAtClosestSM, 'Recevoir sac/Look at/LookAtClosest')
@@ -264,19 +262,6 @@ class HelpmecarrySM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Person'})
 
-			# x:280 y:251
-			OperatableStateMachine.add('action_look_at_face',
-										self.use_behavior(action_look_at_faceSM, 'GetNewPerson/Get ope/look at closest/action_look_at_face'),
-										transitions={'finished': 'action_look_at_face', 'failed': 'get persons'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'Entity': 'Entity'})
-
-			# x:37 y:287
-			OperatableStateMachine.add('get closest',
-										CalculationState(calculation=lambda x: x[0]),
-										transitions={'done': 'action_look_at_face'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'entity_list', 'output_value': 'Entity'})
 
 			# x:36 y:119
 			OperatableStateMachine.add('head angle',

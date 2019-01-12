@@ -15,7 +15,6 @@ from sara_flexbe_states.sara_say_key import SaraSayKey
 from behavior_action_pick.action_pick_sm import Action_pickSM
 from behavior_action_find.action_find_sm import Action_findSM
 from flexbe_states.calculation_state import CalculationState
-from behavior_action_look_at_face.action_look_at_face_sm import action_look_at_faceSM
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
@@ -50,7 +49,6 @@ class ActionWrapper_PickSM(Behavior):
 		# references to used behaviors
 		self.add_behavior(Action_pickSM, 'Action_pick')
 		self.add_behavior(Action_findSM, 'find object/Action_find')
-		self.add_behavior(action_look_at_faceSM, 'action_look_at_face')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -254,19 +252,6 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'ObjectName'})
 
-			# x:257 y:144
-			OperatableStateMachine.add('find object',
-										_sm_find_object_3,
-										transitions={'not_found': 'cause3', 'done': 'action_look_at_face'},
-										autonomy={'not_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
-										remapping={'Action': 'Action', 'ObjectName': 'ObjectName', 'ID': 'ID', 'Object': 'Object'})
-
-			# x:25 y:389
-			OperatableStateMachine.add('action_look_at_face',
-										self.use_behavior(action_look_at_faceSM, 'action_look_at_face'),
-										transitions={'finished': 'Action_pick', 'failed': 'Action_pick'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'Entity': 'Object'})
 
 			# x:261 y:239
 			OperatableStateMachine.add('Get closer',
@@ -314,13 +299,6 @@ class ActionWrapper_PickSM(Behavior):
 										transitions={'done': 'Get object'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'ObjectName'})
-
-			# x:29 y:261
-			OperatableStateMachine.add('Get object',
-										_sm_get_object_1,
-										transitions={'failed': 'find object', 'found': 'action_look_at_face', 'not_found': 'find object'},
-										autonomy={'failed': Autonomy.Inherit, 'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'ID': 'ID', 'Object': 'Object'})
 
 			# x:511 y:20
 			OperatableStateMachine.add('cause1',

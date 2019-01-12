@@ -12,7 +12,6 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="action_look_at_face" />
 	<contains name="Action_Guide2" />
 	<contains name="Action_Receive_Bag" />
 	<contains name="LookAtClosest" />
