@@ -15,9 +15,8 @@ from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_states.sara_say_key import SaraSayKey
-from behavior_action_lookatfacebase.action_lookatfacebase_sm import action_lookAtFaceBaseSM
 from behavior_action_move.action_move_sm import Action_MoveSM
+from sara_flexbe_states.sara_say_key import SaraSayKey
 from behavior_action_findperson.action_findperson_sm import Action_findPersonSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -44,7 +43,6 @@ class Action_Guide2SM(Behavior):
 		# references to used behaviors
 		self.add_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn')
 		self.add_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn_2')
-		self.add_behavior(action_lookAtFaceBaseSM, 'action_lookAtFaceBase')
 		self.add_behavior(Action_MoveSM, 'Try to reach/Container/navigate to the point/Action_Move')
 		self.add_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn')
 		self.add_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn_2')
@@ -459,7 +457,7 @@ class Action_Guide2SM(Behavior):
 			# x:29 y:416
 			OperatableStateMachine.add('operator is still there',
 										_sm_operator_is_still_there_13,
-										transitions={'finished': 'getentitybyID', 'failed': 'say lost operator'},
+										transitions={'finished': 'head to middle', 'failed': 'say lost operator'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
@@ -480,27 +478,6 @@ class Action_Guide2SM(Behavior):
 										SaraSetHeadAngle(pitch=0, yaw=0),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
-
-			# x:553 y:450
-			OperatableStateMachine.add('sayreachtheentity',
-										SaraSayKey(Format=lambda x: "Here is the destination.", emotion=1, block=True),
-										transitions={'done': 'head to middle'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'ID'})
-
-			# x:18 y:582
-			OperatableStateMachine.add('action_lookAtFaceBase',
-										self.use_behavior(action_lookAtFaceBaseSM, 'action_lookAtFaceBase'),
-										transitions={'finished': 'sayreachtheentity', 'failed': 'sayreachtheentity'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'Entity': 'Entity'})
-
-			# x:52 y:498
-			OperatableStateMachine.add('getentitybyID',
-										GetEntityByID(),
-										transitions={'found': 'action_lookAtFaceBase', 'not_found': 'sayreachtheentity'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'ID': 'ID', 'Entity': 'Entity'})
 
 			# x:39 y:330
 			OperatableStateMachine.add('Try to reach',

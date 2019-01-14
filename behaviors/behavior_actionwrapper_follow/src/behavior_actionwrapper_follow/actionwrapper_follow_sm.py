@@ -16,7 +16,6 @@ from sara_flexbe_states.sara_say import SaraSay
 from behavior_action_follow.action_follow_sm import Action_followSM
 from sara_flexbe_states.get_speech import GetSpeech
 from flexbe_states.check_condition_state import CheckConditionState
-from behavior_action_lookatfacebase.action_lookatfacebase_sm import action_lookAtFaceBaseSM
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
@@ -43,7 +42,6 @@ class ActionWrapper_FollowSM(Behavior):
 
 		# references to used behaviors
 		self.add_behavior(Action_followSM, 'Follow Loop/Action_follow')
-		self.add_behavior(action_lookAtFaceBaseSM, 'action_lookAtFaceBase')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -180,13 +178,6 @@ class ActionWrapper_FollowSM(Behavior):
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'name'})
-
-			# x:53 y:409
-			OperatableStateMachine.add('action_lookAtFaceBase',
-										self.use_behavior(action_lookAtFaceBaseSM, 'action_lookAtFaceBase'),
-										transitions={'finished': 'Tell Way', 'failed': 'Say Lost'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'Entity': 'Entity'})
 
 			# x:556 y:151
 			OperatableStateMachine.add('cause1',

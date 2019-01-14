@@ -13,7 +13,6 @@
 
 	<!-- Contained Behaviors -->
 	<contains name="action_turn" />
-	<contains name="action_lookAtFaceBase" />
 	<contains name="Action_Move" />
 	<contains name="Action_findPerson" />
 

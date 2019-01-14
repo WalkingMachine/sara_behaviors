@@ -23,7 +23,6 @@ from behavior_action_turn.action_turn_sm import action_turnSM
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from sara_flexbe_states.sara_say import SaraSay
 from behavior_wonderlanduniqueenity.wonderlanduniqueenity_sm import WonderlandUniqueEnitySM
-from behavior_action_lookatfacebase.action_lookatfacebase_sm import action_lookAtFaceBaseSM
 from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerbal
 from behavior_action_point_at.action_point_at_sm import Action_point_atSM
 from sara_flexbe_states.SetRosParam import SetRosParam
@@ -56,7 +55,6 @@ class ActionWrapper_GuideSM(Behavior):
 		self.add_behavior(WonderlandUniqueEnitySM, 'Try to find area/WonderlandUniqueEnity')
 		self.add_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn')
 		self.add_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn_2')
-		self.add_behavior(action_lookAtFaceBaseSM, 'action_lookAtFaceBase')
 		self.add_behavior(Action_point_atSM, 'Action_point_at')
 
 		# Additional initialization code can be added inside the following tags
@@ -664,13 +662,6 @@ class ActionWrapper_GuideSM(Behavior):
 										transitions={'done': 'head to middle'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'area_name'})
-
-			# x:26 y:529
-			OperatableStateMachine.add('action_lookAtFaceBase',
-										self.use_behavior(action_lookAtFaceBaseSM, 'action_lookAtFaceBase'),
-										transitions={'finished': 'get entity to point', 'failed': 'get entity to point'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'Entity': 'Entity'})
 
 			# x:57 y:471
 			OperatableStateMachine.add('getentitybyID',

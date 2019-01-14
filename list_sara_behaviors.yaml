@@ -81,7 +81,7 @@ action_lookaroundtofind:
 action_look_at:
   description:
   usecase:
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working:
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -89,7 +89,7 @@ action_look_at:
 action_lookatbase:
   description:
   usecase:
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working:
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -97,7 +97,7 @@ action_lookatbase:
 action_look_at_face:
   description: Regarde le visage d'une personne
   usecase: JAMAIS, DUPLICATE
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -105,7 +105,7 @@ action_look_at_face:
 action_lookatfacebase:
   description: Regarde le visage d'une personne en utilisant la base pour tourner.
   usecase: JAMAIS, DUPLICATE
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
