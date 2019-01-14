@@ -185,7 +185,7 @@ actionwrapper_ask:
 actionwrapper_attach:
   description: attache un objet
   usecase: Sert pas
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}

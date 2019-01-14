@@ -16,7 +16,6 @@
   <run_depend>behavior_action_give_back_bag</run_depend>
   <run_depend>behavior_action_receive_bag</run_depend>
   <run_depend>behavior_action_setexpression</run_depend>
-  <run_depend>behavior_actionwrapper_attach</run_depend>
   <run_depend>behavior_actionwrapper_bring</run_depend>
   <run_depend>behavior_actionwrapper_find</run_depend>
   <run_depend>behavior_actionwrapper_follow</run_depend>
@@ -102,7 +101,6 @@
 <run_depend>behavior_action_turn</run_depend>
 <run_depend>behavior_actionwrapper_ask</run_depend>
 <run_depend>behavior_actionwrapper_answer</run_depend>
-<run_depend>behavior_actionwrapper_attach</run_depend>
 <run_depend>behavior_actionwrapper_bring</run_depend>
 <run_depend>behavior_actionwrapper_confirm</run_depend>
 <run_depend>behavior_actionwrapper_count</run_depend>
