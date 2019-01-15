@@ -193,7 +193,7 @@ actionwrapper_attach:
 actionwrapper_bring:
   description: Vas chercher un objet
   usecase: Sert pas
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
