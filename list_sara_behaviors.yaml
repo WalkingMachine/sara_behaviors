@@ -305,7 +305,7 @@ actionwrapper_stop:
 actionwrapper_turn:
   description:
   usecase:
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working:
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -313,7 +313,7 @@ actionwrapper_turn:
 actionwrapper_waitfordoor:
   description: Attend pour une porte
   usecase: Sert pas
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -321,7 +321,7 @@ actionwrapper_waitfordoor:
 age_statistics:
   description: trouve les statistiques d'age
   usecase: Pour SPR
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -345,7 +345,7 @@ a_test_sandbox:
 a_test_wonderland:
   description:
   usecase: pour tester les behaviors de wonderland
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}

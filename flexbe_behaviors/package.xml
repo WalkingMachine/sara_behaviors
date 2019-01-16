@@ -12,7 +12,6 @@
   <run_depend>rospy</run_depend>
 
   <!-- Add here all ROS packages that contain behaviors -->
-  <run_depend>behavior_a_test_wonderland</run_depend>
   <run_depend>behavior_action_give_back_bag</run_depend>
   <run_depend>behavior_action_receive_bag</run_depend>
   <run_depend>behavior_action_setexpression</run_depend>
@@ -24,7 +23,6 @@
   <run_depend>behavior_actionwrapper_place</run_depend>
   <run_depend>behavior_actionwrapper_give</run_depend>
   <run_depend>behavior_stop</run_depend>
-  <run_depend>behavior_actionwrapper_waitfordoor</run_depend>
   <run_depend>behavior_wonderland_entity_in_room</run_depend>
   <run_depend>behavior_wonderland_list_entities_in_room</run_depend>
   <run_depend>behavior_wonderland_list_rooms</run_depend>
@@ -82,7 +80,6 @@
   <run_depend>behavior_action_count</run_depend>
 <run_depend>behavior_a_go_home</run_depend>
 <run_depend>behavior_a_test_sandbox</run_depend>
-<run_depend>behavior_a_test_wonderland</run_depend>
 <run_depend>behavior_action_find</run_depend>
 <run_depend>behavior_action_follow</run_depend>
 <run_depend>behavior_action_give</run_depend>
@@ -104,8 +101,6 @@
 <run_depend>behavior_actionwrapper_move</run_depend>
 <run_depend>behavior_actionwrapper_pick</run_depend>
 <run_depend>behavior_actionwrapper_place</run_depend>
-<run_depend>behavior_actionwrapper_waitfordoor</run_depend>
-<run_depend>behavior_age_statistics</run_depend>
 <run_depend>behavior_check_reachability</run_depend>
 <run_depend>behavior_general_test</run_depend>
 <run_depend>behavior_get_operator</run_depend>
