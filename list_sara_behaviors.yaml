@@ -201,7 +201,7 @@ actionwrapper_bring:
 actionwrapper_confirm:
   description: Demande de valider une déclaration
   usecase: Sert pas
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -257,7 +257,7 @@ actionwrapper_guide:
 actionwrapper_lookat:
   description: Regarde un objet
   usecase: Jamais
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
