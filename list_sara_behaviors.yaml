@@ -297,7 +297,7 @@ actionwrapper_say:
 actionwrapper_stop:
   description:
   usecase:
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working:
   dependencies (behaviors): {}
   dependencies (states): {}
