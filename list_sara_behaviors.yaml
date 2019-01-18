@@ -361,7 +361,7 @@ check_reachability:
 general_test:
   description: des tests
   usecase: pas utilisé
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}

@@ -102,7 +102,6 @@
 <run_depend>behavior_actionwrapper_pick</run_depend>
 <run_depend>behavior_actionwrapper_place</run_depend>
 <run_depend>behavior_check_reachability</run_depend>
-<run_depend>behavior_general_test</run_depend>
 <run_depend>behavior_get_operator</run_depend>
 <run_depend>behavior_get_speech</run_depend>
 <run_depend>behavior_get_waypoint_pose</run_depend>
