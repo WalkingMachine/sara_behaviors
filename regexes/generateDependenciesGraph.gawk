@@ -6,9 +6,12 @@
 function basename(file) {
     sub(".*/", "", file);
     sub(".py","", file);
+    sub("_?((sm)|(SM))","", file);
     return file;
 }
 function writeF(str){
+
+    sub("_?((sm)|(SM))","", str);
     return system("echo \""str"\">>regexes/graphs/dependenceGraph.plantuml")
 }
 
@@ -29,7 +32,7 @@ BEGIN{
     }
     if(match($0, /from .* import (.*)/,arr)&&!match($0, /Behavior/)){
         print "\t",arr[1];
-        writeF(arr[1]" -> "class"\n");
+        writeF(arr[1]" -> "class"");
     }
 }
 END{
