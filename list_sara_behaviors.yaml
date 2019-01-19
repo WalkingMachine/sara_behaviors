@@ -386,7 +386,7 @@ get_speech:
 get_waypoint_pose:
   description:
   usecase: pas utilisé
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: NOT_COMPILING
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -394,7 +394,7 @@ get_waypoint_pose:
 go_to_exit:
   description: sort de l'arène
   usecase: Pas utilisé
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -402,7 +402,7 @@ go_to_exit:
 go_to_from_waypoint_id:
   description: vas vers un waypoint par son ID
   usecase: pas utilisé
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: ?
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -442,7 +442,7 @@ lookatclosest:
 new_qualif:
   description:
   usecase:
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working:
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -450,7 +450,7 @@ new_qualif:
 presentation_robotique_zone_1:
   description:
   usecase:
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working:
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -458,7 +458,7 @@ presentation_robotique_zone_1:
 restaurant2018:
   description:
   usecase:
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working:
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -466,7 +466,7 @@ restaurant2018:
 sara_action_executor:
   description:
   usecase: Dupliqué
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working:
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -498,7 +498,7 @@ sara_presentation:
 say_hello:
   description:
   usecase:
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working:
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -514,7 +514,7 @@ scenario_gpsr:
 scenario_help_me_carry:
   description: scenario de la compé
   usecase: 2017
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working:
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -522,7 +522,7 @@ scenario_help_me_carry:
 scenario_mvp_storing_groceries:
   description:
   usecase: Dupliqué de storing_groceries
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: pas testé
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -554,7 +554,7 @@ scenario_spr:
 stop:
   description: Arrète le robot
   usecase: Sertpuàrien
-  modifications_suggested:  DELETE
+  modifications_suggested:  DELETE DONE
   status_of_working: non
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -562,7 +562,7 @@ stop:
 test_continue_entity:
   description:
   usecase:  Sertpuàrien
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: UNKNOWN
   dependencies (behaviors): {}
   dependencies (states): {}
@@ -570,7 +570,7 @@ test_continue_entity:
 testgenderage:
   description:
   usecase:  Sertpuàrien
-  modifications_suggested: DELETE
+  modifications_suggested: DELETE DONE
   status_of_working: UNKNOWN
   dependencies (behaviors): {}
   dependencies (states): {}
