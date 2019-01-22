@@ -13,17 +13,16 @@ from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from behavior_action_pick.action_pick_sm import Action_pickSM
-from behavior_action_find.action_find_sm import Action_findSM
-from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
+from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.SetRosParam import SetRosParam
-from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
+from behavior_action_find.action_find_sm import Action_findSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -48,7 +47,7 @@ class ActionWrapper_PickSM(Behavior):
 
 		# references to used behaviors
 		self.add_behavior(Action_pickSM, 'Action_pick')
-		self.add_behavior(Action_findSM, 'find object/Action_find')
+		self.add_behavior(Action_findSM, 'Action_find')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -94,29 +93,10 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:30 y:458, x:130 y:458, x:230 y:458
-		_sm_get_object_1 = OperatableStateMachine(outcomes=['failed', 'found', 'not_found'], output_keys=['ID', 'Object'])
-
-		with _sm_get_object_1:
-			# x:35 y:40
-			OperatableStateMachine.add('get param',
-										GetRosParam(ParamName="/behavior/FoundEntity/Id"),
-										transitions={'done': 'get obj', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'Value': 'ID'})
-
-			# x:207 y:223
-			OperatableStateMachine.add('get obj',
-										GetEntityByID(),
-										transitions={'found': 'found', 'not_found': 'not_found'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'ID': 'ID', 'Entity': 'Object'})
-
-
 		# x:40 y:700
-		_sm_get_closer_2 = OperatableStateMachine(outcomes=['done'], input_keys=['Object'])
+		_sm_get_closer_1 = OperatableStateMachine(outcomes=['done'], input_keys=['Object'])
 
-		with _sm_get_closer_2:
+		with _sm_get_closer_1:
 			# x:59 y:36
 			OperatableStateMachine.add('set targetpose',
 										SetKey(Value="PreGripPose"),
@@ -124,7 +104,7 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'target'})
 
-			# x:39 y:367
+			# x:117 y:355
 			OperatableStateMachine.add('set dist',
 										SetKey(Value=0.8),
 										transitions={'done': 'get close pos'},
@@ -145,7 +125,7 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Object', 'output_value': 'Pos'})
 
-			# x:26 y:287
+			# x:110 y:285
 			OperatableStateMachine.add('move head',
 										SaraSetHeadAngle(pitch=0.7, yaw=0),
 										transitions={'done': 'set dist'},
@@ -178,29 +158,10 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:421 y:110, x:272 y:201
-		_sm_find_object_3 = OperatableStateMachine(outcomes=['not_found', 'done'], input_keys=['Action', 'ObjectName'], output_keys=['ID', 'Object'])
-
-		with _sm_find_object_3:
-			# x:27 y:148
-			OperatableStateMachine.add('Action_find',
-										self.use_behavior(Action_findSM, 'find object/Action_find'),
-										transitions={'done': 'get closest ID', 'failed': 'not_found'},
-										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'className': 'ObjectName', 'entity': 'Object'})
-
-			# x:36 y:274
-			OperatableStateMachine.add('get closest ID',
-										CalculationState(calculation=lambda x: x.ID),
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'Object', 'output_value': 'ID'})
-
-
 		# x:59 y:308, x:387 y:59, x:384 y:139
-		_sm_check_form_4 = OperatableStateMachine(outcomes=['done', 'fail_full', 'full_no_object'], input_keys=['Action'])
+		_sm_check_form_2 = OperatableStateMachine(outcomes=['done', 'fail_full', 'full_no_object'], input_keys=['Action'])
 
-		with _sm_check_form_4:
+		with _sm_check_form_2:
 			# x:31 y:40
 			OperatableStateMachine.add('check if gripper full',
 										GetRosParam(ParamName="behavior/Gripper_Content"),
@@ -233,7 +194,7 @@ class ActionWrapper_PickSM(Behavior):
 		with _state_machine:
 			# x:84 y:30
 			OperatableStateMachine.add('Check Form',
-										_sm_check_form_4,
+										_sm_check_form_2,
 										transitions={'done': 'get name', 'fail_full': 'cause1', 'full_no_object': 'cause2'},
 										autonomy={'done': Autonomy.Inherit, 'fail_full': Autonomy.Inherit, 'full_no_object': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
@@ -252,11 +213,10 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'ObjectName'})
 
-
 			# x:261 y:239
 			OperatableStateMachine.add('Get closer',
-										_sm_get_closer_2,
-										transitions={'done': 'find object'},
+										_sm_get_closer_1,
+										transitions={'done': 'Action_pick'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'Object': 'Object'})
 
@@ -296,7 +256,7 @@ class ActionWrapper_PickSM(Behavior):
 			# x:40 y:128
 			OperatableStateMachine.add('get name',
 										CalculationState(calculation=lambda x: x[1]),
-										transitions={'done': 'Get object'},
+										transitions={'done': 'Action_find'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'ObjectName'})
 
@@ -334,6 +294,20 @@ class ActionWrapper_PickSM(Behavior):
 										transitions={'done': 'setrosparam'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Key'})
+
+			# x:31 y:241
+			OperatableStateMachine.add('Action_find',
+										self.use_behavior(Action_findSM, 'Action_find'),
+										transitions={'done': 'get ID', 'failed': 'cause3'},
+										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'className': 'ObjectName', 'entity': 'Object'})
+
+			# x:24 y:363
+			OperatableStateMachine.add('get ID',
+										CalculationState(calculation=lambda x: x.ID),
+										transitions={'done': 'Action_pick'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'Object', 'output_value': 'ID'})
 
 
 		return _state_machine
