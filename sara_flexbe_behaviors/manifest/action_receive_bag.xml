@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Action_Receive_Bag">
+
+	<executable package_path="sara_flexbe_behaviors.action_receive_bag_sm" class="Action_Receive_BagSM" />
+	<tagstring>Receive Bag Action Gripper Arm Join</tagstring>
+	<author>Redouane Laref</author>
+	<date>Thu Jul 27 2017</date>
+	<description>
+		Action for receiving the bag for help me carry scenario.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="ActionWrapper_Follow">
+
+	<executable package_path="sara_flexbe_behaviors.actionwrapper_follow_sm" class="ActionWrapper_FollowSM" />
+	<tagstring>ActionWrapper</tagstring>
+	<author>Lucas Maurice</author>
+	<date>22/05/2018</date>
+	<description>
+		action wrapper pour follow
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_follow" />
+
+	<!-- Available Parameters -->
+
+</behavior>

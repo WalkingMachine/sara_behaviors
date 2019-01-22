@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="ActionWrapper_Answer">
+
+	<executable package_path="sara_flexbe_behaviors.actionwrapper_answer_sm" class="ActionWrapper_AnswerSM" />
+	<tagstring>ActionWrapper</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Sun May 27 2018</date>
+	<description>
+		Answer a question
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_findPerson" />
+	<contains name="action_turn" />
+
+	<!-- Available Parameters -->
+
+</behavior>

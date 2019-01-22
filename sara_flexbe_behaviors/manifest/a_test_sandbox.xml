@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="A Test Sandbox">
+
+	<executable package_path="sara_flexbe_behaviors.a_test_sandbox_sm" class="ATestSandboxSM" />
+	<tagstring>Test</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Thu May 10 2018</date>
+	<description>
+		Une behavior pour faire des tests rapidement.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="ActionWrapper_Move" />
+	<contains name="ActionWrapper_Follow" />
+	<contains name="ActionWrapper_Find_Person" />
+
+	<!-- Available Parameters -->
+
+</behavior>

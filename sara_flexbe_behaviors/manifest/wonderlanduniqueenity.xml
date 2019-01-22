@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="WonderlandUniqueEnity">
+
+	<executable package_path="sara_flexbe_behaviors.wonderlanduniqueenity_sm" class="WonderlandUniqueEnitySM" />
+	<tagstring>Wonderland</tagstring>
+	<author>Lucas Maurice</author>
+	<date>22/05/2018</date>
+	<description>
+		Will try to fin an entity verbally selected. Will give a vocal feedback of the action and return done or failed.
+
+`name` is the yolo class of the object of the name of a room.
+`container` is the yolo class or the container of the name if it is a room. Can be an array.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

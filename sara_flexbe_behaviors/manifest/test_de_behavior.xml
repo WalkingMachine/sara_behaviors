@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="test de behavior">
+
+	<executable package_path="sara_flexbe_behaviors.test_de_behavior_sm" class="testdebehaviorSM" />
+	<tagstring></tagstring>
+	<author>philippe</author>
+	<date>Mon Jan 21 2019</date>
+	<description>
+		une behavior de test
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
