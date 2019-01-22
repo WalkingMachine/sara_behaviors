@@ -2,7 +2,7 @@
 
 <behavior name="Action_Give">
 
-	<executable package_path="behavior_action_give.action_give_sm" class="Action_GiveSM" />
+	<executable package_path="sara_flexbe_behaviors.action_give_sm" class="Action_GiveSM" />
 	<tagstring>Action</tagstring>
 	<author>Philippe La Madeleine</author>
 	<date>Thu May 10 2018</date>

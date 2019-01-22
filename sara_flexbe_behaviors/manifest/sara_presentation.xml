@@ -2,7 +2,7 @@
 
 <behavior name="Sara_presentation">
 
-	<executable package_path="behavior_sara_presentation.sara_presentation_sm" class="Sara_presentationSM" />
+	<executable package_path="sara_flexbe_behaviors.sara_presentation_sm" class="Sara_presentationSM" />
 	<tagstring></tagstring>
 	<author>PLM, MSTP</author>
 	<date>Thu Aug 24 2017</date>

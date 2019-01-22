@@ -2,7 +2,7 @@
 
 <behavior name="Go_To_Room">
 
-	<executable package_path="behavior_go_to_room.go_to_room_sm" class="Go_To_RoomSM" />
+	<executable package_path="sara_flexbe_behaviors.go_to_room_sm" class="Go_To_RoomSM" />
 	<tagstring>Entity Room</tagstring>
 	<author>Redouane Laref</author>
 	<date>Fri Jul 28 2017</date>

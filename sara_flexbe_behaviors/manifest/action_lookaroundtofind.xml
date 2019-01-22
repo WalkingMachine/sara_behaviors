@@ -2,7 +2,7 @@
 
 <behavior name="Action_lookAroundToFind">
 
-	<executable package_path="behavior_action_lookaroundtofind.action_lookaroundtofind_sm" class="Action_lookAroundToFindSM" />
+	<executable package_path="sara_flexbe_behaviors.action_lookaroundtofind_sm" class="Action_lookAroundToFindSM" />
 	<tagstring>Action</tagstring>
 	<author>Raphaël Duchaîne</author>
 	<date>Sat May 12 2018</date>

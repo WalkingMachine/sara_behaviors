@@ -2,7 +2,7 @@
 
 <behavior name="Action_follow">
 
-	<executable package_path="behavior_action_follow.action_follow_sm" class="Action_followSM" />
+	<executable package_path="sara_flexbe_behaviors.action_follow_sm" class="Action_followSM" />
 	<tagstring>Action</tagstring>
 	<author>Raphael Duchaine</author>
 	<date>Mon Apr 30 2018</date>

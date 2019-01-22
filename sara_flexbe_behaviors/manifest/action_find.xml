@@ -2,7 +2,7 @@
 
 <behavior name="Action_find">
 
-	<executable package_path="behavior_action_find.action_find_sm" class="Action_findSM" />
+	<executable package_path="sara_flexbe_behaviors.action_find_sm" class="Action_findSM" />
 	<tagstring>Action</tagstring>
 	<author>Lucas Maurice</author>
 	<date>Sat May 12 2018</date>

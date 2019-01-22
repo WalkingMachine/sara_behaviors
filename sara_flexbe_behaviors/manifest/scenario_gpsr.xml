@@ -2,7 +2,7 @@
 
 <behavior name="Scenario_GPSR">
 
-	<executable package_path="behavior_scenario_gpsr.scenario_gpsr_sm" class="Scenario_GPSRSM" />
+	<executable package_path="sara_flexbe_behaviors.scenario_gpsr_sm" class="Scenario_GPSRSM" />
 	<tagstring>Scenario</tagstring>
 	<author>Philippe La Madeleine</author>
 	<date>Wed May 30 2018</date>

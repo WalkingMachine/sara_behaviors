@@ -2,7 +2,7 @@
 
 <behavior name="Action_Give_Back_Bag">
 
-	<executable package_path="behavior_action_give_back_bag.action_give_back_bag_sm" class="Action_Give_Back_BagSM" />
+	<executable package_path="sara_flexbe_behaviors.action_give_back_bag_sm" class="Action_Give_Back_BagSM" />
 	<tagstring>Give Back Bag</tagstring>
 	<author>Redouane Laref</author>
 	<date>Thu Jul 27 2017</date>

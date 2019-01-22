@@ -2,7 +2,7 @@
 
 <behavior name="Action_Pass_Door">
 
-	<executable package_path="behavior_action_pass_door.action_pass_door_sm" class="Action_Pass_DoorSM" />
+	<executable package_path="sara_flexbe_behaviors.action_pass_door_sm" class="Action_Pass_DoorSM" />
 	<tagstring>Action</tagstring>
 	<author>Philippe La Madeleine</author>
 	<date>Mon May 14 2018</date>

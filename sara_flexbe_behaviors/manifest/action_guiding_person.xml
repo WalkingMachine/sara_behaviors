@@ -2,7 +2,7 @@
 
 <behavior name="Action_Guiding_Person">
 
-	<executable package_path="behavior_action_guiding_person.action_guiding_person_sm" class="Action_Guiding_PersonSM" />
+	<executable package_path="sara_flexbe_behaviors.action_guiding_person_sm" class="Action_Guiding_PersonSM" />
 	<tagstring>Guiding</tagstring>
 	<author>Huynh-Anh Le</author>
 	<date>Sat May 12 2018</date>

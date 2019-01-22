@@ -2,7 +2,7 @@
 
 <behavior name="Action_pick">
 
-	<executable package_path="behavior_action_pick.action_pick_sm" class="Action_pickSM" />
+	<executable package_path="sara_flexbe_behaviors.action_pick_sm" class="Action_pickSM" />
 	<tagstring>Action</tagstring>
 	<author>Huynh-Anh Le</author>
 	<date>May 12 2018</date>

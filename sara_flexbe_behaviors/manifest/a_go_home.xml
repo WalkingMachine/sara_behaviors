@@ -2,7 +2,7 @@
 
 <behavior name="A Go Home">
 
-	<executable package_path="behavior_a_go_home.a_go_home_sm" class="AGoHomeSM" />
+	<executable package_path="sara_flexbe_behaviors.a_go_home_sm" class="AGoHomeSM" />
 	<tagstring>carry</tagstring>
 	<author>Philippe La Madeleine</author>
 	<date>Mon May 14 2018</date>

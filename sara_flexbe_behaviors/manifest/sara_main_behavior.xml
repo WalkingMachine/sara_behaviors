@@ -2,7 +2,7 @@
 
 <behavior name="Sara_main_behavior">
 
-	<executable package_path="behavior_sara_main_behavior.sara_main_behavior_sm" class="Sara_main_behaviorSM" />
+	<executable package_path="sara_flexbe_behaviors.sara_main_behavior_sm" class="Sara_main_behaviorSM" />
 	<tagstring>Main</tagstring>
 	<author>Philippe La Madeleine</author>
 	<date>Sun May 21 2017</date>

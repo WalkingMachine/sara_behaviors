@@ -2,7 +2,7 @@
 
 <behavior name="Get_operator">
 
-	<executable package_path="behavior_get_operator.get_operator_sm" class="Get_operatorSM" />
+	<executable package_path="sara_flexbe_behaviors.get_operator_sm" class="Get_operatorSM" />
 	<tagstring>Action</tagstring>
 	<author>Philippe La Madeleine</author>
 	<date>Wed May 09 2018</date>

@@ -2,7 +2,7 @@
 
 <behavior name="Action_Executor">
 
-	<executable package_path="behavior_action_executor.action_executor_sm" class="Action_ExecutorSM" />
+	<executable package_path="sara_flexbe_behaviors.action_executor_sm" class="Action_ExecutorSM" />
 	<tagstring>Scenario</tagstring>
 	<author>Philippe La Madeleine</author>
 	<date>Wed May 30 2018</date>

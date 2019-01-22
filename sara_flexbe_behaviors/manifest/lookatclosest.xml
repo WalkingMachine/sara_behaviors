@@ -2,7 +2,7 @@
 
 <behavior name="LookAtClosest">
 
-	<executable package_path="behavior_lookatclosest.lookatclosest_sm" class="LookAtClosestSM" />
+	<executable package_path="sara_flexbe_behaviors.lookatclosest_sm" class="LookAtClosestSM" />
 	<tagstring>Action</tagstring>
 	<author>Philippe La Madeleine</author>
 	<date>Sat Jun 16 2018</date>

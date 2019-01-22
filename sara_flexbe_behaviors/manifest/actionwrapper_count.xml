@@ -2,7 +2,7 @@
 
 <behavior name="ActionWrapper_Count">
 
-	<executable package_path="behavior_actionwrapper_count.actionwrapper_count_sm" class="ActionWrapper_CountSM" />
+	<executable package_path="sara_flexbe_behaviors.actionwrapper_count_sm" class="ActionWrapper_CountSM" />
 	<tagstring>ActionWrapper</tagstring>
 	<author>Philippe La Madeleine</author>
 	<date>Sun May 27 2018</date>

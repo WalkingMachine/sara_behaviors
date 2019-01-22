@@ -2,7 +2,7 @@
 
 <behavior name="Scenario_SPR">
 
-	<executable package_path="behavior_scenario_spr.scenario_spr_sm" class="Scenario_SPRSM" />
+	<executable package_path="sara_flexbe_behaviors.scenario_spr_sm" class="Scenario_SPRSM" />
 	<tagstring>Scenario</tagstring>
 	<author>Lucas Maurice</author>
 	<date>Thu Jun 07 2018</date>
