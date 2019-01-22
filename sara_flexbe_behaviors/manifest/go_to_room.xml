@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Go_To_Room">
+
+	<executable package_path="behavior_go_to_room.go_to_room_sm" class="Go_To_RoomSM" />
+	<tagstring>Entity Room</tagstring>
+	<author>Redouane Laref</author>
+	<date>Fri Jul 28 2017</date>
+	<description>
+		Go To the entity room.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Wonderland_Get_Entity" />
+
+	<!-- Available Parameters -->
+
+</behavior>

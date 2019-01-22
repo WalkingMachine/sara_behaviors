@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Scenario_SPR">
+
+	<executable package_path="behavior_scenario_spr.scenario_spr_sm" class="Scenario_SPRSM" />
+	<tagstring>Scenario</tagstring>
+	<author>Lucas Maurice</author>
+	<date>Thu Jun 07 2018</date>
+	<description>
+		Contient le scenario SPR.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="action_turn" />
+	<contains name="ActionWrapper_Move" />
+
+	<!-- Available Parameters -->
+
+</behavior>

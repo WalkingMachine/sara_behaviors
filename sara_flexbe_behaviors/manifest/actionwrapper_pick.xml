@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="ActionWrapper_Pick">
+
+	<executable package_path="behavior_actionwrapper_pick.actionwrapper_pick_sm" class="ActionWrapper_PickSM" />
+	<tagstring>ActionWrapper</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Tue Jul 11 2017</date>
+	<description>
+		action wrapper pour pick
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_pick" />
+	<contains name="Action_find" />
+
+	<!-- Available Parameters -->
+
+</behavior>
