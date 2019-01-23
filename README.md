@@ -12,23 +12,24 @@ Ce paquet a de nombreuses dépendances. En voicis quelques unes.
 
 
 ### Pour lancer
-Le serveur flexbe:
-```sh
-roslaunch flexbe_onboard behavior_onboard.launch
-```
-Le flexbe app:
+Flexbe au complet avec le GUI et le serveur:
 ```sh
 roslaunch flexbe_app flexbe_full.launch
 ```
-Ou si vous utilisez les [settings standards de WM](https://github.com/WalkingMachine/settings)
+Le serveur flexbe seulement:
 ```sh
-FLEXBE
-FLEXBEWIDGET
+roslaunch flexbe_onboard behavior_onboard.launch
 ```
-Une behavior en particulié sans l'interface
+Le flexbe app seulement:
+```sh
+roslaunch flexbe_app flexbe_ocs.launch
+```
+Une behavior en particulié sans le GUI
 ```sh
 rosrun flexbe_widget be_launcher -b 'Example Behavior'
 ```
+Des alias pour simplifier l'utilisation sont disponnibles dans [settings standards de WM](https://github.com/WalkingMachine/settings)
+
 ### liens utiles
 - [Le site de flexbe](http://philserver.bplaced.net/fbe/index.php)
 - [Les tutoriels de flexbe](http://wiki.ros.org/flexbe/Tutorials)
