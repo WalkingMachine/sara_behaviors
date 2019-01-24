@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,18 +7,17 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_action_guide2')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from sara_flexbe_states.SetKey import SetKey
-from behavior_action_turn.action_turn_sm import action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM as sara_flexbe_behaviors__action_turnSM
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from sara_flexbe_states.sara_say import SaraSay
-from behavior_action_move.action_move_sm import Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 from sara_flexbe_states.sara_say_key import SaraSayKey
-from behavior_action_findperson.action_findperson_sm import Action_findPersonSM
+from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as sara_flexbe_behaviors__Action_findPersonSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -41,12 +41,12 @@ class Action_Guide2SM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn')
-		self.add_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn_2')
-		self.add_behavior(Action_MoveSM, 'Try to reach/Container/navigate to the point/Action_Move')
-		self.add_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn')
-		self.add_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn_2')
-		self.add_behavior(Action_findPersonSM, 'Action_findPerson')
+		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn')
+		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn_2')
+		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Try to reach/Container/navigate to the point/Action_Move')
+		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn')
+		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn_2')
+		self.add_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Action_findPerson')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -112,14 +112,14 @@ class Action_Guide2SM(Behavior):
 
 			# x:33 y:122
 			OperatableStateMachine.add('action_turn',
-										self.use_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn'),
+										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn'),
 										transitions={'finished': 'move head', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
 
 			# x:31 y:434
 			OperatableStateMachine.add('action_turn_2',
-										self.use_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn_2'),
+										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn_2'),
 										transitions={'finished': 'head left right', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
@@ -212,7 +212,7 @@ class Action_Guide2SM(Behavior):
 
 			# x:347 y:191
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(Action_MoveSM, 'Try to reach/Container/navigate to the point/Action_Move'),
+										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Try to reach/Container/navigate to the point/Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'pose', 'relative': 'relative'})
@@ -285,7 +285,7 @@ class Action_Guide2SM(Behavior):
 
 			# x:51 y:114
 			OperatableStateMachine.add('action_turn',
-										self.use_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn'),
+										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn'),
 										transitions={'finished': 'turn right head', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
@@ -304,7 +304,7 @@ class Action_Guide2SM(Behavior):
 
 			# x:45 y:348
 			OperatableStateMachine.add('action_turn_2',
-										self.use_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn_2'),
+										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn_2'),
 										transitions={'finished': 'left to rigth', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
@@ -494,7 +494,7 @@ class Action_Guide2SM(Behavior):
 
 			# x:220 y:76
 			OperatableStateMachine.add('Action_findPerson',
-										self.use_behavior(Action_findPersonSM, 'Action_findPerson'),
+										self.use_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Action_findPerson'),
 										transitions={'done': 'sayfollowme', 'pas_done': 'Cant Find Person'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
 										remapping={'className': 'className', 'entity': 'Entity'})

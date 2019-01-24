@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,7 +7,6 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_action_point_at')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.moveit_move import MoveitMove

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,7 +7,6 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_actionwrapper_move')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetKey import SetKey
@@ -14,9 +14,9 @@ from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
 from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.set_a_step import Set_a_step
-from behavior_wonderlanduniqueenity.wonderlanduniqueenity_sm import WonderlandUniqueEnitySM
+from sara_flexbe_behaviors.wonderlanduniqueenity_sm import WonderlandUniqueEnitySM as sara_flexbe_behaviors__WonderlandUniqueEnitySM
 from sara_flexbe_states.sara_say_key import SaraSayKey
-from behavior_action_move.action_move_sm import Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 from sara_flexbe_states.story import Set_Story
 from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
@@ -42,8 +42,8 @@ class ActionWrapper_MoveSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(WonderlandUniqueEnitySM, 'Try to find area/WonderlandUniqueEnity')
-		self.add_behavior(Action_MoveSM, 'Try to reach/Action_Move')
+		self.add_behavior(sara_flexbe_behaviors__WonderlandUniqueEnitySM, 'Try to find area/WonderlandUniqueEnity')
+		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Try to reach/Action_Move')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -169,7 +169,7 @@ class ActionWrapper_MoveSM(Behavior):
 		with _sm_try_to_reach_3:
 			# x:30 y:145
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(Action_MoveSM, 'Try to reach/Action_Move'),
+										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Try to reach/Action_Move'),
 										transitions={'finished': 'Say reached', 'failed': 'Say not reached'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'waypoint', 'relative': 'relative'})
@@ -201,7 +201,7 @@ class ActionWrapper_MoveSM(Behavior):
 		with _sm_try_to_find_area_4:
 			# x:517 y:67
 			OperatableStateMachine.add('WonderlandUniqueEnity',
-										self.use_behavior(WonderlandUniqueEnitySM, 'Try to find area/WonderlandUniqueEnity'),
+										self.use_behavior(sara_flexbe_behaviors__WonderlandUniqueEnitySM, 'Try to find area/WonderlandUniqueEnity'),
 										transitions={'found': 'Export Waypoint', 'not_found': 'Export No Waypoint'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'name': 'area_to_search', 'containers': 'containers', 'entity': 'entity'})

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,9 +7,8 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_action_guiding_person')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from behavior_get_operator.get_operator_sm import Get_operatorSM
+from sara_flexbe_behaviors.get_operator_sm import Get_operatorSM as sara_flexbe_behaviors__Get_operatorSM
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.GetRosParam import GetRosParam
@@ -36,7 +36,7 @@ class Action_Guiding_PersonSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Get_operatorSM, 'Get_operator')
+		self.add_behavior(sara_flexbe_behaviors__Get_operatorSM, 'Get_operator')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -111,7 +111,7 @@ class Action_Guiding_PersonSM(Behavior):
 		with _state_machine:
 			# x:55 y:57
 			OperatableStateMachine.add('Get_operator',
-										self.use_behavior(Get_operatorSM, 'Get_operator'),
+										self.use_behavior(sara_flexbe_behaviors__Get_operatorSM, 'Get_operator'),
 										transitions={'Found': 'foundyou!', 'NotFound': 'not found'},
 										autonomy={'Found': Autonomy.Inherit, 'NotFound': Autonomy.Inherit},
 										remapping={'Operator': 'Operator'})

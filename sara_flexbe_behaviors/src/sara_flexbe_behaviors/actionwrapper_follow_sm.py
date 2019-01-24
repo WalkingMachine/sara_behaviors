@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,14 +7,13 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_actionwrapper_follow')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.GetRosParam import GetRosParam
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.sara_say import SaraSay
-from behavior_action_follow.action_follow_sm import Action_followSM
+from sara_flexbe_behaviors.action_follow_sm import Action_followSM as sara_flexbe_behaviors__Action_followSM
 from sara_flexbe_states.get_speech import GetSpeech
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.SetKey import SetKey
@@ -41,7 +41,7 @@ class ActionWrapper_FollowSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_followSM, 'Follow Loop/Action_follow')
+		self.add_behavior(sara_flexbe_behaviors__Action_followSM, 'Follow Loop/Action_follow')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -103,7 +103,7 @@ class ActionWrapper_FollowSM(Behavior):
 		with _sm_follow_loop_1:
 			# x:190 y:37
 			OperatableStateMachine.add('Action_follow',
-										self.use_behavior(Action_followSM, 'Follow Loop/Action_follow'),
+										self.use_behavior(sara_flexbe_behaviors__Action_followSM, 'Follow Loop/Action_follow'),
 										transitions={'failed': 'error'},
 										autonomy={'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
@@ -138,14 +138,14 @@ class ActionWrapper_FollowSM(Behavior):
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ID': 'personId', 'Entity': 'Entity'})
 
-			# x:432 y:129
+			# x:400 y:127
 			OperatableStateMachine.add('Say Lost',
 										SaraSayKey(Format=lambda x: "I have lost " + x + " !", emotion=1, block=True),
 										transitions={'done': 'cause1'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'name'})
 
-			# x:276 y:424
+			# x:240 y:417
 			OperatableStateMachine.add('Tell Way',
 										SaraSay(sentence="Show me the way !", emotion=1, block=True),
 										transitions={'done': 'Follow Loop'},
@@ -154,11 +154,11 @@ class ActionWrapper_FollowSM(Behavior):
 			# x:97 y:324
 			OperatableStateMachine.add('Tell Follow',
 										SaraSayKey(Format=lambda x: "I will follow you, " + x + " !", emotion=1, block=True),
-										transitions={'done': 'action_lookAtFaceBase'},
+										transitions={'done': 'Tell Way'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'name'})
 
-			# x:385 y:405
+			# x:397 y:405
 			OperatableStateMachine.add('Follow Loop',
 										_sm_follow_loop_1,
 										transitions={'finished': 'Stop Follow', 'error': 'Cant Follow'},
@@ -193,7 +193,7 @@ class ActionWrapper_FollowSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Key'})
 
-			# x:673 y:181
+			# x:697 y:178
 			OperatableStateMachine.add('setrosparamcause',
 										SetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
 										transitions={'done': 'failed'},

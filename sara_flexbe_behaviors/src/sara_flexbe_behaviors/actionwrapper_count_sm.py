@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,10 +7,9 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_actionwrapper_count')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.calculation_state import CalculationState
-from behavior_action_count.action_count_sm import Action_countSM
+from sara_flexbe_behaviors.action_count_sm import Action_countSM as sara_flexbe_behaviors__Action_countSM
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.SetRosParamKey import SetRosParamKey
@@ -37,7 +37,7 @@ class ActionWrapper_CountSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_countSM, 'Action_count')
+		self.add_behavior(sara_flexbe_behaviors__Action_countSM, 'Action_count')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -72,7 +72,7 @@ class ActionWrapper_CountSM(Behavior):
 
 			# x:13 y:220
 			OperatableStateMachine.add('Action_count',
-										self.use_behavior(Action_countSM, 'Action_count'),
+										self.use_behavior(sara_flexbe_behaviors__Action_countSM, 'Action_count'),
 										transitions={'done': 'get paramname', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'className': 'className', 'Count': 'Count'})

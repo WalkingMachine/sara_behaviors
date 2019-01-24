@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,7 +7,6 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_init_sequence')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_move_base import SaraMoveBase
@@ -71,8 +71,8 @@ class Init_SequenceSM(Behavior):
 			# x:418 y:50
 			OperatableStateMachine.add('Gen_Pose_First_Objectif',
 										GenPoseQuat(x=4.9627, y=-0.62033, z=0, ox=0, oy=0, oz=0.9125315, ow=-0.4090063),
-										transitions={'done': 'Go_To_First_Objectif', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										transitions={'done': 'Go_To_First_Objectif'},
+										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'pose'})
 
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,7 +7,6 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_action_give')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.GetRosParam import GetRosParam
 from flexbe_states.check_condition_state import CheckConditionState
@@ -141,7 +141,7 @@ class Action_GiveSM(Behavior):
 										remapping={'ID': 'ID'})
 
 
-		# x:313 y:247, x:301 y:177, x:103 y:293, x:343 y:113, x:397 y:411, x:311 y:27, x:630 y:365, x:730 y:365
+		# x:313 y:247, x:301 y:177, x:103 y:293, x:343 y:113, x:397 y:411, x:311 y:27, x:630 y:365
 		_sm_give_3 = ConcurrencyContainer(outcomes=['failed', 'given', 'continue'], input_keys=['ID', 'Object'], conditions=[
 										('failed', [('Give', 'failed')]),
 										('given', [('Give', 'given')]),

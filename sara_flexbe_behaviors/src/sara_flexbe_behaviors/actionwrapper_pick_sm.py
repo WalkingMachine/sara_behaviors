@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,13 +7,12 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_actionwrapper_pick')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.GetRosParam import GetRosParam
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_say_key import SaraSayKey
-from behavior_action_pick.action_pick_sm import Action_pickSM
+from sara_flexbe_behaviors.action_pick_sm import Action_pickSM as sara_flexbe_behaviors__Action_pickSM
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from flexbe_states.calculation_state import CalculationState
@@ -22,7 +22,7 @@ from sara_flexbe_states.sara_move_base import SaraMoveBase
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.SetRosParam import SetRosParam
-from behavior_action_find.action_find_sm import Action_findSM
+from sara_flexbe_behaviors.action_find_sm import Action_findSM as sara_flexbe_behaviors__Action_findSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -46,8 +46,9 @@ class ActionWrapper_PickSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_pickSM, 'Action_pick')
-		self.add_behavior(Action_findSM, 'Action_find')
+
+		self.add_behavior(sara_flexbe_behaviors__Action_pickSM, 'Action_pick')
+		self.add_behavior(sara_flexbe_behaviors__Action_findSM, 'Action_find')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -201,7 +202,7 @@ class ActionWrapper_PickSM(Behavior):
 
 			# x:31 y:493
 			OperatableStateMachine.add('Action_pick',
-										self.use_behavior(Action_pickSM, 'Action_pick'),
+										self.use_behavior(sara_flexbe_behaviors__Action_pickSM, 'Action_pick'),
 										transitions={'success': 'got it', 'unreachable': 'for 1', 'not found': 'say lost', 'dropped': 'say missed'},
 										autonomy={'success': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not found': Autonomy.Inherit, 'dropped': Autonomy.Inherit},
 										remapping={'objectID': 'ID'})
@@ -216,7 +217,9 @@ class ActionWrapper_PickSM(Behavior):
 			# x:261 y:239
 			OperatableStateMachine.add('Get closer',
 										_sm_get_closer_1,
-										transitions={'done': 'Action_pick'},
+
+										transitions={'done': 'Action_find'},
+
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'Object': 'Object'})
 
@@ -227,19 +230,19 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
-			# x:364 y:318
+			# x:396 y:318
 			OperatableStateMachine.add('say giveup',
 										SaraSay(sentence="I give up", emotion=1, block=True),
 										transitions={'done': 'cause4'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:271 y:388
+			# x:271 y:502
 			OperatableStateMachine.add('say missed',
 										SaraSay(sentence="Oops! I missed.", emotion=1, block=True),
 										transitions={'done': 'cause4'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:273 y:487
+			# x:273 y:564
 			OperatableStateMachine.add('got it',
 										SaraSayKey(Format=lambda x: "I have the "+x, emotion=1, block=True),
 										transitions={'done': 'set param'},
@@ -253,7 +256,7 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'ObjectName'})
 
-			# x:40 y:128
+			# x:82 y:115
 			OperatableStateMachine.add('get name',
 										CalculationState(calculation=lambda x: x[1]),
 										transitions={'done': 'Action_find'},
@@ -295,15 +298,16 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Key'})
 
-			# x:31 y:241
+
+			# x:30 y:188
 			OperatableStateMachine.add('Action_find',
-										self.use_behavior(Action_findSM, 'Action_find'),
-										transitions={'done': 'get ID', 'failed': 'cause3'},
+										self.use_behavior(sara_flexbe_behaviors__Action_findSM, 'Action_find'),
+										transitions={'done': 'getID', 'failed': 'cause3'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'className': 'ObjectName', 'entity': 'Object'})
 
-			# x:24 y:363
-			OperatableStateMachine.add('get ID',
+			# x:49 y:322
+			OperatableStateMachine.add('getID',
 										CalculationState(calculation=lambda x: x.ID),
 										transitions={'done': 'Action_pick'},
 										autonomy={'done': Autonomy.Off},

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,11 +7,10 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_action_turn')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.pose_gen_euler_key import GenPoseEulerKey
-from behavior_action_move.action_move_sm import Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -38,7 +38,7 @@ Verify which rotation is positive
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_MoveSM, 'Action_Move')
+		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -84,7 +84,7 @@ Verify which rotation is positive
 
 			# x:263 y:144
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(Action_MoveSM, 'Action_Move'),
+										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'pose', 'relative': 'relative'})

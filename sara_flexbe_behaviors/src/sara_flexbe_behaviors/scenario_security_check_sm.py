@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,17 +7,16 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_scenario_security_check')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_states.sara_sound import SaraSound
-from behavior_action_move.action_move_sm import Action_MoveSM
 from sara_flexbe_states.continue_button import ContinueButton
+from sara_flexbe_states.sara_sound import SaraSound
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 from sara_flexbe_states.sara_say import SaraSay
-from behavior_action_pass_door.action_pass_door_sm import Action_Pass_DoorSM
+from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as sara_flexbe_behaviors__Action_Pass_DoorSM
 from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerbal
 from flexbe_states.calculation_state import CalculationState
 from flexbe_states.log_key_state import LogKeyState
+from sara_flexbe_states.SetKey import SetKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -40,9 +40,9 @@ class Scenario_Security_CheckSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_MoveSM, 'Move to test zone')
-		self.add_behavior(Action_Pass_DoorSM, 'Action_Pass_Door')
-		self.add_behavior(Action_Pass_DoorSM, 'Action_Pass_Door_2')
+		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Move to test zone')
+		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Action_Pass_Door')
+		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Action_Pass_Door_2')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -89,7 +89,7 @@ class Scenario_Security_CheckSM(Behavior):
 
 			# x:24 y:498
 			OperatableStateMachine.add('Move to test zone',
-										self.use_behavior(Action_MoveSM, 'Move to test zone'),
+										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Move to test zone'),
 										transitions={'finished': 'say ready', 'failed': 'Failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'TestPose', 'relative': 'relative'})
@@ -102,7 +102,7 @@ class Scenario_Security_CheckSM(Behavior):
 
 			# x:24 y:259
 			OperatableStateMachine.add('Action_Pass_Door',
-										self.use_behavior(Action_Pass_DoorSM, 'Action_Pass_Door'),
+										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Action_Pass_Door'),
 										transitions={'Done': 'get test zone', 'Fail': 'Failed'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
 										remapping={'DoorPose1': 'DoorPose1'})
@@ -115,7 +115,7 @@ class Scenario_Security_CheckSM(Behavior):
 
 			# x:1002 y:463
 			OperatableStateMachine.add('Action_Pass_Door_2',
-										self.use_behavior(Action_Pass_DoorSM, 'Action_Pass_Door_2'),
+										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Action_Pass_Door_2'),
 										transitions={'Done': 'finished', 'Fail': 'Failed'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
 										remapping={'DoorPose1': 'DoorPose2'})
