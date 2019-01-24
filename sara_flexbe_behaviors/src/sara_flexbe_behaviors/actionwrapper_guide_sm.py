@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,7 +7,6 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_actionwrapper_guide')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.GetRosParam import GetRosParam
 from sara_flexbe_states.set_a_step import Set_a_step
@@ -15,16 +15,16 @@ from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
 from flexbe_states.log_key_state import LogKeyState
-from behavior_action_move.action_move_sm import Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
-from behavior_action_turn.action_turn_sm import action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM as sara_flexbe_behaviors__action_turnSM
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from sara_flexbe_states.sara_say import SaraSay
-from behavior_wonderlanduniqueenity.wonderlanduniqueenity_sm import WonderlandUniqueEnitySM
+from sara_flexbe_behaviors.wonderlanduniqueenity_sm import WonderlandUniqueEnitySM as sara_flexbe_behaviors__WonderlandUniqueEnitySM
 from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerbal
-from behavior_action_point_at.action_point_at_sm import Action_point_atSM
+from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM as sara_flexbe_behaviors__Action_point_atSM
 from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -49,13 +49,13 @@ class ActionWrapper_GuideSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_MoveSM, 'Try to reach/Container/navigate to the point/Action_Move')
-		self.add_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn')
-		self.add_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn_2')
-		self.add_behavior(WonderlandUniqueEnitySM, 'Try to find area/WonderlandUniqueEnity')
-		self.add_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn')
-		self.add_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn_2')
-		self.add_behavior(Action_point_atSM, 'Action_point_at')
+		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Try to reach/Container/navigate to the point/Action_Move')
+		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn')
+		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn_2')
+		self.add_behavior(sara_flexbe_behaviors__WonderlandUniqueEnitySM, 'Try to find area/WonderlandUniqueEnity')
+		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn')
+		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn_2')
+		self.add_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Action_point_at')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -107,7 +107,7 @@ class ActionWrapper_GuideSM(Behavior):
 
 			# x:51 y:114
 			OperatableStateMachine.add('action_turn',
-										self.use_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn'),
+										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn'),
 										transitions={'finished': 'turn right head', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
@@ -126,7 +126,7 @@ class ActionWrapper_GuideSM(Behavior):
 
 			# x:45 y:348
 			OperatableStateMachine.add('action_turn_2',
-										self.use_behavior(action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn_2'),
+										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'operator is still there/Move head and base end /move head and base at the end/action_turn_2'),
 										transitions={'finished': 'left to rigth', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
@@ -262,14 +262,14 @@ class ActionWrapper_GuideSM(Behavior):
 
 			# x:33 y:122
 			OperatableStateMachine.add('action_turn',
-										self.use_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn'),
+										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn'),
 										transitions={'finished': 'move head', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
 
 			# x:31 y:434
 			OperatableStateMachine.add('action_turn_2',
-										self.use_behavior(action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn_2'),
+										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'Try to reach/check person behind/move head and base/turn around/action_turn_2'),
 										transitions={'finished': 'head left right', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
@@ -355,7 +355,7 @@ class ActionWrapper_GuideSM(Behavior):
 
 			# x:347 y:191
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(Action_MoveSM, 'Try to reach/Container/navigate to the point/Action_Move'),
+										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Try to reach/Container/navigate to the point/Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'pose', 'relative': 'relative'})
@@ -485,7 +485,7 @@ class ActionWrapper_GuideSM(Behavior):
 		with _sm_try_to_find_area_16:
 			# x:517 y:67
 			OperatableStateMachine.add('WonderlandUniqueEnity',
-										self.use_behavior(WonderlandUniqueEnitySM, 'Try to find area/WonderlandUniqueEnity'),
+										self.use_behavior(sara_flexbe_behaviors__WonderlandUniqueEnitySM, 'Try to find area/WonderlandUniqueEnity'),
 										transitions={'found': 'Export Waypoint', 'not_found': 'Export No Waypoint'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'name': 'area_to_search', 'containers': 'containers', 'entity': 'entity'})
@@ -666,7 +666,7 @@ class ActionWrapper_GuideSM(Behavior):
 			# x:57 y:471
 			OperatableStateMachine.add('getentitybyID',
 										GetEntityByID(),
-										transitions={'found': 'action_lookAtFaceBase', 'not_found': 'sayreachtheentity'},
+										transitions={'found': 'get entity to point', 'not_found': 'sayreachtheentity'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ID': 'ID', 'Entity': 'Entity'})
 
@@ -679,7 +679,7 @@ class ActionWrapper_GuideSM(Behavior):
 
 			# x:708 y:529
 			OperatableStateMachine.add('Action_point_at',
-										self.use_behavior(Action_point_atSM, 'Action_point_at'),
+										self.use_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Action_point_at'),
 										transitions={'finished': 'sayreachtheentity', 'failed': 'sayreachtheentity'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'targetPoint': 'targetPoint'})

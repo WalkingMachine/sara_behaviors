@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,17 +7,16 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_actionwrapper_answer')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.SetKey import SetKey
-from behavior_action_findperson.action_findperson_sm import Action_findPersonSM
+from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as sara_flexbe_behaviors__Action_findPersonSM
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_nlu_spr import SaraNLUspr
 from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.for_loop import ForLoop
 from flexbe_states.check_condition_state import CheckConditionState
-from behavior_action_turn.action_turn_sm import action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM as sara_flexbe_behaviors__action_turnSM
 from sara_flexbe_states.SetRosParam import SetRosParam
 from flexbe_states.log_key_state import LogKeyState
 # Additional imports can be added inside the following tags
@@ -42,8 +42,8 @@ class ActionWrapper_AnswerSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(Action_findPersonSM, 'Action_findPerson')
-		self.add_behavior(action_turnSM, 'turnToFindAnotherPersonOnce/action_turn')
+		self.add_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Action_findPerson')
+		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'turnToFindAnotherPersonOnce/action_turn')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -85,7 +85,7 @@ class ActionWrapper_AnswerSM(Behavior):
 
 			# x:30 y:40
 			OperatableStateMachine.add('action_turn',
-										self.use_behavior(action_turnSM, 'turnToFindAnotherPersonOnce/action_turn'),
+										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'turnToFindAnotherPersonOnce/action_turn'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
@@ -178,7 +178,7 @@ class ActionWrapper_AnswerSM(Behavior):
 
 			# x:20 y:117
 			OperatableStateMachine.add('Action_findPerson',
-										self.use_behavior(Action_findPersonSM, 'Action_findPerson'),
+										self.use_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Action_findPerson'),
 										transitions={'done': 'IfQuestionForSARA', 'pas_done': 'noPerson'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
 										remapping={'className': 'personClass', 'entity': 'entity'})

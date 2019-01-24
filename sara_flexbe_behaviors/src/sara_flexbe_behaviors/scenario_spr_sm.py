@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,7 +7,6 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_scenario_spr')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.continue_button import ContinueButton
 from flexbe_states.wait_state import WaitState
@@ -23,9 +23,9 @@ from sara_flexbe_states.sara_nlu_spr import SaraNLUspr
 from sara_flexbe_states.set_a_step import Set_a_step
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.KeepLookingAt import KeepLookingAt
-from behavior_action_turn.action_turn_sm import action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM as sara_flexbe_behaviors__action_turnSM
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
-from behavior_actionwrapper_move.actionwrapper_move_sm import ActionWrapper_MoveSM
+from sara_flexbe_behaviors.actionwrapper_move_sm import ActionWrapper_MoveSM as sara_flexbe_behaviors__ActionWrapper_MoveSM
 from sara_flexbe_states.story import Set_Story
 from sara_flexbe_states.WonderlandClearPeoples import WonderlandClearPeoples
 from sara_flexbe_states.moveit_move import MoveitMove
@@ -54,9 +54,9 @@ class Scenario_SPRSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(action_turnSM, 'Waiting And Turn/action_turn')
-		self.add_behavior(ActionWrapper_MoveSM, 'Leave Arena')
-		self.add_behavior(ActionWrapper_MoveSM, 'Join Area/Join Arena')
+		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'Waiting And Turn/action_turn')
+		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_MoveSM, 'Leave Arena')
+		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_MoveSM, 'Join Area/Join Arena')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -300,7 +300,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:92 y:134
 			OperatableStateMachine.add('Join Arena',
-										self.use_behavior(ActionWrapper_MoveSM, 'Join Area/Join Arena'),
+										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_MoveSM, 'Join Area/Join Arena'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'join'})
@@ -318,7 +318,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:272 y:121
 			OperatableStateMachine.add('action_turn',
-										self.use_behavior(action_turnSM, 'Waiting And Turn/action_turn'),
+										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'Waiting And Turn/action_turn'),
 										transitions={'finished': 'finished', 'failed': 'Cant turn'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'half_turn'})
@@ -528,7 +528,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:1517 y:148
 			OperatableStateMachine.add('Leave Arena',
-										self.use_behavior(ActionWrapper_MoveSM, 'Leave Arena'),
+										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_MoveSM, 'Leave Arena'),
 										transitions={'finished': 'finished', 'failed': 'finished', 'critical_fail': 'finished'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'leave'})

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 ###########################################################
 #               WARNING: Generated code!                  #
 #              **************************                 #
@@ -6,7 +7,6 @@
 # Only code inside the [MANUAL] tags will be kept.        #
 ###########################################################
 
-import roslib; roslib.load_manifest('behavior_test_look_at_sound')
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.Look_at_sound import LookAtSound
@@ -79,7 +79,7 @@ class test_look_at_soundSM(Behavior):
 		with _sm_group_2_1:
 			# x:32 y:131
 			OperatableStateMachine.add('test_sound',
-										LookAtSound(),
+										LookAtSound(moveBase=True),
 										transitions={'done': 'test_sound'},
 										autonomy={'done': Autonomy.Off})
 
