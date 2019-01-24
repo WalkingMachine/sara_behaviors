@@ -27,7 +27,7 @@ Created on Wed Jan 23 2019
 '''
 class Action_OpenCupboardSM(Behavior):
 	'''
-	Ouvre une armoire
+	Se déplace vers une armoire pour l'ouvrir
 	'''
 
 
