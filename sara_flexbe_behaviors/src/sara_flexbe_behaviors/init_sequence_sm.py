@@ -8,9 +8,7 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.wait_state import WaitState
-from sara_flexbe_states.sara_move_base import SaraMoveBase
-from sara_flexbe_states.pose_gen_quat import GenPoseQuat
+from sara_flexbe_states.run_trajectory import RunTrajectory
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -45,7 +43,7 @@ class Init_SequenceSM(Behavior):
 
 
 	def create(self):
-		# x:976 y:64, x:579 y:148
+		# x:976 y:64, x:973 y:289
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 
 		# Additional creation code can be added inside the following tags
@@ -55,25 +53,11 @@ class Init_SequenceSM(Behavior):
 
 
 		with _state_machine:
-			# x:113 y:34
-			OperatableStateMachine.add('Wait_to_begin',
-										WaitState(wait_time=10),
-										transitions={'done': 'Gen_Pose_First_Objectif'},
+			# x:60 y:43
+			OperatableStateMachine.add('repos',
+										RunTrajectory(file="repos"),
+										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
-
-			# x:731 y:51
-			OperatableStateMachine.add('Go_To_First_Objectif',
-										SaraMoveBase(),
-										transitions={'arrived': 'finished', 'failed': 'failed'},
-										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'pose': 'pose'})
-
-			# x:418 y:50
-			OperatableStateMachine.add('Gen_Pose_First_Objectif',
-										GenPoseQuat(x=4.9627, y=-0.62033, z=0, ox=0, oy=0, oz=0.9125315, ow=-0.4090063),
-										transitions={'done': 'Go_To_First_Objectif'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose': 'pose'})
 
 
 		return _state_machine
