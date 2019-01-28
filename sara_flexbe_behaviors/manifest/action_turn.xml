@@ -16,7 +16,6 @@ Verify which rotation is positive
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Action_Move" />
 
 	<!-- Available Parameters -->
 
