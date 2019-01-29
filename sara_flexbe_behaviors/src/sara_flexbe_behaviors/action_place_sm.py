@@ -17,6 +17,9 @@ from sara_flexbe_states.set_gripper_state import SetGripperState
 from flexbe_states.log_state import LogState
 from sara_flexbe_states.torque_reader import ReadTorque
 from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.sara_rel_move_base import SaraRelMoveBase
+from sara_flexbe_states.pose_gen_euler import GenPoseEuler
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -83,7 +86,7 @@ class Action_placeSM(Behavior):
 	def create(self):
 		# x:1108 y:375, x:649 y:312
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['pos'])
-		_state_machine.userdata.pos = {"x":0.8, "y":0, "z":1}
+		_state_machine.userdata.pos = {"x":0.8, "y":-0.2, "z":1}
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -182,7 +185,7 @@ class Action_placeSM(Behavior):
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'pose_in': 'pos', 'pose_out': 'grip_pose'})
 
-			# x:118 y:580
+			# x:133 y:676
 			OperatableStateMachine.add('Move_approach',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
 										transitions={'done': 'Get_down', 'failed': 'failed'},
@@ -220,14 +223,14 @@ class Action_placeSM(Behavior):
 			# x:739 y:581
 			OperatableStateMachine.add('ReturnApproachPose',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'close gripper', 'failed': 'failed'},
+										transitions={'done': 'genpose', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'approach_pose'})
 
-			# x:1083 y:580
+			# x:812 y:352
 			OperatableStateMachine.add('ReturnPreGrip',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'finished', 'failed': 'failed'},
+										MoveitMove(move=True, waitForExecution=False, group="RightArm"),
+										transitions={'done': 'back', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'PreGripPose'})
 
@@ -241,7 +244,7 @@ class Action_placeSM(Behavior):
 			# x:137 y:506
 			OperatableStateMachine.add('log app',
 										LogKeyState(text="{}", severity=Logger.REPORT_HINT),
-										transitions={'done': 'Move_approach'},
+										transitions={'done': 'look down'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'data': 'approach_pose'})
 
@@ -255,7 +258,7 @@ class Action_placeSM(Behavior):
 			# x:923 y:585
 			OperatableStateMachine.add('close gripper',
 										SetGripperState(width=0, effort=1),
-										transitions={'object': 'ReturnPreGrip', 'no_object': 'ReturnPreGrip'},
+										transitions={'object': 'finished', 'no_object': 'finished'},
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
@@ -277,6 +280,26 @@ class Action_placeSM(Behavior):
 			OperatableStateMachine.add('say touchdown',
 										SaraSay(sentence="Touchdown!", emotion=1, block=False),
 										transitions={'done': 'open gripper'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:923 y:480
+			OperatableStateMachine.add('back',
+										SaraRelMoveBase(),
+										transitions={'arrived': 'close gripper', 'failed': 'failed'},
+										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'pose': 'backPose'})
+
+			# x:759 y:473
+			OperatableStateMachine.add('genpose',
+										GenPoseEuler(x=-0.3, y=-0.3, z=0, roll=0, pitch=0, yaw=0),
+										transitions={'done': 'ReturnPreGrip'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'pose': 'backPose'})
+
+			# x:132 y:586
+			OperatableStateMachine.add('look down',
+										SaraSetHeadAngle(pitch=0.6, yaw=-0.3),
+										transitions={'done': 'Move_approach'},
 										autonomy={'done': Autonomy.Off})
 
 

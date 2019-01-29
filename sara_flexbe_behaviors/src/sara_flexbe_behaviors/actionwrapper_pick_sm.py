@@ -46,6 +46,7 @@ class ActionWrapper_PickSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
+
 		self.add_behavior(sara_flexbe_behaviors__Action_pickSM, 'Action_pick')
 		self.add_behavior(sara_flexbe_behaviors__Action_findSM, 'Action_find')
 
@@ -104,7 +105,7 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'target'})
 
-			# x:39 y:367
+			# x:117 y:355
 			OperatableStateMachine.add('set dist',
 										SetKey(Value=0.8),
 										transitions={'done': 'get close pos'},
@@ -125,7 +126,7 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Object', 'output_value': 'Pos'})
 
-			# x:26 y:287
+			# x:110 y:285
 			OperatableStateMachine.add('move head',
 										SaraSetHeadAngle(pitch=0.7, yaw=0),
 										transitions={'done': 'set dist'},
@@ -216,7 +217,9 @@ class ActionWrapper_PickSM(Behavior):
 			# x:261 y:239
 			OperatableStateMachine.add('Get closer',
 										_sm_get_closer_1,
+
 										transitions={'done': 'Action_find'},
+
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'Object': 'Object'})
 
@@ -294,6 +297,7 @@ class ActionWrapper_PickSM(Behavior):
 										transitions={'done': 'setrosparam'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Key'})
+
 
 			# x:30 y:188
 			OperatableStateMachine.add('Action_find',

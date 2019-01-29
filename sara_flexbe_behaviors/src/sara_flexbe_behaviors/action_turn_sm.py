@@ -10,7 +10,7 @@
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.pose_gen_euler_key import GenPoseEulerKey
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
+from sara_flexbe_states.sara_rel_move_base import SaraRelMoveBase
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -38,7 +38,6 @@ Verify which rotation is positive
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -50,7 +49,7 @@ Verify which rotation is positive
 
 
 	def create(self):
-		# x:445 y:258, x:313 y:323
+		# x:622 y:0, x:619 y:113
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['rotation'])
 		_state_machine.userdata.rotation = 0
 
@@ -68,26 +67,19 @@ Verify which rotation is positive
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'value0'})
 
-			# x:213 y:65
-			OperatableStateMachine.add('SetRelative',
-										SetKey(Value=True),
-										transitions={'done': 'Action_Move'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'relative'})
-
-			# x:64 y:163
+			# x:194 y:46
 			OperatableStateMachine.add('GenPoseEulerKey',
 										GenPoseEulerKey(),
-										transitions={'done': 'SetRelative'},
+										transitions={'done': 'move'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'xpos': 'value0', 'ypos': 'value0', 'zpos': 'value0', 'yaw': 'rotation', 'pitch': 'value0', 'roll': 'value0', 'pose': 'pose'})
 
-			# x:263 y:144
-			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move'),
-										transitions={'finished': 'finished', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'pose', 'relative': 'relative'})
+			# x:356 y:30
+			OperatableStateMachine.add('move',
+										SaraRelMoveBase(),
+										transitions={'arrived': 'finished', 'failed': 'failed'},
+										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'pose': 'pose'})
 
 
 		return _state_machine

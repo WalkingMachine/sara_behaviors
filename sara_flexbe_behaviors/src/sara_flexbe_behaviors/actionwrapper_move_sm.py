@@ -63,7 +63,7 @@ class ActionWrapper_MoveSM(Behavior):
 	def create(self):
 		# x:518 y:366, x:823 y:208, x:541 y:500
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
-		_state_machine.userdata.Action = ["Move",'operator']
+		_state_machine.userdata.Action = ["Move",'crowd']
 		_state_machine.userdata.relative = False
 
 		# Additional creation code can be added inside the following tags
@@ -176,7 +176,7 @@ class ActionWrapper_MoveSM(Behavior):
 
 			# x:46 y:307
 			OperatableStateMachine.add('Say reached',
-										SaraSayKey(Format=lambda x: "I have reached my destination.", emotion=1, block=True),
+										SaraSayKey(Format=lambda x: "Yay!", emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'sentence': 'areaName'})

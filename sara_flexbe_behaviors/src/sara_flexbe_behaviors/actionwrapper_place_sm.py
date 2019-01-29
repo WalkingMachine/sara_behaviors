@@ -20,6 +20,7 @@ from flexbe_states.log_state import LogState
 from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_states.SetKey import SetKey
+from sara_flexbe_states.moveit_move import MoveitMove
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -65,6 +66,7 @@ class ActionWrapper_PlaceSM(Behavior):
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Place", "table"]
 		_state_machine.userdata.Empty = None
+		_state_machine.userdata.IdlePos = "IdlePose"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -90,13 +92,13 @@ class ActionWrapper_PlaceSM(Behavior):
 			# x:222 y:497
 			OperatableStateMachine.add('Action_place',
 										self.use_behavior(sara_flexbe_behaviors__Action_placeSM, 'Action_place'),
-										transitions={'finished': 'empty hand', 'failed': 'cause3'},
+										transitions={'finished': 'idlearm', 'failed': 'cause3'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pos': 'MapPosition'})
 
 			# x:39 y:367
 			OperatableStateMachine.add('genPoseArm',
-										GenPoseEuler(x=0.75, y=-0.1, z=0.75, roll=0, pitch=0, yaw=0),
+										GenPoseEuler(x=0.75, y=-0.25, z=0.85, roll=0, pitch=0, yaw=0),
 										transitions={'done': 'referential from robot to map'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'position'})
@@ -189,6 +191,13 @@ class ActionWrapper_PlaceSM(Behavior):
 										transitions={'done': 'setrosparamcause'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Key'})
+
+			# x:363 y:607
+			OperatableStateMachine.add('idlearm',
+										MoveitMove(move=True, waitForExecution=False, group="RightArm"),
+										transitions={'done': 'empty hand', 'failed': 'empty hand'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'IdlePos'})
 
 
 		return _state_machine

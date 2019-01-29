@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Portes_ouvertes">
+
+	<executable package_path="sara_flexbe_behaviors.portes_ouvertes_sm" class="Portes_ouvertesSM" />
+	<tagstring></tagstring>
+	<author>Huynh-Anh et Philippe</author>
+	<date>Tue Jan 22 2019</date>
+	<description>
+		sequence qui permet de prendre un objet dans une armoire et la placer sur une table
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Init_Sequence" />
+	<contains name="ActionWrapper_Pick" />
+	<contains name="Action_OpenCupboard" />
+	<contains name="ActionWrapper_Move" />
+	<contains name="ActionWrapper_Place" />
+	<contains name="action_turn" />
+
+	<!-- Available Parameters -->
+
+</behavior>
