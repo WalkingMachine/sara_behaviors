@@ -12,8 +12,12 @@
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Init_Sequence" />
+	<contains name="ActionWrapper_Pick" />
+	<contains name="Action_OpenCupboard" />
 	<contains name="ActionWrapper_Move" />
-	<contains name="Action_pick" />
+	<contains name="ActionWrapper_Place" />
+	<contains name="action_turn" />
 
 	<!-- Available Parameters -->
 
