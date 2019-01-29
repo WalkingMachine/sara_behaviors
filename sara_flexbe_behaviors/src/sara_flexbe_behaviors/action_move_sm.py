@@ -148,7 +148,7 @@ class Action_MoveSM(Behavior):
 			# x:54 y:27
 			OperatableStateMachine.add('SetCount',
 										SetKey(Value=2),
-										transitions={'done': 'set head'},
+										transitions={'done': 'Move concurent'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Count'})
 
@@ -161,7 +161,7 @@ class Action_MoveSM(Behavior):
 			# x:58 y:339
 			OperatableStateMachine.add('try again',
 										SaraSay(sentence="But I'm still going.", emotion=1, block=False),
-										transitions={'done': 'set head'},
+										transitions={'done': 'Move concurent'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:582 y:558
@@ -211,7 +211,7 @@ class Action_MoveSM(Behavior):
 
 			# x:46 y:147
 			OperatableStateMachine.add('set head',
-										SaraSetHeadAngle(pitch=-0.9, yaw=0),
+										SaraSetHeadAngle(pitch=0.8, yaw=0),
 										transitions={'done': 'Move concurent'},
 										autonomy={'done': Autonomy.Off})
 
