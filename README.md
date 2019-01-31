@@ -9,7 +9,9 @@ Ce paquet a de nombreuses dépendances. En voicis quelques unes.
 - [sara_msgs](https://github.com/WalkingMachine/sara_msgs)
 - [wm_tts](https://github.com/WalkingMachine/wm_tts)
 - [sara_navigation](https://github.com/WalkingMachine/sara_navigation)
-
+- [vizbox](https://github.com/WalkingMachine/vizbox)
+- [wm_nlu](https://github.com/WalkingMachine/wm_nlu)
+- [wm_direction_to_point](https://github.com/WalkingMachine/wm_direction_to_point)
 
 ### Pour lancer
 Flexbe au complet avec le GUI et le serveur:
