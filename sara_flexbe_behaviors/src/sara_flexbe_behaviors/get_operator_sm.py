@@ -19,8 +19,8 @@ from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_be
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_states.get_speech import GetSpeech
-from sara_flexbe_states.binary_calculation_state import BinaryCalculationState
 from flexbe_states.check_condition_state import CheckConditionState
+from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -157,7 +157,7 @@ class Get_operatorSM(Behavior):
 			# x:49 y:511
 			OperatableStateMachine.add('Get persons',
 										list_entities_by_name(frontality_level=0.5, distance_max=10),
-										transitions={'found': 'Get closest', 'none_found': 'say where are you'},
+										transitions={'found': 'get next closest', 'none_found': 'say where are you'},
 										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'Name', 'entity_list': 'entity_list', 'number': 'number'})
 
@@ -196,19 +196,19 @@ class Get_operatorSM(Behavior):
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index2'})
 
-			# x:254 y:514
-			OperatableStateMachine.add('Get closest',
-										BinaryCalculationState(calculation="X[Y-1]"),
-										transitions={'done': 'ask if operator'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'X': 'entity_list', 'Y': 'index2', 'Z': 'Operator'})
-
 			# x:744 y:332
 			OperatableStateMachine.add('Yes ?',
 										CheckConditionState(predicate=lambda x: "yes" in x),
 										transitions={'true': 'get ID', 'false': 'for 3_2'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'words'})
+
+			# x:263 y:535
+			OperatableStateMachine.add('get next closest',
+										FlexibleCalculationState(calculation=lambda x: x[0][x[1]], input_keys=["entity_list", "index"]),
+										transitions={'done': 'ask if operator'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'entity_list': 'entity_list', 'index': 'index', 'output_value': 'Operator'})
 
 
 		return _state_machine
