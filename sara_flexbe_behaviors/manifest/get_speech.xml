@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Get_speech">
+
+	<executable package_path="sara_flexbe_behaviors.get_speech_sm" class="Get_speechSM" />
+	<tagstring></tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Thu Aug 24 2017</date>
+	<description>
+		get the text from speech
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

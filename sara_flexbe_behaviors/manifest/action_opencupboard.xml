@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Action_OpenCupboard">
+
+	<executable package_path="sara_flexbe_behaviors.action_opencupboard_sm" class="Action_OpenCupboardSM" />
+	<tagstring>Action</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Wed Jan 23 2019</date>
+	<description>
+		Se déplace vers une armoire pour l'ouvrir
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="ActionWrapper_Move" />
+
+	<!-- Available Parameters -->
+
+</behavior>

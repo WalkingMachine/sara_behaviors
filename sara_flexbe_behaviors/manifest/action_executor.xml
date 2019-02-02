@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Action_Executor">
+
+	<executable package_path="sara_flexbe_behaviors.action_executor_sm" class="Action_ExecutorSM" />
+	<tagstring>Scenario</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Wed May 30 2018</date>
+	<description>
+		Execute une action a partir d'un ActionForm.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="ActionWrapper_Ask" />
+	<contains name="ActionWrapper_Count" />
+	<contains name="ActionWrapper_Find" />
+	<contains name="ActionWrapper_Find_Person" />
+	<contains name="ActionWrapper_Follow" />
+	<contains name="ActionWrapper_Give" />
+	<contains name="ActionWrapper_Move" />
+	<contains name="ActionWrapper_Place" />
+	<contains name="ActionWrapper_Say" />
+	<contains name="ActionWrapper_Answer" />
+	<contains name="ActionWrapper_Pick" />
+
+	<!-- Available Parameters -->
+
+</behavior>

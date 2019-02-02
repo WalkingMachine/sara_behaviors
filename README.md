@@ -2,51 +2,36 @@
 Ce repo contient tout les states et bahaviors spécifiques à sara.
 
 ### Installation
-- Installer flexbe
+- [Installer flexbe](http://philserver.bplaced.net/fbe/download.php)
 
 ### Dependances
 Ce paquet a de nombreuses dépendances. En voicis quelques unes.
-- [lu4r semantic analyser](https://drive.google.com/file/d/0BwncD7Fw45HYd3JfZEIyQ0FSMU0/view)
+- [sara_msgs](https://github.com/WalkingMachine/sara_msgs)
 - [wm_tts](https://github.com/WalkingMachine/wm_tts)
 - [sara_navigation](https://github.com/WalkingMachine/sara_navigation)
-
-
-# FLEXBE,
-
-C'est l'engine de nos state machines. C'est une interface graphique qui permet d'assembler des states pour tracer des behaviors comme on veut. Ça    marche en python et on peut ajouter nos propres states personnalisé selon nos besoins. L'engine produit du code smack.
-
-### Installation :
-- `./install.sh`
-- Insaller chrome ou chromium
-- Importer l'app flexbe_behavior_engine/FlexBE.crx vers le menu des extention du navigateur. (drag and drop)
-- Parametrer l'application depuis le widget ajouté à **Chrome**:
-![alt text](https://raw.githubusercontent.com/WalkingMachine/sara_behaviors/master/config_FlexBe.png "Logo Title Text 1")
-
-1. Importer les paramètres json fournis ici dans settings en utilisant l'app: `/settings/flexbe_config.json`
-2. Ajouter les dossiers necessaires contenant les states
-    - `~/sara_ws/`
-3. Ajouter les dossiers necessaires contenant les behaviors de SARA
-    - `~/sara_ws/src/sara_behaviors/behaviors`
-4. Ajouter les dossiers necessaires contenant les behaviors flexbe de SARA
-    - `~/sara_ws/src/sara_behaviors/flexbe_behaviors`
-
-- Compiler le workspace: `cd ~/sara_ws/ && catkin_make`
-
-- Tester les commandes de la section [Pour lancer](#pour-lancer)
+- [vizbox](https://github.com/WalkingMachine/vizbox)
+- [wm_nlu](https://github.com/WalkingMachine/wm_nlu)
+- [wm_direction_to_point](https://github.com/WalkingMachine/wm_direction_to_point)
 
 ### Pour lancer
-Le serveur flexbe:
+Flexbe au complet avec le GUI et le serveur:
+```sh
+roslaunch flexbe_app flexbe_full.launch
+```
+Le serveur flexbe seulement:
 ```sh
 roslaunch flexbe_onboard behavior_onboard.launch
 ```
-L'interface graphique:
+Le flexbe app seulement:
 ```sh
-roslaunch flexbe_widget behavior_ocs.launch
+roslaunch flexbe_app flexbe_ocs.launch
 ```
-Une behavior en particulié sans l'interface
+Une behavior en particulié sans le GUI
 ```sh
 rosrun flexbe_widget be_launcher -b 'Example Behavior'
 ```
+Des alias pour simplifier l'utilisation sont disponnibles dans [settings standards de WM](https://github.com/WalkingMachine/settings)
+
 ### liens utiles
 - [Le site de flexbe](http://philserver.bplaced.net/fbe/index.php)
 - [Les tutoriels de flexbe](http://wiki.ros.org/flexbe/Tutorials)

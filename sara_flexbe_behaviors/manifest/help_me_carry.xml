@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Help me carry">
+
+	<executable package_path="sara_flexbe_behaviors.help_me_carry_sm" class="HelpmecarrySM" />
+	<tagstring>carry</tagstring>
+	<author>Huynh-Anh Le</author>
+	<date>Sat May 19 2018</date>
+	<description>
+		Helps someone carry groceries
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_Guide2" />
+	<contains name="Action_Receive_Bag" />
+	<contains name="LookAtClosest" />
+	<contains name="Action_Move" />
+	<contains name="Action_follow" />
+	<contains name="Action_Pass_Door" />
+	<contains name="ActionWrapper_Move" />
+
+	<!-- Available Parameters -->
+
+</behavior>

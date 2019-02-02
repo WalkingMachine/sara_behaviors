@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Scenario_Security_Check">
+
+	<executable package_path="sara_flexbe_behaviors.scenario_security_check_sm" class="Scenario_Security_CheckSM" />
+	<tagstring>Scenario</tagstring>
+	<author>Veronica Romero</author>
+	<date>12 mai 2018</date>
+	<description>
+		englobe le scenario du test de securite.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_Move" />
+	<contains name="Action_Pass_Door" />
+
+	<!-- Available Parameters -->
+
+</behavior>

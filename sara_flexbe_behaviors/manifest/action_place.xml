@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Action_place">
+
+	<executable package_path="sara_flexbe_behaviors.action_place_sm" class="Action_placeSM" />
+	<tagstring>ActionWrapper</tagstring>
+	<author>Raphael Duchaine</author>
+	<date>Sat May 12 2018</date>
+	<description>
+		Place un objet a une position
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

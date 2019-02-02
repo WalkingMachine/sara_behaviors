@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="WonderlandAddUpdatePerson">
+
+	<executable package_path="sara_flexbe_behaviors.wonderlandaddupdateperson_sm" class="WonderlandAddUpdatePersonSM" />
+	<tagstring>Wonderland</tagstring>
+	<author>Lucas Maurice</author>
+	<date>Fri May 18 2018</date>
+	<description>
+		Add or update a person in wonderland.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="ActionWrapper_Place">
+
+	<executable package_path="sara_flexbe_behaviors.actionwrapper_place_sm" class="ActionWrapper_PlaceSM" />
+	<tagstring>ActionWrapper</tagstring>
+	<author>Philippe La Madeleine</author>
+	<date>Tue Jul 11 2017</date>
+	<description>
+		action wrapper pour place
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_place" />
+
+	<!-- Available Parameters -->
+
+</behavior>

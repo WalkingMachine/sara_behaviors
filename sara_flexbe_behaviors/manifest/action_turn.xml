@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="action_turn">
+
+	<executable package_path="sara_flexbe_behaviors.action_turn_sm" class="action_turnSM" />
+	<tagstring>ActionWrapper</tagstring>
+	<author>Raphael Duchaine</author>
+	<date>Mon May 21 2018</date>
+	<description>
+		Quality of life action
+
+Ask for a rotation in degree with forward as 0deg
+
+Verify which rotation is positive
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
