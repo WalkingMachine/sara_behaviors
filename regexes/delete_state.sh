@@ -20,7 +20,7 @@ then
     then
 
         echo "deleting sara_flexbe_states/src/sara_flexbe_states/$STATE.py"
-        #rm -rf deleting sara_flexbe_states/src/sara_flexbe_states/$STATE.py
+        rm -rf deleting sara_flexbe_states/src/sara_flexbe_states/$STATE.py
 
     else
 
