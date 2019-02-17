@@ -278,7 +278,7 @@ class Action_placeSM(Behavior):
 
 			# x:463 y:518
 			OperatableStateMachine.add('say touchdown',
-										SaraSay(sentence="Touchdown!", emotion=1, block=False),
+										SaraSay(sentence="Touchdown!", input_keys=[], emotion=1, block=False),
 										transitions={'done': 'open gripper'},
 										autonomy={'done': Autonomy.Off})
 

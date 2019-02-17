@@ -11,7 +11,6 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.GetRosParam import GetRosParam
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_behaviors.action_follow_sm import Action_followSM as sara_flexbe_behaviors__Action_followSM
 from sara_flexbe_states.get_speech import GetSpeech
@@ -127,66 +126,38 @@ class ActionWrapper_FollowSM(Behavior):
 			# x:97 y:141
 			OperatableStateMachine.add('Get Person ID',
 										GetRosParam(ParamName="/behavior/FoundPerson/Id"),
-										transitions={'done': 'Get Entity Location', 'failed': 'Say Lost'},
+										transitions={'done': 'Get Entity Location', 'failed': 'Say_Lost'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'personId'})
 
 			# x:92 y:225
 			OperatableStateMachine.add('Get Entity Location',
 										GetEntityByID(),
-										transitions={'found': 'Tell Follow', 'not_found': 'Say Lost'},
+										transitions={'found': 'Tell_Follow', 'not_found': 'Say_Lost'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ID': 'personId', 'Entity': 'Entity'})
 
-			# x:400 y:127
-			OperatableStateMachine.add('Say Lost',
-										SaraSayKey(Format=lambda x: "I have lost " + x + " !", emotion=1, block=True),
-										transitions={'done': 'cause1'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'name'})
-
-			# x:240 y:417
+			# x:231 y:389
 			OperatableStateMachine.add('Tell Way',
-										SaraSay(sentence="Show me the way !", emotion=1, block=True),
+										SaraSay(sentence="Show me the way !", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Follow Loop'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:97 y:324
-			OperatableStateMachine.add('Tell Follow',
-										SaraSayKey(Format=lambda x: "I will follow you, " + x + " !", emotion=1, block=True),
-										transitions={'done': 'Tell Way'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'name'})
-
-			# x:397 y:405
+			# x:391 y:374
 			OperatableStateMachine.add('Follow Loop',
 										_sm_follow_loop_1,
-										transitions={'finished': 'Stop Follow', 'error': 'Cant Follow'},
+										transitions={'finished': 'Stop_Follow', 'error': 'Cant_Follow'},
 										autonomy={'finished': Autonomy.Inherit, 'error': Autonomy.Inherit},
 										remapping={'ID': 'personId', 'distance': 'distance'})
 
-			# x:416 y:250
-			OperatableStateMachine.add('Cant Follow',
-										SaraSayKey(Format=lambda x: "I can't follow you, " + x + " !", emotion=1, block=True),
-										transitions={'done': 'cause2'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'name'})
-
-			# x:574 y:411
-			OperatableStateMachine.add('Stop Follow',
-										SaraSayKey(Format=lambda x: "Ok " + x + ", I will stop to follow you !", emotion=1, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'name'})
-
-			# x:556 y:151
+			# x:533 y:140
 			OperatableStateMachine.add('cause1',
 										SetKey(Value="I lost the person I was following."),
 										transitions={'done': 'setrosparamcause'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Key'})
 
-			# x:557 y:210
+			# x:540 y:219
 			OperatableStateMachine.add('cause2',
 										SetKey(Value="I was unable to follow the person."),
 										transitions={'done': 'setrosparamcause'},
@@ -199,6 +170,30 @@ class ActionWrapper_FollowSM(Behavior):
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'Key'})
+
+			# x:96 y:341
+			OperatableStateMachine.add('Tell_Follow',
+										SaraSay(sentence=lambda x: "I will follow you, " + x + " !", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'Tell Way'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:571 y:411
+			OperatableStateMachine.add('Stop_Follow',
+										SaraSay(sentence=lambda x: "Ok " + x + ", I will stop to follow you !", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:359 y:262
+			OperatableStateMachine.add('Cant_Follow',
+										SaraSay(sentence=lambda x: "I can't follow you, " + x + " !", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'cause2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:345 y:149
+			OperatableStateMachine.add('Say_Lost',
+										SaraSay(sentence=lambda x: "I have lost " + x + " !", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'cause1'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

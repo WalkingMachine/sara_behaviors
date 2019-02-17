@@ -12,7 +12,6 @@ from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as sara_flexbe_behaviors__Action_findPersonSM
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_nlu_spr import SaraNLUspr
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.for_loop import ForLoop
 from flexbe_states.check_condition_state import CheckConditionState
@@ -72,7 +71,7 @@ class ActionWrapper_AnswerSM(Behavior):
 		with _sm_turntofindanotherpersononce_0:
 			# x:32 y:135
 			OperatableStateMachine.add('sayNeverMind',
-										SaraSay(sentence="OK. Never mind", emotion=1, block=True),
+										SaraSay(sentence="OK. Never mind", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'loopFindOtherPerson'},
 										autonomy={'done': Autonomy.Off})
 
@@ -104,7 +103,7 @@ class ActionWrapper_AnswerSM(Behavior):
 		with _sm_listenandstorethequestion_1:
 			# x:30 y:51
 			OperatableStateMachine.add('sayAskQuestion',
-										SaraSay(sentence="Ask me your question please.", emotion=1, block=True),
+										SaraSay(sentence="Ask me your question please.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'getQuestion'},
 										autonomy={'done': Autonomy.Off})
 
@@ -124,7 +123,7 @@ class ActionWrapper_AnswerSM(Behavior):
 
 			# x:273 y:94
 			OperatableStateMachine.add('sayRepeat2',
-										SaraSay(sentence="I didn't understand. Can you repeat please?", emotion=1, block=True),
+										SaraSay(sentence="I didn't understand. Can you repeat please?", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'getQuestion'},
 										autonomy={'done': Autonomy.Off})
 
@@ -135,7 +134,7 @@ class ActionWrapper_AnswerSM(Behavior):
 		with _sm_ifquestionforsara_2:
 			# x:30 y:40
 			OperatableStateMachine.add('AskIfQuestion',
-										SaraSay(sentence="Do you have a question for me?", emotion=1, block=True),
+										SaraSay(sentence="Do you have a question for me?", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'getResponse'},
 										autonomy={'done': Autonomy.Off})
 
@@ -155,7 +154,7 @@ class ActionWrapper_AnswerSM(Behavior):
 
 			# x:254 y:63
 			OperatableStateMachine.add('sayRepeat',
-										SaraSay(sentence="I didn't understand. Do you have a question for me?", emotion=1, block=True),
+										SaraSay(sentence="I didn't understand. Do you have a question for me?", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'getResponse'},
 										autonomy={'done': Autonomy.Off})
 
@@ -185,13 +184,13 @@ class ActionWrapper_AnswerSM(Behavior):
 
 			# x:374 y:60
 			OperatableStateMachine.add('noPerson',
-										SaraSay(sentence="I can't find any person here.", emotion=1, block=True),
+										SaraSay(sentence="I can't find any person here.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'cause1'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:332 y:298
 			OperatableStateMachine.add('NotUnderstandEnd',
-										SaraSay(sentence="Sorry. I can't understand your answer.", emotion=1, block=True),
+										SaraSay(sentence="Sorry. I can't understand your answer.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'cause2'},
 										autonomy={'done': Autonomy.Off})
 
@@ -204,16 +203,9 @@ class ActionWrapper_AnswerSM(Behavior):
 
 			# x:334 y:408
 			OperatableStateMachine.add('CannotAnswer',
-										SaraSay(sentence="Sorry. I can't answer your question.", emotion=1, block=True),
+										SaraSay(sentence="Sorry. I can't answer your question.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'cause3'},
 										autonomy={'done': Autonomy.Off})
-
-			# x:31 y:579
-			OperatableStateMachine.add('sayAnswer',
-										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'answer'})
 
 			# x:23 y:208
 			OperatableStateMachine.add('IfQuestionForSARA',
@@ -265,9 +257,15 @@ class ActionWrapper_AnswerSM(Behavior):
 			# x:40 y:469
 			OperatableStateMachine.add('log answer',
 										LogKeyState(text="{}", severity=Logger.REPORT_HINT),
-										transitions={'done': 'sayAnswer'},
+										transitions={'done': 'Say_Answer'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'data': 'answer'})
+
+			# x:42 y:550
+			OperatableStateMachine.add('Say_Answer',
+										SaraSay(sentence=lambda x: x, input_keys=[], emotion=0, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

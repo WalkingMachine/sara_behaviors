@@ -21,7 +21,6 @@ from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionS
 from sara_flexbe_behaviors.action_executor_sm import Action_ExecutorSM as sara_flexbe_behaviors__Action_ExecutorSM
 from sara_flexbe_states.StoryboardSetStepKey import StoryboardSetStepKey
 from sara_flexbe_states.GetRosParam import GetRosParam
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_behaviors.actionwrapper_move_sm import ActionWrapper_MoveSM as sara_flexbe_behaviors__ActionWrapper_MoveSM
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.sara_nlu_gpsr import SaraNLUgpsr
@@ -89,17 +88,10 @@ class Scenario_GPSRSM(Behavior):
 		_sm_validate_0 = OperatableStateMachine(outcomes=['done', 'bad'], input_keys=['sentence'])
 
 		with _sm_validate_0:
-			# x:30 y:40
-			OperatableStateMachine.add('say command',
-										SaraSayKey(Format=lambda x: "I heard. " +x+ ". Is that correct?", emotion=1, block=True),
+			# x:56 y:62
+			OperatableStateMachine.add('Say_Command',
+										SaraSay(sentence=lambda x: "I heard. " +x+ ". Is that correct?", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'get speech'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'sentence'})
-
-			# x:423 y:332
-			OperatableStateMachine.add('say repeate',
-										SaraSay(sentence="Please, repeat your command.", emotion=1, block=True),
-										transitions={'done': 'bad'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:44 y:165
@@ -115,6 +107,12 @@ class Scenario_GPSRSM(Behavior):
 										transitions={'true': 'done', 'false': 'say repeate'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'words'})
+
+			# x:423 y:332
+			OperatableStateMachine.add('say repeate',
+										SaraSay(sentence="Please, repeat your command.", input_keys=[], emotion=1, block=True),
+										transitions={'done': 'bad'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:30 y:324
@@ -156,7 +154,7 @@ class Scenario_GPSRSM(Behavior):
 		with _sm_get_commands_2:
 			# x:50 y:48
 			OperatableStateMachine.add('say ready',
-										SaraSay(sentence="I'm ready for your commands.", emotion=1, block=False),
+										SaraSay(sentence="I'm ready for your commands.", input_keys=[], emotion=1, block=False),
 										transitions={'done': 'GetSpeech'},
 										autonomy={'done': Autonomy.Off})
 
@@ -169,13 +167,13 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:597 y:223
 			OperatableStateMachine.add('say sorry',
-										SaraSay(sentence="Sorry, I could not understand what you said.", emotion=1, block=True),
+										SaraSay(sentence="Sorry, I could not understand what you said.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'GetSpeech'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:30 y:491
 			OperatableStateMachine.add('say understood',
-										SaraSay(sentence="Ok", emotion=1, block=True),
+										SaraSay(sentence="Ok", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'understood'},
 										autonomy={'done': Autonomy.Off})
 
@@ -200,7 +198,7 @@ class Scenario_GPSRSM(Behavior):
 		with _sm_end_3:
 			# x:30 y:40
 			OperatableStateMachine.add('win',
-										SaraSay(sentence="Thank you. I'm going now.", emotion=1, block=True),
+										SaraSay(sentence="Thank you. I'm going now.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'set cont'},
 										autonomy={'done': Autonomy.Off})
 
@@ -234,7 +232,7 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:191 y:570
 			OperatableStateMachine.add('say yay',
-										SaraSay(sentence="I did it. I'm the best robot.", emotion=1, block=True),
+										SaraSay(sentence="I did it. I'm the best robot.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
@@ -267,23 +265,16 @@ class Scenario_GPSRSM(Behavior):
 		with _sm_fail_state_5:
 			# x:36 y:29
 			OperatableStateMachine.add('say failed',
-										SaraSay(sentence="I failed. I'm going back to tell my master.", emotion=1, block=True),
+										SaraSay(sentence="I failed. I'm going back to tell my master.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'ActionWrapper_Move'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:22 y:505
 			OperatableStateMachine.add('get error',
 										GetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
-										transitions={'done': 'say error', 'failed': 'finished'},
+										transitions={'done': 'Say_Error', 'failed': 'finished'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'Error'})
-
-			# x:110 y:584
-			OperatableStateMachine.add('say error',
-										SaraSayKey(Format=lambda x: "Sorry, I failed because "+x, emotion=1, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'Error'})
 
 			# x:21 y:163
 			OperatableStateMachine.add('ActionWrapper_Move',
@@ -291,6 +282,12 @@ class Scenario_GPSRSM(Behavior):
 										transitions={'finished': 'get error', 'failed': 'failed', 'critical_fail': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'ActionGoToStart'})
+
+			# x:140 y:588
+			OperatableStateMachine.add('Say_Error',
+										SaraSay(sentence=lambda x: "Sorry, I failed because "+x, input_keys=[], emotion=0, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:588 y:141, x:590 y:545, x:642 y:410
@@ -351,14 +348,14 @@ class Scenario_GPSRSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'containers'})
 
-			# x:135 y:523
+			# x:143 y:587
 			OperatableStateMachine.add('bras en lair',
 										MoveitMove(move=True, waitForExecution=False, group="RightArm"),
 										transitions={'done': 'say start', 'failed': 'say start'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'PositionBras'})
 
-			# x:33 y:516
+			# x:14 y:516
 			OperatableStateMachine.add('set story',
 										Set_Story(titre="GPSR", storyline=[]),
 										transitions={'done': 'bras en lair'},
@@ -387,13 +384,13 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:284 y:527
 			OperatableStateMachine.add('say start',
-										SaraSay(sentence="I'm ready to start the GPSR scenario.", emotion=1, block=True),
+										SaraSay(sentence="I'm ready to start the GPSR scenario.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:273 y:103
 			OperatableStateMachine.add('say no entry',
-										SaraSay(sentence="Wait. There is no entry door? What!", emotion=1, block=True),
+										SaraSay(sentence="Wait. There is no entry door? What!", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
@@ -429,7 +426,7 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:250 y:257
 			OperatableStateMachine.add('critical',
-										SaraSay(sentence="Critical failure! I require medical assistance.", emotion=1, block=True),
+										SaraSay(sentence="Critical failure! I require medical assistance.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
@@ -442,7 +439,7 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:747 y:475
 			OperatableStateMachine.add('say succseed',
-										SaraSay(sentence="I succeed my mission.", emotion=1, block=True),
+										SaraSay(sentence="I succeed my mission.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'for 3'},
 										autonomy={'done': Autonomy.Off})
 
