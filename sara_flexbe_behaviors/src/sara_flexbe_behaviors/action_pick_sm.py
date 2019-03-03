@@ -60,10 +60,11 @@ class Action_pickSM(Behavior):
 
 	def create(self):
 		# x:934 y:534, x:520 y:222, x:335 y:32, x:926 y:585
-		_state_machine = OperatableStateMachine(outcomes=['success', 'unreachable', 'not found', 'dropped'], input_keys=['objectID'])
-		_state_machine.userdata.objectID = 41
+		_state_machine = OperatableStateMachine(outcomes=['success', 'unreachable', 'not found', 'dropped'], input_keys=['objectID', 'Entity'])
+		_state_machine.userdata.objectID = 1585
 		_state_machine.userdata.PreGripPose = "PreGripPose"
 		_state_machine.userdata.PostGripPose = "PostGripPose"
+		_state_machine.userdata.Entity = 0
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -169,9 +170,9 @@ class Action_pickSM(Behavior):
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'ID': 'objectID'})
 
-			# x:58 y:156
+			# x:31 y:133
 			OperatableStateMachine.add('Say_See_It',
-										SaraSay(sentence=lambda x: "I see the " + x.name, input_keys=[], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "I see the " + x.name, input_keys=Entity, emotion=0, block=True),
 										transitions={'done': 'Look at it for 3s'},
 										autonomy={'done': Autonomy.Off})
 

@@ -84,13 +84,13 @@ class Portes_ouvertesSM(Behavior):
 
 			# x:95 y:152
 			OperatableStateMachine.add('hi',
-										SaraSay(sentence="Hi i will show you how great i am.", emotion=1, block=True),
+										SaraSay(sentence="Hi i will show you how great i am.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'w1'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:107 y:335
 			OperatableStateMachine.add('say pick',
-										SaraSay(sentence="I will take the bottle from this cupboard and place it on the table.", emotion=1, block=True),
+										SaraSay(sentence="I will take the bottle from this cupboard and place it on the table.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
@@ -111,7 +111,7 @@ class Portes_ouvertesSM(Behavior):
 
 			# x:975 y:587
 			OperatableStateMachine.add('bye',
-										SaraSay(sentence="I am done for the day. Thank you for visiting me!", emotion=1, block=True),
+										SaraSay(sentence="I am done for the day. Thank you for visiting me!", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Init_Sequence'},
 										autonomy={'done': Autonomy.Off})
 
@@ -131,7 +131,7 @@ class Portes_ouvertesSM(Behavior):
 
 			# x:60 y:653
 			OperatableStateMachine.add('try',
-										SaraSay(sentence="I will try again", emotion=1, block=True),
+										SaraSay(sentence="I will try again", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Action_OpenCupboard'},
 										autonomy={'done': Autonomy.Off})
 
@@ -171,7 +171,7 @@ class Portes_ouvertesSM(Behavior):
 
 			# x:70 y:445
 			OperatableStateMachine.add('say looking',
-										SaraSay(sentence="I'm now looking for the bottle.", emotion=1, block=True),
+										SaraSay(sentence="I'm now looking for the bottle.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'ActionWrapper_Pick'},
 										autonomy={'done': Autonomy.Off})
 

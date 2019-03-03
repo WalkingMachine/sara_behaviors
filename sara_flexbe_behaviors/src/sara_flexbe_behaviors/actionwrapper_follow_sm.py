@@ -173,27 +173,31 @@ class ActionWrapper_FollowSM(Behavior):
 
 			# x:96 y:341
 			OperatableStateMachine.add('Tell_Follow',
-										SaraSay(sentence=lambda x: "I will follow you, " + x + " !", input_keys=[], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "I will follow you, " + x[0] + " !", input_keys=["name"], emotion=0, block=True),
 										transitions={'done': 'Tell Way'},
-										autonomy={'done': Autonomy.Off})
+										autonomy={'done': Autonomy.Off},
+										remapping={'name': 'name'})
 
 			# x:571 y:411
 			OperatableStateMachine.add('Stop_Follow',
-										SaraSay(sentence=lambda x: "Ok " + x + ", I will stop to follow you !", input_keys=[], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "Ok " + x[0] + ", I will stop to follow you !", input_keys=["name"], emotion=0, block=True),
 										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off})
+										autonomy={'done': Autonomy.Off},
+										remapping={'name': 'name'})
 
 			# x:359 y:262
 			OperatableStateMachine.add('Cant_Follow',
-										SaraSay(sentence=lambda x: "I can't follow you, " + x + " !", input_keys=[], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "I can't follow you, " + x[0] + " !", input_keys=["name"], emotion=0, block=True),
 										transitions={'done': 'cause2'},
-										autonomy={'done': Autonomy.Off})
+										autonomy={'done': Autonomy.Off},
+										remapping={'name': 'name'})
 
 			# x:345 y:149
 			OperatableStateMachine.add('Say_Lost',
-										SaraSay(sentence=lambda x: "I have lost " + x + " !", input_keys=[], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "I have lost " + x[0] + " !", input_keys=["name"], emotion=0, block=True),
 										transitions={'done': 'cause1'},
-										autonomy={'done': Autonomy.Off})
+										autonomy={'done': Autonomy.Off},
+										remapping={'name': 'name'})
 
 
 		return _state_machine
