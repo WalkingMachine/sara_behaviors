@@ -9,7 +9,6 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.GetRosParam import GetRosParam
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_behaviors.action_place_sm import Action_placeSM as sara_flexbe_behaviors__Action_placeSM
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from sara_flexbe_states.TF_transform import TF_transformation
@@ -53,7 +52,7 @@ class ActionWrapper_PlaceSM(Behavior):
 
 		# Behavior comments:
 
-		# O 281 11 
+		# O 369 2 
 		# Place|n1- where to put the object
 
 		# O 588 404 
@@ -81,13 +80,6 @@ class ActionWrapper_PlaceSM(Behavior):
 										transitions={'done': 'if contain something', 'failed': 'cause1'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'content'})
-
-			# x:34 y:300
-			OperatableStateMachine.add('say place object',
-										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
-										transitions={'done': 'genPoseArm'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'sentence'})
 
 			# x:222 y:497
 			OperatableStateMachine.add('Action_place',
@@ -119,23 +111,16 @@ class ActionWrapper_PlaceSM(Behavior):
 
 			# x:209 y:98
 			OperatableStateMachine.add('say nothing in gripper',
-										SaraSay(sentence="It seems I have nothing in my gripper", emotion=1, block=True),
+										SaraSay(sentence="It seems I have nothing in my gripper", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'cause1'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:28 y:236
 			OperatableStateMachine.add('construction phrase',
 										FlexibleCalculationState(calculation=lambda x: "I will place this "+str(x[0])+" on the "+str(x[1][1]), input_keys=["content", "Action"]),
-										transitions={'done': 'say place object'},
+										transitions={'done': 'Say_Place_object'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'content': 'content', 'Action': 'Action', 'output_value': 'sentence'})
-
-			# x:641 y:451
-			OperatableStateMachine.add('say place it this place',
-										SaraSayKey(Format=lambda x: "I will place this "+x+" right there.", emotion=1, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'content'})
 
 			# x:33 y:167
 			OperatableStateMachine.add('cond',
@@ -192,12 +177,24 @@ class ActionWrapper_PlaceSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Key'})
 
-			# x:363 y:607
+			# x:342 y:583
 			OperatableStateMachine.add('idlearm',
 										MoveitMove(move=True, waitForExecution=False, group="RightArm"),
 										transitions={'done': 'empty hand', 'failed': 'empty hand'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'IdlePos'})
+
+			# x:706 y:460
+			OperatableStateMachine.add('Say_Place_It_This_Place',
+										SaraSay(sentence=lambda x: "I will place this "+x+" right there.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:35 y:301
+			OperatableStateMachine.add('Say_Place_object',
+										SaraSay(sentence=lambda x: x, input_keys=[], emotion=0, block=True),
+										transitions={'done': 'genPoseArm'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

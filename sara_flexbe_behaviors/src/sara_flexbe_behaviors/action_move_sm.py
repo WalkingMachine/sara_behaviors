@@ -154,19 +154,19 @@ class Action_MoveSM(Behavior):
 
 			# x:271 y:347
 			OperatableStateMachine.add('stuck',
-										SaraSay(sentence="I'm getting stuck.", emotion=1, block=True),
+										SaraSay(sentence="I'm getting stuck.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Count--'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:58 y:339
 			OperatableStateMachine.add('try again',
-										SaraSay(sentence="But I'm still going.", emotion=1, block=False),
+										SaraSay(sentence="But I'm still going.", input_keys=[], emotion=1, block=False),
 										transitions={'done': 'Move concurent'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:582 y:558
 			OperatableStateMachine.add('sorry',
-										SaraSay(sentence="Well. It seem's I can't go there.", emotion=1, block=True),
+										SaraSay(sentence="Well. It seem's I can't go there.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 

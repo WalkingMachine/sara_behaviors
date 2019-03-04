@@ -11,9 +11,9 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_behaviors.action_count_sm import Action_countSM as sara_flexbe_behaviors__Action_countSM
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.SetRosParamKey import SetRosParamKey
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
+from sara_flexbe_states.sara_say import SaraSay
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -66,56 +66,54 @@ class ActionWrapper_CountSM(Behavior):
 			# x:41 y:32
 			OperatableStateMachine.add('get name',
 										CalculationState(calculation=lambda x: x[1]),
-										transitions={'done': 'say start'},
+										transitions={'done': 'Say_Start'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'className'})
 
-			# x:13 y:220
+			# x:22 y:213
 			OperatableStateMachine.add('Action_count',
 										self.use_behavior(sara_flexbe_behaviors__Action_countSM, 'Action_count'),
 										transitions={'done': 'get paramname', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'className': 'className', 'Count': 'Count'})
 
-			# x:14 y:473
+			# x:14 y:462
 			OperatableStateMachine.add('concat',
 										FlexibleCalculationState(calculation=lambda x: "I counted "+str(x[0])+" "+str(x[1])+".", input_keys=["Count", "className"]),
-										transitions={'done': 'say count'},
+										transitions={'done': 'Say_Count'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Count': 'Count', 'className': 'className', 'output_value': 'sentence'})
 
-			# x:24 y:554
-			OperatableStateMachine.add('say count',
-										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
-										transitions={'done': 'set head back'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'sentence'})
-
-			# x:17 y:394
+			# x:28 y:388
 			OperatableStateMachine.add('store param',
 										SetRosParamKey(),
 										transitions={'done': 'concat'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'Count', 'ParamName': 'ParamName'})
 
-			# x:20 y:312
+			# x:45 y:290
 			OperatableStateMachine.add('get paramname',
 										CalculationState(calculation=lambda x: x[1]),
 										transitions={'done': 'store param'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'ParamName'})
 
-			# x:41 y:125
-			OperatableStateMachine.add('say start',
-										SaraSayKey(Format=lambda x: "I'm starting to count the "+str(x)+"s.", emotion=1, block=False),
-										transitions={'done': 'Action_count'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'className'})
-
 			# x:17 y:633
 			OperatableStateMachine.add('set head back',
 										SaraSetHeadAngle(pitch=-0.3, yaw=0),
 										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:36 y:120
+			OperatableStateMachine.add('Say_Start',
+										SaraSay(sentence=lambda x: "I'm starting to count the "+str(x)+"s.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'Action_count'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:27 y:546
+			OperatableStateMachine.add('Say_Count',
+										SaraSay(sentence=lambda x: x, input_keys=[], emotion=0, block=True),
+										transitions={'done': 'set head back'},
 										autonomy={'done': Autonomy.Off})
 
 

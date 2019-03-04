@@ -15,7 +15,7 @@ from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionS
 from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.set_a_step import Set_a_step
 from sara_flexbe_behaviors.wonderlanduniqueenity_sm import WonderlandUniqueEnitySM as sara_flexbe_behaviors__WonderlandUniqueEnitySM
-from sara_flexbe_states.sara_say_key import SaraSayKey
+from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 from sara_flexbe_states.story import Set_Story
 from sara_flexbe_states.SetRosParam import SetRosParam
@@ -47,8 +47,8 @@ class ActionWrapper_MoveSM(Behavior):
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
-        
-        # [/MANUAL_INIT]
+		
+		# [/MANUAL_INIT]
 
 		# Behavior comments:
 
@@ -68,8 +68,8 @@ class ActionWrapper_MoveSM(Behavior):
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
-        
-        # [/MANUAL_CREATE]
+		
+		# [/MANUAL_CREATE]
 
 		# x:30 y:458
 		_sm_export_no_waypoint_0 = OperatableStateMachine(outcomes=['done'], output_keys=['waipoint', 'area_name'])
@@ -167,31 +167,29 @@ class ActionWrapper_MoveSM(Behavior):
 		_sm_try_to_reach_3 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['waypoint', 'relative', 'areaName'])
 
 		with _sm_try_to_reach_3:
-			# x:30 y:145
+			# x:40 y:98
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Try to reach/Action_Move'),
-										transitions={'finished': 'Say reached', 'failed': 'Say not reached'},
+										transitions={'finished': 'Say_Reached', 'failed': 'Say_not_reached'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'waypoint', 'relative': 'relative'})
 
-			# x:46 y:307
-			OperatableStateMachine.add('Say reached',
-										SaraSayKey(Format=lambda x: "Yay!", emotion=1, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'areaName'})
-
-			# x:198 y:295
-			OperatableStateMachine.add('Say not reached',
-										SaraSayKey(Format=lambda x: "I have not reach the " + x + "!", emotion=1, block=True),
-										transitions={'done': 'failed'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'areaName'})
-
-			# x:156 y:40
+			# x:253 y:81
 			OperatableStateMachine.add('Set step Join Area',
 										Set_a_step(step=2),
 										transitions={'done': 'Action_Move'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:45 y:289
+			OperatableStateMachine.add('Say_Reached',
+										SaraSay(sentence=lambda x: "I have reach the " + x + "!", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:231 y:283
+			OperatableStateMachine.add('Say_not_reached',
+										SaraSay(sentence=lambda x: "I have not reach the " + x + "!", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
 
@@ -206,17 +204,10 @@ class ActionWrapper_MoveSM(Behavior):
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'name': 'area_to_search', 'containers': 'containers', 'entity': 'entity'})
 
-			# x:1274 y:95
-			OperatableStateMachine.add('Say going',
-										SaraSayKey(Format=lambda x: "I will go to the " + x + ".", emotion=1, block=True),
-										transitions={'done': 'found'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'area_name'})
-
 			# x:966 y:71
 			OperatableStateMachine.add('Export Waypoint',
 										_sm_export_waypoint_1,
-										transitions={'done': 'Say going'},
+										transitions={'done': 'Say_Going'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'entity': 'entity', 'waipoint': 'waypoint', 'area_name': 'area_name'})
 
@@ -233,26 +224,33 @@ class ActionWrapper_MoveSM(Behavior):
 										transitions={'done': 'WonderlandUniqueEnity'},
 										autonomy={'done': Autonomy.Off})
 
+			# x:1240 y:56
+			OperatableStateMachine.add('Say_Going',
+										SaraSay(sentence=lambda x: "I will go to the " + x + ".", input_keys=["area_to_search"], emotion=0, block=True),
+										transitions={'done': 'found'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'area_to_search': 'area_to_search'})
+
 
 		# x:871 y:59
 		_sm_decompose_command_5 = OperatableStateMachine(outcomes=['done'], input_keys=['command'], output_keys=['containers', 'area'])
 
 		with _sm_decompose_command_5:
-			# x:377 y:34
+			# x:377 y:84
 			OperatableStateMachine.add('Get area name',
 										CalculationState(calculation=lambda x: x[1]),
 										transitions={'done': 'Get area containers'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'command', 'output_value': 'area'})
 
-			# x:600 y:30
+			# x:570 y:93
 			OperatableStateMachine.add('Get area containers',
 										_sm_get_area_containers_2,
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'command': 'command', 'containers': 'containers'})
 
-			# x:153 y:96
+			# x:162 y:117
 			OperatableStateMachine.add('Set State Command',
 										Set_a_step(step=0),
 										transitions={'done': 'Get area name'},
@@ -321,5 +319,5 @@ class ActionWrapper_MoveSM(Behavior):
 
 	# Private functions can be added inside the following tags
 	# [MANUAL_FUNC]
-    
-    # [/MANUAL_FUNC]
+	
+	# [/MANUAL_FUNC]

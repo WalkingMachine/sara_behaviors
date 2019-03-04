@@ -10,12 +10,11 @@
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.KeepLookingAt import KeepLookingAt
 from flexbe_states.wait_state import WaitState
+from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.moveit_move import MoveitMove
-from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.gen_gripper_pose import GenGripperPose
 from sara_flexbe_states.TF_transform import TF_transformation
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
@@ -46,8 +45,8 @@ class Action_pickSM(Behavior):
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
-        
-        # [/MANUAL_INIT]
+		
+		# [/MANUAL_INIT]
 
 		# Behavior comments:
 
@@ -61,15 +60,16 @@ class Action_pickSM(Behavior):
 
 	def create(self):
 		# x:934 y:534, x:520 y:222, x:335 y:32, x:926 y:585
-		_state_machine = OperatableStateMachine(outcomes=['success', 'unreachable', 'not found', 'dropped'], input_keys=['objectID'])
-		_state_machine.userdata.objectID = 41
+		_state_machine = OperatableStateMachine(outcomes=['success', 'unreachable', 'not found', 'dropped'], input_keys=['objectID', 'Entity'])
+		_state_machine.userdata.objectID = 1585
 		_state_machine.userdata.PreGripPose = "PreGripPose"
 		_state_machine.userdata.PostGripPose = "PostGripPose"
+		_state_machine.userdata.Entity = 0
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
-        
-        # [/MANUAL_CREATE]
+		
+		# [/MANUAL_CREATE]
 
 		# x:30 y:365, x:130 y:365, x:230 y:365
 		_sm_look_at_it_for_3s_0 = ConcurrencyContainer(outcomes=['done'], input_keys=['ID'], conditions=[
@@ -133,7 +133,7 @@ class Action_pickSM(Behavior):
 
 			# x:63 y:184
 			OperatableStateMachine.add('say can reach',
-										SaraSay(sentence="I will grab it", emotion=1, block=False),
+										SaraSay(sentence="I will grab it", input_keys=[], emotion=1, block=False),
 										transitions={'done': 'move_PreGrip'},
 										autonomy={'done': Autonomy.Off})
 
@@ -152,7 +152,7 @@ class Action_pickSM(Behavior):
 			# x:55 y:40
 			OperatableStateMachine.add('getobject',
 										GetEntityByID(),
-										transitions={'found': 'say see it', 'not_found': 'not_found'},
+										transitions={'found': 'Say_See_It', 'not_found': 'not_found'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'ID': 'objectID', 'Entity': 'Entity'})
 
@@ -163,19 +163,19 @@ class Action_pickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Entity', 'output_value': 'posobjet'})
 
-			# x:65 y:151
-			OperatableStateMachine.add('say see it',
-										SaraSayKey(Format=lambda x: "I see the " + x.name, emotion=1, block=False),
-										transitions={'done': 'Look at it for 3s'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'Entity'})
-
 			# x:71 y:262
 			OperatableStateMachine.add('Look at it for 3s',
 										_sm_look_at_it_for_3s_0,
 										transitions={'done': 'getpose'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'ID': 'objectID'})
+
+			# x:31 y:133
+			OperatableStateMachine.add('Say_See_It',
+										SaraSay(sentence=lambda x: "I see the " + x.name, input_keys=["Entity"], emotion=0, block=True),
+										transitions={'done': 'Look at it for 3s'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Entity': 'Entity'})
 
 
 
@@ -252,25 +252,25 @@ class Action_pickSM(Behavior):
 
 			# x:277 y:200
 			OperatableStateMachine.add('cant reach',
-										SaraSay(sentence="Hum. I can't reach it.", emotion=1, block=True),
+										SaraSay(sentence="Hum. I can't reach it.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'unreachable'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:253 y:448
 			OperatableStateMachine.add('say picked',
-										SaraSay(sentence="I think I got it", emotion=1, block=False),
+										SaraSay(sentence="I think I got it", input_keys=[], emotion=1, block=False),
 										transitions={'done': 'move_lift_object'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:50 y:443
 			OperatableStateMachine.add('almost have it',
-										SaraSay(sentence="I am close", emotion=1, block=True),
+										SaraSay(sentence="I am close", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'move_on_object'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:888 y:464
 			OperatableStateMachine.add('welcome',
-										SaraSay(sentence="you are welcome", emotion=1, block=True),
+										SaraSay(sentence="you are welcome", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'success'},
 										autonomy={'done': Autonomy.Off})
 
@@ -308,5 +308,5 @@ class Action_pickSM(Behavior):
 
 	# Private functions can be added inside the following tags
 	# [MANUAL_FUNC]
-    
-    # [/MANUAL_FUNC]
+	
+	# [/MANUAL_FUNC]

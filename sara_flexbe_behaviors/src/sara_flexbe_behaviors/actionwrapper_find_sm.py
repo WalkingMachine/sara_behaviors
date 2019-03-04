@@ -10,7 +10,6 @@
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_behaviors.action_find_sm import Action_findSM as sara_flexbe_behaviors__Action_findSM
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetRosParam import SetRosParam
@@ -73,39 +72,25 @@ class ActionWrapper_FindSM(Behavior):
 
 			# x:325 y:70
 			OperatableStateMachine.add('say no object given',
-										SaraSay(sentence="You didn't told me what to find.", emotion=1, block=True),
+										SaraSay(sentence="You didn't told me what to find.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Cause1'},
 										autonomy={'done': Autonomy.Off})
-
-			# x:75 y:253
-			OperatableStateMachine.add('say find object',
-										SaraSayKey(Format=lambda x: "I'm now looking for the " + x, emotion=1, block=True),
-										transitions={'done': 'Action_find'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'name'})
 
 			# x:68 y:363
 			OperatableStateMachine.add('Action_find',
 										self.use_behavior(sara_flexbe_behaviors__Action_findSM, 'Action_find'),
-										transitions={'done': 'Say Finded Object', 'failed': 'SayNotFound'},
+										transitions={'done': 'Say_FInded_Object', 'failed': 'Say_Not_Found'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'className': 'name', 'entity': 'entity'})
 
 			# x:77 y:159
 			OperatableStateMachine.add('ReadParameters',
 										CalculationState(calculation=lambda x: x[1]),
-										transitions={'done': 'say find object'},
+										transitions={'done': 'SAy_Find_Object'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'name'})
 
-			# x:235 y:150
-			OperatableStateMachine.add('Say Finded Object',
-										SaraSayKey(Format=lambda x: "I just find the " + x.name, emotion=1, block=True),
-										transitions={'done': 'Get Time'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'entity'})
-
-			# x:357 y:269
+			# x:334 y:279
 			OperatableStateMachine.add('Get Time',
 										CalculationState(calculation=lambda x: x.lastUpdateTime.secs),
 										transitions={'done': 'Get Id'},
@@ -119,7 +104,7 @@ class ActionWrapper_FindSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'entity', 'output_value': 'id'})
 
-			# x:490 y:316
+			# x:502 y:268
 			OperatableStateMachine.add('Set Time',
 										SetRosParam(ParamName="/behavior/FoundEntity/lastUpdate"),
 										transitions={'done': 'Set Id'},
@@ -132,13 +117,6 @@ class ActionWrapper_FindSM(Behavior):
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'id'})
-
-			# x:267 y:369
-			OperatableStateMachine.add('SayNotFound',
-										SaraSayKey(Format=lambda x: "I did not find the " + x + ".", emotion=1, block=True),
-										transitions={'done': 'cause2'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'name'})
 
 			# x:835 y:14
 			OperatableStateMachine.add('Cause1',
@@ -160,6 +138,24 @@ class ActionWrapper_FindSM(Behavior):
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'Key'})
+
+			# x:47 y:258
+			OperatableStateMachine.add('SAy_Find_Object',
+										SaraSay(sentence=lambda x: "I'm now looking for the " + x, input_keys=[], emotion=0, block=True),
+										transitions={'done': 'Action_find'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:296 y:403
+			OperatableStateMachine.add('Say_Not_Found',
+										SaraSay(sentence=lambda x: "I did not find the " + x + ".", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'cause2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:212 y:130
+			OperatableStateMachine.add('Say_FInded_Object',
+										SaraSay(sentence=lambda x: "I just find the " + x.name, input_keys=[], emotion=0, block=True),
+										transitions={'done': 'Get Time'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

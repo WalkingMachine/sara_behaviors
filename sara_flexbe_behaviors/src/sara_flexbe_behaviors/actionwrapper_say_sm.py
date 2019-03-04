@@ -9,8 +9,8 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.GetRosParamKey import GetRosParamKey
+from sara_flexbe_states.sara_say import SaraSay
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -66,26 +66,24 @@ class ActionWrapper_SaySM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Action', 'output_value': 'sentence'})
 
-			# x:489 y:118
-			OperatableStateMachine.add('SaraSpeak',
-										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'sentenceToSay'})
-
-			# x:468 y:202
-			OperatableStateMachine.add('saraSpeakFailed',
-										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'sentence'})
-
-			# x:264 y:137
+			# x:271 y:123
 			OperatableStateMachine.add('rosparamkey',
 										GetRosParamKey(),
-										transitions={'done': 'SaraSpeak', 'failed': 'saraSpeakFailed'},
+										transitions={'done': 'Sara_Speak', 'failed': 'Sara_Failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'ParamName': 'sentence', 'Value': 'sentenceToSay'})
+
+			# x:483 y:96
+			OperatableStateMachine.add('Sara_Speak',
+										SaraSay(sentence=lambda x: x, input_keys=[], emotion=0, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:473 y:212
+			OperatableStateMachine.add('Sara_Failed',
+										SaraSay(sentence=lambda x: x, input_keys=[], emotion=0, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

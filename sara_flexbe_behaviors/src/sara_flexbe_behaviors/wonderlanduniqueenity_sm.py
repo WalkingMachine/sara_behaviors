@@ -16,7 +16,6 @@ from flexbe_states.log_key_state import LogKeyState
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from sara_flexbe_states.WonderlandGetEntityByID import WonderlandGetEntityByID
 from flexbe_states.check_condition_state import CheckConditionState
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_states.sara_say import SaraSay
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -202,53 +201,32 @@ class WonderlandUniqueEnitySM(Behavior):
 			# x:152 y:219
 			OperatableStateMachine.add('GetEntityLocation',
 										WonderlandGetEntityVerbal(),
-										transitions={'one': 'Export Waypoint', 'multiple': 'List areas', 'none': 'Say No Area', 'error': 'Say Error'},
+										transitions={'one': 'Export Waypoint', 'multiple': 'List areas', 'none': 'Say_No_Area', 'error': 'Say Error'},
 										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
 										remapping={'name': 'area_to_search', 'containers': 'containers', 'entities': 'entities'})
 
 			# x:431 y:200
 			OperatableStateMachine.add('List areas',
 										_sm_list_areas_1,
-										transitions={'done': 'Say More Than One'},
+										transitions={'done': 'Say_More_Than_One'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'entities': 'entities', 'sentence': 'sentence'})
 
-			# x:781 y:210
-			OperatableStateMachine.add('Say Room List',
-										SaraSayKey(Format=lambda x: "There is :" + x, emotion=1, block=True),
-										transitions={'done': 'Say Be More Precise'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'sentence'})
-
-			# x:600 y:209
-			OperatableStateMachine.add('Say More Than One',
-										SaraSayKey(Format=lambda x: "There is more than one " + str(x), emotion=1, block=True),
-										transitions={'done': 'Say Room List'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'area_to_search'})
-
 			# x:930 y:211
 			OperatableStateMachine.add('Say Be More Precise',
-										SaraSay(sentence="Can you repeat and be more precise please ?", emotion=1, block=True),
+										SaraSay(sentence="Can you repeat and be more precise please ?", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'setNone'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:619 y:303
-			OperatableStateMachine.add('Say No Area',
-										SaraSayKey(Format=lambda x: "There is no " + str(x), emotion=1, block=True),
-										transitions={'done': 'setNone'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'area_to_search'})
-
 			# x:628 y:383
 			OperatableStateMachine.add('Say Error',
-										SaraSay(sentence="I experience memory problem", emotion=1, block=True),
+										SaraSay(sentence="I experience memory problem", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Say Error 2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:813 y:385
 			OperatableStateMachine.add('Say Error 2',
-										SaraSay(sentence="Can you try again please ?", emotion=1, block=True),
+										SaraSay(sentence="Can you try again please ?", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'setNone'},
 										autonomy={'done': Autonomy.Off})
 
@@ -272,6 +250,24 @@ class WonderlandUniqueEnitySM(Behavior):
 										transitions={'done': 'not_found'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'entity'})
+
+			# x:593 y:202
+			OperatableStateMachine.add('Say_More_Than_One',
+										SaraSay(sentence=lambda x: "There is more than one " + str(x), input_keys=[], emotion=0, block=True),
+										transitions={'done': 'Say_Room_List'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:607 y:287
+			OperatableStateMachine.add('Say_No_Area',
+										SaraSay(sentence=lambda x: "There is no " + str(x), input_keys=[], emotion=0, block=True),
+										transitions={'done': 'setNone'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:783 y:240
+			OperatableStateMachine.add('Say_Room_List',
+										SaraSay(sentence=lambda x: "There is :" + x, input_keys=[], emotion=0, block=True),
+										transitions={'done': 'Say Be More Precise'},
+										autonomy={'done': Autonomy.Off})
 
 
 
