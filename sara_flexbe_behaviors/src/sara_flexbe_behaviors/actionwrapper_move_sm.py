@@ -226,9 +226,10 @@ class ActionWrapper_MoveSM(Behavior):
 
 			# x:1240 y:56
 			OperatableStateMachine.add('Say_Going',
-										SaraSay(sentence=lambda x: "I will go to the " + x + ".", input_keys=[], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "I will go to the " + x + ".", input_keys=["area_to_search"], emotion=0, block=True),
 										transitions={'done': 'found'},
-										autonomy={'done': Autonomy.Off})
+										autonomy={'done': Autonomy.Off},
+										remapping={'area_to_search': 'area_to_search'})
 
 
 		# x:871 y:59

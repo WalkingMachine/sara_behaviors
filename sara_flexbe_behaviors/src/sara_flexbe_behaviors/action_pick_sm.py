@@ -172,9 +172,10 @@ class Action_pickSM(Behavior):
 
 			# x:31 y:133
 			OperatableStateMachine.add('Say_See_It',
-										SaraSay(sentence=lambda x: "I see the " + x.name, input_keys=Entity, emotion=0, block=True),
+										SaraSay(sentence=lambda x: "I see the " + x.name, input_keys=["Entity"], emotion=0, block=True),
 										transitions={'done': 'Look at it for 3s'},
-										autonomy={'done': Autonomy.Off})
+										autonomy={'done': Autonomy.Off},
+										remapping={'Entity': 'Entity'})
 
 
 
