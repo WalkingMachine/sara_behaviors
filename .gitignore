@@ -1,1 +1,2 @@
 regexes/graphs/dependenceGraph.plantuml
+*.pyc
