@@ -116,7 +116,7 @@ class HelpmecarrySM(Behavior):
 										remapping={'text': 'words', 'result': 'result'})
 
 
-		# x:320 y:111, x:217 y:274
+		# x:350 y:105, x:261 y:311
 		_sm_get_operator_id_1 = OperatableStateMachine(outcomes=['not_found', 'done'], output_keys=['ID'])
 
 		with _sm_get_operator_id_1:
@@ -127,7 +127,7 @@ class HelpmecarrySM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'name'})
 
-			# x:34 y:274
+			# x:37 y:347
 			OperatableStateMachine.add('setID',
 										SetRosParam(ParamName="OperatorID"),
 										transitions={'done': 'done'},
@@ -141,7 +141,7 @@ class HelpmecarrySM(Behavior):
 										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'name', 'entity_list': 'Entities_list', 'number': 'number'})
 
-			# x:30 y:186
+			# x:38 y:238
 			OperatableStateMachine.add('GetID',
 										CalculationState(calculation=lambda x: x[0].ID),
 										transitions={'done': 'setID'},
@@ -184,7 +184,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:53 y:249
 			OperatableStateMachine.add('start',
-										SaraSay(sentence="I will follow you. Tell me when to stop.", emotion=1, block=True),
+										SaraSay(sentence="I will follow you. Tell me when to stop.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
@@ -213,7 +213,7 @@ class HelpmecarrySM(Behavior):
 		with _sm_receive_bag_5:
 			# x:42 y:326
 			OperatableStateMachine.add('PutBAg',
-										SaraSay(sentence="Please put the grocery bag in my hand", emotion=1, block=False),
+										SaraSay(sentence="Please put the grocery bag in my hand", input_keys=[], emotion=1, block=False),
 										transitions={'done': 'Action_Receive_Bag'},
 										autonomy={'done': Autonomy.Off})
 
@@ -240,13 +240,13 @@ class HelpmecarrySM(Behavior):
 
 			# x:42 y:531
 			OperatableStateMachine.add('bringit',
-										SaraSay(sentence="I will bring it inside", emotion=1, block=True),
+										SaraSay(sentence="I will bring it inside", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:77 y:40
 			OperatableStateMachine.add('sac',
-										SaraSay(sentence="Ok. Tell me, when you are ready", emotion=1, block=True),
+										SaraSay(sentence="Ok. Tell me, when you are ready", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'getspeech2'},
 										autonomy={'done': Autonomy.Off})
 
@@ -282,7 +282,7 @@ class HelpmecarrySM(Behavior):
 		with _sm_get_op_7:
 			# x:76 y:40
 			OperatableStateMachine.add('Say Joke',
-										SaraSay(sentence="Can someone come help me, I only have one arm.", emotion=1, block=True),
+										SaraSay(sentence="Can someone come help me, I only have one arm.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'ecouteNewPerson'},
 										autonomy={'done': Autonomy.Off})
 
@@ -414,7 +414,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:136 y:673
 			OperatableStateMachine.add('say help',
-										SaraSay(sentence="Hi, i will help you carry some bags. LEt me know when you need me", emotion=1, block=True),
+										SaraSay(sentence="Hi, i will help you carry some bags. LEt me know when you need me", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
@@ -427,7 +427,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:137 y:460
 			OperatableStateMachine.add('say start',
-										SaraSay(sentence="", emotion=1, block=True),
+										SaraSay(sentence="", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'ActionWrapper_Move'},
 										autonomy={'done': Autonomy.Off})
 
@@ -529,7 +529,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:258 y:51
 			OperatableStateMachine.add('Arrived',
-										SaraSay(sentence="I have food, people. I will drop the bags on the floor.", emotion=1, block=True),
+										SaraSay(sentence="I have food, people. I will drop the bags on the floor.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
@@ -627,13 +627,13 @@ class HelpmecarrySM(Behavior):
 		with _state_machine:
 			# x:219 y:39
 			OperatableStateMachine.add('say ready',
-										SaraSay(sentence="I'm ready for the help me carry scenario. I will follow when you ask me.", emotion=1, block=True),
+										SaraSay(sentence="I'm ready for the help me carry scenario. I will follow when you ask me.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'INIT SARA'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:827 y:439
 			OperatableStateMachine.add('finish',
-										SaraSay(sentence="I am done for the day", emotion=2, block=True),
+										SaraSay(sentence="I am done for the day", input_keys=[], emotion=2, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
@@ -665,7 +665,7 @@ class HelpmecarrySM(Behavior):
 										autonomy={'failed': Autonomy.Inherit, 'no_object': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Idle': 'Pose_Init', 'dropPose': 'dropPose'})
 
-			# x:21 y:250
+			# x:150 y:260
 			OperatableStateMachine.add('Getting ID Operator and follow ',
 										_sm_getting_id_operator_and_follow__12,
 										transitions={'failed': 'failed', 'done': 'Recevoir sac'},
@@ -694,7 +694,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:329 y:645
 			OperatableStateMachine.add('say leave',
-										SaraSay(sentence="I will leave now. Goodbye", emotion=1, block=True),
+										SaraSay(sentence="I will leave now. Goodbye", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'ExitArena'},
 										autonomy={'done': Autonomy.Off})
 
@@ -704,7 +704,7 @@ class HelpmecarrySM(Behavior):
 										transitions={'done': 'say ready'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:41 y:95
+			# x:67 y:63
 			OperatableStateMachine.add('INIT SARA',
 										_sm_init_sara_9,
 										transitions={'done': 'Getting ID Operator and follow ', 'failed': 'failed'},
