@@ -625,7 +625,7 @@ class HelpmecarrySM(Behavior):
 
 
 		with _state_machine:
-			# x:219 y:39
+			# x:188 y:35
 			OperatableStateMachine.add('say ready',
 										SaraSay(sentence="I'm ready for the help me carry scenario. I will follow when you ask me.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'INIT SARA'},
@@ -686,7 +686,7 @@ class HelpmecarrySM(Behavior):
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'ExitDoor': 'ExitDoor'})
 
-			# x:339 y:0
+			# x:389 y:14
 			OperatableStateMachine.add('ContinueButton',
 										ContinueButton(),
 										transitions={'true': 'say ready', 'false': 'say ready'},
@@ -704,7 +704,7 @@ class HelpmecarrySM(Behavior):
 										transitions={'done': 'say ready'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:67 y:63
+			# x:35 y:78
 			OperatableStateMachine.add('INIT SARA',
 										_sm_init_sara_9,
 										transitions={'done': 'Getting ID Operator and follow ', 'failed': 'failed'},

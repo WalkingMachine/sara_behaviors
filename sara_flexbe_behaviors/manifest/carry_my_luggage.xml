@@ -14,6 +14,8 @@
 	<!-- Contained Behaviors -->
 	<contains name="Action_Receive_Bag" />
 	<contains name="Action_follow" />
+	<contains name="Action_Give_Back_Bag" />
+	<contains name="ActionWrapper_Move" />
 
 	<!-- Available Parameters -->
 
