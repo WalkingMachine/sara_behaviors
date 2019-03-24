@@ -37,13 +37,20 @@ class Filter(EventState):
     def execute(self, userdata):
         '''Execute this state'''
 
-        userdata.output_list = self.filterbyvalue(userdata.input_list,self.filter)
-        print(userdata.input_list)
-        print(userdata.output_list)
+        userdata.output_list = self.filterbyvalue(userdata.input_list, self.filter)
+
+        Logger.loginfo(str(userdata.input_list))
 
         # nothing to check
         return 'done'
 
     def filterbyvalue(self, seq, filter):
+
+        output = []
+
         for el in seq:
-            if filter(el): yield el
+            if filter(el):
+                output.append(el)
+        return output
+
+
