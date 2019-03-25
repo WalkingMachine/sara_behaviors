@@ -1,0 +1,5 @@
+simple
+dsl,test
+simple test behavior
+group ? group1 : failed
+  group1 ? done : failed
