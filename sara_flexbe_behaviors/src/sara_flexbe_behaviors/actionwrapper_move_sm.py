@@ -9,12 +9,9 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.SetKey import SetKey
-from flexbe_states.flexible_calculation_state import FlexibleCalculationState
-from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
-from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.set_a_step import Set_a_step
 from sara_flexbe_behaviors.wonderlanduniqueenity_sm import WonderlandUniqueEnitySM as sara_flexbe_behaviors__WonderlandUniqueEnitySM
+from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 from sara_flexbe_states.story import Set_Story
@@ -109,64 +106,10 @@ class ActionWrapper_MoveSM(Behavior):
 										remapping={'input_value': 'entity', 'output_value': 'area_name'})
 
 
-		# x:98 y:451
-		_sm_get_area_containers_2 = OperatableStateMachine(outcomes=['done'], input_keys=['command'], output_keys=['containers'])
-
-		with _sm_get_area_containers_2:
-			# x:46 y:31
-			OperatableStateMachine.add('Set Empty Array',
-										SetKey(Value=[]),
-										transitions={'done': 'Set initial index'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'containers'})
-
-			# x:50 y:110
-			OperatableStateMachine.add('Set initial index',
-										SetKey(Value=2),
-										transitions={'done': 'Set Loop Max'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'iLoop'})
-
-			# x:49 y:192
-			OperatableStateMachine.add('Set Loop Max',
-										CalculationState(calculation=lambda x: len(x)),
-										transitions={'done': 'Check Loop End'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'command', 'output_value': 'iLoopMax'})
-
-			# x:514 y:278
-			OperatableStateMachine.add('Increment',
-										CalculationState(calculation=lambda x: x+1),
-										transitions={'done': 'Print container array'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'iLoop', 'output_value': 'iLoop'})
-
-			# x:271 y:154
-			OperatableStateMachine.add('Add Container to Array',
-										FlexibleCalculationState(calculation=lambda x: x[2]+[ x[0][ x[1] ] ], input_keys=['command','iLoop','containers']),
-										transitions={'done': 'Increment'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'command': 'command', 'iLoop': 'iLoop', 'containers': 'containers', 'output_value': 'containers'})
-
-			# x:42 y:287
-			OperatableStateMachine.add('Check Loop End',
-										FlexibleCheckConditionState(predicate=lambda x: x[0] < x[1], input_keys=['iLoop','iLoopMax']),
-										transitions={'true': 'Add Container to Array', 'false': 'done'},
-										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-										remapping={'iLoop': 'iLoop', 'iLoopMax': 'iLoopMax'})
-
-			# x:279 y:401
-			OperatableStateMachine.add('Print container array',
-										LogKeyState(text="Containers: \n {}", severity=Logger.REPORT_HINT),
-										transitions={'done': 'Check Loop End'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'data': 'containers'})
-
-
 		# x:38 y:481, x:447 y:470, x:239 y:470
-		_sm_try_to_reach_3 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['waypoint', 'relative', 'areaName'])
+		_sm_try_to_reach_2 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['waypoint', 'relative', 'areaName'])
 
-		with _sm_try_to_reach_3:
+		with _sm_try_to_reach_2:
 			# x:40 y:98
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Try to reach/Action_Move'),
@@ -194,10 +137,10 @@ class ActionWrapper_MoveSM(Behavior):
 
 
 		# x:1620 y:109, x:1648 y:375
-		_sm_try_to_find_area_4 = OperatableStateMachine(outcomes=['found', 'not_found'], input_keys=['area_to_search', 'containers'], output_keys=['area_name', 'waypoint'])
+		_sm_try_to_find_area_3 = OperatableStateMachine(outcomes=['found', 'not_found'], input_keys=['area_to_search', 'containers'], output_keys=['area_name', 'waypoint'])
 
-		with _sm_try_to_find_area_4:
-			# x:517 y:67
+		with _sm_try_to_find_area_3:
+			# x:313 y:49
 			OperatableStateMachine.add('WonderlandUniqueEnity',
 										self.use_behavior(sara_flexbe_behaviors__WonderlandUniqueEnitySM, 'Try to find area/WonderlandUniqueEnity'),
 										transitions={'found': 'Export Waypoint', 'not_found': 'Export No Waypoint'},
@@ -218,7 +161,7 @@ class ActionWrapper_MoveSM(Behavior):
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'waipoint': 'waypoint', 'area_name': 'area_name'})
 
-			# x:117 y:146
+			# x:73 y:72
 			OperatableStateMachine.add('Set state Find Area',
 										Set_a_step(step=1),
 										transitions={'done': 'WonderlandUniqueEnity'},
@@ -233,22 +176,15 @@ class ActionWrapper_MoveSM(Behavior):
 
 
 		# x:871 y:59
-		_sm_decompose_command_5 = OperatableStateMachine(outcomes=['done'], input_keys=['command'], output_keys=['containers', 'area'])
+		_sm_decompose_command_4 = OperatableStateMachine(outcomes=['done'], input_keys=['command'], output_keys=['containers', 'area'])
 
-		with _sm_decompose_command_5:
+		with _sm_decompose_command_4:
 			# x:377 y:84
 			OperatableStateMachine.add('Get area name',
 										CalculationState(calculation=lambda x: x[1]),
-										transitions={'done': 'Get area containers'},
+										transitions={'done': 'get containers'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'command', 'output_value': 'area'})
-
-			# x:570 y:93
-			OperatableStateMachine.add('Get area containers',
-										_sm_get_area_containers_2,
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Inherit},
-										remapping={'command': 'command', 'containers': 'containers'})
 
 			# x:162 y:117
 			OperatableStateMachine.add('Set State Command',
@@ -256,19 +192,26 @@ class ActionWrapper_MoveSM(Behavior):
 										transitions={'done': 'Get area name'},
 										autonomy={'done': Autonomy.Off})
 
+			# x:561 y:108
+			OperatableStateMachine.add('get containers',
+										CalculationState(calculation=lambda x: x[2:]),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'command', 'output_value': 'containers'})
+
 
 
 		with _state_machine:
 			# x:62 y:123
 			OperatableStateMachine.add('Decompose Command',
-										_sm_decompose_command_5,
+										_sm_decompose_command_4,
 										transitions={'done': 'Try to find area'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'command': 'Action', 'containers': 'containers', 'area': 'area'})
 
 			# x:69 y:234
 			OperatableStateMachine.add('Try to find area',
-										_sm_try_to_find_area_4,
+										_sm_try_to_find_area_3,
 										transitions={'found': 'Try to reach', 'not_found': 'cause1'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'area_to_search': 'area', 'containers': 'containers', 'area_name': 'area_name', 'waypoint': 'waypoint'})
@@ -281,7 +224,7 @@ class ActionWrapper_MoveSM(Behavior):
 
 			# x:76 y:355
 			OperatableStateMachine.add('Try to reach',
-										_sm_try_to_reach_3,
+										_sm_try_to_reach_2,
 										transitions={'finished': 'finished', 'failed': 'cause2', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'waypoint': 'waypoint', 'relative': 'relative', 'areaName': 'area_name'})
