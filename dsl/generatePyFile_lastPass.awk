@@ -74,7 +74,7 @@ class "$0"SM(Behavior):\n\
             bad_child = $5
 
             print "\n\
-            # x:"181" y:"(NR-3)*60+34"\n\
+            # x:"(180+(NR*25))" y:"((NR-3)*60+34)%500"\n\
             OperatableStateMachine.add('"parent"',\n\
                                     _sm_group_0"NR-3",\n\
                                     transitions={'done': '"good_child"', 'failed': '"bad_child"'},\n\

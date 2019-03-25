@@ -1,0 +1,19 @@
+clean_up
+scenario,dsl
+Housekeeper scenario Robocup 2019
+EnterArena ? MainForLoop : failed
+MainForLoop ? GotoWhich : sayDone
+GotoWhich ? GotoLastSeenObject : GotoUnseenContainer
+GotoLastSeenObject ? GotoWhileLooking : GotoUnseenContainer
+GotoUnseenContainer ? GotoWhileLooking  : MainForLoop
+GotoWhileLooking  ? GrabClosestObject : ReturnToCenter
+GrabClosestObject ? GotoDesiredLocation : Retry3Times
+GotoDesiredLocation ? PutDownObject : AskForHelp
+PutDownObject ? ReturnToCenter : SayYouMissedYourShot
+SayYouMissedYourShot ? ReturnToCenter : ReturnToCenter
+AskForHelp ? ComplexBehaviorForDeusExMachina : ReturnToCenter
+ComplexBehaviorForDeusExMachina ? ReturnToCenter : ReturnToCenter
+Retry3Times ? GrabClosestObject : ReturnToCenter
+ReturnToCenter ? MainForLoop : SayYouLostYourWayToTheCenter
+SayYouLostYourWayToTheCenter ? ReturnToCenter : ReturnToCenter
+sayDone ? done : done
