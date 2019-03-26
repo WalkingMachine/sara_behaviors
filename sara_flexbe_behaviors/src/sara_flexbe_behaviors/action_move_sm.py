@@ -54,7 +54,7 @@ class Action_MoveSM(Behavior):
 
 	def create(self):
 		# x:765 y:155, x:755 y:568
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['pose', 'relative'])
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['pose'])
 		_state_machine.userdata.pose = 0
 		_state_machine.userdata.relative = False
 
@@ -100,9 +100,9 @@ class Action_MoveSM(Behavior):
 		_sm_move_1 = OperatableStateMachine(outcomes=['arrived', 'failed'], input_keys=['pose'])
 
 		with _sm_move_1:
-			# x:66 y:186
+			# x:95 y:122
 			OperatableStateMachine.add('move',
-										SaraMoveBase(),
+										SaraMoveBase(reference="map"),
 										transitions={'arrived': 'arrived', 'failed': 'failed'},
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'pose'})

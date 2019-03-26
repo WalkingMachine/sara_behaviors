@@ -28,7 +28,7 @@ class SaraMoveBase(EventState):
     <= failed                   Navigation to target pose failed.
     """
 
-    def __init__(self):
+    def __init__(self, reference="map"):
         """Constructor"""
 
         super(SaraMoveBase, self).__init__( outcomes=['arrived', 'failed'],
@@ -41,6 +41,7 @@ class SaraMoveBase(EventState):
         self._arrived = False
         self._failed = False
         self._pose = None
+        self.reference = reference
 
 
     def execute(self, userdata):
@@ -100,7 +101,7 @@ class SaraMoveBase(EventState):
 
         goal.target_pose.pose = pose
 
-        goal.target_pose.header.frame_id = "map"
+        goal.target_pose.header.frame_id = self.reference
         # goal.target_pose.header.stamp.secs = 5.0
 
         # Send the action goal for execution

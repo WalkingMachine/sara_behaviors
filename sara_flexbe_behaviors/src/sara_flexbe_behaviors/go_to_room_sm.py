@@ -64,7 +64,7 @@ class Go_To_RoomSM(Behavior):
 
 			# x:748 y:182
 			OperatableStateMachine.add('Move to object',
-										SaraMoveBase(),
+										SaraMoveBase(reference="map"),
 										transitions={'arrived': 'finished', 'failed': 'failed'},
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'waypoint_pose'})

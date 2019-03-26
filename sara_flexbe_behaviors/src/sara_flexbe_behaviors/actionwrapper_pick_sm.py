@@ -80,7 +80,7 @@ class ActionWrapper_PickSM(Behavior):
 		with _sm_group_0:
 			# x:30 y:40
 			OperatableStateMachine.add('move',
-										SaraMoveBase(),
+										SaraMoveBase(reference="map"),
 										transitions={'arrived': 'done', 'failed': 'done'},
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'pose_out'})
