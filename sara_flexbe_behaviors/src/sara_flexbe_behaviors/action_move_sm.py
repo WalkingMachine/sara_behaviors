@@ -11,13 +11,14 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_set_expression import SetExpression
-from flexbe_states.check_condition_state import CheckConditionState
-from sara_flexbe_states.sara_rel_move_base import SaraRelMoveBase
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.sara_set_head_angle_key import SaraSetHeadAngleKey
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.GetClosestObstacle import GetClosestObstacle
+from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
+from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerbal
+from sara_flexbe_states.GetAttribute import GetAttribute
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -96,24 +97,10 @@ class Action_MoveSM(Behavior):
 
 
 		# x:30 y:365, x:130 y:365
-		_sm_move_1 = OperatableStateMachine(outcomes=['arrived', 'failed'], input_keys=['relative', 'pose'])
+		_sm_move_1 = OperatableStateMachine(outcomes=['arrived', 'failed'], input_keys=['pose'])
 
 		with _sm_move_1:
-			# x:40 y:24
-			OperatableStateMachine.add('check rel',
-										CheckConditionState(predicate=lambda x: x==True),
-										transitions={'true': 'rel move', 'false': 'move'},
-										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
-										remapping={'input_value': 'relative'})
-
-			# x:230 y:177
-			OperatableStateMachine.add('rel move',
-										SaraRelMoveBase(),
-										transitions={'arrived': 'arrived', 'failed': 'failed'},
-										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'pose': 'pose'})
-
-			# x:249 y:28
+			# x:66 y:186
 			OperatableStateMachine.add('move',
 										SaraMoveBase(),
 										transitions={'arrived': 'arrived', 'failed': 'failed'},
@@ -121,20 +108,60 @@ class Action_MoveSM(Behavior):
 										remapping={'pose': 'pose'})
 
 
+		# x:259 y:573, x:488 y:254, x:509 y:305
+		_sm_manage_name_2 = OperatableStateMachine(outcomes=['done', 'too much', 'not found'], input_keys=['pose'], output_keys=['pose'])
+
+		with _sm_manage_name_2:
+			# x:30 y:40
+			OperatableStateMachine.add('check if Pose',
+										CheckConditionState(predicate=lambda x: type(x) is type([])),
+										transitions={'true': 'getname', 'false': 'done'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'pose'})
+
+			# x:232 y:39
+			OperatableStateMachine.add('getname',
+										CalculationState(calculation=lambda x: x[1]),
+										transitions={'done': 'getcontainers'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'pose', 'output_value': 'name'})
+
+			# x:238 y:135
+			OperatableStateMachine.add('getcontainers',
+										CalculationState(calculation=lambda x: x[2:]),
+										transitions={'done': 'get wonderland entity'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'pose', 'output_value': 'containers'})
+
+			# x:236 y:247
+			OperatableStateMachine.add('get wonderland entity',
+										WonderlandGetEntityVerbal(),
+										transitions={'one': 'get waypoint', 'multiple': 'too much', 'none': 'not found', 'error': 'not found'},
+										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
+										remapping={'name': 'name', 'containers': 'containers', 'entities': 'entities'})
+
+			# x:245 y:366
+			OperatableStateMachine.add('get waypoint',
+										GetAttribute(attributes=["waypoint"]),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'object': 'entities', 'waypoint': 'pose'})
+
+
 		# x:30 y:365, x:130 y:365, x:230 y:365, x:330 y:365, x:430 y:365
-		_sm_move_concurent_2 = ConcurrencyContainer(outcomes=['arrived', 'failed'], input_keys=['relative', 'pose'], conditions=[
+		_sm_move_concurent_3 = ConcurrencyContainer(outcomes=['arrived', 'failed'], input_keys=['pose'], conditions=[
 										('arrived', [('Move', 'arrived')]),
 										('failed', [('Move', 'failed')]),
 										('failed', [('Look around', 'failed')])
 										])
 
-		with _sm_move_concurent_2:
+		with _sm_move_concurent_3:
 			# x:30 y:40
 			OperatableStateMachine.add('Move',
 										_sm_move_1,
 										transitions={'arrived': 'arrived', 'failed': 'failed'},
 										autonomy={'arrived': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'relative': 'relative', 'pose': 'pose'})
+										remapping={'pose': 'pose'})
 
 			# x:268 y:74
 			OperatableStateMachine.add('Look around',
@@ -148,7 +175,7 @@ class Action_MoveSM(Behavior):
 			# x:54 y:27
 			OperatableStateMachine.add('SetCount',
 										SetKey(Value=2),
-										transitions={'done': 'Move concurent'},
+										transitions={'done': 'manage name'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Count'})
 
@@ -166,7 +193,7 @@ class Action_MoveSM(Behavior):
 
 			# x:582 y:558
 			OperatableStateMachine.add('sorry',
-										SaraSay(sentence="Well. It seem's I can't go there.", input_keys=[], emotion=1, block=True),
+										SaraSay(sentence="Well. It seem's I can't go there.", input_keys=[], emotion=2, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
@@ -190,10 +217,10 @@ class Action_MoveSM(Behavior):
 
 			# x:252 y:146
 			OperatableStateMachine.add('Move concurent',
-										_sm_move_concurent_2,
+										_sm_move_concurent_3,
 										transitions={'arrived': 'reset head', 'failed': 'set sad face'},
 										autonomy={'arrived': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'relative': 'relative', 'pose': 'pose'})
+										remapping={'pose': 'pose'})
 
 			# x:261 y:471
 			OperatableStateMachine.add('Count--',
@@ -209,16 +236,23 @@ class Action_MoveSM(Behavior):
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'Count'})
 
-			# x:46 y:147
-			OperatableStateMachine.add('set head',
-										SaraSetHeadAngle(pitch=0.8, yaw=0),
-										transitions={'done': 'Move concurent'},
-										autonomy={'done': Autonomy.Off})
-
 			# x:425 y:143
 			OperatableStateMachine.add('reset head',
 										SaraSetHeadAngle(pitch=0.1, yaw=0),
 										transitions={'done': 'set blink'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:269 y:21
+			OperatableStateMachine.add('manage name',
+										_sm_manage_name_2,
+										transitions={'done': 'set head', 'too much': 'sorry', 'not found': 'sorry'},
+										autonomy={'done': Autonomy.Inherit, 'too much': Autonomy.Inherit, 'not found': Autonomy.Inherit},
+										remapping={'pose': 'pose'})
+
+			# x:46 y:147
+			OperatableStateMachine.add('set head',
+										SaraSetHeadAngle(pitch=0.8, yaw=0),
+										transitions={'done': 'Move concurent'},
 										autonomy={'done': Autonomy.Off})
 
 

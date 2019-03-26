@@ -9,12 +9,7 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.set_a_step import Set_a_step
-from sara_flexbe_behaviors.wonderlanduniqueenity_sm import WonderlandUniqueEnitySM as sara_flexbe_behaviors__WonderlandUniqueEnitySM
-from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
-from sara_flexbe_states.story import Set_Story
 from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -39,7 +34,6 @@ class ActionWrapper_MoveSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__WonderlandUniqueEnitySM, 'Try to find area/WonderlandUniqueEnity')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Try to reach/Action_Move')
 
 		# Additional initialization code can be added inside the following tags
@@ -49,16 +43,13 @@ class ActionWrapper_MoveSM(Behavior):
 
 		# Behavior comments:
 
-		# O 1262 27 
+		# O 290 19 
 		# Move|n1- Location|n2- Location Container|n3- Location Container
-
-		# O 1260 94 
-		# Story|n0- Decompose Command|n1- Find Area|n2- Join Area|n3- END
 
 
 
 	def create(self):
-		# x:518 y:366, x:823 y:208, x:541 y:500
+		# x:267 y:194, x:706 y:131, x:92 y:292
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Move",'crowd']
 		_state_machine.userdata.relative = False
@@ -68,193 +59,47 @@ class ActionWrapper_MoveSM(Behavior):
 		
 		# [/MANUAL_CREATE]
 
-		# x:30 y:458
-		_sm_export_no_waypoint_0 = OperatableStateMachine(outcomes=['done'], output_keys=['waipoint', 'area_name'])
+		# x:131 y:459, x:447 y:470
+		_sm_try_to_reach_0 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Action'])
 
-		with _sm_export_no_waypoint_0:
-			# x:30 y:40
-			OperatableStateMachine.add('noWaypoint',
-										SetKey(Value=None),
-										transitions={'done': 'NoName'},
+		with _sm_try_to_reach_0:
+			# x:84 y:67
+			OperatableStateMachine.add('get destination',
+										CalculationState(calculation=lambda x: x[1:]),
+										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'waipoint'})
+										remapping={'input_value': 'Action', 'output_value': 'destination'})
 
-			# x:127 y:44
-			OperatableStateMachine.add('NoName',
-										SetKey(Value=None),
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'area_name'})
-
-
-		# x:30 y:458
-		_sm_export_waypoint_1 = OperatableStateMachine(outcomes=['done'], input_keys=['entity'], output_keys=['waipoint', 'area_name'])
-
-		with _sm_export_waypoint_1:
-			# x:58 y:107
-			OperatableStateMachine.add('Extract Wayppoint',
-										CalculationState(calculation=lambda x: x.waypoint),
-										transitions={'done': 'Extract Name'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'entity', 'output_value': 'waipoint'})
-
-			# x:67 y:257
-			OperatableStateMachine.add('Extract Name',
-										CalculationState(calculation=lambda x: x.name),
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'entity', 'output_value': 'area_name'})
-
-
-		# x:38 y:481, x:447 y:470, x:239 y:470
-		_sm_try_to_reach_2 = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['waypoint', 'relative', 'areaName'])
-
-		with _sm_try_to_reach_2:
-			# x:40 y:98
+			# x:258 y:149
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Try to reach/Action_Move'),
-										transitions={'finished': 'Say_Reached', 'failed': 'Say_not_reached'},
+										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'waypoint', 'relative': 'relative'})
-
-			# x:253 y:81
-			OperatableStateMachine.add('Set step Join Area',
-										Set_a_step(step=2),
-										transitions={'done': 'Action_Move'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:45 y:289
-			OperatableStateMachine.add('Say_Reached',
-										SaraSay(sentence=lambda x: "I have reach the " + x + "!", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:231 y:283
-			OperatableStateMachine.add('Say_not_reached',
-										SaraSay(sentence=lambda x: "I have not reach the " + x + "!", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'failed'},
-										autonomy={'done': Autonomy.Off})
-
-
-		# x:1620 y:109, x:1648 y:375
-		_sm_try_to_find_area_3 = OperatableStateMachine(outcomes=['found', 'not_found'], input_keys=['area_to_search', 'containers'], output_keys=['area_name', 'waypoint'])
-
-		with _sm_try_to_find_area_3:
-			# x:313 y:49
-			OperatableStateMachine.add('WonderlandUniqueEnity',
-										self.use_behavior(sara_flexbe_behaviors__WonderlandUniqueEnitySM, 'Try to find area/WonderlandUniqueEnity'),
-										transitions={'found': 'Export Waypoint', 'not_found': 'Export No Waypoint'},
-										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'name': 'area_to_search', 'containers': 'containers', 'entity': 'entity'})
-
-			# x:966 y:71
-			OperatableStateMachine.add('Export Waypoint',
-										_sm_export_waypoint_1,
-										transitions={'done': 'Say_Going'},
-										autonomy={'done': Autonomy.Inherit},
-										remapping={'entity': 'entity', 'waipoint': 'waypoint', 'area_name': 'area_name'})
-
-			# x:1247 y:295
-			OperatableStateMachine.add('Export No Waypoint',
-										_sm_export_no_waypoint_0,
-										transitions={'done': 'not_found'},
-										autonomy={'done': Autonomy.Inherit},
-										remapping={'waipoint': 'waypoint', 'area_name': 'area_name'})
-
-			# x:73 y:72
-			OperatableStateMachine.add('Set state Find Area',
-										Set_a_step(step=1),
-										transitions={'done': 'WonderlandUniqueEnity'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:1240 y:56
-			OperatableStateMachine.add('Say_Going',
-										SaraSay(sentence=lambda x: "I will go to the " + x + ".", input_keys=["area_to_search"], emotion=0, block=True),
-										transitions={'done': 'found'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'area_to_search': 'area_to_search'})
-
-
-		# x:871 y:59
-		_sm_decompose_command_4 = OperatableStateMachine(outcomes=['done'], input_keys=['command'], output_keys=['containers', 'area'])
-
-		with _sm_decompose_command_4:
-			# x:377 y:84
-			OperatableStateMachine.add('Get area name',
-										CalculationState(calculation=lambda x: x[1]),
-										transitions={'done': 'get containers'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'command', 'output_value': 'area'})
-
-			# x:162 y:117
-			OperatableStateMachine.add('Set State Command',
-										Set_a_step(step=0),
-										transitions={'done': 'Get area name'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:561 y:108
-			OperatableStateMachine.add('get containers',
-										CalculationState(calculation=lambda x: x[2:]),
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'command', 'output_value': 'containers'})
+										remapping={'pose': 'destination', 'relative': 'destination'})
 
 
 
 		with _state_machine:
-			# x:62 y:123
-			OperatableStateMachine.add('Decompose Command',
-										_sm_decompose_command_4,
-										transitions={'done': 'Try to find area'},
-										autonomy={'done': Autonomy.Inherit},
-										remapping={'command': 'Action', 'containers': 'containers', 'area': 'area'})
-
-			# x:69 y:234
-			OperatableStateMachine.add('Try to find area',
-										_sm_try_to_find_area_3,
-										transitions={'found': 'Try to reach', 'not_found': 'cause1'},
-										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'area_to_search': 'area', 'containers': 'containers', 'area_name': 'area_name', 'waypoint': 'waypoint'})
-
-			# x:636 y:355
-			OperatableStateMachine.add('Set Finished',
-										Set_a_step(step=3),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:76 y:355
+			# x:65 y:108
 			OperatableStateMachine.add('Try to reach',
-										_sm_try_to_reach_2,
-										transitions={'finished': 'finished', 'failed': 'cause2', 'critical_fail': 'critical_fail'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
-										remapping={'waypoint': 'waypoint', 'relative': 'relative', 'areaName': 'area_name'})
+										_sm_try_to_reach_0,
+										transitions={'finished': 'finished', 'failed': 'gen fail cause'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'Action': 'Action'})
 
-			# x:109 y:40
-			OperatableStateMachine.add('Set Wrapper Story',
-										Set_Story(titre="Move to Location", storyline=["Decompose Command","Find Area","Join Area","Finished"]),
-										transitions={'done': 'Decompose Command'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:447 y:97
-			OperatableStateMachine.add('cause1',
-										SetKey(Value="I did not found the area to reach"),
-										transitions={'done': 'paramoffailure'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'FailureCause'})
-
-			# x:616 y:159
+			# x:532 y:113
 			OperatableStateMachine.add('paramoffailure',
 										SetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'FailureCause'})
 
-			# x:452 y:235
-			OperatableStateMachine.add('cause2',
-										SetKey(Value="I am unable to go to the place"),
+			# x:290 y:110
+			OperatableStateMachine.add('gen fail cause',
+										CalculationState(calculation=lambda x: "I couldn't reach the "+x[1]+"."),
 										transitions={'done': 'paramoffailure'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'FailureCause'})
+										remapping={'input_value': 'Action', 'output_value': 'FailureCause'})
 
 
 		return _state_machine
