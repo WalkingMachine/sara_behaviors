@@ -3,6 +3,7 @@
         }
 
         NR==1{
+            count=1;
             print "#!/usr/bin/env python\n\
 # -*- coding: utf-8 -*- \n\
 ###########################################################\n\
@@ -68,18 +69,23 @@ class "$0"SM(Behavior):\n\
         }
 
 # /.* \? .* (: .*)?/
-        NR>3{
+        NR>3 && $0!~/^\s*#/{
             parent =$1
             good_child = $3
             bad_child = $5
 
+            if($5~/^\s*$/){
+                bad_child=$3;
+            }
+
             print "\n\
-            # x:"(180+(NR*25))" y:"((NR-3)*60+34)%500"\n\
+            # x:"(180+(count*25))" y:"(count*60+34)%1000"\n\
             OperatableStateMachine.add('"parent"',\n\
-                                    _sm_group_0"NR-3",\n\
+                                    _sm_group_0"count",\n\
                                     transitions={'done': '"good_child"', 'failed': '"bad_child"'},\n\
                                     autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},\n\
                                     remapping={'input_value': 'input_value'})";
+            count++;
         }
 
         END{

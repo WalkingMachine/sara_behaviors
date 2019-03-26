@@ -7,8 +7,9 @@ else
     manifestPath=$2"/"
     behaviorPath=$3"/"
 fi
-echo $manifestPath$(head -1  $1| sed 's/\(.*\)/\L\1/').xml
-echo $behaviorPath$(head -1  $1| sed 's/\(.*\)/\L\1/')_sm.py
-gawk -f genManifest.awk $1 > $manifestPath$(head -1  $1| sed 's/\(.*\)/\L\1/').xml
-lineCount=$(wc -l $1 | awk '{print $1}')
-gawk -f generatePyFile_lastPass.awk -v lineCount=$lineCount $1 > $behaviorPath$(head -1  $1| sed 's/\(.*\)/\L\1/')_sm.py
+name=$( head -1  $1| sed 's/\(.*\)/\L\1/');
+echo $manifestPath$name".xml"
+echo $behaviorPath$name"_sm.py"
+gawk -f genManifest.awk $1 > $manifestPath$name".xml"
+lineCount=$(sed '/^\s*#$/d;/^\s*$/d' $1 | wc -l);
+gawk -f generatePyFile_lastPass.awk -v lineCount=$lineCount $1 > $behaviorPath$name"_sm.py"
