@@ -51,7 +51,7 @@ class ActionWrapper_MoveSM(Behavior):
 	def create(self):
 		# x:267 y:194, x:706 y:131, x:92 y:292
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
-		_state_machine.userdata.Action = ["Move",'crowd']
+		_state_machine.userdata.Action = ["Move","zone"]
 		_state_machine.userdata.relative = False
 
 		# Additional creation code can be added inside the following tags
@@ -75,7 +75,7 @@ class ActionWrapper_MoveSM(Behavior):
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Try to reach/Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'destination', 'relative': 'destination'})
+										remapping={'pose': 'destination'})
 
 
 
