@@ -36,13 +36,14 @@ class GetClosestObstacle(EventState):
 
         msg = self._sub.get_last_msg(self._topic)
         # print(str(msg))
+        if msg:
+            for range in msg.ranges:
+                if range < previousMinimum and range > 0.4:
+                    previousMinimum = range
+                    Angle = msg.angle_min + i * msg.angle_increment
+                i += 1
 
-        for range in msg.ranges:
-            if range < previousMinimum and range > 0.4:
-                previousMinimum = range
-                Angle = msg.angle_min + i * msg.angle_increment
-            i += 1
+            Logger.loginfo("closest obstacle is at "+str(Angle)+" and "+str(previousMinimum))
 
-        Logger.loginfo("closest obstacle is at "+str(Angle)+" and "+str(previousMinimum))
         userdata.Angle = max(min(Angle, 1.8), -1.8)
         return "done"
