@@ -12,7 +12,7 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="ActionWrapper_Move" />
+	<contains name="Action_Move" />
 
 	<!-- Available Parameters -->
 
