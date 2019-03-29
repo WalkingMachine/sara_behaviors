@@ -55,7 +55,7 @@ class Action_MoveSM(Behavior):
 	def create(self):
 		# x:860 y:152, x:755 y:568
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['pose'])
-		_state_machine.userdata.pose = ["room"]
+		_state_machine.userdata.pose = "room"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -107,14 +107,14 @@ class Action_MoveSM(Behavior):
 										remapping={'pose': 'pose'})
 
 
-		# x:259 y:573, x:488 y:254, x:509 y:305
+		# x:259 y:573, x:491 y:362, x:491 y:453
 		_sm_manage_name_2 = OperatableStateMachine(outcomes=['done', 'too much', 'not found'], input_keys=['pose'], output_keys=['pose', 'name'])
 
 		with _sm_manage_name_2:
-			# x:38 y:163
+			# x:39 y:48
 			OperatableStateMachine.add('check if Pose',
-										CheckConditionState(predicate=lambda x: type(x) is type([]) or type(x) is type("")),
-										transitions={'true': 'getname', 'false': 'done'},
+										CheckConditionState(predicate=lambda x: type(x) is type([])),
+										transitions={'true': 'check if string', 'false': 'done'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'pose'})
 
@@ -145,6 +145,27 @@ class Action_MoveSM(Behavior):
 										transitions={'done': 'getcontainers'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'pose', 'output_value': 'name'})
+
+			# x:336 y:46
+			OperatableStateMachine.add('check if string',
+										CheckConditionState(predicate=lambda x: type(x) is type("")),
+										transitions={'true': 'remap to name', 'false': 'getname'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'pose'})
+
+			# x:435 y:172
+			OperatableStateMachine.add('remap to name',
+										CalculationState(calculation=lambda x: x),
+										transitions={'done': 'set containers empty'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'pose', 'output_value': 'name'})
+
+			# x:431 y:270
+			OperatableStateMachine.add('set containers empty',
+										SetKey(Value=[]),
+										transitions={'done': 'get wonderland entity'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'containers'})
 
 
 		# x:30 y:365, x:130 y:365, x:230 y:365, x:330 y:365, x:430 y:365
