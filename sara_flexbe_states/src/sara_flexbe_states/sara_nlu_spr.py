@@ -26,7 +26,10 @@ class SaraNLUspr(EventState):
         serviceName = "/answer_question"
 
         Logger.loginfo("waiting forservice: " + serviceName)
-        rospy.wait_for_service(serviceName)
+        try:
+            rospy.wait_for_service(serviceName, 1)
+        except:
+            Logger.logwarn("No nlu for you today!")
 
         self.service = rospy.ServiceProxy(serviceName, AnswerQuestion)
 

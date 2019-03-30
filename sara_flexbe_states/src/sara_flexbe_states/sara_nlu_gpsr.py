@@ -29,7 +29,10 @@ class SaraNLUgpsr(EventState):
         self.serviceName = "/gpsr_receive_action"
 
         Logger.loginfo("waiting forservice: " + self.serviceName)
-        rospy.wait_for_service(self.serviceName)
+        try:
+            rospy.wait_for_service(self.serviceName, 1)
+        except:
+            Logger.logwarn("No nlu for you today!")
 
     def execute(self, userdata):
 

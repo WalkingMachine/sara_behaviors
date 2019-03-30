@@ -38,29 +38,30 @@ class SetGripperState(EventState):
         self._connected  = False
 
         self._topic = '/sara_gripper_action_controller/gripper_cmd/goal'
-        self._topic_f = '/sara_gripper_action_controller/gripper_cmd/result'
+        self._topic_result = '/sara_gripper_action_controller/gripper_cmd/result'
 
         self._pub = ProxyPublisher({self._topic: GripperCommandActionGoal})
 
-        (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic_f)
-        if msg_topic == self._topic_f:
+        (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic_result)
+        if msg_topic == self._topic_result:
             msg_type = self._get_msg_from_path(msg_path)
-            self._sub = ProxySubscriberCached({self._topic_f: msg_type})
+            self._sub = ProxySubscriberCached({self._topic_result: msg_type})
             self._connected = True
 
-            Logger.loginfo('connecting marker state to '+self._topic_f)
+            Logger.loginfo('connecting marker state to ' + self._topic_result)
         else:
-            Logger.logwarn('Topic %s for state %s not yet available.\nFound: %s\nWill try again when entering the state...' % (self._topic_f, self.name, str(msg_topic)))
+            Logger.logwarn('Topic %s for state %s not yet available.\nFound: %s\nWill try again when entering the state...' % (self._topic_result, self.name, str(msg_topic)))
 
     def execute(self, userdata):
 
         if not self._connected:
+            userdata.object_size = 0
             return 'no_object'
 
-        if self._sub.has_msg(self._topic_f):
-            message = self._sub.get_last_msg(self._topic_f)
+        if self._sub.has_msg(self._topic_result):
+            message = self._sub.get_last_msg(self._topic_result)
             size = message.result.position
-            self._sub.remove_last_msg(self._topic_f)
+            self._sub.remove_last_msg(self._topic_result)
             userdata.object_size = size
             if abs( size-self.width) > 0.006:
                 return 'object'
@@ -74,15 +75,16 @@ class SetGripperState(EventState):
         self._pub.publish(self._topic, msg)
 
         if not self._connected:
-            (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic_f)
-            if msg_topic == self._topic_f:
+            (msg_path, msg_topic, fn) = rostopic.get_topic_type(self._topic_result)
+            if msg_topic == self._topic_result:
                 msg_type = self._get_msg_from_path(msg_path)
-                self._sub = ProxySubscriberCached({self._topic_f: msg_type})
+                self._sub = ProxySubscriberCached({self._topic_result: msg_type})
                 self._connected = True
-                Logger.loginfo('Successfully subscribed to previously unavailable topic %s' % self._topic_f)
+                Logger.loginfo('Successfully subscribed to previously unavailable topic %s' % self._topic_result)
+                self._sub.remove_last_msg(self._topic_result)
             else:
-                Logger.logwarn('Topic %s still not available, giving up.' % self._topic_f)
-        self._sub.remove_last_msg(self._topic_f)
+                Logger.logwarn('Topic %s still not available, giving up.' % self._topic_result)
+
 
     def _get_msg_from_path(self, msg_path):
         msg_import = msg_path.split('/')

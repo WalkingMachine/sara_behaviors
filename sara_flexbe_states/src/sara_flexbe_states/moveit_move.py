@@ -22,80 +22,95 @@ class MoveitMove(EventState):
         super(MoveitMove, self).__init__(outcomes=['done', 'failed'], input_keys=['target'])
         self.move = move
         self.waitForExecution = waitForExecution
-        self.group = MoveGroupCommander(group)
         self.tol = 0.06
         self.result = None
         self.count = 0
         self.countlimit = 0
 
+        self._active = True
+        try:
+            self.group = MoveGroupCommander(group)
+        except:
+            self._active = False
+
     def execute(self, userdata):
-
-        if self.result:
-            return self.result
-
-        if self.waitForExecution:
-            curState = self.group.get_current_joint_values()
-            diff = compareStates(curState, self.endState)
-            print("diff="+str(diff))
-            if diff < self.tol:
-                self.count += 1
-                if self.count > 3:
-                    Logger.loginfo('Target reached :)')
-                    return "done"
+        if self._active:
+    
+            if self.result:
+                return self.result
+    
+            if self.waitForExecution:
+                curState = self.group.get_current_joint_values()
+                diff = compareStates(curState, self.endState)
+                print("diff="+str(diff))
+                if diff < self.tol:
+                    self.count += 1
+                    if self.count > 3:
+                        Logger.loginfo('Target reached :)')
+                        return "done"
+                else:
+                    self.count = 0
             else:
-                self.count = 0
+                return "done"
         else:
             return "done"
+            
 
     def on_enter(self, userdata):
         Logger.loginfo('Enter Move Arm')
+        if self._active:
 
-        if type(userdata.target) is Pose:
-            Logger.loginfo('the target is a pose')
-            self.group.set_pose_target(userdata.target)
-        elif type(userdata.target) is Point:
-            Logger.loginfo('the target is a point')
-            xyz = [userdata.target.x, userdata.target.y, userdata.target.z]
-            self.group.set_position_target(xyz)
-        elif type(userdata.target) is str:
-            Logger.loginfo('the target is a named_target')
-            self.group.set_named_target(userdata.target)
-        else:
-            Logger.loginfo('ERROR in ' + str(self.name) + ' : target is not a Pose() nor a Point() nor a string')
-            self.result = 'failed'
+            if type(userdata.target) is Pose:
+                Logger.loginfo('the target is a pose')
+                self.group.set_pose_target(userdata.target)
+            elif type(userdata.target) is Point:
+                Logger.loginfo('the target is a point')
+                xyz = [userdata.target.x, userdata.target.y, userdata.target.z]
+                self.group.set_position_target(xyz)
+            elif type(userdata.target) is str:
+                Logger.loginfo('the target is a named_target')
+                self.group.set_named_target(userdata.target)
+            else:
+                Logger.loginfo('ERROR in ' + str(self.name) + ' : target is not a Pose() nor a Point() nor a string')
+                self.result = 'failed'
 
-        Logger.loginfo('target defined')
-        try:
-            plan = self.group.plan()
-            Logger.loginfo(str(plan))
-            # Logger.loginfo(str(plan.joint_trajectory.points))
-            self.endState = plan.joint_trajectory.points[len(plan.joint_trajectory.points)-1].positions
-            Logger.loginfo(str(self.endState))
-        except:
-            Logger.loginfo('Planning failed')
-            self.result = 'failed'
-            return
+            Logger.loginfo('target defined')
+            try:
+                plan = self.group.plan()
+                Logger.loginfo(str(plan))
+                # Logger.loginfo(str(plan.joint_trajectory.points))
+                self.endState = plan.joint_trajectory.points[len(plan.joint_trajectory.points)-1].positions
+                Logger.loginfo(str(self.endState))
+            except:
+                Logger.loginfo('Planning failed')
+                self.result = 'failed'
+                return
 
-        Logger.loginfo('Plan done successfully')
-        if self.move:
-            Logger.loginfo('Initiating movement')
-            self.group.execute(plan, wait=False)
-            if not self.waitForExecution:
+            Logger.loginfo('Plan done successfully')
+            if self.move:
+                Logger.loginfo('Initiating movement')
+                self.group.execute(plan, wait=False)
+                if not self.waitForExecution:
+                    self.result = "done"
+            else:
+                Logger.loginfo('The target is reachable')
                 self.result = "done"
         else:
-            Logger.loginfo('The target is reachable')
-            self.result = "done"
+            Logger.logwarn("Simulation mode! Let's assume the arm hat moved properly.")
 
     def on_exit(self, userdata):
-        Logger.loginfo('Stoping movement')
-        self.group.stop()
+        if self._active:
+            Logger.loginfo('Stoping movement')
+            self.group.stop()
 
     def on_pause(self):
-        Logger.loginfo('Pausing movement')
-        self.group.stop()
+        if self._active:
+            Logger.loginfo('Pausing movement')
+            self.group.stop()
 
     def on_resume(self, userdata):
-        self.on_enter(userdata)
+        if self._active:
+            self.on_enter(userdata)
 
 
 def compareStates(state1, state2):

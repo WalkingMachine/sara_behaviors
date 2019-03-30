@@ -31,20 +31,29 @@ class Get_direction_to_point(EventState):
         self.service.reference = frame_reference
         self.service.origine = frame_origin
 
+        self.serviceName = '/get_direction'
         Logger.loginfo('waiting for service /get_direction')
-        rospy.wait_for_service('/get_direction')    #Attend que le service soit disopnible
+
+        self._active = True
+        self.serv = rospy.ServiceProxy(self.serviceName, get_direction)
+        try:
+            self.serv.wait_for_service(1)
+        except:
+            self._active = False
+
+    def on_enter(self, userdata):
+        if self._active:
+            self.service.point = userdata.targetPoint
+            resp = self.serv(self.service)
+
+            userdata.yaw = resp.yaw
+            userdata.pitch = resp.pitch
+
+            Logger.loginfo('Angle retrieved')
+        else:
+            userdata.yaw = 0
+            userdata.pitch = 0
+
 
     def execute(self, userdata):
-        """Wait for action result and return outcome accordingly"""
-
-        #rospy.wait_for_service('/get_direction')
-        serv = rospy.ServiceProxy('/get_direction', get_direction)
-        self.service.point = userdata.targetPoint
-        resp = serv(self.service)
-
-        userdata.yaw = resp.yaw
-        userdata.pitch = resp.pitch
-
-        Logger.loginfo('Angle retrieved')
-
         return 'done'
