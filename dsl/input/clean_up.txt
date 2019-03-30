@@ -1,19 +1,31 @@
 clean_up
 scenario,dsl
 Housekeeper scenario Robocup 2019
-EnterArena ? MainForLoop : failed
-MainForLoop ? GotoWhich : sayDone
-GotoWhich ? GotoLastSeenObject : GotoUnseenContainer
-GotoLastSeenObject ? GotoWhileLooking : GotoUnseenContainer
-GotoUnseenContainer ? GotoWhileLooking  : MainForLoop
-GotoWhileLooking  ? GrabClosestObject : ReturnToCenter
-GrabClosestObject ? GotoDesiredLocation : Retry3Times
-GotoDesiredLocation ? PutDownObject : AskForHelp
-PutDownObject ? ReturnToCenter : SayYouMissedYourShot
-SayYouMissedYourShot ? ReturnToCenter : ReturnToCenter
-AskForHelp ? ComplexBehaviorForDeusExMachina : ReturnToCenter
-ComplexBehaviorForDeusExMachina ? ReturnToCenter : ReturnToCenter
-Retry3Times ? GrabClosestObject : ReturnToCenter
-ReturnToCenter ? MainForLoop : SayYouLostYourWayToTheCenter
-SayYouLostYourWayToTheCenter ? ReturnToCenter : ReturnToCenter
+ #Début du scénario
+EnterArena ? MainLoop : failed
+MainLoop ? hasSeenObject 
+hasSeenObject ? GetLastSeenObject : hasContainerLeft
+hasContainerLeft ? GetUnseenContainer : sayDone
+# Get Position to go to
+GetLastSeenObject ? GotoWhileLooking : GetUnseenContainer
+GetUnseenContainer ? GotoWhileLooking : continueLoop
+# Go to Position
+GotoWhileLooking ? ScanContainer : continueLoop
+# Look For object in container according to type [cupboard, table, chair]
+ScanContainer ? GrabClosestObject : continueLoop
+# Try to Grab using appropriate technique (known obj vs. unknown obj)
+GrabClosestObject ? GotoDesiredContainer : Retry3Times
+# Go to Container associated with type of object
+GotoDesiredContainer ? PutDownObject : AskForHelp
+#Put Object on desired container
+PutDownObject ? continueLoop : SayYouMissedYourShot
+#
+# Following lines need to be synced with latest execution flow diagram on drive
+#
+SayYouMissedYourShot ? continueLoop : continueLoop
+AskForHelp ? ComplexBehaviorForDeusExMachina : continueLoop
+ComplexBehaviorForDeusExMachina ? continueLoop : continueLoop
+Retry3Times ? GrabClosestObject : continueLoop
+continueLoop ? MainLoop : SayYouLostYourWayToTheCenter
+SayYouLostYourWayToTheCenter ? continueLoop : continueLoop
 sayDone ? done : done
