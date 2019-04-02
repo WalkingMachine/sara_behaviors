@@ -55,7 +55,8 @@ class Action_MoveSM(Behavior):
 	def create(self):
 		# x:860 y:152, x:755 y:568
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['pose'])
-		_state_machine.userdata.pose = "room"
+		_state_machine.userdata.pose = "crowd"
+		_state_machine.userdata.name = "destination"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -114,7 +115,7 @@ class Action_MoveSM(Behavior):
 			# x:39 y:48
 			OperatableStateMachine.add('check if Pose',
 										CheckConditionState(predicate=lambda x: type(x) is type([])),
-										transitions={'true': 'check if string', 'false': 'done'},
+										transitions={'true': 'getname', 'false': 'check if string'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'pose'})
 
@@ -146,21 +147,21 @@ class Action_MoveSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'pose', 'output_value': 'name'})
 
-			# x:336 y:46
+			# x:42 y:180
 			OperatableStateMachine.add('check if string',
 										CheckConditionState(predicate=lambda x: type(x) is type("")),
-										transitions={'true': 'remap to name', 'false': 'getname'},
+										transitions={'true': 'remap to name', 'false': 'done'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'pose'})
 
-			# x:435 y:172
+			# x:40 y:251
 			OperatableStateMachine.add('remap to name',
 										CalculationState(calculation=lambda x: x),
 										transitions={'done': 'set containers empty'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'pose', 'output_value': 'name'})
 
-			# x:431 y:270
+			# x:30 y:326
 			OperatableStateMachine.add('set containers empty',
 										SetKey(Value=[]),
 										transitions={'done': 'get wonderland entity'},
@@ -255,7 +256,7 @@ class Action_MoveSM(Behavior):
 										_sm_manage_name_2,
 										transitions={'done': 'set head', 'too much': 'say too much', 'not found': 'say not known'},
 										autonomy={'done': Autonomy.Inherit, 'too much': Autonomy.Inherit, 'not found': Autonomy.Inherit},
-										remapping={'pose': 'pose', 'name': 'poseName'})
+										remapping={'pose': 'pose', 'name': 'name'})
 
 			# x:46 y:147
 			OperatableStateMachine.add('set head',
@@ -268,14 +269,14 @@ class Action_MoveSM(Behavior):
 										SaraSay(sentence=lambda x: "There is more than one "+x[0]+".", input_keys=["poseName"], emotion=3, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'poseName': 'poseName'})
+										remapping={'poseName': 'name'})
 
 			# x:445 y:418
 			OperatableStateMachine.add('say not known',
 										SaraSay(sentence=lambda x: "I don't know where the "+x[0]+" is.", input_keys=["poseName"], emotion=0, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'poseName': 'poseName'})
+										remapping={'poseName': 'name'})
 
 
 		return _state_machine
