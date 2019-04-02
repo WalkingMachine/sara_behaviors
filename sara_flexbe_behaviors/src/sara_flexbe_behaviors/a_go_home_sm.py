@@ -8,7 +8,6 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
@@ -57,30 +56,16 @@ class AGoHomeSM(Behavior):
 
 
 		with _state_machine:
-			# x:32 y:36
-			OperatableStateMachine.add('set not rel',
-										SetKey(Value=False),
-										transitions={'done': 'say home'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'relative'})
-
-			# x:32 y:160
-			OperatableStateMachine.add('gen origin',
-										GenPoseEuler(x=0, y=0, z=0, roll=0, pitch=0, yaw=0),
-										transitions={'done': 'Action_Move'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose': 'pose'})
+			# x:40 y:96
+			OperatableStateMachine.add('say home',
+										SaraSay(sentence="I'm going back home.", input_keys=[], emotion=1, block=False),
+										transitions={'done': 'gen origin'},
+										autonomy={'done': Autonomy.Off})
 
 			# x:41 y:338
 			OperatableStateMachine.add('docked',
-										SaraSay(sentence="Docking sequence initiated. Locking safety clamps. This robot will stay there as long as needed.", emotion=1, block=True),
+										SaraSay(sentence="Docking sequence initiated. Locking safety clamps. This robot will stay there as long as needed.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:40 y:96
-			OperatableStateMachine.add('say home',
-										SaraSay(sentence="I'm going back home.", emotion=1, block=False),
-										transitions={'done': 'gen origin'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:30 y:238
@@ -88,7 +73,14 @@ class AGoHomeSM(Behavior):
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move'),
 										transitions={'finished': 'docked', 'failed': 'Action_Move'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'pose', 'relative': 'relative'})
+										remapping={'pose': 'pose'})
+
+			# x:32 y:160
+			OperatableStateMachine.add('gen origin',
+										GenPoseEuler(x=0, y=0, z=0, roll=0, pitch=0, yaw=0),
+										transitions={'done': 'Action_Move'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'pose': 'pose'})
 
 
 		return _state_machine
