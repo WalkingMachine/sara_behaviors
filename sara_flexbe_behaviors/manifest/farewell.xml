@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Farewell">
+
+	<executable package_path="sara_flexbe_behaviors.farewell_sm" class="FarewellSM" />
+	<tagstring>Party Host</tagstring>
+	<author>Huynh-Anh Le</author>
+	<date>Mon Mar 18 2019</date>
+	<description>
+		Some guests are tired, so they call the robot to retrieve their coat.  It’s raining outside and thereis only one umbrella, so the robot takes the guests one by one to their cab and returns with theumbrella
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Sara_Init" />
+	<contains name="ActionWrapper_Move" />
+
+	<!-- Available Parameters -->
+
+</behavior>
