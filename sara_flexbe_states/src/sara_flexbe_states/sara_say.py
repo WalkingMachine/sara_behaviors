@@ -42,7 +42,8 @@ class SaraSay(EventState):
         # Get parameters
         self.msg = say()
         self.sentence = sentence
-        self.emotion = emotion
+        self.emotion = UInt8()
+        self.emotion.data = emotion
         self.block = block
 
         # Set topics
@@ -84,14 +85,14 @@ class SaraSay(EventState):
             return 'done'
 
     def on_enter(self, userdata):
-        if self.emotion is not 0:
+        if self.emotion.data is not 0:
             # Save the previous emotion so we can place it back later
             if self.block and self.emotionSub.has_msg(self.emotion_topic):
                 self.lastEmotion = self.emotionSub.get_last_msg(self.emotion_topic)
                 self.emotionSub.remove_last_msg(self.emotion_topic)
 
             # Set the emotion
-            self.emotionPub.publish(self.emotion)
+            self.emotionPub.publish(self.emotion_topic, self.emotion)
 
         # Set the message according to the lambda function if needed.
         if isinstance(self.sentence, types.LambdaType) and self.sentence.__name__ == "<lambda>":
@@ -110,7 +111,7 @@ class SaraSay(EventState):
         self.maxBlockCount = 30
 
     def on_exit(self, userdata):
-        if self.block and self.emotion is not 0:
+        if self.block and self.emotion.data is not 0:
             # Put the original emotion back
             if self.lastEmotion:
-                self.emotionPub.publish(self.lastEmotion)
+                self.emotionPub.publish(self.emotion_topic, self.lastEmotion)

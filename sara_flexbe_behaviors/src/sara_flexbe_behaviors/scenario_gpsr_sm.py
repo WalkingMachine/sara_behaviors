@@ -8,21 +8,19 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_states.moveit_move import MoveitMove
-from sara_flexbe_states.story import Set_Story
-from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerbal
 from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as sara_flexbe_behaviors__Action_Pass_DoorSM
-from flexbe_states.calculation_state import CalculationState
+from sara_flexbe_states.story import Set_Story
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.set_a_step import Set_a_step
+from sara_flexbe_states.moveit_move import MoveitMove
+from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
+from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_behaviors.action_executor_sm import Action_ExecutorSM as sara_flexbe_behaviors__Action_ExecutorSM
 from sara_flexbe_states.StoryboardSetStepKey import StoryboardSetStepKey
 from sara_flexbe_states.GetRosParam import GetRosParam
-from sara_flexbe_states.sara_say_key import SaraSayKey
-from sara_flexbe_behaviors.actionwrapper_move_sm import ActionWrapper_MoveSM as sara_flexbe_behaviors__ActionWrapper_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.sara_nlu_gpsr import SaraNLUgpsr
 from sara_flexbe_states.get_speech import GetSpeech
@@ -58,9 +56,9 @@ class Scenario_GPSRSM(Behavior):
 		# references to used behaviors
 		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Initialisation/Action_Pass_Door')
 		self.add_behavior(sara_flexbe_behaviors__Action_ExecutorSM, 'Do the actions/Action_Executor')
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_MoveSM, 'Fail state/ActionWrapper_Move')
+		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Fail state/Action_Move')
 		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'End/Action_Pass_Door')
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_MoveSM, 'ActionWrapper_Move')
+		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -74,7 +72,7 @@ class Scenario_GPSRSM(Behavior):
 	def create(self):
 		# x:391 y:586, x:438 y:304
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
-		_state_machine.userdata.ActionGoToStart = ["Move", "Operator"]
+		_state_machine.userdata.StartPosition = "Operator"
 		_state_machine.userdata.PositionBras = "IdlePose"
 		_state_machine.userdata.title = "GPSR"
 		_state_machine.userdata.EntryName = "door1/enter"
@@ -89,17 +87,10 @@ class Scenario_GPSRSM(Behavior):
 		_sm_validate_0 = OperatableStateMachine(outcomes=['done', 'bad'], input_keys=['sentence'])
 
 		with _sm_validate_0:
-			# x:30 y:40
-			OperatableStateMachine.add('say command',
-										SaraSayKey(Format=lambda x: "I heard. " +x+ ". Is that correct?", emotion=1, block=True),
+			# x:56 y:62
+			OperatableStateMachine.add('Say_Command',
+										SaraSay(sentence=lambda x: "I heard. " +x+ ". Is that correct?", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'get speech'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'sentence'})
-
-			# x:423 y:332
-			OperatableStateMachine.add('say repeate',
-										SaraSay(sentence="Please, repeat your command.", emotion=1, block=True),
-										transitions={'done': 'bad'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:44 y:165
@@ -115,6 +106,12 @@ class Scenario_GPSRSM(Behavior):
 										transitions={'true': 'done', 'false': 'say repeate'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'words'})
+
+			# x:423 y:332
+			OperatableStateMachine.add('say repeate',
+										SaraSay(sentence="Please, repeat your command.", input_keys=[], emotion=1, block=True),
+										transitions={'done': 'bad'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:30 y:324
@@ -156,7 +153,7 @@ class Scenario_GPSRSM(Behavior):
 		with _sm_get_commands_2:
 			# x:50 y:48
 			OperatableStateMachine.add('say ready',
-										SaraSay(sentence="I'm ready for your commands.", emotion=1, block=False),
+										SaraSay(sentence="I'm ready for your commands.", input_keys=[], emotion=1, block=False),
 										transitions={'done': 'GetSpeech'},
 										autonomy={'done': Autonomy.Off})
 
@@ -169,13 +166,13 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:597 y:223
 			OperatableStateMachine.add('say sorry',
-										SaraSay(sentence="Sorry, I could not understand what you said.", emotion=1, block=True),
+										SaraSay(sentence="Sorry, I could not understand what you said.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'GetSpeech'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:30 y:491
 			OperatableStateMachine.add('say understood',
-										SaraSay(sentence="Ok", emotion=1, block=True),
+										SaraSay(sentence="Ok", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'understood'},
 										autonomy={'done': Autonomy.Off})
 
@@ -194,47 +191,26 @@ class Scenario_GPSRSM(Behavior):
 										remapping={'sentence': 'sentence'})
 
 
-		# x:97 y:612
+		# x:122 y:413
 		_sm_end_3 = OperatableStateMachine(outcomes=['done'], input_keys=['ExitName'])
 
 		with _sm_end_3:
 			# x:30 y:40
 			OperatableStateMachine.add('win',
-										SaraSay(sentence="Thank you. I'm going now.", emotion=1, block=True),
-										transitions={'done': 'set cont'},
+										SaraSay(sentence="Thank you. I'm going now.", input_keys=[], emotion=1, block=True),
+										transitions={'done': 'Action_Pass_Door'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:186 y:221
-			OperatableStateMachine.add('get exit',
-										WonderlandGetEntityVerbal(),
-										transitions={'one': 'get exit pose', 'multiple': 'get exit pose', 'none': 'get exit pose', 'error': 'get exit pose'},
-										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'name': 'ExitName', 'containers': 'containers', 'entities': 'entities'})
-
-			# x:197 y:337
-			OperatableStateMachine.add('get exit pose',
-										CalculationState(calculation=lambda x: x.waypoint),
-										transitions={'done': 'Action_Pass_Door'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'entities', 'output_value': 'pose'})
-
-			# x:166 y:436
+			# x:33 y:163
 			OperatableStateMachine.add('Action_Pass_Door',
 										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'End/Action_Pass_Door'),
 										transitions={'Done': 'say yay', 'Fail': 'done'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
-										remapping={'DoorPose1': 'pose'})
+										remapping={'DoorName': 'ExitName'})
 
-			# x:209 y:59
-			OperatableStateMachine.add('set cont',
-										SetKey(Value=""),
-										transitions={'done': 'get exit'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'containers'})
-
-			# x:191 y:570
+			# x:210 y:262
 			OperatableStateMachine.add('say yay',
-										SaraSay(sentence="I did it. I'm the best robot.", emotion=1, block=True),
+										SaraSay(sentence="I did it. I'm the best robot.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
@@ -261,36 +237,35 @@ class Scenario_GPSRSM(Behavior):
 										autonomy={'fail': Autonomy.Inherit})
 
 
-		# x:356 y:519, x:581 y:195
-		_sm_fail_state_5 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['ActionGoToStart'])
+		# x:325 y:387, x:314 y:190
+		_sm_fail_state_5 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['StartPosition'])
 
 		with _sm_fail_state_5:
 			# x:36 y:29
 			OperatableStateMachine.add('say failed',
-										SaraSay(sentence="I failed. I'm going back to tell my master.", emotion=1, block=True),
-										transitions={'done': 'ActionWrapper_Move'},
+										SaraSay(sentence="I failed. I'm going back to tell my master.", input_keys=[], emotion=1, block=True),
+										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:22 y:505
+			# x:42 y:301
 			OperatableStateMachine.add('get error',
 										GetRosParam(ParamName="behavior/GPSR/CauseOfFailure"),
-										transitions={'done': 'say error', 'failed': 'finished'},
+										transitions={'done': 'Say_Error', 'failed': 'finished'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'Error'})
 
-			# x:110 y:584
-			OperatableStateMachine.add('say error',
-										SaraSayKey(Format=lambda x: "Sorry, I failed because "+x, emotion=1, block=True),
+			# x:48 y:414
+			OperatableStateMachine.add('Say_Error',
+										SaraSay(sentence=lambda x: "Sorry, I failed because "+x, input_keys=[], emotion=0, block=True),
 										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'Error'})
+										autonomy={'done': Autonomy.Off})
 
-			# x:21 y:163
-			OperatableStateMachine.add('ActionWrapper_Move',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_MoveSM, 'Fail state/ActionWrapper_Move'),
-										transitions={'finished': 'get error', 'failed': 'failed', 'critical_fail': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
-										remapping={'Action': 'ActionGoToStart'})
+			# x:25 y:172
+			OperatableStateMachine.add('Action_Move',
+										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Fail state/Action_Move'),
+										transitions={'finished': 'get error', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'pose': 'StartPosition'})
 
 
 		# x:588 y:141, x:590 y:545, x:642 y:410
@@ -340,68 +315,41 @@ class Scenario_GPSRSM(Behavior):
 										remapping={'step': 'index'})
 
 
-		# x:371 y:386
+		# x:424 y:175
 		_sm_initialisation_7 = OperatableStateMachine(outcomes=['done'], input_keys=['PositionBras', 'EntryName'])
 
 		with _sm_initialisation_7:
-			# x:47 y:25
-			OperatableStateMachine.add('set container',
-										SetKey(Value=None),
-										transitions={'done': 'get entry door'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'containers'})
+			# x:62 y:79
+			OperatableStateMachine.add('Action_Pass_Door',
+										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Initialisation/Action_Pass_Door'),
+										transitions={'Done': 'set step', 'Fail': 'done'},
+										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
+										remapping={'DoorName': 'EntryName'})
 
-			# x:135 y:523
-			OperatableStateMachine.add('bras en lair',
-										MoveitMove(move=True, waitForExecution=False, group="RightArm"),
-										transitions={'done': 'say start', 'failed': 'say start'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'PositionBras'})
-
-			# x:33 y:516
+			# x:70 y:306
 			OperatableStateMachine.add('set story',
 										Set_Story(titre="GPSR", storyline=[]),
 										transitions={'done': 'bras en lair'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:31 y:119
-			OperatableStateMachine.add('get entry door',
-										WonderlandGetEntityVerbal(),
-										transitions={'one': 'get pos', 'multiple': 'get pos', 'none': 'say no entry', 'error': 'say no entry'},
-										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'name': 'EntryName', 'containers': 'containers', 'entities': 'entitie'})
-
-			# x:30 y:317
-			OperatableStateMachine.add('Action_Pass_Door',
-										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Initialisation/Action_Pass_Door'),
-										transitions={'Done': 'set step', 'Fail': 'done'},
-										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
-										remapping={'DoorPose1': 'pose'})
-
-			# x:54 y:248
-			OperatableStateMachine.add('get pos',
-										CalculationState(calculation=lambda x: x.waypoint),
-										transitions={'done': 'Action_Pass_Door'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'entitie', 'output_value': 'pose'})
-
-			# x:284 y:527
+			# x:288 y:375
 			OperatableStateMachine.add('say start',
-										SaraSay(sentence="I'm ready to start the GPSR scenario.", emotion=1, block=True),
+										SaraSay(sentence="I'm ready to start the GPSR scenario.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:273 y:103
-			OperatableStateMachine.add('say no entry',
-										SaraSay(sentence="Wait. There is no entry door? What!", emotion=1, block=True),
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:45 y:425
+			# x:78 y:205
 			OperatableStateMachine.add('set step',
 										Set_a_step(step=0),
 										transitions={'done': 'set story'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:101 y:395
+			OperatableStateMachine.add('bras en lair',
+										MoveitMove(move=True, waitForExecution=False, group="RightArm"),
+										transitions={'done': 'say start', 'failed': 'say start'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'PositionBras'})
 
 
 
@@ -409,7 +357,7 @@ class Scenario_GPSRSM(Behavior):
 			# x:33 y:103
 			OperatableStateMachine.add('Initialisation',
 										_sm_initialisation_7,
-										transitions={'done': 'ActionWrapper_Move'},
+										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'PositionBras': 'PositionBras', 'EntryName': 'EntryName'})
 
@@ -420,16 +368,16 @@ class Scenario_GPSRSM(Behavior):
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical fail': Autonomy.Inherit},
 										remapping={'ActionForms': 'ActionForms', 'OriginalPose': 'OriginalPose'})
 
-			# x:376 y:115
+			# x:250 y:126
 			OperatableStateMachine.add('Fail state',
 										_sm_fail_state_5,
 										transitions={'finished': 'lift head', 'failed': 'critical'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'ActionGoToStart': 'ActionGoToStart'})
+										remapping={'StartPosition': 'StartPosition'})
 
 			# x:250 y:257
 			OperatableStateMachine.add('critical',
-										SaraSay(sentence="Critical failure! I require medical assistance.", emotion=1, block=True),
+										SaraSay(sentence="Critical failure! I require medical assistance.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
@@ -442,7 +390,7 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:747 y:475
 			OperatableStateMachine.add('say succseed',
-										SaraSay(sentence="I succeed my mission.", emotion=1, block=True),
+										SaraSay(sentence="I succeed my mission.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'for 3'},
 										autonomy={'done': Autonomy.Off})
 
@@ -492,12 +440,12 @@ class Scenario_GPSRSM(Behavior):
 										transitions={'true': 'Initialisation', 'false': 'Initialisation'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
 
-			# x:17 y:201
-			OperatableStateMachine.add('ActionWrapper_Move',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_MoveSM, 'ActionWrapper_Move'),
-										transitions={'finished': 'lift head', 'failed': 'critical', 'critical_fail': 'critical'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
-										remapping={'Action': 'ActionGoToStart'})
+			# x:21 y:185
+			OperatableStateMachine.add('Action_Move',
+										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move'),
+										transitions={'finished': 'lift head', 'failed': 'critical'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'pose': 'StartPosition'})
 
 
 		return _state_machine

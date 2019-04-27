@@ -8,13 +8,13 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_behaviors.actionwrapper_move_sm import ActionWrapper_MoveSM as sara_flexbe_behaviors__ActionWrapper_MoveSM
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.cupboard_door_detector import CupboardDoorDetector
+from flexbe_states.calculation_state import CalculationState
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.run_trajectory import RunTrajectory
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -38,7 +38,7 @@ class Action_OpenCupboardSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_MoveSM, 'GetToCupboard/ActionWrapper_Move')
+		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -92,19 +92,19 @@ class Action_OpenCupboardSM(Behavior):
 
 			# x:53 y:179
 			OperatableStateMachine.add('saytryagain',
-										SaraSay(sentence="Let's try again!", emotion=1, block=True),
+										SaraSay(sentence="Let's try again!", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'movearm'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:44 y:438
 			OperatableStateMachine.add('say cant',
-										SaraSay(sentence="I can't open it.", emotion=2, block=True),
+										SaraSay(sentence="I can't open it.", input_keys=[], emotion=2, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:455 y:40
 			OperatableStateMachine.add('yay',
-										SaraSay(sentence="Yay, I did it!", emotion=1, block=True),
+										SaraSay(sentence="Yay, I did it!", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
@@ -115,43 +115,18 @@ class Action_OpenCupboardSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:424 y:237, x:424 y:103
-		_sm_gettocupboard_1 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['name'])
-
-		with _sm_gettocupboard_1:
-			# x:64 y:49
-			OperatableStateMachine.add('genAction',
-										CalculationState(calculation=lambda x: ["move", x]),
-										transitions={'done': 'ActionWrapper_Move'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'name', 'output_value': 'Action'})
-
-			# x:51 y:148
-			OperatableStateMachine.add('ActionWrapper_Move',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_MoveSM, 'GetToCupboard/ActionWrapper_Move'),
-										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
-										remapping={'Action': 'Action'})
-
-
 
 		with _state_machine:
-			# x:337 y:18
-			OperatableStateMachine.add('GetToCupboard',
-										_sm_gettocupboard_1,
+			# x:310 y:31
+			OperatableStateMachine.add('Action_Move',
+										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move'),
 										transitions={'finished': 'reach', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'name': 'name'})
-
-			# x:320 y:485
-			OperatableStateMachine.add('OpenIt',
-										_sm_openit_0,
-										transitions={'finished': 'finished', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+										remapping={'pose': 'name'})
 
 			# x:326 y:351
 			OperatableStateMachine.add('sayWillOpen',
-										SaraSay(sentence="The door is closed. I will open it.", emotion=1, block=True),
+										SaraSay(sentence="The door is closed. I will open it.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'OpenIt'},
 										autonomy={'done': Autonomy.Off})
 
@@ -163,9 +138,15 @@ class Action_OpenCupboardSM(Behavior):
 
 			# x:338 y:126
 			OperatableStateMachine.add('reach',
-										SaraSay(sentence="I reached the cupboard!", emotion=1, block=True),
+										SaraSay(sentence="I reached the cupboard!", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'checkdoor'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:320 y:485
+			OperatableStateMachine.add('OpenIt',
+										_sm_openit_0,
+										transitions={'finished': 'finished', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 
 		return _state_machine

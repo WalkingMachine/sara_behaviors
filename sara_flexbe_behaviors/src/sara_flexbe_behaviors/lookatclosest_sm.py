@@ -11,6 +11,7 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.KeepLookingAt import KeepLookingAt
+from flexbe_states.wait_state import WaitState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -48,12 +49,32 @@ class LookAtClosestSM(Behavior):
 		# x:30 y:365
 		_state_machine = OperatableStateMachine(outcomes=['failed'])
 		_state_machine.userdata.ObjectName = "person"
-		_state_machine.userdata.ID = 2314
+		_state_machine.userdata.ID = 0
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
 		
 		# [/MANUAL_CREATE]
+
+		# x:30 y:365, x:130 y:365
+		_sm_keeplookingforatime_0 = ConcurrencyContainer(outcomes=['failed'], input_keys=['ID'], conditions=[
+										('failed', [('keep looking', 'failed'), ('wait 3', 'done')])
+										])
+
+		with _sm_keeplookingforatime_0:
+			# x:210 y:103
+			OperatableStateMachine.add('wait 3',
+										WaitState(wait_time=3),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:37 y:128
+			OperatableStateMachine.add('keep looking',
+										KeepLookingAt(),
+										transitions={'failed': 'failed'},
+										autonomy={'failed': Autonomy.Off},
+										remapping={'ID': 'ID'})
+
 
 
 		with _state_machine:
@@ -67,15 +88,15 @@ class LookAtClosestSM(Behavior):
 			# x:296 y:131
 			OperatableStateMachine.add('getclosest',
 										CalculationState(calculation=lambda x: x[0].ID),
-										transitions={'done': 'keep looking'},
+										transitions={'done': 'KeepLookingForATime'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'entity_list', 'output_value': 'ID'})
 
-			# x:207 y:231
-			OperatableStateMachine.add('keep looking',
-										KeepLookingAt(),
+			# x:220 y:258
+			OperatableStateMachine.add('KeepLookingForATime',
+										_sm_keeplookingforatime_0,
 										transitions={'failed': 'list'},
-										autonomy={'failed': Autonomy.Off},
+										autonomy={'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
 

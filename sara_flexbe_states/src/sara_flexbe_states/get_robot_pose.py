@@ -31,7 +31,9 @@ class Get_Robot_Pose(EventState):
         '''
 
         mypose = userdata.pose = self._sub.get_last_msg(self._topic)
-        Logger.loginfo('my pose is:'+str(mypose))
-        userdata.pose = mypose
-        #self._sub.remove_last_msg(self._topic)
-        return 'done'
+        if mypose:
+            Logger.loginfo('my pose is:'+str(mypose))
+            userdata.pose = mypose
+        else:
+            userdata.pose = Pose()
+            return 'done'

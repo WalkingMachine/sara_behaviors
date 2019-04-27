@@ -11,7 +11,6 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from sara_flexbe_states.GetRosParam import GetRosParam
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_behaviors.action_pick_sm import Action_pickSM as sara_flexbe_behaviors__Action_pickSM
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
@@ -46,7 +45,6 @@ class ActionWrapper_PickSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-
 		self.add_behavior(sara_flexbe_behaviors__Action_pickSM, 'Action_pick')
 		self.add_behavior(sara_flexbe_behaviors__Action_findSM, 'Action_find')
 
@@ -63,7 +61,7 @@ class ActionWrapper_PickSM(Behavior):
 
 
 	def create(self):
-		# x:629 y:497, x:880 y:203, x:715 y:440
+		# x:660 y:509, x:880 y:203, x:715 y:440
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Action'])
 		_state_machine.userdata.Action = ["Pick","bottle"]
 
@@ -82,7 +80,7 @@ class ActionWrapper_PickSM(Behavior):
 		with _sm_group_0:
 			# x:30 y:40
 			OperatableStateMachine.add('move',
-										SaraMoveBase(),
+										SaraMoveBase(reference="map"),
 										transitions={'arrived': 'done', 'failed': 'done'},
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'pose_out'})
@@ -105,43 +103,43 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'target'})
 
-			# x:117 y:355
+			# x:88 y:374
 			OperatableStateMachine.add('set dist',
 										SetKey(Value=0.8),
 										transitions={'done': 'get close pos'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'distance'})
 
-			# x:13 y:461
+			# x:26 y:448
 			OperatableStateMachine.add('get close pos',
 										Get_Reacheable_Waypoint(),
 										transitions={'done': 'Group'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose_in': 'Pos', 'distance': 'distance', 'pose_out': 'pose_out'})
 
-			# x:31 y:201
+			# x:47 y:213
 			OperatableStateMachine.add('get pos',
 										CalculationState(calculation=lambda x: x.position),
 										transitions={'done': 'move head'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Object', 'output_value': 'Pos'})
 
-			# x:110 y:285
+			# x:88 y:290
 			OperatableStateMachine.add('move head',
 										SaraSetHeadAngle(pitch=0.7, yaw=0),
 										transitions={'done': 'set dist'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:189 y:143
+			# x:201 y:156
 			OperatableStateMachine.add('move arm',
 										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
 										transitions={'done': 'get pos', 'failed': 'get pos'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'target'})
 
-			# x:209 y:36
+			# x:60 y:106
 			OperatableStateMachine.add('say closer',
-										SaraSay(sentence="I need to get a bit closer.", emotion=1, block=False),
+										SaraSay(sentence="I need to get a bit closer.", input_keys=[], emotion=1, block=False),
 										transitions={'done': 'move arm'},
 										autonomy={'done': Autonomy.Off})
 
@@ -159,14 +157,14 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:59 y:308, x:387 y:59, x:384 y:139
+		# x:59 y:308, x:447 y:59, x:384 y:162
 		_sm_check_form_2 = OperatableStateMachine(outcomes=['done', 'fail_full', 'full_no_object'], input_keys=['Action'])
 
 		with _sm_check_form_2:
 			# x:31 y:40
 			OperatableStateMachine.add('check if gripper full',
 										GetRosParam(ParamName="behavior/Gripper_Content"),
-										transitions={'done': 'say full', 'failed': 'cond'},
+										transitions={'done': 'Say_Full', 'failed': 'cond'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'Value': 'ObjectInGripper'})
 
@@ -179,16 +177,15 @@ class ActionWrapper_PickSM(Behavior):
 
 			# x:222 y:119
 			OperatableStateMachine.add('not told',
-										SaraSay(sentence="Hum! They didn't told me what to pick", emotion=1, block=True),
+										SaraSay(sentence="Hum! They didn't told me what to pick", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'full_no_object'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:213 y:43
-			OperatableStateMachine.add('say full',
-										SaraSayKey(Format=lambda x: "Wait. There is already a "+ x + "in my gripper.", emotion=1, block=True),
+			# x:242 y:31
+			OperatableStateMachine.add('Say_Full',
+										SaraSay(sentence=lambda x: "Wait. There is already a "+ x + "in my gripper.", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'fail_full'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'ObjectInGripper'})
+										autonomy={'done': Autonomy.Off})
 
 
 
@@ -200,26 +197,17 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Inherit, 'fail_full': Autonomy.Inherit, 'full_no_object': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
 
-			# x:31 y:493
+			# x:28 y:452
 			OperatableStateMachine.add('Action_pick',
 										self.use_behavior(sara_flexbe_behaviors__Action_pickSM, 'Action_pick'),
-										transitions={'success': 'got it', 'unreachable': 'for 1', 'not found': 'say lost', 'dropped': 'say missed'},
+										transitions={'success': 'Got_It', 'unreachable': 'for 1', 'not found': 'Say_lost', 'dropped': 'say missed'},
 										autonomy={'success': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not found': Autonomy.Inherit, 'dropped': Autonomy.Inherit},
 										remapping={'objectID': 'ID'})
-
-			# x:271 y:440
-			OperatableStateMachine.add('say lost',
-										SaraSayKey(Format=lambda x: "Hum! I lost sight of the "+x, emotion=1, block=True),
-										transitions={'done': 'cause4'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'ObjectName'})
 
 			# x:261 y:239
 			OperatableStateMachine.add('Get closer',
 										_sm_get_closer_1,
-
 										transitions={'done': 'Action_find'},
-
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'Object': 'Object'})
 
@@ -230,26 +218,19 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
-			# x:396 y:318
+			# x:416 y:264
 			OperatableStateMachine.add('say giveup',
-										SaraSay(sentence="I give up", emotion=1, block=True),
+										SaraSay(sentence="I give up", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'cause4'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:271 y:502
+			# x:284 y:496
 			OperatableStateMachine.add('say missed',
-										SaraSay(sentence="Oops! I missed.", emotion=1, block=True),
+										SaraSay(sentence="Oops! I missed.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'cause4'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:273 y:564
-			OperatableStateMachine.add('got it',
-										SaraSayKey(Format=lambda x: "I have the "+x, emotion=1, block=True),
-										transitions={'done': 'set param'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'ObjectName'})
-
-			# x:443 y:497
+			# x:469 y:495
 			OperatableStateMachine.add('set param',
 										SetRosParam(ParamName="behavior/GripperContent"),
 										transitions={'done': 'finished'},
@@ -291,13 +272,12 @@ class ActionWrapper_PickSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'Key'})
 
-			# x:527 y:315
+			# x:605 y:312
 			OperatableStateMachine.add('cause4',
 										SetKey(Value="I was unable to pick the object."),
 										transitions={'done': 'setrosparam'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Key'})
-
 
 			# x:30 y:188
 			OperatableStateMachine.add('Action_find',
@@ -312,6 +292,18 @@ class ActionWrapper_PickSM(Behavior):
 										transitions={'done': 'Action_pick'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Object', 'output_value': 'ID'})
+
+			# x:284 y:422
+			OperatableStateMachine.add('Say_lost',
+										SaraSay(sentence=lambda x: "Hum! I lost sight of the "+x, input_keys=[], emotion=0, block=True),
+										transitions={'done': 'cause4'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:281 y:572
+			OperatableStateMachine.add('Got_It',
+										SaraSay(sentence=lambda x: "I have the "+x, input_keys=[], emotion=0, block=True),
+										transitions={'done': 'set param'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

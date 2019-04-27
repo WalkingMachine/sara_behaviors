@@ -16,7 +16,6 @@ from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as sara_flexbe_behaviors__Action_findPersonSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -64,7 +63,7 @@ class Action_Guide2SM(Behavior):
 
 
 	def create(self):
-		# x:1023 y:473, x:791 y:291, x:797 y:103
+		# x:666 y:331, x:502 y:199, x:797 y:103
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed', 'critical_fail'], input_keys=['Position', 'ID'])
 		_state_machine.userdata.relative = False
 		_state_machine.userdata.Position = 0
@@ -142,7 +141,7 @@ class Action_Guide2SM(Behavior):
 										transitions={'done': 'wait wait wait'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:271 y:711
+			# x:262 y:652
 			OperatableStateMachine.add('wait wait wait',
 										WaitState(wait_time=10),
 										transitions={'done': 'head left right'},
@@ -380,23 +379,9 @@ class Action_Guide2SM(Behavior):
 			# x:186 y:130
 			OperatableStateMachine.add('Container',
 										_sm_container_7,
-										transitions={'finished': 'Say reached', 'failed': 'Say not reached', 'check': 'say check'},
+										transitions={'finished': 'Say_Reached', 'failed': 'say_not_reached', 'check': 'say check'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'check': Autonomy.Inherit},
 										remapping={'waypoint': 'waypoint'})
-
-			# x:106 y:453
-			OperatableStateMachine.add('Say reached',
-										SaraSayKey(Format=lambda x: "I have reach the destination", emotion=1, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'ID'})
-
-			# x:516 y:463
-			OperatableStateMachine.add('Say not reached',
-										SaraSayKey(Format=lambda x: "I have not reach the destination", emotion=1, block=True),
-										transitions={'done': 'failed'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'ID'})
 
 			# x:581 y:163
 			OperatableStateMachine.add('check person behind',
@@ -407,20 +392,32 @@ class Action_Guide2SM(Behavior):
 
 			# x:706 y:484
 			OperatableStateMachine.add('say lost',
-										SaraSay(sentence="Oh no! I lost my operator!", emotion=1, block=True),
+										SaraSay(sentence="Oh no! I lost my operator!", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:445 y:69
 			OperatableStateMachine.add('say check',
-										SaraSay(sentence="I check if my operator is still there", emotion=1, block=True),
+										SaraSay(sentence="I check if my operator is still there", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'check person behind'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:443 y:187
 			OperatableStateMachine.add('say found',
-										SaraSay(sentence="Great. You are still there.", emotion=1, block=True),
+										SaraSay(sentence="Great. You are still there.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Container'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:520 y:409
+			OperatableStateMachine.add('say_not_reached',
+										SaraSay(sentence=lambda x: "I have not reach the destination", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:139 y:339
+			OperatableStateMachine.add('Say_Reached',
+										SaraSay(sentence=lambda x: "I have reach the destination", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
 
@@ -461,19 +458,19 @@ class Action_Guide2SM(Behavior):
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
-			# x:347 y:370
+			# x:290 y:324
 			OperatableStateMachine.add('say lost operator',
-										SaraSay(sentence="I have reach my goal but I lost the person I was guiding.", emotion=1, block=True),
+										SaraSay(sentence="I have reach my goal but I lost the person I was guiding.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:43 y:214
 			OperatableStateMachine.add('sayfollowme',
-										SaraSay(sentence="Follow me please.", emotion=1, block=True),
+										SaraSay(sentence="Follow me please.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Try to reach'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:808 y:451
+			# x:413 y:441
 			OperatableStateMachine.add('head to middle',
 										SaraSetHeadAngle(pitch=0, yaw=0),
 										transitions={'done': 'finished'},
@@ -486,13 +483,13 @@ class Action_Guide2SM(Behavior):
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'waypoint': 'Position', 'relative': 'relative', 'ID': 'ID'})
 
-			# x:513 y:74
+			# x:443 y:95
 			OperatableStateMachine.add('Cant Find Person',
-										SaraSay(sentence="I can't find a person.", emotion=1, block=True),
+										SaraSay(sentence="I can't find a person.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:220 y:76
+			# x:201 y:57
 			OperatableStateMachine.add('Action_findPerson',
 										self.use_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Action_findPerson'),
 										transitions={'done': 'sayfollowme', 'pas_done': 'Cant Find Person'},

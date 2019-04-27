@@ -13,7 +13,6 @@ from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.WonderlandGetPersonStat import WonderlandGetPersonStat
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
-from sara_flexbe_states.sara_say_key import SaraSayKey
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetRosParamKey import SetRosParamKey
 from flexbe_states.log_key_state import LogKeyState
@@ -163,7 +162,7 @@ class Scenario_SPRSM(Behavior):
 		with _sm_nlu_2:
 			# x:156 y:37
 			OperatableStateMachine.add('say ask',
-										SaraSay(sentence="You can ask me your questions.", emotion=1, block=True),
+										SaraSay(sentence="You can ask me your questions.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Loop Questions'},
 										autonomy={'done': Autonomy.Off})
 
@@ -177,16 +176,9 @@ class Scenario_SPRSM(Behavior):
 			# x:1324 y:110
 			OperatableStateMachine.add('Engine',
 										SaraNLUspr(),
-										transitions={'understood': 'Say Answer', 'not_understood': 'Listen', 'fail': 'Listen'},
+										transitions={'understood': 'Say_Answer', 'not_understood': 'Listen', 'fail': 'Listen'},
 										autonomy={'understood': Autonomy.Off, 'not_understood': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'sentence': 'sentence', 'answer': 'answer'})
-
-			# x:698 y:218
-			OperatableStateMachine.add('Say Answer',
-										SaraSayKey(Format=lambda x: str(x), emotion=1, block=True),
-										transitions={'done': 'Loop Questions'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'answer'})
 
 			# x:632 y:77
 			OperatableStateMachine.add('Select Story',
@@ -210,7 +202,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:439 y:252
 			OperatableStateMachine.add('Say Blind Game',
-										SaraSay(sentence="Let's play the blind game !", emotion=1, block=True),
+										SaraSay(sentence="Let's play the blind game !", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Loop Questions'},
 										autonomy={'done': Autonomy.Off})
 
@@ -220,6 +212,12 @@ class Scenario_SPRSM(Behavior):
 										transitions={'do': 'Say Blind Game', 'end': 'finished'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
+
+			# x:721 y:205
+			OperatableStateMachine.add('Say_Answer',
+										SaraSay(sentence=lambda x: str(x), input_keys=[], emotion=0, block=True),
+										transitions={'done': 'Loop Questions'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:817 y:123, x:130 y:458
@@ -294,7 +292,7 @@ class Scenario_SPRSM(Behavior):
 		with _sm_join_area_5:
 			# x:95 y:40
 			OperatableStateMachine.add('Say Join Area',
-										SaraSay(sentence="I will join the playing room !", emotion=1, block=True),
+										SaraSay(sentence="I will join the playing room !", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Join Arena'},
 										autonomy={'done': Autonomy.Off})
 
@@ -312,7 +310,7 @@ class Scenario_SPRSM(Behavior):
 		with _sm_waiting_and_turn_6:
 			# x:50 y:51
 			OperatableStateMachine.add('Want Play',
-										SaraSay(sentence="Hum, I want to play riddles !", emotion=1, block=True),
+										SaraSay(sentence="Hum, I want to play riddles !", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Wait 10s'},
 										autonomy={'done': Autonomy.Off})
 
@@ -325,7 +323,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:437 y:240
 			OperatableStateMachine.add('Cant turn',
-										SaraSay(sentence="I can't turn !", emotion=1, block=True),
+										SaraSay(sentence="I can't turn !", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
@@ -370,7 +368,7 @@ class Scenario_SPRSM(Behavior):
 		with _sm_find_operator_8:
 			# x:51 y:40
 			OperatableStateMachine.add('Ask Player',
-										SaraSay(sentence="Who wan't to play with me ?", emotion=1, block=True),
+										SaraSay(sentence="Who wan't to play with me ?", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Wait Operator'},
 										autonomy={'done': Autonomy.Off})
 
@@ -428,37 +426,35 @@ class Scenario_SPRSM(Behavior):
 
 			# x:466 y:46
 			OperatableStateMachine.add('Nobody',
-										SaraSay(sentence="There is nobody here !", emotion=1, block=True),
+										SaraSay(sentence="There is nobody here !", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:181 y:285
+			# x:162 y:243
 			OperatableStateMachine.add('GenerateSentence',
 										FlexibleCalculationState(calculation=lambda x: "There is " + str(x[0]+x[1]+x[2]) + " persons.", input_keys=['men','women','others']),
-										transitions={'done': 'Tell Stats'},
+										transitions={'done': 'Tell_Stats'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'men': 'men', 'women': 'women', 'others': 'others', 'output_value': 'sentence'})
-
-			# x:441 y:188
-			OperatableStateMachine.add('Tell Stats',
-										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
-										transitions={'done': 'Generate Sentence 2'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'sentence'})
 
 			# x:151 y:345
 			OperatableStateMachine.add('Generate Sentence 2',
 										FlexibleCalculationState(calculation=lambda x: "I recognize " + str(x[1]) + " women and " + str(x[0]) + " men.", input_keys=['men','women','others']),
-										transitions={'done': 'Tell Stats 2'},
+										transitions={'done': 'Tell_Stats 2'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'men': 'men', 'women': 'women', 'others': 'others', 'output_value': 'sentence'})
 
-			# x:443 y:246
-			OperatableStateMachine.add('Tell Stats 2',
-										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
+			# x:380 y:172
+			OperatableStateMachine.add('Tell_Stats',
+										SaraSay(sentence=lambda x: x, input_keys=[], emotion=0, block=True),
+										transitions={'done': 'Generate Sentence 2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:409 y:276
+			OperatableStateMachine.add('Tell_Stats 2',
+										SaraSay(sentence=lambda x: x, input_keys=[], emotion=0, block=True),
 										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'sentence'})
+										autonomy={'done': Autonomy.Off})
 
 
 
@@ -548,7 +544,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:1302 y:140
 			OperatableStateMachine.add('Say And Of Game',
-										SaraSay(sentence="The game is finished. I will leave the arena. Thank you for playing with me.", emotion=1, block=True),
+										SaraSay(sentence="The game is finished. I will leave the arena. Thank you for playing with me.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Leave Arena'},
 										autonomy={'done': Autonomy.Off})
 

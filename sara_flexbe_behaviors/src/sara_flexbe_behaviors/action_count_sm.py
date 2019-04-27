@@ -14,7 +14,7 @@ from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.wait_state import WaitState
-from sara_flexbe_states.sara_say_key import SaraSayKey
+from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_behaviors.action_turn_sm import action_turnSM as sara_flexbe_behaviors__action_turnSM
 from sara_flexbe_states.SetRosParam import SetRosParam
@@ -63,7 +63,7 @@ class Action_countSM(Behavior):
         
         # [/MANUAL_CREATE]
 
-		# x:687 y:347
+		# x:756 y:397
 		_sm_move_head_0 = OperatableStateMachine(outcomes=['finished'], input_keys=['className', 'Count'], output_keys=['Count'])
 
 		with _sm_move_head_0:
@@ -145,47 +145,44 @@ class Action_countSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Count': 'Count', 'number': 'number', 'output_value': 'Count'})
 
-			# x:70 y:497
-			OperatableStateMachine.add('say1',
-										SaraSayKey(Format=lambda x: x, emotion=1, block=False),
-										transitions={'done': 'set center'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'text'})
-
 			# x:30 y:412
 			OperatableStateMachine.add('gen text',
 										FlexibleCalculationState(calculation=lambda x: "I see "+ str(x[0])+ " "+ str(x[1]), input_keys=["number", "classname"]),
-										transitions={'done': 'say1'},
+										transitions={'done': 'say_1'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'number': 'number', 'classname': 'className', 'output_value': 'text'})
 
 			# x:253 y:392
 			OperatableStateMachine.add('geb text 2',
 										FlexibleCalculationState(calculation=lambda x: "I see "+ str(x[0])+ " "+ str(x[1]), input_keys=["number", "classname"]),
-										transitions={'done': 'say2'},
+										transitions={'done': 'sara_2'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'number': 'number', 'classname': 'className', 'output_value': 'text'})
-
-			# x:282 y:480
-			OperatableStateMachine.add('say2',
-										SaraSayKey(Format=lambda x: x, emotion=1, block=False),
-										transitions={'done': 'set right'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'text'})
 
 			# x:461 y:405
 			OperatableStateMachine.add('gen text3',
 										FlexibleCalculationState(calculation=lambda x: "I see "+ str(x[0])+ " "+ str(x[1]), input_keys=["number", "classname"]),
-										transitions={'done': 'say 3'},
+										transitions={'done': 'Say_3'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'number': 'number', 'classname': 'className', 'output_value': 'text'})
 
-			# x:499 y:479
-			OperatableStateMachine.add('say 3',
-										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
+			# x:53 y:492
+			OperatableStateMachine.add('say_1',
+										SaraSay(sentence=lambda x: x, input_keys=[], emotion=0, block=True),
+										transitions={'done': 'set center'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:264 y:471
+			OperatableStateMachine.add('sara_2',
+										SaraSay(sentence=lambda x: x, input_keys=[], emotion=0, block=True),
+										transitions={'done': 'set right'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:486 y:485
+			OperatableStateMachine.add('Say_3',
+										SaraSay(sentence=lambda x: x, input_keys=[], emotion=0, block=True),
 										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'text'})
+										autonomy={'done': Autonomy.Off})
 
 
 
@@ -248,16 +245,15 @@ class Action_countSM(Behavior):
 			# x:400 y:114
 			OperatableStateMachine.add('concat',
 										FlexibleCalculationState(calculation=lambda x: "I counted "+str(x[0])+" "+str(x[1])+".", input_keys=["Count", "className"]),
-										transitions={'done': 'say Count'},
+										transitions={'done': 'say_count'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Count': 'Count', 'className': 'className', 'output_value': 'Text'})
 
-			# x:432 y:182
-			OperatableStateMachine.add('say Count',
-										SaraSayKey(Format=lambda x: x, emotion=1, block=True),
+			# x:419 y:186
+			OperatableStateMachine.add('say_count',
+										SaraSay(sentence=lambda x: x, input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Look Center Found'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'sentence': 'Text'})
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

@@ -22,7 +22,6 @@ class Get_direction_to_point(EventState):
     '''
 
 
-
     def __init__(self, frame_origin, frame_reference):
         '''
         Constructor
