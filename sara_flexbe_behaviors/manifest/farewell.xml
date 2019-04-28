@@ -13,7 +13,7 @@
 
 	<!-- Contained Behaviors -->
 	<contains name="Sara_Init" />
-	<contains name="ActionWrapper_Move" />
+	<contains name="Action_Move" />
 
 	<!-- Available Parameters -->
 
