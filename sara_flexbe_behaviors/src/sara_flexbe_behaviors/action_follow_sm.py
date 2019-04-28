@@ -51,21 +51,51 @@ Demande le id de la personne a suivre
 	def create(self):
 		# x:572 y:135
 		_state_machine = OperatableStateMachine(outcomes=['failed'], input_keys=['ID'])
-		_state_machine.userdata.ID = 20
+		_state_machine.userdata.ID = 4
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
         
         # [/MANUAL_CREATE]
 
-		# x:30 y:365
+		# x:19 y:459
 		_sm_delai_0 = OperatableStateMachine(outcomes=['finished'])
 
 		with _sm_delai_0:
-			# x:129 y:168
-			OperatableStateMachine.add('delay',
-										WaitState(wait_time=25),
+			# x:167 y:26
+			OperatableStateMachine.add('say lost',
+										SaraSay(sentence="Sorry, I lost you.", input_keys=[], emotion=0, block=False),
+										transitions={'done': 'delay'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:167 y:190
+			OperatableStateMachine.add('say wait',
+										SaraSay(sentence=" Please wait for me!", input_keys=[], emotion=0, block=False),
+										transitions={'done': 'delay2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:161 y:362
+			OperatableStateMachine.add('say face 2',
+										SaraSay(sentence="Make sure to let me see your face, please.", input_keys=[], emotion=0, block=False),
+										transitions={'done': 'delay3'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:173 y:278
+			OperatableStateMachine.add('delay2',
+										WaitState(wait_time=4),
+										transitions={'done': 'say face 2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:169 y:448
+			OperatableStateMachine.add('delay3',
+										WaitState(wait_time=10),
 										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:176 y:108
+			OperatableStateMachine.add('delay',
+										WaitState(wait_time=5),
+										transitions={'done': 'say wait'},
 										autonomy={'done': Autonomy.Off})
 
 
@@ -181,19 +211,13 @@ Demande le id de la personne a suivre
 			# x:231 y:115
 			OperatableStateMachine.add('look',
 										KeepLookingAt(),
-										transitions={'failed': 'sorry'},
+										transitions={'failed': 'Find back'},
 										autonomy={'failed': Autonomy.Off},
 										remapping={'ID': 'ID'})
 
-			# x:470 y:272
-			OperatableStateMachine.add('sorry',
-										SaraSay(sentence="Sorry, I lost you. Please wait for me! Make sure to let me see your face, please.", emotion=1, block=False),
-										transitions={'done': 'Find back'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:103 y:276
+			# x:78 y:199
 			OperatableStateMachine.add('Found you',
-										SaraSay(sentence="Here you are!", emotion=1, block=False),
+										SaraSay(sentence="Here you are!", input_keys=[], emotion=1, block=False),
 										transitions={'done': 'look'},
 										autonomy={'done': Autonomy.Off})
 

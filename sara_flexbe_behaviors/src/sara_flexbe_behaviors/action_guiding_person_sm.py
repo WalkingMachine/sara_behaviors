@@ -95,7 +95,7 @@ class Action_Guiding_PersonSM(Behavior):
 		with _sm_deplacement_et_verification_de_presence_1:
 			# x:70 y:106
 			OperatableStateMachine.add('saramove',
-										SaraMoveBase(),
+										SaraMoveBase(reference="map"),
 										transitions={'arrived': 'arrived', 'failed': 'failed'},
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'Position'})

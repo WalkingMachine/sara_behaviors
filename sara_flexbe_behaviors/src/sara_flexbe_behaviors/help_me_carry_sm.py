@@ -27,8 +27,6 @@ from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_behaviors.action_follow_sm import Action_followSM as sara_flexbe_behaviors__Action_followSM
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as sara_flexbe_behaviors__Action_Pass_DoorSM
-from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerbal
-from sara_flexbe_behaviors.actionwrapper_move_sm import ActionWrapper_MoveSM as sara_flexbe_behaviors__ActionWrapper_MoveSM
 from sara_flexbe_states.continue_button import ContinueButton
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -59,7 +57,7 @@ class HelpmecarrySM(Behavior):
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Retour maison/Action_Move')
 		self.add_behavior(sara_flexbe_behaviors__Action_followSM, 'Getting ID Operator and follow /Follow/Action_follow')
 		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Enter arena/Action_Pass_Door')
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_MoveSM, 'Enter arena/ActionWrapper_Move')
+		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Enter arena/Action_Move')
 		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'ExitArena/Action_Pass_Door')
 
 		# Additional initialization code can be added inside the following tags
@@ -347,89 +345,47 @@ class HelpmecarrySM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:116 y:484, x:437 y:194
+		# x:92 y:291, x:242 y:133
 		_sm_exitarena_10 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['ExitDoor'])
 
 		with _sm_exitarena_10:
-			# x:56 y:31
-			OperatableStateMachine.add('set cont',
-										SetKey(Value=""),
-										transitions={'done': 'get exit'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'containers'})
-
-			# x:34 y:232
-			OperatableStateMachine.add('get exit pose',
-										CalculationState(calculation=lambda x: x.waypoint),
-										transitions={'done': 'Action_Pass_Door'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'entities', 'output_value': 'doorPose'})
-
-			# x:25 y:343
+			# x:38 y:119
 			OperatableStateMachine.add('Action_Pass_Door',
 										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'ExitArena/Action_Pass_Door'),
 										transitions={'Done': 'finished', 'Fail': 'failed'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
-										remapping={'DoorPose1': 'doorPose'})
-
-			# x:21 y:130
-			OperatableStateMachine.add('get exit',
-										WonderlandGetEntityVerbal(),
-										transitions={'one': 'get exit pose', 'multiple': 'get exit pose', 'none': 'failed', 'error': 'failed'},
-										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'name': 'ExitDoor', 'containers': 'containers', 'entities': 'entities'})
+										remapping={'DoorName': 'ExitDoor'})
 
 
-		# x:151 y:747, x:521 y:498
+		# x:353 y:529, x:369 y:296
 		_sm_enter_arena_11 = OperatableStateMachine(outcomes=['done', 'fail'], input_keys=['EntryDoor'])
 
 		with _sm_enter_arena_11:
-			# x:155 y:35
-			OperatableStateMachine.add('set cont',
-										SetKey(Value=""),
-										transitions={'done': 'get entry'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'containers'})
-
-			# x:118 y:361
+			# x:132 y:147
 			OperatableStateMachine.add('Action_Pass_Door',
 										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Enter arena/Action_Pass_Door'),
 										transitions={'Done': 'say start', 'Fail': 'fail'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
-										remapping={'DoorPose1': 'doorpose'})
+										remapping={'DoorName': 'EntryDoor'})
 
-			# x:138 y:270
-			OperatableStateMachine.add('get waypoint',
-										CalculationState(calculation=lambda x: x.waypoint),
-										transitions={'done': 'Action_Pass_Door'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'entities', 'output_value': 'doorpose'})
-
-			# x:124 y:134
-			OperatableStateMachine.add('get entry',
-										WonderlandGetEntityVerbal(),
-										transitions={'one': 'get waypoint', 'multiple': 'get waypoint', 'none': 'get waypoint', 'error': 'get waypoint'},
-										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'name': 'EntryDoor', 'containers': 'containers', 'entities': 'entities'})
-
-			# x:136 y:673
+			# x:124 y:501
 			OperatableStateMachine.add('say help',
 										SaraSay(sentence="Hi, i will help you carry some bags. LEt me know when you need me", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:111 y:566
-			OperatableStateMachine.add('ActionWrapper_Move',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_MoveSM, 'Enter arena/ActionWrapper_Move'),
-										transitions={'finished': 'say help', 'failed': 'fail', 'critical_fail': 'fail'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
-										remapping={'Action': 'EntryDoor'})
-
-			# x:137 y:460
+			# x:146 y:256
 			OperatableStateMachine.add('say start',
 										SaraSay(sentence="", input_keys=[], emotion=1, block=True),
-										transitions={'done': 'ActionWrapper_Move'},
+										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:121 y:375
+			OperatableStateMachine.add('Action_Move',
+										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Enter arena/Action_Move'),
+										transitions={'finished': 'say help', 'failed': 'fail'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'pose': 'EntryDoor'})
 
 
 		# x:372 y:428, x:389 y:477
@@ -545,7 +501,7 @@ class HelpmecarrySM(Behavior):
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Retour maison/Action_Move'),
 										transitions={'finished': 'Arrived', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'pose_out', 'relative': 'Relative'})
+										remapping={'pose': 'pose_out'})
 
 
 		# x:30 y:365, x:130 y:365, x:230 y:365, x:330 y:365, x:430 y:365
