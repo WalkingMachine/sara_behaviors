@@ -11,7 +11,7 @@ Created on 21.04.2019
 
 class SetSegmentationRosParam(EventState):
     '''
-    Store a value in the ros parameter server for later use.
+    Set the Rosparams /process_table_segmentation and /process_object_segmentation to true or false to activate/desactivate the table/object segmentation.
     ># ValueTableSegmentation      object      The rosparam to set for table segmentation.
     ># ValueObjectSegmentation      object      The rosparam to set for object segmentation.
 
