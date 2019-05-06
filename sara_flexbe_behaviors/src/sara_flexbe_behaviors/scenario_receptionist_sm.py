@@ -49,6 +49,9 @@ class Scenario_ReceptionistSM(Behavior):
 		self.add_behavior(sara_flexbe_behaviors__Action_AskSM, 'welcome Guest1/Action_Ask')
 		self.add_behavior(sara_flexbe_behaviors__Action_AskSM, 'welcome Guest1/Action_Ask_2')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Welcome Guest2/Action_Move')
+		self.add_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Welcome Guest2/Action_findPerson')
+		self.add_behavior(sara_flexbe_behaviors__Action_AskSM, 'Welcome Guest2/Action_Ask')
+		self.add_behavior(sara_flexbe_behaviors__Action_AskSM, 'Welcome Guest2/Action_Ask_2')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Guide G1 and introduice people/Action_Move')
 		self.add_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Guide G1 and introduice people/Action_findPerson')
 		self.add_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Guide G1 and introduice people/Action_point_at')
@@ -75,7 +78,7 @@ class Scenario_ReceptionistSM(Behavior):
 		
 		# [/MANUAL_CREATE]
 
-		# x:30 y:458, x:130 y:458
+		# x:1141 y:693, x:1133 y:101
 		_sm_guide_g2_and_introduice_people_0 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['personAlreadyInLocation', 'personAlreadyInName', 'personAlreadyInDrink', 'Guest1Drink', 'Guest1Name', 'Guest1Entity', 'personAlreadyInEntity'])
 
 		with _sm_guide_g2_and_introduice_people_0:
@@ -86,7 +89,7 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:1125 y:673, x:1149 y:31
+		# x:1125 y:673, x:1146 y:27
 		_sm_guide_g1_and_introduice_people_1 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['personAlreadyInLocation', 'personAlreadyInName', 'personAlreadyInDrink', 'Guest1Drink', 'Guest1Name', 'Guest1Entity'], output_keys=['personAlreadyInEntity'])
 
 		with _sm_guide_g1_and_introduice_people_1:
@@ -203,7 +206,7 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:78 y:669
 			OperatableStateMachine.add('say sit there',
-										SaraSay(sentence=lambda x: x[0]", you can sit there.", input_keys=["Guest1Name"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: x[0]+", you can sit there.", input_keys=["Guest1Name"], emotion=0, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Guest1Name': 'Guest1Name'})
@@ -216,68 +219,150 @@ class Scenario_ReceptionistSM(Behavior):
 										remapping={'Guest1Name': 'Guest1Name'})
 
 
-		# x:996 y:708, x:1101 y:80
+		# x:1010 y:784, x:1204 y:163
 		_sm_welcome_guest2_2 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['entranceLocation'], output_keys=['Guest2Drink', 'Guest2Name', 'Guest2Entity'])
 
 		with _sm_welcome_guest2_2:
-			# x:37 y:27
-			OperatableStateMachine.add('say go to welcome G2',
-										SaraSay(sentence="I will go to the entrance to welcome the second guest.", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'Action_Move'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:28 y:86
+			# x:95 y:34
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Welcome Guest2/Action_Move'),
-										transitions={'finished': 'say help to open the door G2', 'failed': 'retry move to entrance G2'},
+										transitions={'finished': 'say help to open the door G2', 'failed': 'retry moving G2'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'entranceLocation'})
 
-			# x:216 y:87
-			OperatableStateMachine.add('retry move to entrance G2',
+			# x:294 y:35
+			OperatableStateMachine.add('retry moving G2',
 										ForLoop(repeat=2),
-										transitions={'do': 'Action_Move', 'end': 'say failed entranceG2'},
+										transitions={'do': 'Action_Move', 'end': 'say cannot do task G2'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
-										remapping={'index': 'index21'})
+										remapping={'index': 'index'})
 
-			# x:404 y:81
-			OperatableStateMachine.add('say failed entranceG2',
-										SaraSay(sentence="I am unable to move to welcome the second guest.", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'set unknown G2name'},
+			# x:555 y:161
+			OperatableStateMachine.add('say cannot do task G2',
+										SaraSay(sentence="I failed to do my task.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'set G2 name to unknown'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:543 y:80
-			OperatableStateMachine.add('set unknown G2name',
-										SetKey(Value="unknown"),
-										transitions={'done': 'set unknown G2drink'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'Guest2Name'})
+			# x:109 y:212
+			OperatableStateMachine.add('check if door is open G2',
+										DoorDetector(timeout=12),
+										transitions={'done': 'Action_findPerson', 'failed': 'retry opening door G2'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
 
-			# x:685 y:79
-			OperatableStateMachine.add('set unknown G2drink',
-										SetKey(Value="unknown"),
-										transitions={'done': 'set unknown G2entity'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'Guest2Drink'})
-
-			# x:823 y:79
-			OperatableStateMachine.add('set unknown G2entity',
-										SetKey(Value="unknown"),
-										transitions={'done': 'failed'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'Guest2Entity'})
-
-			# x:26 y:155
+			# x:100 y:131
 			OperatableStateMachine.add('say help to open the door G2',
 										SaraSay(sentence="Can someone help me and open this door?", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'check if door is open G2'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:29 y:218
-			OperatableStateMachine.add('check if door is open G2',
-										DoorDetector(timeout=12),
-										transitions={'done': 'finished', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off})
+			# x:275 y:163
+			OperatableStateMachine.add('retry opening door G2',
+										ForLoop(repeat=1),
+										transitions={'do': 'say help to open the door G2', 'end': 'say cannot do task G2'},
+										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+										remapping={'index': 'index'})
+
+			# x:104 y:294
+			OperatableStateMachine.add('Action_findPerson',
+										self.use_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Welcome Guest2/Action_findPerson', default_keys=['className']),
+										transitions={'done': 'introduice receptionist robot G2', 'pas_done': 'say cannot do task G2'},
+										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
+										remapping={'className': 'className', 'entity': 'Guest2Entity'})
+
+			# x:699 y:156
+			OperatableStateMachine.add('set G2 name to unknown',
+										SetKey(Value="unknown"),
+										transitions={'done': 'set G2 drink to unknown'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Guest2Name'})
+
+			# x:865 y:155
+			OperatableStateMachine.add('set G2 drink to unknown',
+										SetKey(Value="unknown"),
+										transitions={'done': 'set G2 entity to unknown'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Guest2Drink'})
+
+			# x:1023 y:153
+			OperatableStateMachine.add('set G2 entity to unknown',
+										SetKey(Value="unknown"),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Guest2Entity'})
+
+			# x:100 y:367
+			OperatableStateMachine.add('introduice receptionist robot G2',
+										SaraSay(sentence="Hello, I am the receptionist robot.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'set question name G2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:324 y:510
+			OperatableStateMachine.add('say continue scenario G2',
+										SaraSay(sentence="I will continue the scenario with your name as unknown.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'set name G2 to unknown'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:99 y:594
+			OperatableStateMachine.add('nlu receptionist for name G2',
+										SaraNLUreceptionist(),
+										transitions={'understood': 'set question drink G2', 'fail': 'say continue scenario G2'},
+										autonomy={'understood': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'sentence': 'answerNameG2', 'answer': 'Guest2Name'})
+
+			# x:110 y:439
+			OperatableStateMachine.add('set question name G2',
+										SetKey(Value="What is your name?"),
+										transitions={'done': 'Action_Ask'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'questionNameG2'})
+
+			# x:319 y:582
+			OperatableStateMachine.add('set name G2 to unknown',
+										SetKey(Value="unknown"),
+										transitions={'done': 'set question drink G2'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Guest2Name'})
+
+			# x:105 y:662
+			OperatableStateMachine.add('set question drink G2',
+										SetKey(Value="What is your favorite drink?"),
+										transitions={'done': 'Action_Ask_2'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'questionDrinkG2'})
+
+			# x:97 y:829
+			OperatableStateMachine.add('nlu receptionist for drink G2',
+										SaraNLUreceptionist(),
+										transitions={'understood': 'finished', 'fail': 'say continue scenario after drinkG2 failed'},
+										autonomy={'understood': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'sentence': 'answerDrinkG2', 'answer': 'Guest2Drink'})
+
+			# x:325 y:706
+			OperatableStateMachine.add('say continue scenario after drinkG2 failed',
+										SaraSay(sentence="I will continue the scenario with your favorite drink as unknown.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'set drink G2 to unknown'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:350 y:781
+			OperatableStateMachine.add('set drink G2 to unknown',
+										SetKey(Value="unknown"),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'Guest2Drink'})
+
+			# x:102 y:513
+			OperatableStateMachine.add('Action_Ask',
+										self.use_behavior(sara_flexbe_behaviors__Action_AskSM, 'Welcome Guest2/Action_Ask'),
+										transitions={'finished': 'nlu receptionist for name G2', 'failed': 'say continue scenario G2'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'question': 'questionNameG2', 'answer': 'answerNameG2'})
+
+			# x:100 y:724
+			OperatableStateMachine.add('Action_Ask_2',
+										self.use_behavior(sara_flexbe_behaviors__Action_AskSM, 'Welcome Guest2/Action_Ask_2'),
+										transitions={'finished': 'nlu receptionist for drink G2', 'failed': 'say continue scenario after drinkG2 failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'question': 'questionDrinkG2', 'answer': 'answerDrinkG2'})
 
 
 		# x:863 y:856, x:1249 y:152
@@ -353,7 +438,7 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:113 y:374
 			OperatableStateMachine.add('introduice receptionist robot',
-										SaraSay(sentence="Hello, I am receptionist robot.", input_keys=[], emotion=0, block=True),
+										SaraSay(sentence="Hello, I am the receptionist robot.", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'set question name G1'},
 										autonomy={'done': Autonomy.Off})
 
