@@ -82,11 +82,139 @@ class Scenario_ReceptionistSM(Behavior):
 		_sm_guide_g2_and_introduice_people_0 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['personAlreadyInLocation', 'personAlreadyInName', 'personAlreadyInDrink', 'Guest1Drink', 'Guest1Name', 'Guest1Entity', 'personAlreadyInEntity'])
 
 		with _sm_guide_g2_and_introduice_people_0:
-			# x:31 y:109
-			OperatableStateMachine.add('say4',
-										SaraSay(sentence="say", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off})
+            # x:65 y:25
+            OperatableStateMachine.add('say follow me to the right place',
+                                       SaraSay(sentence=lambda x: "Please follow me to the x[0].",
+                                               input_keys=["personAlreadyInLocation"], emotion=0, block=True),
+                                       transitions={'done': 'Action_Move'},
+                                       autonomy={'done': Autonomy.Off},
+                                       remapping={'personAlreadyInLocation': 'personAlreadyInLocation'})
+
+            # x:68 y:85
+            OperatableStateMachine.add('Action_Move',
+                                       self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Guide G2 and introduice people/Action_Move'),
+                                       transitions={'finished': 'retry find person', 'failed': 'retry guide to location'},
+                                       autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                       remapping={'pose': 'personAlreadyInLocation'})
+
+            # x:409 y:25
+            OperatableStateMachine.add('retry guide to location',
+                                       ForLoop(repeat=2),
+                                       transitions={'do': 'Action_Move', 'end': 'say cannot reach destination'},
+                                       autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+                                       remapping={'index': 'index'})
+
+            # x:585 y:26
+            OperatableStateMachine.add('say cannot reach destination',
+                                       SaraSay(sentence="I cannot reach the destination.", input_keys=[], emotion=0,
+                                               block=True),
+                                       transitions={'done': 'set personAlreadyInEntity to unknown'},
+                                       autonomy={'done': Autonomy.Off})
+
+            # x:355 y:162
+            OperatableStateMachine.add('retry find person',
+                                       ForLoop(repeat=2),
+                                       transitions={'do': 'Action_findPerson', 'end': 'say cannot find personAlreadyIn'},
+                                       autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+                                       remapping={'index': 'index3'})
+
+            # x:527 y:154
+            OperatableStateMachine.add('say cannot find personAlreadyIn',
+                                       SaraSay(
+                                           sentence=lambda x: "I can not find " + x[0] + " but I will continue the scenario.",
+                                           input_keys=["personAlreadyInName"], emotion=0, block=True),
+                                       transitions={'done': 'set personAlreadyInEntity to unknown and continue'},
+                                       autonomy={'done': Autonomy.Off},
+                                       remapping={'personAlreadyInName': 'personAlreadyInName'})
+
+            # x:33 y:241
+            OperatableStateMachine.add('check if found entity is not the same as guest1 entity',
+                                       FlexibleCheckConditionState(predicate=lambda x: x[0].ID == x[1].ID,
+                                                                   input_keys=["foundEntity", "Guest1Entity"]),
+                                       transitions={'true': 'retry find person',
+                                                    'false': 'transfert foundEntity in personAlreadyInEntity'},
+                                       autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                       remapping={'foundEntity': 'foundEntity', 'Guest1Entity': 'Guest1Entity'})
+
+            # x:782 y:21
+            OperatableStateMachine.add('set personAlreadyInEntity to unknown',
+                                       SetKey(Value="unknown"),
+                                       transitions={'done': 'failed'},
+                                       autonomy={'done': Autonomy.Off},
+                                       remapping={'Key': 'personAlreadyInEntity'})
+
+            # x:40 y:310
+            OperatableStateMachine.add('transfert foundEntity in personAlreadyInEntity',
+                                       CalculationState(calculation=lambda x: x),
+                                       transitions={'done': 'introduice G1 to person already in'},
+                                       autonomy={'done': Autonomy.Off},
+                                       remapping={'input_value': 'foundEntity', 'output_value': 'personAlreadyInEntity'})
+
+            # x:52 y:379
+            OperatableStateMachine.add('introduice G1 to person already in',
+                                       SaraSay(sentence=lambda x: "Hello " + x[0] + ", here is a new guest who is named " + x[2] + " and love to drink " + x[3] + ". " + x[2] + ", I would like to introduice you " + x[0] + " and his favorite drink is " + x[1] + ".",
+                                               input_keys=["personAlreadyInName", "personAlreadyInDrink", "Guest1Name",
+                                                           "Guest1Drink"], emotion=0, block=True),
+                                       transitions={'done': 'find empty chair for G1'},
+                                       autonomy={'done': Autonomy.Off},
+                                       remapping={'personAlreadyInName': 'personAlreadyInName',
+                                                  'personAlreadyInDrink': 'personAlreadyInDrink', 'Guest1Name': 'Guest1Name',
+                                                  'Guest1Drink': 'Guest1Drink'})
+
+            # x:505 y:237
+            OperatableStateMachine.add('set personAlreadyInEntity to unknown and continue',
+                                       SetKey(Value="unknown"),
+                                       transitions={'done': 'introduice G1 to person already in'},
+                                       autonomy={'done': Autonomy.Off},
+                                       remapping={'Key': 'personAlreadyInEntity'})
+
+            # x:70 y:447
+            OperatableStateMachine.add('find empty chair for G1',
+                                       GetEmptyChair(),
+                                       transitions={'done': 'get the entity to point Point',
+                                                    'nothing_found': 'say cannot find empty chair'},
+                                       autonomy={'done': Autonomy.Off, 'nothing_found': Autonomy.Off},
+                                       remapping={'output_entity': 'emptyChair'})
+
+            # x:66 y:586
+            OperatableStateMachine.add('Action_point_at',
+                                       self.use_behavior(sara_flexbe_behaviors__Action_point_atSM,
+                                                         'Guide G2 and introduice people/Action_point_at'),
+                                       transitions={'finished': 'say sit there', 'failed': 'say cannot point'},
+                                       autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                       remapping={'targetPoint': 'chairPoint'})
+
+            # x:61 y:525
+            OperatableStateMachine.add('get the entity to point Point',
+                                       GetAttribute(attributes=["position"]),
+                                       transitions={'done': 'Action_point_at'},
+                                       autonomy={'done': Autonomy.Off},
+                                       remapping={'object': 'emptyChair', 'position': 'chairPoint'})
+
+            # x:273 y:448
+            OperatableStateMachine.add('say cannot find empty chair',
+                                       SaraSay(sentence=lambda x: "I can not find a place for you to sit. Please, " + x[0] + ", choose the one you prefere.", input_keys=["Guest1Name"], emotion=0,
+                                               block=True),
+                                       transitions={'done': 'finished'},
+                                       autonomy={'done': Autonomy.Off},
+                                       remapping={'Guest1Name': 'Guest1Name'})
+
+            # x:78 y:669
+            OperatableStateMachine.add('say sit there',
+                                       SaraSay(sentence=lambda x: x[0] + ", you can sit there.", input_keys=["Guest1Name"],
+                                               emotion=0, block=True),
+                                       transitions={'done': 'finished'},
+                                       autonomy={'done': Autonomy.Off},
+                                       remapping={'Guest1Name': 'Guest1Name'})
+
+            # x:336 y:591
+            OperatableStateMachine.add('say cannot point',
+                                       SaraSay(sentence=lambda x: x[
+                                                                      0] + ", there is a place to sit for you but I can not point it.",
+                                               input_keys=["Guest1Name"], emotion=0, block=True),
+                                       transitions={'done': 'finished'},
+                                       autonomy={'done': Autonomy.Off},
+                                       remapping={'Guest1Name': 'Guest1Name'})
 
 
 		# x:1125 y:673, x:1146 y:27
