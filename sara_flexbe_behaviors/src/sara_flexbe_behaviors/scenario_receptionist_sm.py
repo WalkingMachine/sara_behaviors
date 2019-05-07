@@ -60,6 +60,8 @@ class Scenario_ReceptionistSM(Behavior):
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Guide G2 and introduice people/Action_Move')
 		self.add_behavior(sara_flexbe_behaviors__Action_findPersonByIDSM, 'Guide G2 and introduice people/Action_findPersonByID')
 		self.add_behavior(sara_flexbe_behaviors__Action_findPersonByIDSM, 'Guide G2 and introduice people/Action_findPersonByID_2')
+		self.add_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Guide G2 and introduice people/Action_point_at')
+		self.add_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Guide G2 and introduice people/Action_point_at_2')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -121,35 +123,35 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'personAlreadyInEntity'})
 
-			# x:62 y:206
+			# x:66 y:214
 			OperatableStateMachine.add('Action_findPersonByID',
 										self.use_behavior(sara_flexbe_behaviors__Action_findPersonByIDSM, 'Guide G2 and introduice people/Action_findPersonByID', default_keys=['className']),
-										transitions={'found': 'say G1 details', 'not_found': 'say not found G1 but say his name and drink'},
+										transitions={'found': 'get position of guest1Entity', 'not_found': 'say not found G1 but say his name and drink'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'className': 'className', 'personID': 'Guest1ID'})
+										remapping={'className': 'className', 'personID': 'Guest1ID', 'personEntity': 'Guest1Entity'})
 
-			# x:306 y:205
+			# x:346 y:221
 			OperatableStateMachine.add('say not found G1 but say his name and drink',
 										SaraSay(sentence=lambda x: "I can not find "+x[0]+" but his favorite drink is "+x[1]+".", input_keys=["Guest1Name", "Guest1Drink"], emotion=0, block=True),
 										transitions={'done': 'check if person already in is known aka ID not 0'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Guest1Name': 'Guest1Name', 'Guest1Drink': 'Guest1Drink'})
 
-			# x:77 y:273
+			# x:86 y:426
 			OperatableStateMachine.add('say G1 details',
 										SaraSay(sentence=lambda x: "Here is "+x[0]+" and his favorite drink is "+x[1]+".", input_keys=["Guest1Name", "Guest1Drink"], emotion=0, block=True),
 										transitions={'done': 'check if person already in is known aka ID not 0'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Guest1Name': 'Guest1Name', 'Guest1Drink': 'Guest1Drink'})
 
-			# x:37 y:336
+			# x:45 y:500
 			OperatableStateMachine.add('check if person already in is known aka ID not 0',
 										CheckConditionState(predicate=lambda x: x != 0),
 										transitions={'true': 'Action_findPersonByID_2', 'false': 'say not/cannot found person already in but say name/drink'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'personAlreadyInID'})
 
-			# x:341 y:352
+			# x:363 y:574
 			OperatableStateMachine.add('say not/cannot found person already in but say name/drink',
 										SaraSay(sentence=lambda x: "I can not find "+x[0]+" but his favorite drink is "+x[1]+".", input_keys=["personAlreadyInName", "personAlreadyInDrink"], emotion=0, block=True),
 										transitions={'done': 'finished'},
@@ -163,16 +165,58 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Guest2Name': 'Guest2Name', 'Guest2Drink': 'Guest2Drink'})
 
-			# x:52 y:397
+			# x:66 y:566
 			OperatableStateMachine.add('Action_findPersonByID_2',
 										self.use_behavior(sara_flexbe_behaviors__Action_findPersonByIDSM, 'Guide G2 and introduice people/Action_findPersonByID_2', default_keys=['className']),
-										transitions={'found': 'say details person already in', 'not_found': 'say not/cannot found person already in but say name/drink'},
+										transitions={'found': 'get person already in position', 'not_found': 'say not/cannot found person already in but say name/drink'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'className': 'className', 'personID': 'personAlreadyInID'})
+										remapping={'className': 'className', 'personID': 'personAlreadyInID', 'personEntity': 'personAlreadyInEntity'})
 
-			# x:55 y:472
+			# x:64 y:798
 			OperatableStateMachine.add('say details person already in',
 										SaraSay(sentence=lambda x: "Here is "+x[0]+" and his favorite drink is "+x[1]+".", input_keys=["personAlreadyInName", "personAlreadyInDrink"], emotion=0, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'personAlreadyInName': 'personAlreadyInName', 'personAlreadyInDrink': 'personAlreadyInDrink'})
+
+			# x:65 y:285
+			OperatableStateMachine.add('get position of guest1Entity',
+										GetAttribute(attributes=["position"]),
+										transitions={'done': 'Action_point_at'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'object': 'Guest1Entity', 'position': 'Guest1Position'})
+
+			# x:73 y:346
+			OperatableStateMachine.add('Action_point_at',
+										self.use_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Guide G2 and introduice people/Action_point_at'),
+										transitions={'finished': 'say G1 details', 'failed': 'say cannot point guest1 for guest2'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'targetPoint': 'Guest1Position'})
+
+			# x:388 y:360
+			OperatableStateMachine.add('say cannot point guest1 for guest2',
+										SaraSay(sentence=lambda x: "I can not point to "+x[0]+" but his favorite drink is "+x[1]+".", input_keys=["Guest1Name", "Guest1Drink"], emotion=0, block=True),
+										transitions={'done': 'check if person already in is known aka ID not 0'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Guest1Name': 'Guest1Name', 'Guest1Drink': 'Guest1Drink'})
+
+			# x:70 y:636
+			OperatableStateMachine.add('get person already in position',
+										GetAttribute(attributes=["position"]),
+										transitions={'done': 'Action_point_at_2'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'object': 'personAlreadyInEntity', 'position': 'personAlreadyInPosition'})
+
+			# x:72 y:711
+			OperatableStateMachine.add('Action_point_at_2',
+										self.use_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Guide G2 and introduice people/Action_point_at_2'),
+										transitions={'finished': 'say details person already in', 'failed': 'say cannot point to personalreadyin for G2'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'targetPoint': 'personAlreadyInPosition'})
+
+			# x:328 y:677
+			OperatableStateMachine.add('say cannot point to personalreadyin for G2',
+										SaraSay(sentence=lambda x: "I can not point to "+x[0]+" but his favorite drink is "+x[1]+".", input_keys=["personAlreadyInName","personAlreadyInDrink"], emotion=0, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'personAlreadyInName': 'personAlreadyInName', 'personAlreadyInDrink': 'personAlreadyInDrink'})
