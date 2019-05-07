@@ -51,17 +51,18 @@ class Action_findPersonByIDSM(Behavior):
 
 	def create(self):
 		# x:93 y:313, x:514 y:143
-		_state_machine = OperatableStateMachine(outcomes=['found', 'not_found'], input_keys=['className', 'personID'])
+		_state_machine = OperatableStateMachine(outcomes=['found', 'not_found'], input_keys=['className', 'personID'], output_keys=['personEntity'])
 		_state_machine.userdata.className = "person"
 		_state_machine.userdata.personID = 0
+		_state_machine.userdata.personEntity = ""
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
 
 		# [/MANUAL_CREATE]
 
-		# x:706 y:647
-		_sm_rotation_0 = OperatableStateMachine(outcomes=['end'])
+		# x:707 y:760
+		_sm_rotation_0 = OperatableStateMachine(outcomes=['end'], output_keys=['personEntity'])
 
 		with _sm_rotation_0:
 			# x:51 y:38
@@ -136,7 +137,7 @@ class Action_findPersonByIDSM(Behavior):
 			# x:400 y:499
 			OperatableStateMachine.add('check is cpt is 1',
 										CheckConditionState(predicate=lambda x: x==1),
-										transitions={'true': 'end', 'false': 'set cpt to 1'},
+										transitions={'true': 'set entity to unknown', 'false': 'set cpt to 1'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'cpt'})
 
@@ -147,9 +148,16 @@ class Action_findPersonByIDSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'cpt'})
 
+			# x:605 y:659
+			OperatableStateMachine.add('set entity to unknown',
+										SetKey(Value="unknown"),
+										transitions={'done': 'end'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'personEntity'})
+
 
 		# x:683 y:188
-		_sm_find_entity_1 = OperatableStateMachine(outcomes=['found'], input_keys=['className', 'personID'], output_keys=['entity'])
+		_sm_find_entity_1 = OperatableStateMachine(outcomes=['found'], input_keys=['className', 'personID'], output_keys=['personEntity'])
 
 		with _sm_find_entity_1:
 			# x:183 y:185
@@ -170,11 +178,11 @@ class Action_findPersonByIDSM(Behavior):
 										GetEntityFromListByID(attributes=[]),
 										transitions={'done': 'found', 'not_found': 'find_entity'},
 										autonomy={'done': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'entityList': 'entity_list', 'ID': 'personID', 'entity': 'entity'})
+										remapping={'entityList': 'entity_list', 'ID': 'personID', 'entity': 'personEntity'})
 
 
-		# x:372 y:27, x:370 y:220, x:368 y:100, x:330 y:458
-		_sm_container_2 = ConcurrencyContainer(outcomes=['found', 'not_found'], input_keys=['className', 'personID'], conditions=[
+		# x:372 y:27, x:392 y:217, x:400 y:139, x:330 y:458
+		_sm_container_2 = ConcurrencyContainer(outcomes=['found', 'not_found'], input_keys=['className', 'personID'], output_keys=['personEntity'], conditions=[
 										('not_found', [('Rotation', 'end')]),
 										('found', [('Find Entity', 'found')])
 										])
@@ -185,13 +193,14 @@ class Action_findPersonByIDSM(Behavior):
 										_sm_find_entity_1,
 										transitions={'found': 'found'},
 										autonomy={'found': Autonomy.Inherit},
-										remapping={'className': 'className', 'personID': 'personID', 'entity': 'entity'})
+										remapping={'className': 'className', 'personID': 'personID', 'personEntity': 'personEntity'})
 
-			# x:129 y:197
+			# x:135 y:199
 			OperatableStateMachine.add('Rotation',
 										_sm_rotation_0,
 										transitions={'end': 'not_found'},
-										autonomy={'end': Autonomy.Inherit})
+										autonomy={'end': Autonomy.Inherit},
+										remapping={'personEntity': 'personEntity'})
 
 
 
@@ -213,7 +222,7 @@ class Action_findPersonByIDSM(Behavior):
 										_sm_container_2,
 										transitions={'found': 'WaitState', 'not_found': 'Look Center Not Found'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'className': 'className', 'personID': 'personID'})
+										remapping={'className': 'className', 'personID': 'personID', 'personEntity': 'personEntity'})
 
 			# x:67 y:222
 			OperatableStateMachine.add('WaitState',
