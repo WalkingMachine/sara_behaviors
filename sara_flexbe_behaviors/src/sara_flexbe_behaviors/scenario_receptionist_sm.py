@@ -630,7 +630,7 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'entranceLocation': 'entranceLocation', 'Guest1Drink': 'Guest1Drink', 'Guest1Name': 'Guest1Name', 'Guest1ID': 'Guest1ID'})
 
-			# x:373 y:283
+			# x:446 y:320
 			OperatableStateMachine.add('Welcome Guest2',
 										_sm_welcome_guest2_2,
 										transitions={'finished': 'Guide G2 and introduice people', 'failed': 'failed'},
