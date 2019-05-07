@@ -16,6 +16,7 @@
 	<contains name="Action_findPerson" />
 	<contains name="Action_Ask" />
 	<contains name="Action_point_at" />
+	<contains name="Action_findPersonByID" />
 
 	<!-- Available Parameters -->
 
