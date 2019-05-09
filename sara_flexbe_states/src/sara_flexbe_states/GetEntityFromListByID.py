@@ -28,7 +28,7 @@ class GetEntityFromListByID(EventState):
 
     def __init__(self, attributes=[]):
         '''Constructor'''
-        super(GetAttribute, self).__init__(outcomes=['done', 'not_found'],
+        super(GetEntityFromListByID, self).__init__(outcomes=['done', 'not_found'],
                                            input_keys=['entityList','ID'],
                                            output_keys=['entity'])
 
