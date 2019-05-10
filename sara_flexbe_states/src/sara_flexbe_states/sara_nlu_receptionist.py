@@ -4,7 +4,6 @@ from __future__ import print_function
 from flexbe_core import EventState, Logger
 import rospy
 from wm_nlu.srv import ReceptionistNLUService
-from std_msgs.msg import String
 
 
 class SaraNLUreceptionist(EventState):
@@ -23,7 +22,7 @@ class SaraNLUreceptionist(EventState):
         super(SaraNLUreceptionist, self).__init__(outcomes=['understood', 'fail'], input_keys=['sentence'],
                                          output_keys=['answer'])
 
-        serviceName = "/receptionist_NLU"
+        serviceName = "/Receptionist_NLU_Service"
 
         Logger.loginfo("waiting forservice: " + serviceName)
         rospy.wait_for_service(serviceName)
@@ -33,16 +32,20 @@ class SaraNLUreceptionist(EventState):
     def execute(self, userdata):
 
         # Call the NLU service
-        response = self.service(String(userdata.sentence))
+        response = self.service(userdata.sentence)
 
+        if not response:
+            userdata.answer = "unknown"
+            return "fail"
+            
         # Checking the validity of the response
-        if response.str.data is "unknown":
-            userdata.answer = response.str.data
+        if response.response is "unknown":
+            userdata.answer = response.response
             return "fail"
 
-        if response.str.data is "":
-            userdata.answer = response.str.data
+        if response.response is "":
+            userdata.answer = response.response
             return "fail"
 
-        userdata.answer = response.str.data
+        userdata.answer = response.response
         return "understood"

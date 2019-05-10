@@ -45,7 +45,7 @@ class GetEmptyChair(EventState):
         return math.sqrt(x*x+y*y)
 
 
-    def execute(self):
+    def execute(self, userdata):
         '''Execute this state'''
         if self._subpos.has_msg('/robot_pose'):
             self.mypose = self._subpos.get_last_msg('/robot_pose')
@@ -59,7 +59,7 @@ class GetEmptyChair(EventState):
         chairs = []
 
         if self.message is not None and self.mypose is not None:
-            for self.entity in self.message.entities:
+            for entity in self.message.entities:
                 if entity.name == "person":
                     people.append(entity)
                 if entity.name == "chair":
@@ -69,7 +69,7 @@ class GetEmptyChair(EventState):
 
             for person in people:
                 for chair in chairs:
-                    if dist(chair, person) < 0.5:
+                    if self.dist(chair, person) < 0.5:
                         chairs.remove(chair)
                         continue
 
@@ -79,9 +79,10 @@ class GetEmptyChair(EventState):
             closest_empty_chair = chairs[0]
             min_dist = 999
             for chair in chairs:
-                if dist(self.mypose, chair) < min_dist:
-                    min_dist = dist(self.mypose, chair)
+                if self.dist(self.mypose, chair) < min_dist:
+                    min_dist = self.dist(self.mypose, chair)
                     closest_empty_chair = chair
 
             userdata.output_entity = closest_empty_chair
             return 'done'
+

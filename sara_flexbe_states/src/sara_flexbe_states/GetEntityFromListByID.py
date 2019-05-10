@@ -26,7 +26,7 @@ class GetEntityFromListByID(EventState):
 
     '''
 
-    def __init__(self, attributes=[]):
+    def __init__(self):
         '''Constructor'''
         super(GetEntityFromListByID, self).__init__(outcomes=['done', 'not_found'],
                                            input_keys=['entityList','ID'],
@@ -36,7 +36,7 @@ class GetEntityFromListByID(EventState):
     def execute(self, userdata):
         '''Execute this state'''
         for entity in userdata.entityList:
-            if entity.ID == ID:
+            if entity.ID == userdata.ID:
                 userdata.entity = entity
                 return 'done'
 
