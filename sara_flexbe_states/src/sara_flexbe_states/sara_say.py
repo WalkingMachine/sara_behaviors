@@ -96,7 +96,7 @@ class SaraSay(EventState):
 
         # Set the message according to the lambda function if needed.
         if isinstance(self.sentence, types.LambdaType) and self.sentence.__name__ == "<lambda>":
-            self.msg.sentence = self.sentence(map(lambda key: userdata[key], self._input_keys))
+            self.msg.sentence = self.sentence(map(lambda key: userdata[key], list(reversed(list(self._input_keys)))))
         else:
             self.msg.sentence = self.sentence
         Logger.loginfo('Sara is saying: "' + str(self.msg.sentence) + '".')
