@@ -8,8 +8,9 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_behaviors.test_de_behavior_sm import testdebehaviorSM as sara_flexbe_behaviors__testdebehaviorSM
-from flexbe_states.log_state import LogState
+from sara_flexbe_states.pose_gen_euler import GenPoseEuler
+from sara_flexbe_states.GetAttribute import GetAttribute
+from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM as sara_flexbe_behaviors__Action_point_atSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -33,7 +34,7 @@ class ATestSandboxSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__testdebehaviorSM, 'test de behavior')
+		self.add_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Action_point_at')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -45,7 +46,7 @@ class ATestSandboxSM(Behavior):
 
 
 	def create(self):
-		# x:537 y:110, x:515 y:330
+		# x:971 y:114, x:515 y:330
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.Pose1 = "PostGripPose"
 		_state_machine.userdata.Pose2 = "IdlePose"
@@ -64,17 +65,26 @@ class ATestSandboxSM(Behavior):
 
 
 		with _state_machine:
-			# x:134 y:83
-			OperatableStateMachine.add('test de behavior',
-										self.use_behavior(sara_flexbe_behaviors__testdebehaviorSM, 'test de behavior'),
-										transitions={'finished': 'log', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+			# x:30 y:40
+			OperatableStateMachine.add('gen',
+										GenPoseEuler(x=1, y=-1, z=0, roll=0, pitch=0, yaw=0),
+										transitions={'done': 'asdas'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'pose': 'pose'})
 
-			# x:411 y:111
-			OperatableStateMachine.add('log',
-										LogState(text="ok", severity=Logger.REPORT_HINT),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off})
+			# x:30 y:117
+			OperatableStateMachine.add('asdas',
+										GetAttribute(attributes=["position"]),
+										transitions={'done': 'Action_point_at'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'object': 'pose', 'position': 'position'})
+
+			# x:30 y:194
+			OperatableStateMachine.add('Action_point_at',
+										self.use_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Action_point_at'),
+										transitions={'finished': 'finished', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'targetPoint': 'position'})
 
 
 		return _state_machine

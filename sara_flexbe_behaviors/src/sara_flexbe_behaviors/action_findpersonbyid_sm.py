@@ -9,9 +9,8 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
-from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.wait_state import WaitState
-from sara_flexbe_states.GetEntityFromListByID import GetEntityFromListByID
+from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_behaviors.action_turn_sm import action_turnSM as sara_flexbe_behaviors__action_turnSM
 from flexbe_states.check_condition_state import CheckConditionState
@@ -157,28 +156,21 @@ class Action_findPersonByIDSM(Behavior):
 
 
 		# x:683 y:188
-		_sm_find_entity_1 = OperatableStateMachine(outcomes=['found'], input_keys=['className', 'personID'], output_keys=['personEntity'])
+		_sm_find_entity_1 = OperatableStateMachine(outcomes=['found'], input_keys=['personID'], output_keys=['personEntity'])
 
 		with _sm_find_entity_1:
-			# x:183 y:185
-			OperatableStateMachine.add('find_entity',
-										list_entities_by_name(frontality_level=0.5, distance_max=4),
-										transitions={'found': 'select the right entity', 'none_found': 'find_entity'},
-										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
-										remapping={'name': 'className', 'entity_list': 'entity_list', 'number': 'number'})
+			# x:226 y:188
+			OperatableStateMachine.add('get person',
+										GetEntityByID(),
+										transitions={'found': 'found', 'not_found': 'WaitState'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'ID': 'personID', 'Entity': 'personEntity'})
 
 			# x:194 y:40
 			OperatableStateMachine.add('WaitState',
 										WaitState(wait_time=1),
-										transitions={'done': 'find_entity'},
+										transitions={'done': 'get person'},
 										autonomy={'done': Autonomy.Off})
-
-			# x:443 y:197
-			OperatableStateMachine.add('select the right entity',
-										GetEntityFromListByID(attributes=[]),
-										transitions={'done': 'found', 'not_found': 'find_entity'},
-										autonomy={'done': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'entityList': 'entity_list', 'ID': 'personID', 'entity': 'personEntity'})
 
 
 		# x:372 y:27, x:392 y:217, x:400 y:139, x:330 y:458
@@ -193,7 +185,7 @@ class Action_findPersonByIDSM(Behavior):
 										_sm_find_entity_1,
 										transitions={'found': 'found'},
 										autonomy={'found': Autonomy.Inherit},
-										remapping={'className': 'className', 'personID': 'personID', 'personEntity': 'personEntity'})
+										remapping={'personID': 'personID', 'personEntity': 'personEntity'})
 
 			# x:135 y:199
 			OperatableStateMachine.add('Rotation',

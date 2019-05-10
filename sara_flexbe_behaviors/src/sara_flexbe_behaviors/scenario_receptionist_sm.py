@@ -78,7 +78,7 @@ class Scenario_ReceptionistSM(Behavior):
 		_state_machine.userdata.personAlreadyInLocation = "living room"
 		_state_machine.userdata.personAlreadyInName = "John"
 		_state_machine.userdata.personAlreadyInDrink = "coke"
-		_state_machine.userdata.entranceLocation = "front door"
+		_state_machine.userdata.entranceLocation = "door"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -91,7 +91,7 @@ class Scenario_ReceptionistSM(Behavior):
 		with _sm_guide_g2_and_introduice_people_0:
 			# x:65 y:25
 			OperatableStateMachine.add('say follow me to the right place',
-										SaraSay(sentence=lambda x: "Please follow me to the x[0].", input_keys=["personAlreadyInLocation"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "Please follow me to the"+ x[0] +".", input_keys=["personAlreadyInLocation"], emotion=0, block=True),
 										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'personAlreadyInLocation': 'personAlreadyInLocation'})
@@ -228,7 +228,7 @@ class Scenario_ReceptionistSM(Behavior):
 		with _sm_guide_g1_and_introduice_people_1:
 			# x:65 y:25
 			OperatableStateMachine.add('say follow me to the right place',
-										SaraSay(sentence=lambda x: "Please follow me to the x[0].", input_keys=["personAlreadyInLocation"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "Please follow me to the "+x[0]+".", input_keys=["personAlreadyInLocation"], emotion=0, block=True),
 										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'personAlreadyInLocation': 'personAlreadyInLocation'})
@@ -297,7 +297,7 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:54 y:430
 			OperatableStateMachine.add('introduice G1 to person already in',
-										SaraSay(sentence=lambda x: "Hello "+x[0]+", here is a new guest who is named "+x[2]+" and love to drink "+x[3]+". "+x[2]+", I would like to introduice you "+x[0]+" and his favorite drink is "+x[1]+".", input_keys=["personAlreadyInName", "personAlreadyInDrink","Guest1Name","Guest1Drink"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "Hello "+x[0]+". Here is a new guest. His name is "+x[2]+" and love to drink "+x[3]+". "+x[2]+", I would like to introduice you "+x[0]+" and his favorite drink is "+x[1]+".", input_keys=["personAlreadyInName", "personAlreadyInDrink","Guest1Name","Guest1Drink"], emotion=0, block=True),
 										transitions={'done': 'find empty chair for G1'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'personAlreadyInName': 'personAlreadyInName', 'personAlreadyInDrink': 'personAlreadyInDrink', 'Guest1Name': 'Guest1Name', 'Guest1Drink': 'Guest1Drink'})
