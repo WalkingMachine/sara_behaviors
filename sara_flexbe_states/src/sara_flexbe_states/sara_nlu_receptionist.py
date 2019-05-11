@@ -2,8 +2,10 @@
 # encoding=utf8
 from __future__ import print_function
 from flexbe_core import EventState, Logger
+from flexbe_core.proxy import ProxyServiceCaller
+from flexbe_core import EventState, Logger
 import rospy
-from wm_nlu.srv import ReceptionistNLUService
+from wm_nlu.srv import ReceptionistNLUService, ReceptionistNLUServiceRequest
 
 
 class SaraNLUreceptionist(EventState):
@@ -22,30 +24,38 @@ class SaraNLUreceptionist(EventState):
         super(SaraNLUreceptionist, self).__init__(outcomes=['understood', 'fail'], input_keys=['sentence'],
                                          output_keys=['answer'])
 
-        serviceName = "/Receptionist_NLU_Service"
+        self.serviceName = "/Receptionist_NLU_Service"
 
-        Logger.loginfo("waiting forservice: " + serviceName)
-        rospy.wait_for_service(serviceName)
+        Logger.loginfo("waiting forservice: " + self.serviceName)
 
-        self.service = rospy.ServiceProxy(serviceName, ReceptionistNLUService)
+        self.serviceNLU = ProxyServiceCaller({self.serviceName: ReceptionistNLUService})
+        # self.service = rospy.ServiceProxy(serviceName, ReceptionistNLUService)
 
     def execute(self, userdata):
 
-        # Call the NLU service
-        response = self.service(userdata.sentence)
+        if self.serviceNLU.is_available(self.serviceName):
 
-        if not response:
-            userdata.answer = "unknown"
-            return "fail"
-            
-        # Checking the validity of the response
-        if response.response is "unknown":
-            userdata.answer = response.response
-            return "fail"
+            try:
+                # Call the say service
+                srvRequest = ReceptionistNLUServiceRequest()
+                srvRequest.str = userdata.sentence
+                response = self.serviceNLU.call(self.serviceName, srvRequest)
 
-        if response.response is "":
-            userdata.answer = response.response
-            return "fail"
+                if not response:
+                    userdata.answer = "unknown"
+                    return "fail"
 
-        userdata.answer = response.response
-        return "understood"
+                # Checking the validity of the response
+                if response.response is "unknown":
+                    userdata.answer = response.response
+                    return "fail"
+
+                if response.response is "":
+                    userdata.answer = "unknown"
+                    return "fail"
+
+                userdata.answer = response.response
+                return "understood"
+
+            except rospy.ServiceException as exc:
+                Logger.logwarn("Receptionist NLU did not work: \n" + str(exc))
