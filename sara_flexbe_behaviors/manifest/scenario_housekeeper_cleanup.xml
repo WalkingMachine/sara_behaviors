@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Scenario_Housekeeper_CleanUp">
+
+	<executable package_path="sara_flexbe_behaviors.scenario_housekeeper_cleanup_sm" class="Scenario_Housekeeper_CleanUpSM" />
+	<tagstring>scenario,housekeeper</tagstring>
+	<author>Raphaël Duchaîne</author>
+	<date>Mon Mar 11 2019</date>
+	<description>
+		Search items and put them at there place or in the trash can if the item is unknown
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
