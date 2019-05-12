@@ -110,13 +110,13 @@ class Scenario_ReceptionistSM(Behavior):
 										transitions={'done': 'set question name G1'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:375 y:202
+			# x:411 y:201
 			OperatableStateMachine.add('say continue scenario',
 										SaraSay(sentence="I will continue the scenario with your name as unknown.", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'set name G1 to unknown'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:71 y:272
+			# x:62 y:274
 			OperatableStateMachine.add('nlu receptionist for name G1',
 										SaraNLUreceptionist(),
 										transitions={'understood': 'set question drink G1', 'fail': 'say continue scenario'},
@@ -137,41 +137,41 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'questionNameG1'})
 
-			# x:342 y:296
+			# x:397 y:285
 			OperatableStateMachine.add('set name G1 to unknown',
 										SetKey(Value="unknown"),
 										transitions={'done': 'set question drink G1'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Guest1Name'})
 
-			# x:82 y:401
+			# x:68 y:427
 			OperatableStateMachine.add('Action_Ask_2',
 										self.use_behavior(sara_flexbe_behaviors__Action_AskSM, 'welcome Guest1/Ask name and drink while keep looking at person/Ask name and drink/Action_Ask_2'),
 										transitions={'finished': 'nlu receptionist for drink G1', 'failed': 'say continue scenario after drinkG1 failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'question': 'questionDrinkG1', 'answer': 'answerDrinkG1'})
 
-			# x:89 y:333
+			# x:72 y:352
 			OperatableStateMachine.add('set question drink G1',
 										SetKey(Value="What is your favorite drink?"),
 										transitions={'done': 'Action_Ask_2'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'questionDrinkG1'})
 
-			# x:300 y:424
+			# x:358 y:411
 			OperatableStateMachine.add('say continue scenario after drinkG1 failed',
 										SaraSay(sentence="I will continue the scenario with your favorite drink as unknown.", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'set drink G1 to unknown'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:342 y:503
+			# x:410 y:497
 			OperatableStateMachine.add('set drink G1 to unknown',
 										SetKey(Value="unknown"),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Guest1Drink'})
 
-			# x:79 y:483
+			# x:59 y:509
 			OperatableStateMachine.add('nlu receptionist for drink G1',
 										SaraNLUreceptionist(),
 										transitions={'understood': 'finished', 'fail': 'say continue scenario after drinkG1 failed'},
@@ -205,12 +205,12 @@ class Scenario_ReceptionistSM(Behavior):
 		_sm_guide_g2_and_introduice_people_3 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['personAlreadyInLocation', 'personAlreadyInName', 'personAlreadyInDrink', 'Guest1Drink', 'Guest1Name', 'Guest1ID', 'personAlreadyInID', 'Guest2Drink', 'Guest2Name'])
 
 		with _sm_guide_g2_and_introduice_people_3:
-			# x:65 y:25
+			# x:78 y:23
 			OperatableStateMachine.add('say follow me to the right place',
-										SaraSay(sentence=lambda x: "Please follow me to the"+ x[0] +".", input_keys=["personAlreadyInLocation"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "Thank you, "+x[0]+". Please follow me to the"+ x[1] +".", input_keys=["Guest2Name","personAlreadyInLocation"], emotion=0, block=True),
 										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'personAlreadyInLocation': 'personAlreadyInLocation'})
+										remapping={'personAlreadyInLocation': 'personAlreadyInLocation', 'Guest2Name': 'Guest2Name'})
 
 			# x:68 y:85
 			OperatableStateMachine.add('Action_Move',
@@ -342,12 +342,12 @@ class Scenario_ReceptionistSM(Behavior):
 		_sm_guide_g1_and_introduice_people_4 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['personAlreadyInLocation', 'personAlreadyInName', 'personAlreadyInDrink', 'Guest1Drink', 'Guest1Name', 'Guest1ID'], output_keys=['personAlreadyInID'])
 
 		with _sm_guide_g1_and_introduice_people_4:
-			# x:65 y:25
+			# x:75 y:21
 			OperatableStateMachine.add('say follow me to the right place',
-										SaraSay(sentence=lambda x: "Please follow me to the "+x[0]+".", input_keys=["personAlreadyInLocation"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "Thank you, "+x[0]+". Please follow me to the "+x[1]+".", input_keys=["Guest1Name", "personAlreadyInLocation"], emotion=0, block=True),
 										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'personAlreadyInLocation': 'personAlreadyInLocation'})
+										remapping={'personAlreadyInLocation': 'personAlreadyInLocation', 'Guest1Name': 'Guest1Name'})
 
 			# x:68 y:85
 			OperatableStateMachine.add('Action_Move',
