@@ -4,8 +4,7 @@
 import json
 
 import requests
-from flexbe_core import EventState
-from rospy import logerr, logwarn, loginfo
+from flexbe_core import EventState, Logger
 from sara_msgs.msg import Entity, Entities
 
 """
@@ -33,9 +32,23 @@ class WonderlandGetEntityVerbal(EventState):
         # See example_state.py for basic explanations.
         super(WonderlandGetEntityVerbal, self).__init__(outcomes=['one', 'multiple', 'none', 'error'],
                                                         input_keys=['name', 'containers'],
-                                                        output_keys=['entities'])
+                                                        output_keys=['entities', 'firstEntity'])
+        self.entities = []
 
     def execute(self, userdata):
+
+        userdata.entities = self.entities
+        if len(self.entities) == 0:
+            return 'none'
+        elif len(self.entities) == 1:
+            userdata.firstEntity = self.entities[0]
+            return 'one'
+        elif len(self.entities) > 1:
+            return 'multiple'
+        else:
+            return 'none'
+
+    def on_enter(self, userdata):
         # Generate URL to contact
 
         if type(userdata.name) is str:
@@ -51,40 +64,26 @@ class WonderlandGetEntityVerbal(EventState):
                 if type(container) is str:
                     url += "&entityContainer=" + container
 
-        logwarn(url)
+        Logger.logwarn(url)
 
         # try the request
         try:
             response = requests.get(url)
         except requests.exceptions.RequestException as e:
-            logerr(e)
+            Logger.logerr(e)
             return 'error'
 
         # parse parameter json data
         data = json.loads(response.content)
 
-        loginfo(data)
+        Logger.loginfo(data)
 
-        if len(data) == 0:
-            return 'none'
+        self.entities = []
+        for entityData in data:
+            if 'entityId' in entityData:
+                self.entities.append(self.generateEntity(entityData))
 
-        elif len(data) == 1 and 'entityId' in data[0]:
-            userdata.entities = self.generateEntity(data[0])
-            return 'one'
-
-        elif 'entityId' in data:
-            userdata.entities = self.generateEntity(data)
-            return 'one'
-
-        else:
-            entities = Entities()
-
-            for entityData in data:
-                if 'entityId' in entityData:
-                    entities.entities.append(self.generateEntity(entityData))
-
-            userdata.entities = entities
-            return 'multiple'
+        Logger.loginfo(self.entities)
 
     def generateEntity(self, data):
         entity = Entity()
@@ -116,7 +115,5 @@ class WonderlandGetEntityVerbal(EventState):
         entity.waypoint.theta = data['entityWaypointYaw']/180*3.14159
 
         entity.containerId = data['entityContainer']
-
-        loginfo(entity)
 
         return entity

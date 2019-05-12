@@ -18,7 +18,6 @@
 	<contains name="Action_Move" />
 	<contains name="Action_follow" />
 	<contains name="Action_Pass_Door" />
-	<contains name="ActionWrapper_Move" />
 
 	<!-- Available Parameters -->
 

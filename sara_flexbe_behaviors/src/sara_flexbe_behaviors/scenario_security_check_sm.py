@@ -13,10 +13,6 @@ from sara_flexbe_states.sara_sound import SaraSound
 from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as sara_flexbe_behaviors__Action_Pass_DoorSM
-from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerbal
-from flexbe_states.calculation_state import CalculationState
-from flexbe_states.log_key_state import LogKeyState
-from sara_flexbe_states.SetKey import SetKey
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -54,7 +50,7 @@ class Scenario_Security_CheckSM(Behavior):
 
 
 	def create(self):
-		# x:1166 y:631
+		# x:358 y:506
 		_state_machine = OperatableStateMachine(outcomes=['finished'])
 		_state_machine.userdata.relative = False
 		_state_machine.userdata.EntryName = "door1/enter"
@@ -69,118 +65,62 @@ class Scenario_Security_CheckSM(Behavior):
 
 
 		with _state_machine:
-			# x:189 y:9
+			# x:52 y:27
 			OperatableStateMachine.add('Bouton to start',
 										ContinueButton(),
-										transitions={'true': 'set not relative', 'false': 'Bouton to start'},
+										transitions={'true': 'Action_Pass_Door', 'false': 'Bouton to start'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
 
-			# x:37 y:612
+			# x:41 y:430
 			OperatableStateMachine.add('Failed',
 										SaraSound(sound="error.wav"),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:369 y:551
+			# x:328 y:370
 			OperatableStateMachine.add('Waiting',
 										SaraSound(sound="to_be_continued.wav"),
 										transitions={'done': 'Bouton continuer'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:24 y:498
+			# x:310 y:111
 			OperatableStateMachine.add('Move to test zone',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Move to test zone'),
 										transitions={'finished': 'say ready', 'failed': 'Failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'TestPose', 'relative': 'relative'})
+										remapping={'pose': 'TestName'})
 
-			# x:226 y:489
+			# x:329 y:197
 			OperatableStateMachine.add('say ready',
-										SaraSay(sentence="I'm ready for my safety check. Press the continue button on my back when you are done.", emotion=1, block=True),
+										SaraSay(sentence="I'm ready for my safety check. Press the continue button on my back when you are done.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Bouton continuer'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:24 y:259
+			# x:34 y:115
 			OperatableStateMachine.add('Action_Pass_Door',
 										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Action_Pass_Door'),
-										transitions={'Done': 'get test zone', 'Fail': 'Failed'},
+										transitions={'Done': 'Move to test zone', 'Fail': 'Failed'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
-										remapping={'DoorPose1': 'DoorPose1'})
+										remapping={'DoorName': 'EntryName'})
 
-			# x:359 y:480
+			# x:332 y:282
 			OperatableStateMachine.add('Bouton continuer',
 										ContinueButton(),
 										transitions={'true': 'say bye', 'false': 'Waiting'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
 
-			# x:1002 y:463
+			# x:513 y:432
 			OperatableStateMachine.add('Action_Pass_Door_2',
 										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Action_Pass_Door_2'),
 										transitions={'Done': 'finished', 'Fail': 'Failed'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
-										remapping={'DoorPose1': 'DoorPose2'})
+										remapping={'DoorName': 'ExitName'})
 
-			# x:27 y:104
-			OperatableStateMachine.add('get entry',
-										WonderlandGetEntityVerbal(),
-										transitions={'one': 'get waypoint entry', 'multiple': 'get waypoint entry', 'none': 'get waypoint entry', 'error': 'get waypoint entry'},
-										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'name': 'EntryName', 'containers': 'container', 'entities': 'DoorPose1'})
-
-			# x:39 y:176
-			OperatableStateMachine.add('get waypoint entry',
-										CalculationState(calculation=lambda x: x.waypoint),
-										transitions={'done': 'Action_Pass_Door'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'DoorPose1', 'output_value': 'DoorPose1'})
-
-			# x:25 y:413
-			OperatableStateMachine.add('get waypoint test',
-										CalculationState(calculation=lambda x: x.waypoint),
-										transitions={'done': 'Move to test zone'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'TestPose', 'output_value': 'TestPose'})
-
-			# x:646 y:472
-			OperatableStateMachine.add('get exit zone',
-										WonderlandGetEntityVerbal(),
-										transitions={'one': 'get exit pose', 'multiple': 'get exit pose', 'none': 'get exit pose', 'error': 'get exit pose'},
-										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'name': 'ExitName', 'containers': 'container', 'entities': 'DoorPose2'})
-
-			# x:855 y:470
-			OperatableStateMachine.add('get exit pose',
-										CalculationState(calculation=lambda x: x.waypoint),
-										transitions={'done': 'log'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'DoorPose2', 'output_value': 'DoorPose2'})
-
-			# x:921 y:334
-			OperatableStateMachine.add('log',
-										LogKeyState(text="{}", severity=Logger.REPORT_HINT),
-										transitions={'done': 'Action_Pass_Door_2'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'data': 'DoorPose2'})
-
-			# x:519 y:476
+			# x:530 y:282
 			OperatableStateMachine.add('say bye',
-										SaraSay(sentence="Thank you, See you later.", emotion=1, block=True),
-										transitions={'done': 'get exit zone'},
+										SaraSay(sentence="Thank you, See you later.", input_keys=[], emotion=1, block=True),
+										transitions={'done': 'Action_Pass_Door_2'},
 										autonomy={'done': Autonomy.Off})
-
-			# x:17 y:335
-			OperatableStateMachine.add('get test zone',
-										WonderlandGetEntityVerbal(),
-										transitions={'one': 'get waypoint test', 'multiple': 'get waypoint test', 'none': 'get waypoint test', 'error': 'get waypoint test'},
-										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'name': 'TestName', 'containers': 'container', 'entities': 'TestPose'})
-
-			# x:49 y:34
-			OperatableStateMachine.add('set not relative',
-										SetKey(Value=False),
-										transitions={'done': 'get entry'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'relative'})
 
 
 		return _state_machine

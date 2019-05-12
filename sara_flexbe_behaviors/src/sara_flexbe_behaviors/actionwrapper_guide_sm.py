@@ -360,7 +360,7 @@ class ActionWrapper_GuideSM(Behavior):
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Try to reach/Container/navigate to the point/Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'pose', 'relative': 'relative'})
+										remapping={'pose': 'pose'})
 
 
 		# x:728 y:335, x:792 y:103, x:738 y:249, x:724 y:448
@@ -667,7 +667,7 @@ class ActionWrapper_GuideSM(Behavior):
 										WonderlandGetEntityVerbal(),
 										transitions={'one': 'find the point', 'multiple': 'say_reach_the_entity', 'none': 'say_reach_the_entity', 'error': 'say_reach_the_entity'},
 										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
-										remapping={'name': 'area_name', 'containers': 'containers', 'entities': 'entities'})
+										remapping={'name': 'area_name', 'containers': 'containers', 'entities': 'entities', 'firstEntity': 'firstEntity'})
 
 			# x:708 y:529
 			OperatableStateMachine.add('Action_point_at',
