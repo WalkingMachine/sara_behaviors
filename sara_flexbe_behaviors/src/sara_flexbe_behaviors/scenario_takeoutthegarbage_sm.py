@@ -52,6 +52,12 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 
 		# Behavior comments:
 
+		# O 55 98 /First bin/find the bin
+		# mettre le bras en haut
+
+		# O 69 551 /First bin/find the bin
+		# faire le move plusieurs fois: ex 3 fois|n
+
 
 
 	def create(self):
@@ -196,35 +202,35 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 		_sm_find_the_bin_6 = OperatableStateMachine(outcomes=['finished', 'failed'])
 
 		with _sm_find_the_bin_6:
-			# x:79 y:47
+			# x:89 y:168
 			OperatableStateMachine.add('find closest obstacle point',
 										GetClosestObstacle(topic="/scan", maximumDistance=2),
 										transitions={'done': 'pose form lidar to map'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Angle': 'Angle', 'distance': 'distance', 'position': 'detectedObstacle'})
 
-			# x:84 y:359
+			# x:90 y:493
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'First bin/find the bin/Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'poseToBin'})
 
-			# x:92 y:281
+			# x:91 y:395
 			OperatableStateMachine.add('get waypoint',
 										Get_Reacheable_Waypoint(),
 										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose_in': 'detectedBin', 'distance': 'distanceToBin', 'pose_out': 'poseToBin'})
 
-			# x:72 y:185
+			# x:103 y:312
 			OperatableStateMachine.add('set distance to bin',
 										SetKey(Value=0.5),
 										transitions={'done': 'get waypoint'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'distanceToBin'})
 
-			# x:126 y:126
+			# x:101 y:244
 			OperatableStateMachine.add('pose form lidar to map',
 										TF_transformation(in_ref="front_hokuyo_link", out_ref="map"),
 										transitions={'done': 'set distance to bin', 'fail': 'failed'},
