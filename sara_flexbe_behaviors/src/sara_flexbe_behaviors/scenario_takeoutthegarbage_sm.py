@@ -13,8 +13,11 @@ from sara_flexbe_states.GetClosestObstacle import GetClosestObstacle
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.TF_transform import TF_transformation
-from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.set_gripper_state import SetGripperState
+from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.run_trajectory import RunTrajectory
+from sara_flexbe_states.torque_reader import ReadTorque
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -55,8 +58,8 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 		# O 55 98 /First bin/find the bin
 		# mettre le bras en haut
 
-		# O 69 551 /First bin/find the bin
-		# faire le move plusieurs fois: ex 3 fois|n
+		# O 355 118 /First bin/get the bag/trajectory down with torque limit/torque control
+		# faire une state toggle du controller manager|n
 
 
 
@@ -162,10 +165,123 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 										remapping={'pose': 'bin2Waypoint'})
 
 
-		# x:788 y:451, x:808 y:125
-		_sm_go_to_drop_the_bag_4 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['dropzoneWaypoint'])
+		# x:726 y:80, x:726 y:381
+		_sm_torque_control_4 = OperatableStateMachine(outcomes=['finished', 'failed'])
 
-		with _sm_go_to_drop_the_bag_4:
+		with _sm_torque_control_4:
+			# x:110 y:93
+			OperatableStateMachine.add('check torque',
+										ReadTorque(watchdog=10, Joint="shoulder_pitch_joint", Threshold=1, min_time=1),
+										transitions={'threshold': 'finished', 'watchdog': 'check torque', 'fail': 'check torque'},
+										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'torque': 'torque'})
+
+
+		# x:30 y:458, x:130 y:458
+		_sm_trajectory_down_5 = OperatableStateMachine(outcomes=['finished', 'failed'])
+
+		with _sm_trajectory_down_5:
+			# x:68 y:158
+			OperatableStateMachine.add('run down',
+										RunTrajectory(file="poubelle_app"),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+
+		# x:30 y:458, x:130 y:458
+		_sm_has_bag_in_gripper_6 = OperatableStateMachine(outcomes=['finished', 'failed'])
+
+		with _sm_has_bag_in_gripper_6:
+			# x:48 y:101
+			OperatableStateMachine.add('say',
+										SaraSay(sentence="I must check if I have a bag in my gripper.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+
+		# x:30 y:458, x:130 y:458
+		_sm_trajectory_up_7 = OperatableStateMachine(outcomes=['finished', 'failed'])
+
+		with _sm_trajectory_up_7:
+			# x:71 y:122
+			OperatableStateMachine.add('trajectory up',
+										RunTrajectory(file="poubelle_eloigne"),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+
+		# x:536 y:382, x:532 y:119
+		_sm_close_gripper_8 = OperatableStateMachine(outcomes=['finished', 'failed'])
+
+		with _sm_close_gripper_8:
+			# x:79 y:177
+			OperatableStateMachine.add('close gripper',
+										SetGripperState(width=0, effort=1),
+										transitions={'object': 'finished', 'no_object': 'retry close'},
+										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
+										remapping={'object_size': 'object_size'})
+
+			# x:284 y:92
+			OperatableStateMachine.add('retry close',
+										ForLoop(repeat=1),
+										transitions={'do': 'close gripper', 'end': 'failed'},
+										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+										remapping={'index': 'index'})
+
+
+		# x:517 y:111, x:500 y:306, x:578 y:111, x:569 y:313
+		_sm_trajectory_down_with_torque_limit_9 = ConcurrencyContainer(outcomes=['finished', 'failed'], conditions=[
+										('finished', [('torque control', 'finished'), ('trajectory down', 'finished')]),
+										('failed', [('trajectory down', 'failed'), ('torque control', 'failed')])
+										])
+
+		with _sm_trajectory_down_with_torque_limit_9:
+			# x:109 y:63
+			OperatableStateMachine.add('trajectory down',
+										_sm_trajectory_down_5,
+										transitions={'finished': 'finished', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+
+			# x:102 y:211
+			OperatableStateMachine.add('torque control',
+										_sm_torque_control_4,
+										transitions={'finished': 'finished', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+
+
+		# x:1040 y:501, x:1039 y:56
+		_sm_get_the_bag_10 = OperatableStateMachine(outcomes=['finished', 'failed'])
+
+		with _sm_get_the_bag_10:
+			# x:333 y:39
+			OperatableStateMachine.add('trajectory down with torque limit',
+										_sm_trajectory_down_with_torque_limit_9,
+										transitions={'finished': 'close gripper', 'failed': 'trajectory down with torque limit'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+
+			# x:366 y:157
+			OperatableStateMachine.add('close gripper',
+										_sm_close_gripper_8,
+										transitions={'finished': 'trajectory up', 'failed': 'trajectory up'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+
+			# x:364 y:269
+			OperatableStateMachine.add('trajectory up',
+										_sm_trajectory_up_7,
+										transitions={'finished': 'has bag in gripper', 'failed': 'has bag in gripper'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+
+			# x:115 y:349
+			OperatableStateMachine.add('has bag in gripper',
+										_sm_has_bag_in_gripper_6,
+										transitions={'finished': 'finished', 'failed': 'trajectory down with torque limit'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+
+
+		# x:788 y:451, x:808 y:125
+		_sm_go_to_drop_the_bag_11 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['dropzoneWaypoint'])
+
+		with _sm_go_to_drop_the_bag_11:
 			# x:62 y:32
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'First bin/go to drop the bag/Action_Move'),
@@ -187,21 +303,10 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:30 y:458, x:130 y:458
-		_sm_get_the_bag_5 = OperatableStateMachine(outcomes=['finished', 'failed'])
-
-		with _sm_get_the_bag_5:
-			# x:30 y:40
-			OperatableStateMachine.add('say',
-										SaraSay(sentence="I must take the bag", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off})
-
-
 		# x:1146 y:606, x:1141 y:452
-		_sm_find_the_bin_6 = OperatableStateMachine(outcomes=['finished', 'failed'])
+		_sm_find_the_bin_12 = OperatableStateMachine(outcomes=['finished', 'failed'])
 
-		with _sm_find_the_bin_6:
+		with _sm_find_the_bin_12:
 			# x:89 y:168
 			OperatableStateMachine.add('find closest obstacle point',
 										GetClosestObstacle(topic="/scan", maximumDistance=2),
@@ -212,7 +317,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 			# x:90 y:493
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'First bin/find the bin/Action_Move'),
-										transitions={'finished': 'finished', 'failed': 'failed'},
+										transitions={'finished': 'redo ajustements de la position', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'poseToBin'})
 
@@ -237,11 +342,18 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'in_pos': 'detectedObstacle', 'out_pos': 'detectedBin'})
 
+			# x:80 y:598
+			OperatableStateMachine.add('redo ajustements de la position',
+										ForLoop(repeat=2),
+										transitions={'do': 'Action_Move', 'end': 'finished'},
+										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+										remapping={'index': 'index'})
+
 
 		# x:573 y:546, x:622 y:92
-		_sm_go_to_bin_7 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['bin1Waypoint'])
+		_sm_go_to_bin_13 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['bin1Waypoint'])
 
-		with _sm_go_to_bin_7:
+		with _sm_go_to_bin_13:
 			# x:254 y:199
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'First bin/go to bin/Action_Move'),
@@ -251,9 +363,9 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 
 
 		# x:946 y:467, x:907 y:75
-		_sm_second_bin_8 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['bin2Waypoint', 'bin2Height', 'dropzoneWaypoint'])
+		_sm_second_bin_14 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['bin2Waypoint', 'bin2Height', 'dropzoneWaypoint'])
 
-		with _sm_second_bin_8:
+		with _sm_second_bin_14:
 			# x:150 y:33
 			OperatableStateMachine.add('go to bin',
 										_sm_go_to_bin_3,
@@ -282,48 +394,48 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 
 
 		# x:776 y:624, x:717 y:53
-		_sm_first_bin_9 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['bin1Waypoint', 'bin1Height', 'dropzoneWaypoint'])
+		_sm_first_bin_15 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['bin1Waypoint', 'bin1Height', 'dropzoneWaypoint'])
 
-		with _sm_first_bin_9:
+		with _sm_first_bin_15:
 			# x:150 y:33
 			OperatableStateMachine.add('go to bin',
-										_sm_go_to_bin_7,
+										_sm_go_to_bin_13,
 										transitions={'finished': 'find the bin', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'bin1Waypoint': 'bin1Waypoint'})
 
 			# x:149 y:164
 			OperatableStateMachine.add('find the bin',
-										_sm_find_the_bin_6,
+										_sm_find_the_bin_12,
 										transitions={'finished': 'get the bag', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:145 y:299
-			OperatableStateMachine.add('get the bag',
-										_sm_get_the_bag_5,
-										transitions={'finished': 'go to drop the bag', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
-
-			# x:141 y:430
+			# x:135 y:430
 			OperatableStateMachine.add('go to drop the bag',
-										_sm_go_to_drop_the_bag_4,
+										_sm_go_to_drop_the_bag_11,
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'dropzoneWaypoint': 'dropzoneWaypoint'})
+
+			# x:145 y:299
+			OperatableStateMachine.add('get the bag',
+										_sm_get_the_bag_10,
+										transitions={'finished': 'go to drop the bag', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 
 
 		with _state_machine:
 			# x:277 y:63
 			OperatableStateMachine.add('First bin',
-										_sm_first_bin_9,
+										_sm_first_bin_15,
 										transitions={'finished': 'second bin', 'failed': 'try second bin'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'bin1Waypoint': 'bin1Waypoint', 'bin1Height': 'bin1Height', 'dropzoneWaypoint': 'dropzoneWaypoint'})
 
 			# x:331 y:381
 			OperatableStateMachine.add('second bin',
-										_sm_second_bin_8,
+										_sm_second_bin_14,
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'bin2Waypoint': 'bin2Waypoint', 'bin2Height': 'bin2Height', 'dropzoneWaypoint': 'dropzoneWaypoint'})
