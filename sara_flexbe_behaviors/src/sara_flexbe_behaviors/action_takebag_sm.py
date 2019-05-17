@@ -73,12 +73,12 @@ class Action_TakeBagSM(Behavior):
 		with _sm_trajectory_down_1:
 			# x:68 y:158
 			OperatableStateMachine.add('run down',
-										RunTrajectory(file="poubelle_app"),
+										RunTrajectory(file="poubelle_app", duration=8),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:30 y:458, x:130 y:458, x:230 y:458, x:330 y:458
+		# x:479 y:236, x:469 y:51, x:230 y:458, x:330 y:458
 		_sm_trajectory_down_with_torque_limit_2 = ConcurrencyContainer(outcomes=['finished', 'failed'], conditions=[
 										('finished', [('torque control', 'finished'), ('trajectory down', 'finished')]),
 										('failed', [('trajectory down', 'failed'), ('torque control', 'failed')])
@@ -115,7 +115,7 @@ class Action_TakeBagSM(Behavior):
 		with _sm_trajectory_up_4:
 			# x:71 y:122
 			OperatableStateMachine.add('trajectory up',
-										RunTrajectory(file="poubelle_eloigne"),
+										RunTrajectory(file="poubelle_eloigne", duration=8),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
@@ -131,7 +131,7 @@ class Action_TakeBagSM(Behavior):
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
-			# x:284 y:92
+			# x:272 y:237
 			OperatableStateMachine.add('retry close',
 										ForLoop(repeat=1),
 										transitions={'do': 'close gripper', 'end': 'failed'},
