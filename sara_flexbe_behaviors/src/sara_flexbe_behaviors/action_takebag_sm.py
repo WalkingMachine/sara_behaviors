@@ -8,11 +8,13 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.run_trajectory import RunTrajectory
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.torque_reader import ReadTorque
+from flexbe_states.wait_state import WaitState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -59,9 +61,15 @@ class Action_TakeBagSM(Behavior):
 		_sm_torque_control_0 = OperatableStateMachine(outcomes=['finished', 'failed'])
 
 		with _sm_torque_control_0:
-			# x:110 y:93
+			# x:126 y:51
+			OperatableStateMachine.add('w2',
+										WaitState(wait_time=2),
+										transitions={'done': 'check torque'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:120 y:195
 			OperatableStateMachine.add('check torque',
-										ReadTorque(watchdog=10, Joint="right_shoulder_pitch_joint", Threshold=1, min_time=1),
+										ReadTorque(watchdog=20, Joint="right_shoulder_pitch_joint", Threshold=2, min_time=0.5),
 										transitions={'threshold': 'finished', 'watchdog': 'check torque', 'fail': 'check torque'},
 										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'torque': 'torque'})
@@ -73,15 +81,17 @@ class Action_TakeBagSM(Behavior):
 		with _sm_trajectory_down_1:
 			# x:68 y:158
 			OperatableStateMachine.add('run down',
-										RunTrajectory(file="poubelle_app", duration=8),
+										RunTrajectory(file="poubelle_app", duration=20),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:479 y:236, x:469 y:51, x:230 y:458, x:330 y:458
+		# x:479 y:236, x:469 y:51, x:462 y:111, x:471 y:160, x:430 y:365, x:530 y:365
 		_sm_trajectory_down_with_torque_limit_2 = ConcurrencyContainer(outcomes=['finished', 'failed'], conditions=[
-										('finished', [('torque control', 'finished'), ('trajectory down', 'finished')]),
-										('failed', [('trajectory down', 'failed'), ('torque control', 'failed')])
+										('finished', [('torque control', 'finished')]),
+										('finished', [('trajectory down', 'finished')]),
+										('failed', [('trajectory down', 'failed')]),
+										('failed', [('torque control', 'failed')])
 										])
 
 		with _sm_trajectory_down_with_torque_limit_2:
@@ -141,36 +151,42 @@ class Action_TakeBagSM(Behavior):
 
 
 		with _state_machine:
-			# x:120 y:34
-			OperatableStateMachine.add('open gripper',
-										SetGripperState(width=0.12, effort=0),
-										transitions={'object': 'trajectory down with torque limit', 'no_object': 'trajectory down with torque limit'},
-										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
-										remapping={'object_size': 'object_size'})
+			# x:89 y:35
+			OperatableStateMachine.add('head down',
+										SaraSetHeadAngle(pitch=0.8, yaw=0),
+										transitions={'done': 'open gripper'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:366 y:157
+			# x:484 y:164
 			OperatableStateMachine.add('close gripper',
 										_sm_close_gripper_5,
 										transitions={'finished': 'trajectory up', 'failed': 'trajectory up'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:364 y:269
+			# x:473 y:300
 			OperatableStateMachine.add('trajectory up',
 										_sm_trajectory_up_4,
 										transitions={'finished': 'has bag in gripper', 'failed': 'has bag in gripper'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:115 y:349
+			# x:232 y:434
 			OperatableStateMachine.add('has bag in gripper',
 										_sm_has_bag_in_gripper_3,
 										transitions={'finished': 'finished', 'failed': 'open gripper'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:333 y:39
+			# x:467 y:33
 			OperatableStateMachine.add('trajectory down with torque limit',
 										_sm_trajectory_down_with_torque_limit_2,
-										transitions={'finished': 'close gripper', 'failed': 'trajectory down with torque limit'},
+										transitions={'finished': 'close gripper', 'failed': 'head down'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+
+			# x:283 y:83
+			OperatableStateMachine.add('open gripper',
+										SetGripperState(width=0.12, effort=0),
+										transitions={'object': 'trajectory down with torque limit', 'no_object': 'trajectory down with torque limit'},
+										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
+										remapping={'object_size': 'object_size'})
 
 
 		return _state_machine
