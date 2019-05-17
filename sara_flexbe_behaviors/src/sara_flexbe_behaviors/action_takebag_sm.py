@@ -69,7 +69,7 @@ class Action_TakeBagSM(Behavior):
 
 			# x:120 y:195
 			OperatableStateMachine.add('check torque',
-										ReadTorque(watchdog=20, Joint="right_shoulder_pitch_joint", Threshold=2, min_time=0.5),
+										ReadTorque(watchdog=20, Joint="right_shoulder_pitch_joint", Threshold=2.5, min_time=0.5),
 										transitions={'threshold': 'finished', 'watchdog': 'check torque', 'fail': 'check torque'},
 										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'torque': 'torque'})
