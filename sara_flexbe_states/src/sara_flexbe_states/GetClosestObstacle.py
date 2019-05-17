@@ -42,7 +42,7 @@ class GetClosestObstacle(EventState):
         if msg:
             for range in msg.ranges:
                 ang = msg.angle_min + i * msg.angle_increment
-                if range < previousMinimum and (range > 0.4 or -1.8 < ang < 1.8):
+                if range < previousMinimum and (range > 0.4 or -1.8 < ang < 1.8) and range > 0.05:
                     previousMinimum = range
                     Angle = ang
                 i += 1
