@@ -74,7 +74,8 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 		_state_machine.userdata.bin2Waypoint = "bin2"
 		_state_machine.userdata.bin1Height = "1"
 		_state_machine.userdata.bin2Height = "1"
-		_state_machine.userdata.dropzoneWaypoint = "dropzone"
+		_state_machine.userdata.dropzone2Waypoint = "drop_zone1"
+		_state_machine.userdata.dropzone1Waypoint = "drop_zone2"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -330,14 +331,14 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 										_sm_first_bin_7,
 										transitions={'finished': 'second bin', 'failed': 'try second bin'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'bin1Waypoint': 'bin1Waypoint', 'bin1Height': 'bin1Height', 'dropzoneWaypoint': 'dropzoneWaypoint'})
+										remapping={'bin1Waypoint': 'bin1Waypoint', 'bin1Height': 'bin1Height', 'dropzoneWaypoint': 'dropzone1Waypoint'})
 
 			# x:331 y:381
 			OperatableStateMachine.add('second bin',
 										_sm_second_bin_6,
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'bin2Waypoint': 'bin2Waypoint', 'bin2Height': 'bin2Height', 'dropzoneWaypoint': 'dropzoneWaypoint'})
+										remapping={'bin2Waypoint': 'bin2Waypoint', 'bin2Height': 'bin2Height', 'dropzoneWaypoint': 'dropzone2Waypoint'})
 
 			# x:444 y:195
 			OperatableStateMachine.add('try second bin',
