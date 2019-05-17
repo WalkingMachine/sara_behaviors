@@ -63,7 +63,7 @@ class Action_TakeBagSM(Behavior):
 		with _sm_torque_control_0:
 			# x:126 y:51
 			OperatableStateMachine.add('w2',
-										WaitState(wait_time=2),
+										WaitState(wait_time=5),
 										transitions={'done': 'check torque'},
 										autonomy={'done': Autonomy.Off})
 
