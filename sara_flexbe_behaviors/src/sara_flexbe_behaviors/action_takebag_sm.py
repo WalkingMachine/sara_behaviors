@@ -12,9 +12,9 @@ from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.run_trajectory import RunTrajectory
+from sara_flexbe_states.torque_reader import ReadTorque
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.wait_state import WaitState
-from sara_flexbe_states.torque_reader import ReadTorque
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -86,26 +86,49 @@ class Action_TakeBagSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:30 y:365, x:130 y:365
-		_sm_trajectory_to_transport_pose_2 = OperatableStateMachine(outcomes=['finished', 'failed'])
+		# x:30 y:458, x:130 y:458, x:230 y:458, x:330 y:458, x:430 y:458, x:530 y:458
+		_sm_container_2 = ConcurrencyContainer(outcomes=['finished', 'failed'], conditions=[
+										('failed', [('test', 'done')]),
+										('finished', [('tor', 'threshold')]),
+										('failed', [('tor', 'watchdog')]),
+										('failed', [('tor', 'fail')])
+										])
 
-		with _sm_trajectory_to_transport_pose_2:
+		with _sm_container_2:
+			# x:67 y:108
+			OperatableStateMachine.add('test',
+										RunTrajectory(file="poubelle_valide", duration=7),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:327 y:130
+			OperatableStateMachine.add('tor',
+										ReadTorque(watchdog=7, Joint="right_elbow_yaw_joint", Threshold=1.6, min_time=1),
+										transitions={'threshold': 'finished', 'watchdog': 'failed', 'fail': 'failed'},
+										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'torque': 'torque'})
+
+
+		# x:30 y:365, x:130 y:365
+		_sm_trajectory_to_transport_pose_3 = OperatableStateMachine(outcomes=['finished', 'failed'])
+
+		with _sm_trajectory_to_transport_pose_3:
 			# x:30 y:40
 			OperatableStateMachine.add('trajectory to transport pose',
-										RunTrajectory(file="poubelle_transport", duration=8),
+										RunTrajectory(file="poubelle_transport", duration=0),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
 
 		# x:479 y:236, x:469 y:51, x:462 y:111, x:471 y:160, x:430 y:365, x:530 y:365
-		_sm_trajectory_down_with_torque_limit_3 = ConcurrencyContainer(outcomes=['finished', 'failed'], conditions=[
+		_sm_trajectory_down_with_torque_limit_4 = ConcurrencyContainer(outcomes=['finished', 'failed'], conditions=[
 										('finished', [('torque control', 'finished')]),
 										('finished', [('trajectory down', 'finished')]),
 										('failed', [('trajectory down', 'failed')]),
 										('failed', [('torque control', 'failed')])
 										])
 
-		with _sm_trajectory_down_with_torque_limit_3:
+		with _sm_trajectory_down_with_torque_limit_4:
 			# x:109 y:63
 			OperatableStateMachine.add('trajectory down',
 										_sm_trajectory_down_1,
@@ -120,31 +143,43 @@ class Action_TakeBagSM(Behavior):
 
 
 		# x:30 y:458, x:130 y:458
-		_sm_has_bag_in_gripper_4 = OperatableStateMachine(outcomes=['finished', 'failed'])
+		_sm_has_bag_in_gripper_5 = OperatableStateMachine(outcomes=['finished', 'failed'])
 
-		with _sm_has_bag_in_gripper_4:
-			# x:48 y:101
-			OperatableStateMachine.add('say',
-										SaraSay(sentence="I must check if I have a bag in my gripper.", input_keys=[], emotion=0, block=True),
+		with _sm_has_bag_in_gripper_5:
+			# x:191 y:132
+			OperatableStateMachine.add('Container',
+										_sm_container_2,
+										transitions={'finished': 'ok', 'failed': 'bad'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+
+			# x:18 y:266
+			OperatableStateMachine.add('ok',
+										SaraSay(sentence="Yay! I got it!", input_keys=[], emotion=6, block=True),
 										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:238 y:279
+			OperatableStateMachine.add('bad',
+										SaraSay(sentence="Woops! I missed!", input_keys=[], emotion=3, block=True),
+										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
 
 		# x:30 y:458, x:130 y:458
-		_sm_trajectory_up_5 = OperatableStateMachine(outcomes=['finished', 'failed'])
+		_sm_trajectory_up_6 = OperatableStateMachine(outcomes=['finished', 'failed'])
 
-		with _sm_trajectory_up_5:
+		with _sm_trajectory_up_6:
 			# x:71 y:122
 			OperatableStateMachine.add('trajectory up',
-										RunTrajectory(file="poubelle_eloigne", duration=8),
+										RunTrajectory(file="poubelle_eloigne", duration=10),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
 
 		# x:30 y:458, x:130 y:458
-		_sm_close_gripper_6 = OperatableStateMachine(outcomes=['finished', 'failed'])
+		_sm_close_gripper_7 = OperatableStateMachine(outcomes=['finished', 'failed'])
 
-		with _sm_close_gripper_6:
+		with _sm_close_gripper_7:
 			# x:79 y:177
 			OperatableStateMachine.add('close gripper',
 										SetGripperState(width=0, effort=1),
@@ -170,25 +205,25 @@ class Action_TakeBagSM(Behavior):
 
 			# x:484 y:164
 			OperatableStateMachine.add('close gripper',
-										_sm_close_gripper_6,
+										_sm_close_gripper_7,
 										transitions={'finished': 'trajectory up', 'failed': 'trajectory up'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 			# x:473 y:300
 			OperatableStateMachine.add('trajectory up',
-										_sm_trajectory_up_5,
-										transitions={'finished': 'has bag in gripper', 'failed': 'has bag in gripper'},
+										_sm_trajectory_up_6,
+										transitions={'finished': 'wait a little bit', 'failed': 'wait a little bit'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 			# x:232 y:434
 			OperatableStateMachine.add('has bag in gripper',
-										_sm_has_bag_in_gripper_4,
+										_sm_has_bag_in_gripper_5,
 										transitions={'finished': 'trajectory to transport pose', 'failed': 'open gripper'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 			# x:467 y:33
 			OperatableStateMachine.add('trajectory down with torque limit',
-										_sm_trajectory_down_with_torque_limit_3,
+										_sm_trajectory_down_with_torque_limit_4,
 										transitions={'finished': 'close gripper', 'failed': 'head down'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
@@ -201,9 +236,15 @@ class Action_TakeBagSM(Behavior):
 
 			# x:557 y:454
 			OperatableStateMachine.add('trajectory to transport pose',
-										_sm_trajectory_to_transport_pose_2,
+										_sm_trajectory_to_transport_pose_3,
 										transitions={'finished': 'finished', 'failed': 'finished'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+
+			# x:356 y:357
+			OperatableStateMachine.add('wait a little bit',
+										WaitState(wait_time=1),
+										transitions={'done': 'has bag in gripper'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine

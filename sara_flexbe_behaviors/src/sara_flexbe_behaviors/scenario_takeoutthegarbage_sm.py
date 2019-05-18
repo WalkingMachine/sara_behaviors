@@ -19,6 +19,8 @@ from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.TF_transform import TF_transformation
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.GetClosestObstacle import GetClosestObstacle
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
+from sara_flexbe_states.sara_move_base import SaraMoveBase
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -46,12 +48,10 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'First bin/go to drop the bag/Action_Move')
 		self.add_behavior(sara_flexbe_behaviors__Action_TakeBagSM, 'First bin/Action_TakeBag')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'First bin/go to bin/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'First bin/find the bin/Action_Move')
 		self.add_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'second bin/Init_Sequence')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'second bin/go to drop the bag/Action_Move')
 		self.add_behavior(sara_flexbe_behaviors__Action_TakeBagSM, 'second bin/Action_TakeBag')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'second bin/go to bin/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'second bin/find the bin/Action_Move')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -83,38 +83,31 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 		
 		# [/MANUAL_CREATE]
 
-		# x:30 y:365, x:130 y:365
+		# x:600 y:617, x:666 y:442
 		_sm_find_the_bin_0 = OperatableStateMachine(outcomes=['finished', 'failed'])
 
 		with _sm_find_the_bin_0:
 			# x:89 y:62
 			OperatableStateMachine.add('place arm',
 										RunTrajectory(file="poubelle_init", duration=0),
-										transitions={'done': 'find closest obstacle point'},
+										transitions={'done': 'leve la tete'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:90 y:493
-			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'second bin/find the bin/Action_Move'),
-										transitions={'finished': 'redo ajustements de la position', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'poseToBin'})
-
-			# x:91 y:395
+			# x:268 y:410
 			OperatableStateMachine.add('get waypoint',
 										Get_Reacheable_Waypoint(),
-										transitions={'done': 'Action_Move'},
+										transitions={'done': 'move'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose_in': 'detectedBin', 'distance': 'distanceToBin', 'pose_out': 'poseToBin'})
 
-			# x:103 y:312
+			# x:293 y:326
 			OperatableStateMachine.add('set distance to bin',
 										SetKey(Value=0.5),
 										transitions={'done': 'get waypoint'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'distanceToBin'})
 
-			# x:101 y:244
+			# x:278 y:238
 			OperatableStateMachine.add('pose form lidar to map',
 										TF_transformation(in_ref="front_hokuyo_link", out_ref="map"),
 										transitions={'done': 'set distance to bin', 'fail': 'failed'},
@@ -124,7 +117,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 			# x:80 y:598
 			OperatableStateMachine.add('redo ajustements de la position',
 										ForLoop(repeat=2),
-										transitions={'do': 'Action_Move', 'end': 'finished'},
+										transitions={'do': 'find closest obstacle point', 'end': 'finished'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
@@ -135,11 +128,30 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Angle': 'Angle', 'distance': 'distance', 'position': 'detectedObstacle'})
 
+			# x:288 y:104
+			OperatableStateMachine.add('leve la tete',
+										SaraSetHeadAngle(pitch=0, yaw=0),
+										transitions={'done': 'find closest obstacle point'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:285 y:504
+			OperatableStateMachine.add('move',
+										SaraMoveBase(reference="map"),
+										transitions={'arrived': 'redo ajustements de la position', 'failed': 'failed'},
+										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'pose': 'poseToBin'})
+
 
 		# x:30 y:365, x:130 y:365
 		_sm_go_to_bin_1 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['bin2Waypoint'])
 
 		with _sm_go_to_bin_1:
+			# x:59 y:100
+			OperatableStateMachine.add('bras sur le cote',
+										RunTrajectory(file="poubelle_transport", duration=0),
+										transitions={'done': 'Action_Move'},
+										autonomy={'done': Autonomy.Off})
+
 			# x:254 y:199
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'second bin/go to bin/Action_Move'),
@@ -148,7 +160,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 										remapping={'pose': 'bin2Waypoint'})
 
 
-		# x:30 y:365, x:130 y:365
+		# x:30 y:365, x:211 y:340
 		_sm_go_to_drop_the_bag_2 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['dropzoneWaypoint'])
 
 		with _sm_go_to_drop_the_bag_2:
@@ -169,7 +181,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 			# x:285 y:72
 			OperatableStateMachine.add('say cant go to drop zone',
 										SaraSay(sentence="I am not able to go to the drop zone. I will put the bag here and go to the second bin.", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'open the gripper'},
+										transitions={'done': 'run depose sac'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:72 y:143
@@ -192,31 +204,24 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 			# x:89 y:62
 			OperatableStateMachine.add('place arm',
 										RunTrajectory(file="poubelle_init", duration=0),
-										transitions={'done': 'find closest obstacle point'},
+										transitions={'done': 'leve la tete'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:90 y:493
-			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'First bin/find the bin/Action_Move'),
-										transitions={'finished': 'redo ajustements de la position', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'poseToBin'})
-
-			# x:91 y:395
+			# x:268 y:410
 			OperatableStateMachine.add('get waypoint',
 										Get_Reacheable_Waypoint(),
-										transitions={'done': 'Action_Move'},
+										transitions={'done': 'move'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose_in': 'detectedBin', 'distance': 'distanceToBin', 'pose_out': 'poseToBin'})
 
-			# x:103 y:312
+			# x:293 y:326
 			OperatableStateMachine.add('set distance to bin',
 										SetKey(Value=0.5),
 										transitions={'done': 'get waypoint'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'distanceToBin'})
 
-			# x:101 y:244
+			# x:278 y:238
 			OperatableStateMachine.add('pose form lidar to map',
 										TF_transformation(in_ref="front_hokuyo_link", out_ref="map"),
 										transitions={'done': 'set distance to bin', 'fail': 'failed'},
@@ -226,7 +231,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 			# x:80 y:598
 			OperatableStateMachine.add('redo ajustements de la position',
 										ForLoop(repeat=2),
-										transitions={'do': 'Action_Move', 'end': 'finished'},
+										transitions={'do': 'find closest obstacle point', 'end': 'finished'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
@@ -237,11 +242,30 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Angle': 'Angle', 'distance': 'distance', 'position': 'detectedObstacle'})
 
+			# x:288 y:104
+			OperatableStateMachine.add('leve la tete',
+										SaraSetHeadAngle(pitch=0, yaw=0),
+										transitions={'done': 'find closest obstacle point'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:285 y:504
+			OperatableStateMachine.add('move',
+										SaraMoveBase(reference="map"),
+										transitions={'arrived': 'redo ajustements de la position', 'failed': 'failed'},
+										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'pose': 'poseToBin'})
+
 
 		# x:573 y:546, x:622 y:92
 		_sm_go_to_bin_4 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['bin1Waypoint'])
 
 		with _sm_go_to_bin_4:
+			# x:86 y:104
+			OperatableStateMachine.add('bras sur le cote',
+										RunTrajectory(file="poubelle_transport", duration=0),
+										transitions={'done': 'Action_Move'},
+										autonomy={'done': Autonomy.Off})
+
 			# x:254 y:199
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'First bin/go to bin/Action_Move'),
@@ -270,7 +294,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 			# x:286 y:243
 			OperatableStateMachine.add('say cant go to drop zone',
 										SaraSay(sentence="I am not able to go to the drop zone. I will put the bag here and go to the second bin.", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'open the gripper'},
+										transitions={'done': 'run depose sac'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:75 y:251
