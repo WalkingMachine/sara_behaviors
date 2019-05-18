@@ -17,6 +17,7 @@
 	<contains name="Init_Sequence" />
 	<contains name="Action_Receive_Bag" />
 	<contains name="LookAtClosest" />
+	<contains name="Action_Move" />
 
 	<!-- Available Parameters -->
 

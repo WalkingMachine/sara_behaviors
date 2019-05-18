@@ -18,10 +18,10 @@ from sara_flexbe_behaviors.action_follow_sm import Action_followSM as sara_flexb
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_behaviors.action_give_back_bag_sm import Action_Give_Back_BagSM as sara_flexbe_behaviors__Action_Give_Back_BagSM
-from flexbe_navigation_states.move_base_state import MoveBaseState
 from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as sara_flexbe_behaviors__Init_SequenceSM
 from sara_flexbe_behaviors.action_receive_bag_sm import Action_Receive_BagSM as sara_flexbe_behaviors__Action_Receive_BagSM
 from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM as sara_flexbe_behaviors__LookAtClosestSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -50,6 +50,7 @@ class CarrymyluggageSM(Behavior):
 		self.add_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence')
 		self.add_behavior(sara_flexbe_behaviors__Action_Receive_BagSM, 'Recevoir sac/Receive bag/Action_Receive_Bag')
 		self.add_behavior(sara_flexbe_behaviors__LookAtClosestSM, 'Recevoir sac/Look at/LookAtClosest')
+		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -58,13 +59,13 @@ class CarrymyluggageSM(Behavior):
 
 		# Behavior comments:
 
-		# O 309 285 
+		# O 287 357 
 		# Manque OpenPose, pour trouver la direction du bras pour savoir quelle sac prendre
 
 
 
 	def create(self):
-		# x:1126 y:529, x:377 y:114
+		# x:1103 y:529, x:321 y:227
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.Pose_Init = "IdlePose"
 		_state_machine.userdata.Closed_Gripper_Width = 1
@@ -218,61 +219,55 @@ class CarrymyluggageSM(Behavior):
 
 			# x:36 y:236
 			OperatableStateMachine.add('ImHere',
-										SaraSay(sentence="I am ready to carry your luggages!", input_keys=[], emotion=1, block=True),
-										transitions={'done': 'GetIDOpe'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:49 y:439
-			OperatableStateMachine.add('GetBag',
-										SaraSay(sentence="Can you give me the bag, please.", input_keys=[], emotion=0, block=True),
+										SaraSay(sentence="I am ready to carry your luggage!", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Recevoir sac'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:35 y:326
+			# x:28 y:539
 			OperatableStateMachine.add('GetIDOpe',
 										_sm_getidope_5,
-										transitions={'done': 'GetBag'},
+										transitions={'done': 'Follow and listen'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
-			# x:241 y:536
+			# x:220 y:536
 			OperatableStateMachine.add('Follow and listen',
 										_sm_follow_and_listen_4,
 										transitions={'done': 'Action_Give_Back_Bag', 'failed': 'Follow and listen'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
-			# x:446 y:525
+			# x:411 y:525
 			OperatableStateMachine.add('Action_Give_Back_Bag',
 										self.use_behavior(sara_flexbe_behaviors__Action_Give_Back_BagSM, 'Action_Give_Back_Bag'),
 										transitions={'finished': 'GoBackHome', 'failed': 'Action_Give_Back_Bag'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:870 y:515
-			OperatableStateMachine.add('GoBack',
-										MoveBaseState(),
-										transitions={'arrived': 'finished', 'failed': 'finished'},
-										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'waypoint': 'Origin'})
-
-			# x:22 y:150
+			# x:24 y:135
 			OperatableStateMachine.add('Init_Sequence',
 										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence'),
 										transitions={'finished': 'ImHere', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:54 y:546
+			# x:36 y:444
 			OperatableStateMachine.add('Recevoir sac',
 										_sm_recevoir_sac_3,
-										transitions={'failed': 'failed', 'done': 'Follow and listen'},
+										transitions={'failed': 'failed', 'done': 'GetIDOpe'},
 										autonomy={'failed': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Closed_Gripper_Width': 'Closed_Gripper_Width', 'Open_Gripper_Width': 'Open_Gripper_Width'})
 
-			# x:682 y:515
+			# x:634 y:522
 			OperatableStateMachine.add('GoBackHome',
 										SaraSay(sentence="I will go back home now, bye", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'GoBack'},
+										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:827 y:516
+			OperatableStateMachine.add('Action_Move',
+										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move'),
+										transitions={'finished': 'finished', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'pose': 'Origin'})
 
 
 		return _state_machine

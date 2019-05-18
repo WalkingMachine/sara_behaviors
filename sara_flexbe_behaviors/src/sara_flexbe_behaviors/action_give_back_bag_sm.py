@@ -8,11 +8,10 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_states.set_gripper_state import SetGripperState
+from sara_flexbe_states.run_trajectory import RunTrajectory
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.torque_reader import ReadTorque
+from sara_flexbe_states.set_gripper_state import SetGripperState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -59,50 +58,48 @@ class Action_Give_Back_BagSM(Behavior):
 
 
 		with _state_machine:
-			# x:73 y:35
-			OperatableStateMachine.add('setTarget',
-										SetKey(Value="Help_me_carry"),
-										transitions={'done': 'Give_back'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'target'})
+			# x:53 y:30
+			OperatableStateMachine.add('place arm',
+										RunTrajectory(file="receive_bag", duration=6),
+										transitions={'done': 'Open_gripper'},
+										autonomy={'done': Autonomy.Off})
 
-			# x:58 y:216
+			# x:50 y:231
+			OperatableStateMachine.add('Say_to take_bag',
+										SaraSay(sentence="Here is your bag.", input_keys=[], emotion=1, block=True),
+										transitions={'done': 'detectObject'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:45 y:321
+			OperatableStateMachine.add('detectObject',
+										ReadTorque(watchdog=10, Joint="right_elbow_pitch_joint", Threshold=0.5, min_time=2),
+										transitions={'threshold': 'Finished', 'watchdog': 'Finished', 'fail': 'Finished'},
+										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'torque': 'torque'})
+
+			# x:220 y:472
+			OperatableStateMachine.add('Close',
+										SetGripperState(width=0, effort=1),
+										transitions={'object': 'place back bag', 'no_object': 'place back bag'},
+										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
+										remapping={'object_size': 'object_size'})
+
+			# x:47 y:466
+			OperatableStateMachine.add('Finished',
+										SaraSay(sentence="It was a pleasure", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'Close'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:48 y:116
 			OperatableStateMachine.add('Open_gripper',
 										SetGripperState(width=0.1, effort=1),
 										transitions={'object': 'Say_to take_bag', 'no_object': 'Say_to take_bag'},
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
-			# x:54 y:315
-			OperatableStateMachine.add('Say_to take_bag',
-										SaraSay(sentence="Here is your bag. It was a pleasure helping you", input_keys=[], emotion=1, block=True),
-										transitions={'done': 'detectObject'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:73 y:122
-			OperatableStateMachine.add('Give_back',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'Open_gripper', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'target'})
-
-			# x:60 y:404
-			OperatableStateMachine.add('detectObject',
-										ReadTorque(watchdog=5, Joint="right_elbow_pitch_joint", Threshold=0.1, min_time=2),
-										transitions={'threshold': 'Close', 'watchdog': 'Close', 'fail': 'Close'},
-										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
-										remapping={'torque': 'torque'})
-
-			# x:39 y:537
-			OperatableStateMachine.add('Close',
-										SetGripperState(width=0, effort=1),
-										transitions={'object': 'Finished', 'no_object': 'Finished'},
-										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
-										remapping={'object_size': 'object_size'})
-
-			# x:231 y:545
-			OperatableStateMachine.add('Finished',
-										SaraSay(sentence="It was a pleasure", input_keys=[], emotion=0, block=True),
+			# x:436 y:372
+			OperatableStateMachine.add('place back bag',
+										RunTrajectory(file="", duration=0),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
