@@ -3,6 +3,14 @@ Ce repo contient tout les states et bahaviors spécifiques à sara.
 
 ### Installation
 - [Installer flexbe](http://philserver.bplaced.net/fbe/download.php)
+#### Warning:
+La version actuelle de flexbe est incompatible avec notre projet. Installer ce fix en attendant un fix officiel.
+```
+cd flexbe_app
+git remote set-url origin git@github.com:ffriese/flexbe_app.git
+git fetch
+git checkout 2afa637417c10fdbc9216113f2aac8b80800ab94
+```
 
 ### Dependances
 Ce paquet a de nombreuses dépendances. En voicis quelques unes.
