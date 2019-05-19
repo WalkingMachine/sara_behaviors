@@ -46,7 +46,7 @@ class Action_Give_Back_BagSM(Behavior):
 
 
 	def create(self):
-		# x:459 y:476, x:402 y:174
+		# x:463 y:361, x:402 y:174
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.effort = 0
 		_state_machine.userdata.Open_gripper = 255
@@ -97,9 +97,9 @@ class Action_Give_Back_BagSM(Behavior):
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
-			# x:436 y:372
+			# x:420 y:470
 			OperatableStateMachine.add('place back bag',
-										RunTrajectory(file="", duration=0),
+										RunTrajectory(file="repos", duration=0),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
