@@ -81,7 +81,7 @@ class Action_TakeBagSM(Behavior):
 		with _sm_trajectory_down_1:
 			# x:68 y:158
 			OperatableStateMachine.add('run down',
-										RunTrajectory(file="poubelle_app", duration=20),
+										RunTrajectory(file="poubelle_app", duration=16),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
