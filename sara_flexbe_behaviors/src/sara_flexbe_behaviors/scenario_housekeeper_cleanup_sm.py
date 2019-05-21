@@ -9,10 +9,14 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.decision_state import DecisionState
+from flexbe_states.check_condition_state import CheckConditionState
+from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
 from flexbe_states.calculation_state import CalculationState
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.WonderlandGetEntityByID import WonderlandGetEntityByID
+from sara_flexbe_states.SetSegmentationRosParam import SetSegmentationRosParam
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_behaviors.action_place_sm import Action_placeSM
 from flexbe_states.wait_state import WaitState
@@ -23,22 +27,25 @@ from flexbe_states.wait_state import WaitState
 
 
 '''
-Created on Mon Apr 29 2019
+Created on Mon Mar 11 2019
 @author: Raphaël Duchaîne
 '''
-class clean_upSM(Behavior):
+class Scenario_Housekeeper_CleanUpSM(Behavior):
     '''
-    Housekeeper scenario Robocup 2019
+    Search items and put them at there place or in the trash can if the item is unknown
+
+( "___" : TO COMPLETE )
     '''
 
 
     def __init__(self):
-        super(clean_upSM, self).__init__()
-        self.name = 'clean_up'
+        super(Scenario_Housekeeper_CleanUpSM, self).__init__()
+        self.name = 'Scenario_Housekeeper_CleanUp'
 
         # parameters of this behavior
 
         # references to used behaviors
+        self.add_behavior(Action_MoveSM, 'Goto__WhileLooking/Action_Move')
         self.add_behavior(Action_placeSM, 'PutDownObject/Action_place')
 
         # Additional initialization code can be added inside the following tags
@@ -51,7 +58,7 @@ class clean_upSM(Behavior):
 
 
     def create(self):
-        # x:1200 y:570, x:5 y:103
+        # x:1229 y:141, x:5 y:103
         _state_machine = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['___'])
         _state_machine.userdata.___ = ''
         _state_machine.userdata.seenObjects = []
@@ -177,16 +184,22 @@ class clean_upSM(Behavior):
                                         remapping={'input_value': 'input_value'})
 
 
-        # x:130 y:465, x:230 y:465
-        _sm_gotowhilelooking_9 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['input_value'])
+        # x:130 y:465, x:280 y:461
+        _sm_goto__whilelooking_9 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['input_value', 'containerPos'])
 
-        with _sm_gotowhilelooking_9:
-            # x:98 y:96
-            OperatableStateMachine.add('07',
-                                        DecisionState(outcomes=['done','failed'], conditions=lambda x:'done'),
-                                        transitions={'done': 'done', 'failed': 'failed'},
-                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-                                        remapping={'input_value': 'input_value'})
+        with _sm_goto__whilelooking_9:
+            # x:89 y:31
+            OperatableStateMachine.add('StartRecognisingUnknownObjects',
+                                        SetSegmentationRosParam(ValueTableSegmentation=true, ValueObjectSegmentation=true),
+                                        transitions={'done': 'Action_Move'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:109 y:117
+            OperatableStateMachine.add('Action_Move',
+                                        self.use_behavior(Action_MoveSM, 'Goto__WhileLooking/Action_Move'),
+                                        transitions={'finished': 'done', 'failed': 'failed'},
+                                        autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+                                        remapping={'pose': 'containerPos'})
 
 
         # x:120 y:504, x:316 y:455
@@ -200,7 +213,7 @@ class clean_upSM(Behavior):
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'containers': 'containers', 'indexNextContainer': 'indexNextContainer', 'output_value': 'containerId'})
 
-            # x:312 y:121
+            # x:316 y:122
             OperatableStateMachine.add('CouldntFindContainer',
                                         SaraSay(sentence=lambda x:"Couldnt Find Container "+x, input_keys=['containerId'], emotion=0, block=True),
                                         transitions={'done': 'failed'},
@@ -245,38 +258,24 @@ class clean_upSM(Behavior):
         _sm_hascontainerleft_12 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['containers', 'indexNextContainer'])
 
         with _sm_hascontainerleft_12:
-            # x:46 y:33
-            OperatableStateMachine.add('len(containers) > indexNextContainer',
-                                        FlexibleCalculationState(calculation=lambda x: len(x[0]) > x[1], input_keys=['containers','indexNextContainer']),
-                                        transitions={'done': 'IsIndexNextContainerInBounds'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'containers': 'containers', 'indexNextContainer': 'indexNextContainer', 'output_value': 'cond'})
-
-            # x:50 y:150
+            # x:81 y:151
             OperatableStateMachine.add('IsIndexNextContainerInBounds',
-                                        DecisionState(outcomes=['done','failed'], conditions=lambda x: (x) ? 'done' : 'failed'),
-                                        transitions={'done': 'done', 'failed': 'failed'},
-                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-                                        remapping={'input_value': 'cond'})
+                                        FlexibleCheckConditionState(predicate=lambda x: len(x[0]) > x[1], input_keys=['containers','indexNextContainer']),
+                                        transitions={'true': 'done', 'false': 'failed'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'containers': 'containers', 'indexNextContainer': 'indexNextContainer'})
 
 
         # x:130 y:465, x:230 y:465
         _sm_hasseenobject_13 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['seenObjects'])
 
         with _sm_hasseenobject_13:
-            # x:74 y:25
-            OperatableStateMachine.add('getSeenObjectsLength',
-                                        CalculationState(calculation=lambda x: len(x)),
-                                        transitions={'done': 'isLengthNotZero'},
-                                        autonomy={'done': Autonomy.Off},
-                                        remapping={'input_value': 'seenObjects', 'output_value': 'length'})
-
-            # x:157 y:174
+            # x:118 y:186
             OperatableStateMachine.add('isLengthNotZero',
-                                        DecisionState(outcomes=['done','failed'], conditions=lambda x: (x > 0) ? 'done' : 'failed'),
-                                        transitions={'done': 'done', 'failed': 'failed'},
-                                        autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-                                        remapping={'input_value': 'length'})
+                                        CheckConditionState(predicate=lambda x: len(x) > 0),
+                                        transitions={'true': 'done', 'false': 'failed'},
+                                        autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+                                        remapping={'input_value': 'seenObjects'})
 
 
         # x:130 y:465, x:230 y:465
@@ -336,23 +335,23 @@ class clean_upSM(Behavior):
             # x:45 y:338
             OperatableStateMachine.add('GetLastSeenObject',
                                         _sm_getlastseenobject_11,
-                                        transitions={'done': 'GotoWhileLooking', 'failed': 'GetUnseenContainer'},
+                                        transitions={'done': 'Goto__WhileLooking', 'failed': 'GetUnseenContainer'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'seenObjects': 'seenObjects', 'seenObj': 'seenObj'})
 
             # x:229 y:79
             OperatableStateMachine.add('GetUnseenContainer',
                                         _sm_getunseencontainer_10,
-                                        transitions={'done': 'GotoWhileLooking', 'failed': 'continueLoop'},
+                                        transitions={'done': 'Goto__WhileLooking', 'failed': 'continueLoop'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'containers': 'containers', 'indexNextContainer': 'indexNextContainer', 'containerPos': 'containerPos'})
 
             # x:235 y:181
-            OperatableStateMachine.add('GotoWhileLooking',
-                                        _sm_gotowhilelooking_9,
+            OperatableStateMachine.add('Goto__WhileLooking',
+                                        _sm_goto__whilelooking_9,
                                         transitions={'done': 'ScanContainer', 'failed': 'continueLoop'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'input_value': '___'})
+                                        remapping={'input_value': '___', 'containerPos': 'containerPos'})
 
             # x:239 y:266
             OperatableStateMachine.add('ScanContainer',
@@ -371,18 +370,18 @@ class clean_upSM(Behavior):
             # x:229 y:479
             OperatableStateMachine.add('GotoDesiredContainer',
                                         _sm_gotodesiredcontainer_6,
-                                        transitions={'done': 'PutDownObject', 'failed': 'AskForHelp'},
+                                        transitions={'done': 'StopRecognisingUnknownObjects', 'failed': 'AskForHelp'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'input_value': '___'})
 
-            # x:550 y:14
+            # x:669 y:11
             OperatableStateMachine.add('PutDownObject',
                                         _sm_putdownobject_5,
                                         transitions={'done': 'continueLoop', 'failed': 'SayYouMissedYourShot'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'containerPos': 'containerPos'})
 
-            # x:775 y:16
+            # x:890 y:19
             OperatableStateMachine.add('SayYouMissedYourShot',
                                         _sm_sayyoumissedyourshot_4,
                                         transitions={'done': 'continueLoop'},
@@ -414,6 +413,12 @@ class clean_upSM(Behavior):
                                         transitions={'done': 'done', 'failed': 'done'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'indexNextContainer': 'indexNextContainer'})
+
+            # x:402 y:4
+            OperatableStateMachine.add('StopRecognisingUnknownObjects',
+                                        SetSegmentationRosParam(ValueTableSegmentation=false, ValueObjectSegmentation=false),
+                                        transitions={'done': 'PutDownObject'},
+                                        autonomy={'done': Autonomy.Off})
 
 
         return _state_machine
