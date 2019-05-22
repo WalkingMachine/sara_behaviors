@@ -12,8 +12,9 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Sara_Init" />
+	<contains name="Init_Sequence" />
 	<contains name="Action_Move" />
+	<contains name="LookAtClosest" />
 
 	<!-- Available Parameters -->
 
