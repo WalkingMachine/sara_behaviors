@@ -179,10 +179,12 @@ class Scenario_ReceptionistSM(Behavior):
 										remapping={'sentence': 'answerDrinkG1', 'answer': 'Guest1Drink'})
 
 
-		# x:491 y:77, x:490 y:301, x:577 y:76, x:574 y:306
+		# x:491 y:77, x:485 y:125, x:478 y:215, x:470 y:273, x:677 y:101, x:670 y:143
 		_sm_ask_name_and_drink_while_keep_looking_at_person_2 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['personID'], output_keys=['Guest1Name', 'Guest1Drink'], conditions=[
-										('finished', [('Ask name and drink', 'finished'), ('keep looking at person', 'finished')]),
-										('failed', [('Ask name and drink', 'failed'), ('keep looking at person', 'failed')])
+										('finished', [('Ask name and drink', 'finished')]),
+										('finished', [('keep looking at person', 'finished')]),
+										('failed', [('Ask name and drink', 'failed')]),
+										('failed', [('keep looking at person', 'failed')])
 										])
 
 		with _sm_ask_name_and_drink_while_keep_looking_at_person_2:
@@ -210,7 +212,7 @@ class Scenario_ReceptionistSM(Behavior):
 										SaraSay(sentence=lambda x: "Thank you, "+x[0]+". Please follow me to the"+ x[1] +".", input_keys=["Guest2Name","personAlreadyInLocation"], emotion=0, block=True),
 										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'personAlreadyInLocation': 'personAlreadyInLocation', 'Guest2Name': 'Guest2Name'})
+										remapping={'Guest2Name': 'Guest2Name', 'personAlreadyInLocation': 'personAlreadyInLocation'})
 
 			# x:68 y:85
 			OperatableStateMachine.add('Action_Move',
@@ -347,7 +349,7 @@ class Scenario_ReceptionistSM(Behavior):
 										SaraSay(sentence=lambda x: "Thank you, "+x[0]+". Please follow me to the "+x[1]+".", input_keys=["Guest1Name", "personAlreadyInLocation"], emotion=0, block=True),
 										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'personAlreadyInLocation': 'personAlreadyInLocation', 'Guest1Name': 'Guest1Name'})
+										remapping={'Guest1Name': 'Guest1Name', 'personAlreadyInLocation': 'personAlreadyInLocation'})
 
 			# x:68 y:85
 			OperatableStateMachine.add('Action_Move',
