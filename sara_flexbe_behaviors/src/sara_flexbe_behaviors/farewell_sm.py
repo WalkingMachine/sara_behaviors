@@ -310,59 +310,59 @@ class FarewellSM(Behavior):
 										transitions={'finished': 'Get Gender', 'failed': 'say fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:108 y:172
+			# x:99 y:141
 			OperatableStateMachine.add('Get Gender',
 										_sm_get_gender_5,
 										transitions={'none_found': 'say nobody', 'done': 'Get closer'},
 										autonomy={'none_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'name': 'name', 'distance': 'distance', 'person': 'person', 'pronoun': 'pronoun'})
 
-			# x:112 y:704
+			# x:117 y:565
 			OperatableStateMachine.add('GetTaxi',
 										_sm_gettaxi_4,
-										transitions={'finished': 'say succseed', 'failed': 'say fail'},
+										transitions={'finished': 'say succeed', 'failed': 'say fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'vest': 'vest', 'distance': 'distance', 'taxi': 'taxi'})
 
-			# x:104 y:438
+			# x:104 y:327
 			OperatableStateMachine.add('confirm',
 										_sm_confirm_3,
 										transitions={'false': 'say ok', 'done': 'say taxi'},
 										autonomy={'false': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'person': 'person', 'pronoun': 'pronoun'})
 
-			# x:362 y:133
+			# x:313 y:113
 			OperatableStateMachine.add('say nobody',
 										SaraSay(sentence="There is nobody here.", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'say fail'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:587 y:82
+			# x:571 y:44
 			OperatableStateMachine.add('say fail',
 										SaraSay(sentence="I failed this scenario. Sorry.", input_keys=[], emotion=3, block=True),
 										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:506 y:600
-			OperatableStateMachine.add('say succseed',
-										SaraSay(sentence="Yay! I succeed this scenario!", input_keys=[], emotion=5, block=True),
+			OperatableStateMachine.add('say succeed',
+										SaraSay(sentence="Yay! I succeeded this scenario!", input_keys=[], emotion=5, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:1 y:296
+			# x:22 y:229
 			OperatableStateMachine.add('say ok',
 										SaraSay(sentence="Ok, nevermind.", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'Get Gender'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:208 y:292
+			# x:229 y:236
 			OperatableStateMachine.add('Get closer',
 										_sm_get_closer_2,
 										transitions={'finished': 'confirm'},
 										autonomy={'finished': Autonomy.Inherit},
 										remapping={'distance': 'distance', 'person': 'person'})
 
-			# x:114 y:566
+			# x:114 y:465
 			OperatableStateMachine.add('say taxi',
 										SaraSay(sentence="Ok, follow me to the taxi then.", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'GetTaxi'},
