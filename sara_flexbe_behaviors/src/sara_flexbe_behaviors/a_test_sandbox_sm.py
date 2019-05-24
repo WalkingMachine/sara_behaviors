@@ -8,9 +8,7 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.pose_gen_euler import GenPoseEuler
-from sara_flexbe_states.GetAttribute import GetAttribute
-from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM as sara_flexbe_behaviors__Action_point_atSM
+from sara_flexbe_states.sara_say import SaraSay
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -34,7 +32,6 @@ class ATestSandboxSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Action_point_at')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -57,6 +54,8 @@ class ATestSandboxSM(Behavior):
 		_state_machine.userdata.Action1 = ["move", "counter"]
 		_state_machine.userdata.Action2 = ["move", "table"]
 		_state_machine.userdata.pose = "Dining room"
+		_state_machine.userdata.say1 = "say one"
+		_state_machine.userdata.say2 = "say two"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -66,25 +65,11 @@ class ATestSandboxSM(Behavior):
 
 		with _state_machine:
 			# x:30 y:40
-			OperatableStateMachine.add('gen',
-										GenPoseEuler(x=1, y=-1, z=0, roll=0, pitch=0, yaw=0),
-										transitions={'done': 'asdas'},
+			OperatableStateMachine.add('say',
+										SaraSay(sentence=lambda x: x[0]+ " and " + x[1], input_keys=["say1", "say2"], emotion=0, block=True),
+										transitions={'done': 'failed'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'pose': 'pose'})
-
-			# x:30 y:117
-			OperatableStateMachine.add('asdas',
-										GetAttribute(attributes=["position"]),
-										transitions={'done': 'Action_point_at'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'object': 'pose', 'position': 'position'})
-
-			# x:30 y:194
-			OperatableStateMachine.add('Action_point_at',
-										self.use_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Action_point_at'),
-										transitions={'finished': 'finished', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'targetPoint': 'position'})
+										remapping={'say1': 'say1', 'say2': 'say2'})
 
 
 		return _state_machine

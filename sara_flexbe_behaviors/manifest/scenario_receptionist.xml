@@ -12,6 +12,7 @@
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Init_Sequence" />
 	<contains name="Action_Move" />
 	<contains name="Action_findPerson" />
 	<contains name="Action_Ask" />
