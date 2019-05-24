@@ -632,7 +632,7 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'className': 'className', 'personID': 'Guest1ID', 'personEntity': 'Guest1Entity'})
 
-			# x:289 y:131
+			# x:327 y:186
 			OperatableStateMachine.add('say not found G1 but say his name and drink',
 										SaraSay(sentence=lambda x: "I can not find "+x[0]+" but his favorite drink is "+x[1]+".", input_keys=["Guest1Name", "Guest1Drink"], emotion=0, block=True),
 										transitions={'done': 'check if person already in is known aka ID not 0'},
