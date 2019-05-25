@@ -20,9 +20,9 @@ from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_nlu_receptionist import SaraNLUreceptionist
 from sara_flexbe_behaviors.action_ask_sm import Action_AskSM as sara_flexbe_behaviors__Action_AskSM
 from sara_flexbe_states.KeepLookingAt import KeepLookingAt
+from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.run_trajectory import RunTrajectory
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
-from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM as sara_flexbe_behaviors__Action_point_atSM
 from sara_flexbe_states.GetEmptyChair import GetEmptyChair
 from sara_flexbe_behaviors.action_findpersonbyid_sm import Action_findPersonByIDSM as sara_flexbe_behaviors__Action_findPersonByIDSM
@@ -55,6 +55,7 @@ class Scenario_ReceptionistSM(Behavior):
 		self.add_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Welcome Guest2/Action_findPerson')
 		self.add_behavior(sara_flexbe_behaviors__Action_AskSM, 'Welcome Guest2/Ask name and drink while keep looking at person/Ask name and drink/Action_Ask')
 		self.add_behavior(sara_flexbe_behaviors__Action_AskSM, 'Welcome Guest2/Ask name and drink while keep looking at person/Ask name and drink/Action_Ask_2')
+		self.add_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Welcome Guest2/Action_findPerson_2')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Guide G1 and introduice people/move to the place/Action_Move')
 		self.add_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Guide G1 and introduice people/Find person already in/Action_findPerson')
 		self.add_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Guide G1 and introduice people/point person already in/Action_point_at_2')
@@ -66,9 +67,10 @@ class Scenario_ReceptionistSM(Behavior):
 		self.add_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Guide G2 and introduice people/Point person already in/Action_point_at_2')
 		self.add_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Guide G2 and introduice people/find and point empty chair/Action_point_at')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'welcome Guest1/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'welcome Guest1/Action_findPerson')
 		self.add_behavior(sara_flexbe_behaviors__Action_AskSM, 'welcome Guest1/Ask name and drink while keep looking at person/Ask name and drink/Action_Ask')
 		self.add_behavior(sara_flexbe_behaviors__Action_AskSM, 'welcome Guest1/Ask name and drink while keep looking at person/Ask name and drink/Action_Ask_2')
+		self.add_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'welcome Guest1/Action_findPerson')
+		self.add_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'welcome Guest1/Action_findPerson_2')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -552,13 +554,6 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
-			# x:69 y:261
-			OperatableStateMachine.add('Action_findPerson',
-										self.use_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'welcome Guest1/Action_findPerson', default_keys=['className']),
-										transitions={'done': 'get Guest1 ID', 'pas_done': 'say cannot do task'},
-										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
-										remapping={'className': 'className', 'entity': 'Guest1Entity'})
-
 			# x:885 y:145
 			OperatableStateMachine.add('set G1 name to unknown',
 										SetKey(Value="unknown"),
@@ -580,13 +575,6 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Guest1ID'})
 
-			# x:75 y:335
-			OperatableStateMachine.add('get Guest1 ID',
-										GetAttribute(attributes=["ID"]),
-										transitions={'done': 'Ask name and drink while keep looking at person'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'object': 'Guest1Entity', 'ID': 'Guest1ID'})
-
 			# x:150 y:187
 			OperatableStateMachine.add('wait the door to be open',
 										WaitState(wait_time=5),
@@ -596,9 +584,44 @@ class Scenario_ReceptionistSM(Behavior):
 			# x:33 y:473
 			OperatableStateMachine.add('Ask name and drink while keep looking at person',
 										_sm_ask_name_and_drink_while_keep_looking_at_person_2,
-										transitions={'finished': 'finished', 'failed': 'Ask name and drink while keep looking at person'},
+										transitions={'finished': 'Action_findPerson_2', 'failed': 'Ask name and drink while keep looking at person'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'personID': 'Guest1ID', 'Guest1Name': 'Guest1Name', 'Guest1Drink': 'Guest1Drink'})
+										remapping={'personID': 'personID', 'Guest1Name': 'Guest1Name', 'Guest1Drink': 'Guest1Drink'})
+
+			# x:69 y:261
+			OperatableStateMachine.add('Action_findPerson',
+										self.use_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'welcome Guest1/Action_findPerson', default_keys=['className']),
+										transitions={'done': 'get Guest1 ID', 'pas_done': 'say cannot do task'},
+										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
+										remapping={'className': 'className', 'entity': 'personEntity'})
+
+			# x:84 y:385
+			OperatableStateMachine.add('get Guest1 ID',
+										GetAttribute(attributes=["ID"]),
+										transitions={'done': 'Ask name and drink while keep looking at person'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'object': 'personEntity', 'ID': 'personID'})
+
+			# x:114 y:587
+			OperatableStateMachine.add('Action_findPerson_2',
+										self.use_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'welcome Guest1/Action_findPerson_2', default_keys=['className']),
+										transitions={'done': 'get Guest1 ID_2', 'pas_done': 'put previous ID in Guest1ID'},
+										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
+										remapping={'className': 'className', 'entity': 'Guest1Entity'})
+
+			# x:135 y:777
+			OperatableStateMachine.add('get Guest1 ID_2',
+										GetAttribute(attributes=["ID"]),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'object': 'Guest1Entity', 'ID': 'Guest1ID'})
+
+			# x:316 y:666
+			OperatableStateMachine.add('put previous ID in Guest1ID',
+										CalculationState(calculation=lambda x: x),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'personID', 'output_value': 'Guest1ID'})
 
 
 		# x:1053 y:780, x:1133 y:101
@@ -941,7 +964,7 @@ class Scenario_ReceptionistSM(Behavior):
 										self.use_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Welcome Guest2/Action_findPerson', default_keys=['className']),
 										transitions={'done': 'get the ID for G2', 'pas_done': 'say cannot do task G2'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
-										remapping={'className': 'className', 'entity': 'Guest2Entity'})
+										remapping={'className': 'className', 'entity': 'person2Entity'})
 
 			# x:718 y:213
 			OperatableStateMachine.add('set G2 name to unknown',
@@ -964,12 +987,12 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'Guest2ID'})
 
-			# x:107 y:329
+			# x:97 y:356
 			OperatableStateMachine.add('get the ID for G2',
 										GetAttribute(attributes=["ID"]),
 										transitions={'done': 'Ask name and drink while keep looking at person'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'object': 'Guest2Entity', 'ID': 'Guest2ID'})
+										remapping={'object': 'person2Entity', 'ID': 'person2ID'})
 
 			# x:97 y:103
 			OperatableStateMachine.add('check if door is open',
@@ -996,44 +1019,65 @@ class Scenario_ReceptionistSM(Behavior):
 										transitions={'done': 'check if door is open'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:218 y:559
+			# x:61 y:514
 			OperatableStateMachine.add('Ask name and drink while keep looking at person',
 										_sm_ask_name_and_drink_while_keep_looking_at_person_13,
-										transitions={'finished': 'finished', 'failed': 'Ask name and drink while keep looking at person'},
+										transitions={'finished': 'Action_findPerson_2', 'failed': 'Ask name and drink while keep looking at person'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'personID': 'Guest2ID', 'Guest2Name': 'Guest2Name', 'Guest2Drink': 'Guest2Drink'})
+										remapping={'personID': 'person2ID', 'Guest2Name': 'Guest2Name', 'Guest2Drink': 'Guest2Drink'})
+
+			# x:114 y:627
+			OperatableStateMachine.add('Action_findPerson_2',
+										self.use_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Welcome Guest2/Action_findPerson_2', default_keys=['className']),
+										transitions={'done': 'get Guest1 ID_2', 'pas_done': 'put previous ID in Guest1ID'},
+										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
+										remapping={'className': 'className', 'entity': 'Guest2Entity'})
+
+			# x:135 y:777
+			OperatableStateMachine.add('get Guest1 ID_2',
+										GetAttribute(attributes=["ID"]),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'object': 'Guest2Entity', 'ID': 'Guest2ID'})
+
+			# x:316 y:666
+			OperatableStateMachine.add('put previous ID in Guest1ID',
+										CalculationState(calculation=lambda x: x),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'person2ID', 'output_value': 'Guest2ID'})
 
 
 
 		with _state_machine:
-			# x:60 y:41
+			# x:283 y:41
 			OperatableStateMachine.add('Init_Sequence',
 										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence'),
 										transitions={'finished': 'welcome Guest1', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:446 y:320
+			# x:333 y:517
 			OperatableStateMachine.add('Welcome Guest2',
 										_sm_welcome_guest2_17,
 										transitions={'finished': 'Guide G2 and introduice people', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'entranceLocation': 'entranceLocation', 'Guest2Drink': 'Guest2Drink', 'Guest2Name': 'Guest2Name', 'Guest2ID': 'Guest2ID'})
 
-			# x:338 y:171
+			# x:291 y:324
 			OperatableStateMachine.add('Guide G1 and introduice people',
 										_sm_guide_g1_and_introduice_people_16,
 										transitions={'finished': 'Welcome Guest2', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'personAlreadyInLocation': 'personAlreadyInLocation', 'personAlreadyInName': 'personAlreadyInName', 'personAlreadyInDrink': 'personAlreadyInDrink', 'Guest1Drink': 'Guest1Drink', 'Guest1Name': 'Guest1Name', 'Guest1ID': 'Guest1ID', 'personAlreadyInID': 'personAlreadyInID'})
 
-			# x:306 y:573
+			# x:299 y:626
 			OperatableStateMachine.add('Guide G2 and introduice people',
 										_sm_guide_g2_and_introduice_people_15,
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'personAlreadyInLocation': 'personAlreadyInLocation', 'personAlreadyInName': 'personAlreadyInName', 'personAlreadyInDrink': 'personAlreadyInDrink', 'Guest1Drink': 'Guest1Drink', 'Guest1Name': 'Guest1Name', 'Guest1ID': 'Guest1ID', 'personAlreadyInID': 'personAlreadyInID', 'Guest2Drink': 'Guest2Drink', 'Guest2Name': 'Guest2Name'})
 
-			# x:319 y:49
+			# x:314 y:153
 			OperatableStateMachine.add('welcome Guest1',
 										_sm_welcome_guest1_14,
 										transitions={'finished': 'Guide G1 and introduice people', 'failed': 'failed'},
