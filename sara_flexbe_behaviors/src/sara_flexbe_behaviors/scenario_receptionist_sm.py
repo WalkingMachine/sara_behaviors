@@ -303,14 +303,14 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'done': Autonomy.Off, 'nothing_found': Autonomy.Off},
 										remapping={'output_entity': 'emptyChair'})
 
-			# x:30 y:168
+			# x:67 y:277
 			OperatableStateMachine.add('Action_point_at',
 										self.use_behavior(sara_flexbe_behaviors__Action_point_atSM, 'Guide G1 and introduice people/find and point empty chair/Action_point_at'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'targetPoint': 'chairPoint'})
 
-			# x:36 y:107
+			# x:64 y:150
 			OperatableStateMachine.add('get the entity to point Point',
 										GetAttribute(attributes=["position"]),
 										transitions={'done': 'Action_point_at'},
@@ -814,12 +814,12 @@ class Scenario_ReceptionistSM(Behavior):
 										transitions={'done': 'set personAlreadyInEntity to unknown'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:527 y:154
+			# x:451 y:208
 			OperatableStateMachine.add('say cannot find personAlreadyIn',
-										SaraSay(sentence=lambda x: "I can not find"+x[0]+" but I will continue the scenario.", input_keys=["personAlreadyInName"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "I can not find"+x[0]+" but I will continue the scenario. The favorite drink of "+x[0]+" is "+x[1]+".", input_keys=["personAlreadyInName", "personAlreadyInDrink"], emotion=0, block=True),
 										transitions={'done': 'set personAlreadyInID to unknown and continue'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'personAlreadyInName': 'personAlreadyInName'})
+										remapping={'personAlreadyInName': 'personAlreadyInName', 'personAlreadyInDrink': 'personAlreadyInDrink'})
 
 			# x:782 y:21
 			OperatableStateMachine.add('set personAlreadyInEntity to unknown',
@@ -835,10 +835,10 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Guest1Name': 'Guest1Name', 'personAlreadyInName': 'personAlreadyInName', 'personAlreadyInDrink': 'personAlreadyInDrink'})
 
-			# x:505 y:237
+			# x:415 y:328
 			OperatableStateMachine.add('set personAlreadyInID to unknown and continue',
 										SetKey(Value=0),
-										transitions={'done': 'introduice G1 to person already in'},
+										transitions={'done': 'find and point empty chair'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'personAlreadyInID'})
 
@@ -890,7 +890,7 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Guest1ID': 'Guest1ID', 'foundEntity': 'foundEntity', 'personAlreadyInID': 'personAlreadyInID'})
 
-			# x:68 y:431
+			# x:71 y:413
 			OperatableStateMachine.add('point person already in',
 										_sm_point_person_already_in_8,
 										transitions={'finished': 'introduice G1 to person already in', 'failed': 'say cannot point person already in'},
