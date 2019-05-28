@@ -27,6 +27,8 @@ from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM as sara_f
 from sara_flexbe_states.GetEmptyChair import GetEmptyChair
 from sara_flexbe_behaviors.action_findpersonbyid_sm import Action_findPersonByIDSM as sara_flexbe_behaviors__Action_findPersonByIDSM
 from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.FilterKey import FilterKey
+from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -209,33 +211,38 @@ class Scenario_ReceptionistSM(Behavior):
 										remapping={'personID': 'personID'})
 
 
-		# x:30 y:458
-		_sm_replace_arm_3 = OperatableStateMachine(outcomes=['done'], input_keys=['Guest1Name'])
+		# x:632 y:289
+		_sm_replace_arm_2_3 = OperatableStateMachine(outcomes=['finished'], input_keys=['Guest2Name'])
 
-		with _sm_replace_arm_3:
-			# x:30 y:65
-			OperatableStateMachine.add('position bras en repos si fail_2',
-										RunTrajectory(file="repos", duration=0),
-										transitions={'done': 'wait5_2'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:375 y:116
-			OperatableStateMachine.add('say cannot point',
-										SaraSay(sentence=lambda x: x[0]+", there is a place to sit for you but I can not point it.", input_keys=["Guest1Name"], emotion=0, block=True),
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Guest1Name': 'Guest1Name'})
-
-			# x:40 y:128
+		with _sm_replace_arm_2_3:
+			# x:53 y:274
 			OperatableStateMachine.add('position bras en repos si fail',
 										RunTrajectory(file="repos", duration=0),
 										transitions={'done': 'wait5'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:248 y:128
+			# x:271 y:277
 			OperatableStateMachine.add('wait5',
 										WaitState(wait_time=5),
 										transitions={'done': 'say cannot point'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:398 y:284
+			OperatableStateMachine.add('say cannot point',
+										SaraSay(sentence=lambda x: x[0]+", there is a place to sit for you but I can not point it.", input_keys=["Guest2Name"], emotion=0, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Guest2Name': 'Guest2Name'})
+
+
+		# x:653 y:93
+		_sm_replace_arm_4 = OperatableStateMachine(outcomes=['done'], input_keys=['Guest2Name'])
+
+		with _sm_replace_arm_4:
+			# x:30 y:65
+			OperatableStateMachine.add('position bras en repos si fail_2',
+										RunTrajectory(file="repos", duration=0),
+										transitions={'done': 'wait5_2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:247 y:62
@@ -246,16 +253,16 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:360 y:40
 			OperatableStateMachine.add('say cannot find empty chair',
-										SaraSay(sentence=lambda x: "I can not find a place for you to sit. Please, "+x[0]+", choose the one you prefere.", input_keys=["Guest1Name"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "I can not find a place for you to sit. Please, "+x[0]+", choose the one you prefere.", input_keys=["Guest2Name"], emotion=0, block=True),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'Guest1Name': 'Guest1Name'})
+										remapping={'Guest2Name': 'Guest2Name'})
 
 
 		# x:30 y:458, x:130 y:458, x:230 y:458
-		_sm_find_and_point_empty_chair_4 = OperatableStateMachine(outcomes=['nothing_found', 'finished', 'failed'])
+		_sm_find_and_point_empty_chair_5 = OperatableStateMachine(outcomes=['nothing_found', 'finished', 'failed'])
 
-		with _sm_find_and_point_empty_chair_4:
+		with _sm_find_and_point_empty_chair_5:
 			# x:44 y:40
 			OperatableStateMachine.add('find empty chair for G1',
 										GetEmptyChair(),
@@ -279,9 +286,9 @@ class Scenario_ReceptionistSM(Behavior):
 
 
 		# x:30 y:458, x:130 y:458
-		_sm_point_person_already_in_5 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['personAlreadyInEntity'])
+		_sm_point_person_already_in_6 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['personAlreadyInEntity'])
 
-		with _sm_point_person_already_in_5:
+		with _sm_point_person_already_in_6:
 			# x:30 y:40
 			OperatableStateMachine.add('get person already in position',
 										GetAttribute(attributes=["position"]),
@@ -298,9 +305,9 @@ class Scenario_ReceptionistSM(Behavior):
 
 
 		# x:30 y:458, x:130 y:458
-		_sm_point_g1_6 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Guest1Entity'])
+		_sm_point_g1_7 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Guest1Entity'])
 
-		with _sm_point_g1_6:
+		with _sm_point_g1_7:
 			# x:30 y:40
 			OperatableStateMachine.add('get position of guest1Entity',
 										GetAttribute(attributes=["position"]),
@@ -317,9 +324,9 @@ class Scenario_ReceptionistSM(Behavior):
 
 
 		# x:30 y:458, x:130 y:458
-		_sm_navigate_to_the_place_7 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Guest2Name', 'personAlreadyInLocation'])
+		_sm_navigate_to_the_place_8 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Guest2Name', 'personAlreadyInLocation'])
 
-		with _sm_navigate_to_the_place_7:
+		with _sm_navigate_to_the_place_8:
 			# x:40 y:40
 			OperatableStateMachine.add('say follow me to the right place',
 										SaraSay(sentence=lambda x: "Thank you, "+x[0]+". Please follow me to the"+ x[1] +".", input_keys=["Guest2Name","personAlreadyInLocation"], emotion=0, block=True),
@@ -335,33 +342,38 @@ class Scenario_ReceptionistSM(Behavior):
 										remapping={'pose': 'personAlreadyInLocation'})
 
 
-		# x:580 y:102
-		_sm_replace_arm_8 = OperatableStateMachine(outcomes=['done'], input_keys=['Guest1Name'])
+		# x:531 y:137
+		_sm_replace_arm_2_9 = OperatableStateMachine(outcomes=['finished'], input_keys=['Guest1Name'])
 
-		with _sm_replace_arm_8:
-			# x:39 y:42
-			OperatableStateMachine.add('position bras en repos si fail_2',
-										RunTrajectory(file="repos", duration=0),
-										transitions={'done': 'wait5_2'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:362 y:131
-			OperatableStateMachine.add('say cannot point',
-										SaraSay(sentence=lambda x: x[0]+", there is a place to sit for you but I can not point it.", input_keys=["Guest1Name"], emotion=0, block=True),
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Guest1Name': 'Guest1Name'})
-
+		with _sm_replace_arm_2_9:
 			# x:30 y:144
 			OperatableStateMachine.add('position bras en repos si fail',
 										RunTrajectory(file="repos", duration=0),
 										transitions={'done': 'wait5'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:206 y:142
+			# x:230 y:133
 			OperatableStateMachine.add('wait5',
 										WaitState(wait_time=5),
 										transitions={'done': 'say cannot point'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:362 y:131
+			OperatableStateMachine.add('say cannot point',
+										SaraSay(sentence=lambda x: x[0]+", there is a place to sit for you but I can not point it.", input_keys=["Guest1Name"], emotion=0, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Guest1Name': 'Guest1Name'})
+
+
+		# x:580 y:102
+		_sm_replace_arm_10 = OperatableStateMachine(outcomes=['done'], input_keys=['Guest1Name'])
+
+		with _sm_replace_arm_10:
+			# x:39 y:42
+			OperatableStateMachine.add('position bras en repos si fail_2',
+										RunTrajectory(file="repos", duration=0),
+										transitions={'done': 'wait5_2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:229 y:41
@@ -379,9 +391,9 @@ class Scenario_ReceptionistSM(Behavior):
 
 
 		# x:30 y:458, x:130 y:458, x:230 y:458
-		_sm_find_and_point_empty_chair_9 = OperatableStateMachine(outcomes=['nothing_found', 'finished', 'failed'])
+		_sm_find_and_point_empty_chair_11 = OperatableStateMachine(outcomes=['nothing_found', 'finished', 'failed'])
 
-		with _sm_find_and_point_empty_chair_9:
+		with _sm_find_and_point_empty_chair_11:
 			# x:44 y:40
 			OperatableStateMachine.add('find empty chair for G1',
 										GetEmptyChair(),
@@ -405,9 +417,9 @@ class Scenario_ReceptionistSM(Behavior):
 
 
 		# x:30 y:458, x:130 y:458
-		_sm_point_person_already_in_10 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['foundEntity'])
+		_sm_point_person_already_in_12 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['foundEntity'])
 
-		with _sm_point_person_already_in_10:
+		with _sm_point_person_already_in_12:
 			# x:57 y:40
 			OperatableStateMachine.add('get point of personAlreadyIn',
 										GetAttribute(attributes=["position"]),
@@ -424,9 +436,9 @@ class Scenario_ReceptionistSM(Behavior):
 
 
 		# x:130 y:458, x:471 y:379
-		_sm_find_person_already_in_11 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['Guest1ID'], output_keys=['foundEntity', 'personAlreadyInID'])
+		_sm_find_person_already_in_13 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['Guest1ID'], output_keys=['foundEntity', 'personAlreadyInID'])
 
-		with _sm_find_person_already_in_11:
+		with _sm_find_person_already_in_13:
 			# x:70 y:40
 			OperatableStateMachine.add('Action_findPerson',
 										self.use_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Guide G1 and introduice people/Find person already in/Action_findPerson', default_keys=['className']),
@@ -464,9 +476,9 @@ class Scenario_ReceptionistSM(Behavior):
 
 
 		# x:30 y:458, x:130 y:458
-		_sm_move_to_the_place_12 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Guest1Name', 'personAlreadyInLocation'])
+		_sm_move_to_the_place_14 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['Guest1Name', 'personAlreadyInLocation'])
 
-		with _sm_move_to_the_place_12:
+		with _sm_move_to_the_place_14:
 			# x:37 y:40
 			OperatableStateMachine.add('say follow me to the right place',
 										SaraSay(sentence=lambda x: "Thank you, "+x[0]+". Please follow me to the "+x[1]+".", input_keys=["Guest1Name", "personAlreadyInLocation"], emotion=0, block=True),
@@ -483,9 +495,9 @@ class Scenario_ReceptionistSM(Behavior):
 
 
 		# x:30 y:458, x:130 y:458
-		_sm_keep_looking_at_person_13 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['personID'])
+		_sm_keep_looking_at_person_15 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['personID'])
 
-		with _sm_keep_looking_at_person_13:
+		with _sm_keep_looking_at_person_15:
 			# x:78 y:160
 			OperatableStateMachine.add('keep looking at the person',
 										KeepLookingAt(),
@@ -495,9 +507,9 @@ class Scenario_ReceptionistSM(Behavior):
 
 
 		# x:173 y:620, x:469 y:632
-		_sm_ask_name_and_drink_14 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['Guest2Name', 'Guest2Drink'])
+		_sm_ask_name_and_drink_16 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['Guest2Name', 'Guest2Drink'])
 
-		with _sm_ask_name_and_drink_14:
+		with _sm_ask_name_and_drink_16:
 			# x:73 y:62
 			OperatableStateMachine.add('introduice receptionist robot',
 										SaraSay(sentence="Hello, I am the receptionist robot.", input_keys=[], emotion=0, block=True),
@@ -574,33 +586,33 @@ class Scenario_ReceptionistSM(Behavior):
 
 
 		# x:30 y:458, x:130 y:458, x:230 y:458, x:330 y:458, x:430 y:458, x:530 y:458
-		_sm_ask_name_and_drink_while_keep_looking_at_person_15 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['personID'], output_keys=['Guest2Name', 'Guest2Drink'], conditions=[
+		_sm_ask_name_and_drink_while_keep_looking_at_person_17 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['personID'], output_keys=['Guest2Name', 'Guest2Drink'], conditions=[
 										('finished', [('Ask name and drink', 'finished')]),
 										('finished', [('keep looking at person', 'finished')]),
 										('failed', [('Ask name and drink', 'failed')]),
 										('failed', [('keep looking at person', 'failed')])
 										])
 
-		with _sm_ask_name_and_drink_while_keep_looking_at_person_15:
+		with _sm_ask_name_and_drink_while_keep_looking_at_person_17:
 			# x:59 y:120
 			OperatableStateMachine.add('Ask name and drink',
-										_sm_ask_name_and_drink_14,
+										_sm_ask_name_and_drink_16,
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Guest2Name': 'Guest2Name', 'Guest2Drink': 'Guest2Drink'})
 
 			# x:341 y:91
 			OperatableStateMachine.add('keep looking at person',
-										_sm_keep_looking_at_person_13,
+										_sm_keep_looking_at_person_15,
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'personID': 'personID'})
 
 
 		# x:863 y:856, x:1410 y:152
-		_sm_welcome_guest1_16 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['entranceLocation'], output_keys=['Guest1Drink', 'Guest1Name', 'Guest1ID'])
+		_sm_welcome_guest1_18 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['entranceLocation'], output_keys=['Guest1Drink', 'Guest1Name', 'Guest1ID'])
 
-		with _sm_welcome_guest1_16:
+		with _sm_welcome_guest1_18:
 			# x:95 y:34
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'welcome Guest1/Action_Move'),
@@ -711,12 +723,12 @@ class Scenario_ReceptionistSM(Behavior):
 
 
 		# x:1370 y:761, x:1133 y:101
-		_sm_guide_g2_and_introduice_people_17 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['personAlreadyInLocation', 'personAlreadyInName', 'personAlreadyInDrink', 'Guest1Drink', 'Guest1Name', 'Guest1ID', 'personAlreadyInID', 'Guest2Drink', 'Guest2Name'])
+		_sm_guide_g2_and_introduice_people_19 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['personAlreadyInLocation', 'personAlreadyInName', 'personAlreadyInDrink', 'Guest1Drink', 'Guest1Name', 'Guest1ID', 'personAlreadyInID', 'Guest2Drink', 'Guest2Name', 'Guest2ID'])
 
-		with _sm_guide_g2_and_introduice_people_17:
+		with _sm_guide_g2_and_introduice_people_19:
 			# x:56 y:32
 			OperatableStateMachine.add('navigate to the place',
-										_sm_navigate_to_the_place_7,
+										_sm_navigate_to_the_place_8,
 										transitions={'finished': 'introduce new guest G2', 'failed': 'retry guide to location'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Guest2Name': 'Guest2Name', 'personAlreadyInLocation': 'personAlreadyInLocation'})
@@ -744,21 +756,21 @@ class Scenario_ReceptionistSM(Behavior):
 			# x:327 y:186
 			OperatableStateMachine.add('say not found G1 but say his name and drink',
 										SaraSay(sentence=lambda x: "I can not find "+x[0]+" but his favorite drink is "+x[1]+".", input_keys=["Guest1Name", "Guest1Drink"], emotion=0, block=True),
-										transitions={'done': 'check if person already in is known aka ID not 0'},
+										transitions={'done': 'replace arm before check personalreadyin'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Guest1Name': 'Guest1Name', 'Guest1Drink': 'Guest1Drink'})
 
 			# x:68 y:296
 			OperatableStateMachine.add('say G1 details',
 										SaraSay(sentence=lambda x: "Here is "+x[0]+" and his favorite drink is "+x[1]+".", input_keys=["Guest1Name", "Guest1Drink"], emotion=0, block=True),
-										transitions={'done': 'check if person already in is known aka ID not 0'},
+										transitions={'done': 'replace arm before check personalreadyin'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Guest1Name': 'Guest1Name', 'Guest1Drink': 'Guest1Drink'})
 
-			# x:26 y:361
+			# x:20 y:413
 			OperatableStateMachine.add('check if person already in is known aka ID not 0',
 										CheckConditionState(predicate=lambda x: x != 0),
-										transitions={'true': 'Action_findPersonByID_2', 'false': 'say not/cannot found person already in but say name/drink'},
+										transitions={'true': 'Action_findPersonByID_2', 'false': 'set key for filter'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'personAlreadyInID'})
 
@@ -776,10 +788,10 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Guest2Name': 'Guest2Name', 'Guest2Drink': 'Guest2Drink'})
 
-			# x:58 y:428
+			# x:56 y:476
 			OperatableStateMachine.add('Action_findPersonByID_2',
 										self.use_behavior(sara_flexbe_behaviors__Action_findPersonByIDSM, 'Guide G2 and introduice people/Action_findPersonByID_2', default_keys=['className']),
-										transitions={'found': 'Point person already in', 'not_found': 'say not/cannot found person already in but say name/drink'},
+										transitions={'found': 'Point person already in', 'not_found': 'set key for filter'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'className': 'className', 'personID': 'personAlreadyInID', 'personEntity': 'personAlreadyInEntity'})
 
@@ -793,7 +805,7 @@ class Scenario_ReceptionistSM(Behavior):
 			# x:388 y:360
 			OperatableStateMachine.add('say cannot point guest1 for guest2',
 										SaraSay(sentence=lambda x: "I can not point to "+x[0]+" but his favorite drink is "+x[1]+".", input_keys=["Guest1Name", "Guest1Drink"], emotion=0, block=True),
-										transitions={'done': 'check if person already in is known aka ID not 0'},
+										transitions={'done': 'replace arm before check personalreadyin'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Guest1Name': 'Guest1Name', 'Guest1Drink': 'Guest1Drink'})
 
@@ -806,7 +818,7 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:68 y:226
 			OperatableStateMachine.add('Point G1',
-										_sm_point_g1_6,
+										_sm_point_g1_7,
 										transitions={'finished': 'say G1 details', 'failed': 'say cannot point guest1 for guest2'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Guest1Entity': 'Guest1Entity'})
@@ -820,7 +832,7 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:86 y:710
 			OperatableStateMachine.add('Point person already in',
-										_sm_point_person_already_in_5,
+										_sm_point_person_already_in_6,
 										transitions={'finished': 'say details person already in', 'failed': 'say cannot point to personalreadyin for G2'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'personAlreadyInEntity': 'personAlreadyInEntity'})
@@ -840,25 +852,73 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:544 y:812
 			OperatableStateMachine.add('find and point empty chair',
-										_sm_find_and_point_empty_chair_4,
-										transitions={'nothing_found': 'replace arm', 'finished': 'say sit there', 'failed': 'replace arm'},
+										_sm_find_and_point_empty_chair_5,
+										transitions={'nothing_found': 'replace arm', 'finished': 'say sit there', 'failed': 'replace arm 2'},
 										autonomy={'nothing_found': Autonomy.Inherit, 'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:901 y:740
+			# x:911 y:675
 			OperatableStateMachine.add('replace arm',
-										_sm_replace_arm_3,
+										_sm_replace_arm_4,
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Inherit},
-										remapping={'Guest1Name': 'Guest1Name'})
+										remapping={'Guest2Name': 'Guest2Name'})
+
+			# x:909 y:742
+			OperatableStateMachine.add('replace arm 2',
+										_sm_replace_arm_2_3,
+										transitions={'finished': 'finished'},
+										autonomy={'finished': Autonomy.Inherit},
+										remapping={'Guest2Name': 'Guest2Name'})
+
+			# x:28 y:353
+			OperatableStateMachine.add('replace arm before check personalreadyin',
+										RunTrajectory(file="repos", duration=0),
+										transitions={'done': 'check if person already in is known aka ID not 0'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:465 y:492
+			OperatableStateMachine.add('filter the list',
+										FilterKey(filter_function=lambda x: x[0].name == "person" && x[0].ID != x[1]  && x[0].ID != x[2], input_keys=["entity_list", "Guest1ID", "Guest2ID"]),
+										transitions={'not_empty': 'take first entity', 'empty': 'say not/cannot found person already in but say name/drink'},
+										autonomy={'not_empty': Autonomy.Off, 'empty': Autonomy.Off},
+										remapping={'entity_list': 'entity_list', 'Guest1ID': 'Guest1ID', 'Guest2ID': 'Guest2ID', 'output_list': 'output_list'})
+
+			# x:639 y:418
+			OperatableStateMachine.add('get entity list',
+										list_entities_by_name(frontality_level=0.5, distance_max=5),
+										transitions={'found': 'filter the list', 'none_found': 'say not/cannot found person already in but say name/drink'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
+										remapping={'name': 'keyPerson', 'entity_list': 'entity_list', 'number': 'number'})
+
+			# x:329 y:546
+			OperatableStateMachine.add('take first entity',
+										CalculationState(calculation=lambda x: x[0]),
+										transitions={'done': 'calculation'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'output_list', 'output_value': 'output_entity'})
+
+			# x:196 y:592
+			OperatableStateMachine.add('calculation',
+										CalculationState(calculation=lambda x: x),
+										transitions={'done': 'Point person already in'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'output_entity', 'output_value': 'personAlreadyInEntity'})
+
+			# x:455 y:427
+			OperatableStateMachine.add('set key for filter',
+										SetKey(Value="person"),
+										transitions={'done': 'get entity list'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'keyPerson'})
 
 
 		# x:1125 y:673, x:1146 y:27
-		_sm_guide_g1_and_introduice_people_18 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['personAlreadyInLocation', 'personAlreadyInName', 'personAlreadyInDrink', 'Guest1Drink', 'Guest1Name', 'Guest1ID'], output_keys=['personAlreadyInID'])
+		_sm_guide_g1_and_introduice_people_20 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['personAlreadyInLocation', 'personAlreadyInName', 'personAlreadyInDrink', 'Guest1Drink', 'Guest1Name', 'Guest1ID'], output_keys=['personAlreadyInID'])
 
-		with _sm_guide_g1_and_introduice_people_18:
+		with _sm_guide_g1_and_introduice_people_20:
 			# x:75 y:21
 			OperatableStateMachine.add('move to the place',
-										_sm_move_to_the_place_12,
+										_sm_move_to_the_place_14,
 										transitions={'finished': 'Find person already in', 'failed': 'retry guide to location'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Guest1Name': 'Guest1Name', 'personAlreadyInLocation': 'personAlreadyInLocation'})
@@ -886,7 +946,7 @@ class Scenario_ReceptionistSM(Behavior):
 			# x:61 y:517
 			OperatableStateMachine.add('introduice G1 to person already in',
 										SaraSay(sentence=lambda x: x[0]+", I would like to introduice you "+x[1]+" and his favorite drink is "+x[2]+".", input_keys=["Guest1Name","personAlreadyInName", "personAlreadyInDrink"], emotion=0, block=True),
-										transitions={'done': 'find and point empty chair'},
+										transitions={'done': 'replace arm before point chair'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Guest1Name': 'Guest1Name', 'personAlreadyInName': 'personAlreadyInName', 'personAlreadyInDrink': 'personAlreadyInDrink'})
 
@@ -907,7 +967,7 @@ class Scenario_ReceptionistSM(Behavior):
 			# x:369 y:506
 			OperatableStateMachine.add('say cannot point person already in',
 										SaraSay(sentence=lambda x: "I can not point to "+x[0]+" but it is the only person in this room. His favorite drink is "+x[1]+".", input_keys=["personAlreadyInName","personAlreadyInDrink"], emotion=0, block=True),
-										transitions={'done': 'find and point empty chair'},
+										transitions={'done': 'replace arm before point chair'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'personAlreadyInName': 'personAlreadyInName', 'personAlreadyInDrink': 'personAlreadyInDrink'})
 
@@ -926,22 +986,22 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:70 y:164
 			OperatableStateMachine.add('Find person already in',
-										_sm_find_person_already_in_11,
+										_sm_find_person_already_in_13,
 										transitions={'done': 'introduice G1', 'failed': 'say cannot find personAlreadyIn'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Guest1ID': 'Guest1ID', 'foundEntity': 'foundEntity', 'personAlreadyInID': 'personAlreadyInID'})
 
 			# x:71 y:413
 			OperatableStateMachine.add('point person already in',
-										_sm_point_person_already_in_10,
+										_sm_point_person_already_in_12,
 										transitions={'finished': 'introduice G1 to person already in', 'failed': 'say cannot point person already in'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'foundEntity': 'foundEntity'})
 
 			# x:59 y:682
 			OperatableStateMachine.add('find and point empty chair',
-										_sm_find_and_point_empty_chair_9,
-										transitions={'nothing_found': 'replace arm', 'finished': 'say sit there', 'failed': 'replace arm'},
+										_sm_find_and_point_empty_chair_11,
+										transitions={'nothing_found': 'replace arm', 'finished': 'say sit there', 'failed': 'replace arm 2'},
 										autonomy={'nothing_found': Autonomy.Inherit, 'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 			# x:409 y:25
@@ -951,18 +1011,31 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
 
-			# x:508 y:679
+			# x:470 y:631
 			OperatableStateMachine.add('replace arm',
-										_sm_replace_arm_8,
+										_sm_replace_arm_10,
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'Guest1Name': 'Guest1Name'})
 
+			# x:466 y:707
+			OperatableStateMachine.add('replace arm 2',
+										_sm_replace_arm_2_9,
+										transitions={'finished': 'finished'},
+										autonomy={'finished': Autonomy.Inherit},
+										remapping={'Guest1Name': 'Guest1Name'})
+
+			# x:68 y:600
+			OperatableStateMachine.add('replace arm before point chair',
+										RunTrajectory(file="repos", duration=0),
+										transitions={'done': 'find and point empty chair'},
+										autonomy={'done': Autonomy.Off})
+
 
 		# x:1010 y:784, x:1230 y:226
-		_sm_welcome_guest2_19 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['entranceLocation'], output_keys=['Guest2Drink', 'Guest2Name', 'Guest2ID'])
+		_sm_welcome_guest2_21 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['entranceLocation'], output_keys=['Guest2Drink', 'Guest2Name', 'Guest2ID'])
 
-		with _sm_welcome_guest2_19:
+		with _sm_welcome_guest2_21:
 			# x:95 y:34
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Welcome Guest2/Action_Move'),
@@ -1045,7 +1118,7 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:61 y:514
 			OperatableStateMachine.add('Ask name and drink while keep looking at person',
-										_sm_ask_name_and_drink_while_keep_looking_at_person_15,
+										_sm_ask_name_and_drink_while_keep_looking_at_person_17,
 										transitions={'finished': 'Action_findPerson_2', 'failed': 'Ask name and drink while keep looking at person'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'personID': 'person2ID', 'Guest2Name': 'Guest2Name', 'Guest2Drink': 'Guest2Drink'})
@@ -1082,28 +1155,28 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:326 y:486
 			OperatableStateMachine.add('Welcome Guest2',
-										_sm_welcome_guest2_19,
+										_sm_welcome_guest2_21,
 										transitions={'finished': 'Guide G2 and introduice people', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'entranceLocation': 'entranceLocation', 'Guest2Drink': 'Guest2Drink', 'Guest2Name': 'Guest2Name', 'Guest2ID': 'Guest2ID'})
 
 			# x:291 y:324
 			OperatableStateMachine.add('Guide G1 and introduice people',
-										_sm_guide_g1_and_introduice_people_18,
+										_sm_guide_g1_and_introduice_people_20,
 										transitions={'finished': 'Welcome Guest2', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'personAlreadyInLocation': 'personAlreadyInLocation', 'personAlreadyInName': 'personAlreadyInName', 'personAlreadyInDrink': 'personAlreadyInDrink', 'Guest1Drink': 'Guest1Drink', 'Guest1Name': 'Guest1Name', 'Guest1ID': 'Guest1ID', 'personAlreadyInID': 'personAlreadyInID'})
 
 			# x:299 y:626
 			OperatableStateMachine.add('Guide G2 and introduice people',
-										_sm_guide_g2_and_introduice_people_17,
+										_sm_guide_g2_and_introduice_people_19,
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'personAlreadyInLocation': 'personAlreadyInLocation', 'personAlreadyInName': 'personAlreadyInName', 'personAlreadyInDrink': 'personAlreadyInDrink', 'Guest1Drink': 'Guest1Drink', 'Guest1Name': 'Guest1Name', 'Guest1ID': 'Guest1ID', 'personAlreadyInID': 'personAlreadyInID', 'Guest2Drink': 'Guest2Drink', 'Guest2Name': 'Guest2Name'})
+										remapping={'personAlreadyInLocation': 'personAlreadyInLocation', 'personAlreadyInName': 'personAlreadyInName', 'personAlreadyInDrink': 'personAlreadyInDrink', 'Guest1Drink': 'Guest1Drink', 'Guest1Name': 'Guest1Name', 'Guest1ID': 'Guest1ID', 'personAlreadyInID': 'personAlreadyInID', 'Guest2Drink': 'Guest2Drink', 'Guest2Name': 'Guest2Name', 'Guest2ID': 'Guest2ID'})
 
 			# x:314 y:153
 			OperatableStateMachine.add('welcome Guest1',
-										_sm_welcome_guest1_16,
+										_sm_welcome_guest1_18,
 										transitions={'finished': 'Guide G1 and introduice people', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'entranceLocation': 'entranceLocation', 'Guest1Drink': 'Guest1Drink', 'Guest1Name': 'Guest1Name', 'Guest1ID': 'Guest1ID'})
