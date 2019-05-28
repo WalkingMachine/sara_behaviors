@@ -3,7 +3,7 @@
 import rospy
 import math
 from flexbe_core import EventState, Logger
-from sara_msgs.msg import Entity
+from sara_msgs.msg import Entities
 from geometry_msgs.msg import Pose
 from flexbe_core.proxy import ProxySubscriberCached
 
@@ -48,17 +48,22 @@ class GetClosestEntity(EventState):
             self.mypose = self._subpos.get_last_msg('/robot_pose')
 
         if len(userdata.entityList) == 0:
+            Logger.loginfo('va chercher la liste entities')
             if self._sub.has_msg('/entities'):
                 myList = self._sub.get_last_msg('/entities')
                 self._sub.remove_last_msg('/entities')
+                myList = myList.entities
+                Logger.loginfo('a la liste entities')
         else:
             myList = userdata.entityList
+            Logger.loginfo('a la liste en parametre')
 
         if len(myList) == 0:
+            Logger.loginfo('liste vide')
             return "not_found"
 
-        closestEntity = myList[0]
         min_dist = 99999
+        closestEntity = myList[0]
         for entity in myList:
             if self.dist(self.mypose, entity) < min_dist:
                 min_dist = self.dist(self.mypose, entity)
