@@ -5,6 +5,7 @@ import math
 from flexbe_core import EventState, Logger
 from sara_msgs.msg import Entity
 from geometry_msgs.msg import Pose
+from flexbe_core.proxy import ProxySubscriberCached
 
 '''
 Created on 27.05.2019
