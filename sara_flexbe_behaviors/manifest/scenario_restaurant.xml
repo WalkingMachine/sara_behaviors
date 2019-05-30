@@ -14,6 +14,9 @@
 	<!-- Contained Behaviors -->
 	<contains name="Action_Move" />
 	<contains name="Action_Ask" />
+	<contains name="Action_find" />
+	<contains name="Action_pick" />
+	<contains name="Action_place" />
 
 	<!-- Available Parameters -->
 
