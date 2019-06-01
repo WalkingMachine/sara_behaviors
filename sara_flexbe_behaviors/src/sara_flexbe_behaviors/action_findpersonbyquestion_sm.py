@@ -11,8 +11,8 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
-from sara_flexbe_states.for_loop import ForLoop
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
+from sara_flexbe_states.for_loop_with_input import ForLoopWithInput
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -53,6 +53,7 @@ Look 180 degres, do not rotate
 		_state_machine.userdata.question = ""
 		_state_machine.userdata.entityFound = ""
 		_state_machine.userdata.personKey = "person"
+		_state_machine.userdata.index = -1
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -82,16 +83,9 @@ Look 180 degres, do not rotate
 			# x:55 y:225
 			OperatableStateMachine.add('get list of person',
 										list_entities_by_name(frontality_level=0.5, distance_max=4),
-										transitions={'found': 'for each item', 'none_found': 'not_found'},
+										transitions={'found': 'for loop', 'none_found': 'not_found'},
 										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'personKey', 'entity_list': 'entity_list', 'number': 'number'})
-
-			# x:54 y:287
-			OperatableStateMachine.add('for each item',
-										ForLoop(repeat=5),
-										transitions={'do': 'if index greater than number of entity in list', 'end': 'not_found'},
-										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
-										remapping={'index': 'index'})
 
 			# x:17 y:354
 			OperatableStateMachine.add('if index greater than number of entity in list',
@@ -99,6 +93,13 @@ Look 180 degres, do not rotate
 										transitions={'true': 'not_found', 'false': 'found'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'index': 'index', 'entity_list': 'entity_list'})
+
+			# x:61 y:288
+			OperatableStateMachine.add('for loop',
+										ForLoopWithInput(repeat=5),
+										transitions={'do': 'if index greater than number of entity in list', 'end': 'not_found'},
+										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+										remapping={'index_in': 'index', 'index_out': 'index'})
 
 
 		return _state_machine
