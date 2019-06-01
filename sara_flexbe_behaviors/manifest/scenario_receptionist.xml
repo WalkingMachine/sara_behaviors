@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Scenario_Receptionist">
+
+	<executable package_path="sara_flexbe_behaviors.scenario_receptionist_sm" class="Scenario_ReceptionistSM" />
+	<tagstring>2019, Party host</tagstring>
+	<author>Quentin Gaillot</author>
+	<date>Sat Apr 27 2019</date>
+	<description>
+		Scenario receptionist 2019 (Party Host)
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Init_Sequence" />
+	<contains name="Action_Move" />
+	<contains name="Action_findPerson" />
+	<contains name="Action_Ask" />
+	<contains name="Action_point_at" />
+	<contains name="Action_findPersonByID" />
+
+	<!-- Available Parameters -->
+
+</behavior>
