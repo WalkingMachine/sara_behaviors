@@ -10,17 +10,19 @@
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.FIFO_New import FIFO_New
 from sara_flexbe_states.for_loop_with_input import ForLoopWithInput
+from flexbe_states.wait_state import WaitState
 from sara_flexbe_behaviors.action_ask_sm import Action_AskSM as sara_flexbe_behaviors__Action_AskSM
 from sara_flexbe_states.KeepLookingAt import KeepLookingAt
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.check_condition_state import CheckConditionState
-from flexbe_states.wait_state import WaitState
 from sara_flexbe_behaviors.action_turn_sm import action_turnSM as sara_flexbe_behaviors__action_turnSM
 from sara_flexbe_states.FilterKey import FilterKey
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from sara_flexbe_states.FIFO_Add import FIFO_Add
+from sara_flexbe_states.sara_say import SaraSay
+from flexbe_states.log_key_state import LogKeyState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -60,11 +62,11 @@ Look 180 degres, do not rotate
 	def create(self):
 		# x:860 y:786, x:837 y:171, x:828 y:43
 		_state_machine = OperatableStateMachine(outcomes=['found', 'failed', 'not_found'], input_keys=['question'], output_keys=['entityFound'])
-		_state_machine.userdata.question = ""
+		_state_machine.userdata.question = "Are you Philippe?"
 		_state_machine.userdata.entityFound = ""
 		_state_machine.userdata.personKey = "person"
 		_state_machine.userdata.index = -1
-		_state_machine.userdata.rotation90degres = 90
+		_state_machine.userdata.rotation90degres = -1.57
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -87,7 +89,13 @@ Look 180 degres, do not rotate
 		_sm_ask_1 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['question'], output_keys=['answer'])
 
 		with _sm_ask_1:
-			# x:30 y:40
+			# x:57 y:66
+			OperatableStateMachine.add('wait',
+										WaitState(wait_time=5),
+										transitions={'done': 'Action_Ask'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:46 y:155
 			OperatableStateMachine.add('Action_Ask',
 										self.use_behavior(sara_flexbe_behaviors__Action_AskSM, 'ask while looking at person/ask/Action_Ask'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
@@ -95,7 +103,7 @@ Look 180 degres, do not rotate
 										remapping={'question': 'question', 'answer': 'answer'})
 
 
-		# x:30 y:458, x:130 y:458
+		# x:30 y:458, x:572 y:96
 		_sm_tourne_tete_et_base_2 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['rotation90degres', 'index'])
 
 		with _sm_tourne_tete_et_base_2:
@@ -120,7 +128,7 @@ Look 180 degres, do not rotate
 
 			# x:53 y:309
 			OperatableStateMachine.add('wait right',
-										WaitState(wait_time=8),
+										WaitState(wait_time=6),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
@@ -144,31 +152,31 @@ Look 180 degres, do not rotate
 
 			# x:171 y:306
 			OperatableStateMachine.add('wait right_2',
-										WaitState(wait_time=8),
+										WaitState(wait_time=6),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:312 y:182
 			OperatableStateMachine.add('look left_2_2',
-										SaraSetHeadAngle(pitch=0.1, yaw=-1.5),
+										SaraSetHeadAngle(pitch=0.1, yaw=1.5),
 										transitions={'done': 'waitleft_2_2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:323 y:243
 			OperatableStateMachine.add('waitleft_2_2',
-										WaitState(wait_time=4),
+										WaitState(wait_time=6),
 										transitions={'done': 'look right_2_2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:306 y:303
 			OperatableStateMachine.add('look right_2_2',
-										SaraSetHeadAngle(pitch=0.1, yaw=1.5),
+										SaraSetHeadAngle(pitch=0.1, yaw=-1.5),
 										transitions={'done': 'wait right_2_2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:316 y:364
 			OperatableStateMachine.add('wait right_2_2',
-										WaitState(wait_time=8),
+										WaitState(wait_time=6),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
@@ -229,7 +237,7 @@ Look 180 degres, do not rotate
 			# x:163 y:58
 			OperatableStateMachine.add('for loop',
 										ForLoopWithInput(repeat=3),
-										transitions={'do': 'tourne tete et base', 'end': 'not_found'},
+										transitions={'do': 'get list of person', 'end': 'not_found'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index_in': 'index', 'index_out': 'index'})
 
@@ -243,21 +251,21 @@ Look 180 degres, do not rotate
 			# x:269 y:461
 			OperatableStateMachine.add('get personID',
 										CalculationState(calculation=lambda x: x.ID),
-										transitions={'done': 'ask while looking at person'},
+										transitions={'done': 'log_2'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'personEntity', 'output_value': 'personID'})
 
 			# x:270 y:643
 			OperatableStateMachine.add('answer contains yes',
-										RegexTester(regex=".*((take)|(bag)|(ready)).*"),
-										transitions={'true': 'found', 'false': 'add id'},
+										RegexTester(regex=".*((yes)|(Yes)|(yep)|(sure)|(of course)).*"),
+										transitions={'true': 'say ty', 'false': 'add id'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'text': 'answer', 'result': 'result'})
 
-			# x:261 y:257
+			# x:173 y:260
 			OperatableStateMachine.add('look center',
 										SaraSetHeadAngle(pitch=0.1, yaw=0),
-										transitions={'done': 'fitler the entity list to remove id already checked'},
+										transitions={'done': 'for loop'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:299 y:88
@@ -269,10 +277,10 @@ Look 180 degres, do not rotate
 
 			# x:263 y:322
 			OperatableStateMachine.add('fitler the entity list to remove id already checked',
-										FilterKey(filter_function=lambda x: x[0].ID not in x[1], input_keys=["entityList", "FIFO"]),
-										transitions={'not_empty': 'get first entity', 'empty': 'not_found'},
+										FilterKey(filter_function=lambda x: x[0].ID not in x[1], input_keys=["input_list", "FIFO"]),
+										transitions={'not_empty': 'get first entity', 'empty': 'look center'},
 										autonomy={'not_empty': Autonomy.Off, 'empty': Autonomy.Off},
-										remapping={'entityList': 'entityList', 'FIFO': 'FIFO', 'output_list': 'filteredEntityList'})
+										remapping={'input_list': 'entityList', 'FIFO': 'FIFO', 'output_list': 'filteredEntityList'})
 
 			# x:268 y:388
 			OperatableStateMachine.add('get first entity',
@@ -281,19 +289,38 @@ Look 180 degres, do not rotate
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'filteredEntityList', 'output_value': 'personEntity'})
 
-			# x:262 y:188
+			# x:296 y:168
 			OperatableStateMachine.add('get list of person',
-										list_entities_by_name(frontality_level=0.5, distance_max=4),
-										transitions={'found': 'look center', 'none_found': 'for loop'},
+										list_entities_by_name(frontality_level=0.5, distance_max=3),
+										transitions={'found': 'fitler the entity list to remove id already checked', 'none_found': 'for loop'},
 										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'personKey', 'entity_list': 'entityList', 'number': 'numberOfEntity'})
 
 			# x:111 y:533
 			OperatableStateMachine.add('add id',
 										FIFO_Add(),
-										transitions={'done': 'for loop'},
+										transitions={'done': 'say keep looking'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Entry': 'personID', 'FIFO': 'FIFO'})
+
+			# x:609 y:651
+			OperatableStateMachine.add('say ty',
+										SaraSay(sentence="Thank you.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'found'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:113 y:386
+			OperatableStateMachine.add('say keep looking',
+										SaraSay(sentence="Ok, never mind.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'for loop'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:521 y:445
+			OperatableStateMachine.add('log_2',
+										LogKeyState(text="personID: {}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'ask while looking at person'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'personID'})
 
 
 		return _state_machine
