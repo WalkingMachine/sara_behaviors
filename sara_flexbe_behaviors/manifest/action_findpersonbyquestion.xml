@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Action_FindPersonByQuestion">
+
+	<executable package_path="sara_flexbe_behaviors.action_findpersonbyquestion_sm" class="Action_FindPersonByQuestionSM" />
+	<tagstring></tagstring>
+	<author>Quentin Gaillot</author>
+	<date>Sat Jun 01 2019</date>
+	<description>
+		Find a person by asking a question and return an entity (ex: Are you John?)
+Look 180 degres, do not rotate
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_Ask" />
+	<contains name="action_turn" />
+
+	<!-- Available Parameters -->
+
+</behavior>

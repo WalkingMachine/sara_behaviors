@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Scenario_TakeOutTheGarbage">
+
+	<executable package_path="sara_flexbe_behaviors.scenario_takeoutthegarbage_sm" class="Scenario_TakeOutTheGarbageSM" />
+	<tagstring>2019, house keeper, scenario, take out the garbage</tagstring>
+	<author>Quentin Gaillot</author>
+	<date>Mon May 13 2019</date>
+	<description>
+		Scenario 2019 for Take out the garbage, House keeper
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Init_Sequence" />
+	<contains name="Action_Move" />
+	<contains name="Action_TakeBag" />
+
+	<!-- Available Parameters -->
+
+</behavior>
