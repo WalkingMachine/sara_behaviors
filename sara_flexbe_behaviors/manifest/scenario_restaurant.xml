@@ -12,9 +12,9 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Action_findPerson" />
-	<contains name="Action_Ask" />
+	<contains name="Action_FindPersonByQuestion" />
 	<contains name="Action_Move" />
+	<contains name="Action_Ask" />
 	<contains name="Action_findPersonByID" />
 	<contains name="Action_find" />
 	<contains name="Action_pick" />
