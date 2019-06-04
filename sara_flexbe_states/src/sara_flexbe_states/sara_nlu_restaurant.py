@@ -54,4 +54,4 @@ class SaraNLUrestaurant(EventState):
                 return "understood"
 
             except rospy.ServiceException as exc:
-                Logger.logwarn("Receptionist NLU did not work: \n" + str(exc))
+                Logger.logwarn("Restaurant NLU did not work: \n" + str(exc))
