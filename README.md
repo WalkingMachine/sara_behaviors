@@ -8,6 +8,8 @@ La version actuelle de flexbe est incompatible avec notre projet. Installer ce f
 ```
 cd flexbe_app
 git remote set-url origin git@github.com:ffriese/flexbe_app.git
+OU
+git remote set-url origin https://github.com/ffriese/flexbe_app.git
 git fetch
 git checkout 2afa637417c10fdbc9216113f2aac8b80800ab94
 ```

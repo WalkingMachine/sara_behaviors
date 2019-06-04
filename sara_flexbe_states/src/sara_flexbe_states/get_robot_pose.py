@@ -36,4 +36,4 @@ class Get_Robot_Pose(EventState):
             userdata.pose = mypose
         else:
             userdata.pose = Pose()
-            return 'done'
+        return 'done'
