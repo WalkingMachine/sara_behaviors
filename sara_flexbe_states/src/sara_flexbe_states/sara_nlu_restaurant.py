@@ -5,7 +5,7 @@ from flexbe_core import EventState, Logger
 from flexbe_core.proxy import ProxyServiceCaller
 from flexbe_core import EventState, Logger
 import rospy
-from wm_nlu.srv import RestaurantNLUService, RetaurantNLUServiceRequest
+from wm_nlu.srv import RestaurantNLUService, RestaurantNLUServiceRequest
 
 
 class SaraNLUrestaurant(EventState):
