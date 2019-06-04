@@ -6,7 +6,7 @@ from flexbe_core.proxy import ProxyServiceCaller
 from flexbe_core import EventState, Logger
 import rospy
 from wm_nlu.srv import RestaurantNLUService, RestaurantNLUServiceRequest
-
+from std_msgs.msg import String
 
 class SaraNLUrestaurant(EventState):
     '''
@@ -22,7 +22,7 @@ class SaraNLUrestaurant(EventState):
     def __init__(self):
         # See example_state.py for basic explanations.
         super(SaraNLUrestaurant, self).__init__(outcomes=['understood', 'fail'], input_keys=['sentence'],
-                                         output_keys=['answer'])
+                                         output_keys=['orderList'])
 
         self.serviceName = "/Restaurant_NLU_Service"
 
@@ -38,19 +38,19 @@ class SaraNLUrestaurant(EventState):
             try:
                 # Call the say service
                 srvRequest = RestaurantNLUServiceRequest()
-                srvRequest.str = userdata.sentence
+                srvRequest.str = String(userdata.sentence)
                 response = self.serviceNLU.call(self.serviceName, srvRequest)
 
                 if not response:
-                    userdata.answer = "unknown"
+                    userdata.orderList = []
                     return "fail"
 
                 # Checking the validity of the response
                 if len(response.order) == 0:
-                    userdata.answer = "unknown"
+                    userdata.orderList = []
                     return "fail"
 
-                userdata.answer = response.response
+                userdata.orderList = response.order
                 return "understood"
 
             except rospy.ServiceException as exc:
