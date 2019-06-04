@@ -17,6 +17,7 @@ from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 from sara_flexbe_behaviors.action_ask_sm import Action_AskSM as sara_flexbe_behaviors__Action_AskSM
 from sara_flexbe_states.KeepLookingAt import KeepLookingAt
+from sara_flexbe_states.sara_nlu_restaurant import SaraNLUrestaurant
 from sara_flexbe_behaviors.action_findpersonbyid_sm import Action_findPersonByIDSM as sara_flexbe_behaviors__Action_findPersonByIDSM
 from flexbe_states.check_condition_state import CheckConditionState
 from flexbe_states.wait_state import WaitState
@@ -429,16 +430,16 @@ class Scenario_RestaurantSM(Behavior):
 			# x:59 y:272
 			OperatableStateMachine.add('ask AND look person',
 										_sm_ask_and_look_person_2,
-										transitions={'finished': 'le temps de faire un NLU resaurant', 'failed': 'say cannot'},
+										transitions={'finished': 'nlu restaurant', 'failed': 'say cannot'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'personID': 'customerID', 'question': 'question', 'answer': 'answer'})
 
-			# x:415 y:508
-			OperatableStateMachine.add('le temps de faire un NLU resaurant',
-										SetKey(Value=["orange", "pringles"]),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'Key'})
+			# x:411 y:453
+			OperatableStateMachine.add('nlu restaurant',
+										SaraNLUrestaurant(),
+										transitions={'understood': 'finished', 'fail': 'say cannot'},
+										autonomy={'understood': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'sentence': 'answer', 'orderList': 'orderList'})
 
 
 		# x:704 y:488, x:735 y:160
