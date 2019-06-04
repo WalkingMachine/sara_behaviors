@@ -23,7 +23,7 @@ class CheckMisplacedObjects(EventState):
     ># entities  list               Input to the filter function
 
     #> expected_objects list        All expected objects.
-    #> objects_to_move list         All unexpected objects and their desired locations. ex: [["orange", ["table", "kitchen"]], ["hat", ["bed", room]]]
+    #> unexpected_objects list         All unexpected objects and their desired locations. ex: [[entity1, pseudo-entity of entity1 at the right place], [entity2, pseudo-entity of entity2 at the right place]]
 
     <= all_expected                 There are no unexpected objects.
     <= unexpected                   There are unexpected objects.
