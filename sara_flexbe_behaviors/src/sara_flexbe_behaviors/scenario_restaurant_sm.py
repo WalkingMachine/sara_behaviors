@@ -27,8 +27,9 @@ from sara_flexbe_behaviors.action_pick_sm import Action_pickSM as sara_flexbe_be
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from sara_flexbe_states.run_trajectory import RunTrajectory
-from sara_flexbe_behaviors.action_place_sm import Action_placeSM as sara_flexbe_behaviors__Action_placeSM
 from sara_flexbe_states.GetPositionToPlaceOnTable import GetPositionToPlaceOnTable
+from sara_flexbe_behaviors.action_place_sm import Action_placeSM as sara_flexbe_behaviors__Action_placeSM
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -61,8 +62,8 @@ class Scenario_RestaurantSM(Behavior):
 		self.add_behavior(sara_flexbe_behaviors__Action_pickSM, 'take objects and bring the order to customer/Action_pick')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'take objects and bring the order to customer/Action_Move')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'take objects and bring the order to customer/Action_Move_2')
-		self.add_behavior(sara_flexbe_behaviors__Action_placeSM, 'take objects and bring the order to customer/find table and place/Action_place')
 		self.add_behavior(sara_flexbe_behaviors__Action_findSM, 'take objects and bring the order to customer/find table and place/Action_find_2')
+		self.add_behavior(sara_flexbe_behaviors__Action_placeSM, 'take objects and bring the order to customer/find table and place/Action_place')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move')
 
 		# Additional initialization code can be added inside the following tags
@@ -89,57 +90,107 @@ class Scenario_RestaurantSM(Behavior):
 		
 		# [/MANUAL_CREATE]
 
-		# x:707 y:754, x:698 y:447, x:731 y:148
+		# x:839 y:869, x:860 y:725, x:1271 y:566
 		_sm_find_table_and_place_0 = OperatableStateMachine(outcomes=['finished', 'failed', 'no_table'])
 
 		with _sm_find_table_and_place_0:
 			# x:62 y:29
 			OperatableStateMachine.add('set distance',
 										SetKey(Value=0.3),
-										transitions={'done': 'find a table and a free spot'},
+										transitions={'done': 'look down'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'distanceFromEdge'})
 
-			# x:262 y:157
+			# x:640 y:573
 			OperatableStateMachine.add('Action_find_2',
 										self.use_behavior(sara_flexbe_behaviors__Action_findSM, 'take objects and bring the order to customer/find table and place/Action_find_2'),
 										transitions={'done': 'get table position', 'failed': 'say do not find table'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'className': 'tableKey', 'entity': 'tableEntity'})
 
-			# x:279 y:67
+			# x:672 y:504
 			OperatableStateMachine.add('set tableKey',
 										SetKey(Value="table"),
 										transitions={'done': 'Action_find_2'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'tableKey'})
 
-			# x:98 y:685
+			# x:654 y:646
 			OperatableStateMachine.add('get table position',
 										CalculationState(calculation=lambda x: x.position),
 										transitions={'done': 'Action_place'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'tableEntity', 'output_value': 'pose'})
 
-			# x:443 y:160
+			# x:1053 y:547
 			OperatableStateMachine.add('say do not find table',
 										SaraSay(sentence="I can not find the table.", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'no_table'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:45 y:94
+			# x:41 y:231
 			OperatableStateMachine.add('find a table and a free spot',
 										GetPositionToPlaceOnTable(),
-										transitions={'done': 'Action_place', 'not_found': 'set tableKey'},
+										transitions={'done': 'Action_place', 'not_found': 'look down_left'},
 										autonomy={'done': Autonomy.Off, 'not_found': Autonomy.Off},
 										remapping={'distanceFromEdge': 'distanceFromEdge', 'position': 'pose'})
 
-			# x:76 y:770
+			# x:291 y:805
 			OperatableStateMachine.add('Action_place',
 										self.use_behavior(sara_flexbe_behaviors__Action_placeSM, 'take objects and bring the order to customer/find table and place/Action_place'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pos': 'pose'})
+
+			# x:50 y:102
+			OperatableStateMachine.add('look down',
+										SaraSetHeadAngle(pitch=0, yaw=0.7),
+										transitions={'done': 'wait'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:214 y:378
+			OperatableStateMachine.add('find a table and a free spot_2',
+										GetPositionToPlaceOnTable(),
+										transitions={'done': 'Action_place', 'not_found': 'look down_right'},
+										autonomy={'done': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'distanceFromEdge': 'distanceFromEdge', 'position': 'pose'})
+
+			# x:240 y:232
+			OperatableStateMachine.add('look down_left',
+										SaraSetHeadAngle(pitch=0.7, yaw=0.6),
+										transitions={'done': 'wait_2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:402 y:537
+			OperatableStateMachine.add('find a table and a free spot_2_2',
+										GetPositionToPlaceOnTable(),
+										transitions={'done': 'Action_place', 'not_found': 'set tableKey'},
+										autonomy={'done': Autonomy.Off, 'not_found': Autonomy.Off},
+										remapping={'distanceFromEdge': 'distanceFromEdge', 'position': 'pose'})
+
+			# x:426 y:377
+			OperatableStateMachine.add('look down_right',
+										SaraSetHeadAngle(pitch=-0.7, yaw=0.6),
+										transitions={'done': 'wait_3'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:66 y:169
+			OperatableStateMachine.add('wait',
+										WaitState(wait_time=3),
+										transitions={'done': 'find a table and a free spot'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:242 y:294
+			OperatableStateMachine.add('wait_2',
+										WaitState(wait_time=3),
+										transitions={'done': 'find a table and a free spot_2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:428 y:453
+			OperatableStateMachine.add('wait_3',
+										WaitState(wait_time=3),
+										transitions={'done': 'find a table and a free spot_2_2'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:30 y:458, x:130 y:458
