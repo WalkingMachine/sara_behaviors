@@ -12,6 +12,8 @@
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Init_Sequence" />
+	<contains name="Action_Pass_Door" />
 	<contains name="Action_Ask" />
 	<contains name="Action_Move" />
 	<contains name="Action_pick" />
