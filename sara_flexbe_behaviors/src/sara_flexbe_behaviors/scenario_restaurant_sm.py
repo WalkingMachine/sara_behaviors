@@ -13,6 +13,9 @@ from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_behaviors.action_findpersonbyquestion_sm import Action_FindPersonByQuestionSM as sara_flexbe_behaviors__Action_FindPersonByQuestionSM
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
+from sara_flexbe_states.sara_move_base import SaraMoveBase
+from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 from sara_flexbe_behaviors.action_ask_sm import Action_AskSM as sara_flexbe_behaviors__Action_AskSM
@@ -29,7 +32,6 @@ from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from sara_flexbe_states.run_trajectory import RunTrajectory
 from sara_flexbe_states.GetPositionToPlaceOnTable import GetPositionToPlaceOnTable
 from sara_flexbe_behaviors.action_place_sm import Action_placeSM as sara_flexbe_behaviors__Action_placeSM
-from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -558,15 +560,109 @@ class Scenario_RestaurantSM(Behavior):
 										remapping={'pose': 'robotPositionToCustomer'})
 
 
-		# x:851 y:631, x:851 y:167
+		# x:851 y:631, x:452 y:798
 		_sm_detect_people_waving_10 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['customerPosition', 'customerID'])
 
 		with _sm_detect_people_waving_10:
-			# x:50 y:32
-			OperatableStateMachine.add('say to wave',
-										SaraSay(sentence="Hello everyone. If you want to place an order, please raise your hand.", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'finished'},
+			# x:70 y:29
+			OperatableStateMachine.add('look center',
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										transitions={'done': 'find waving person'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:70 y:101
+			OperatableStateMachine.add('find waving person',
+										SaraSay(sentence="", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'look left'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:69 y:182
+			OperatableStateMachine.add('look left',
+										SaraSetHeadAngle(pitch=0.1, yaw=1.3),
+										transitions={'done': 'find waving person_2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:62 y:254
+			OperatableStateMachine.add('find waving person_2',
+										SaraSay(sentence="", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'look right'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:65 y:327
+			OperatableStateMachine.add('look right',
+										SaraSetHeadAngle(pitch=0.1, yaw=-1.3),
+										transitions={'done': 'find waving person_3'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:61 y:403
+			OperatableStateMachine.add('find waving person_3',
+										SaraSay(sentence="", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'pose with 180 rotation'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:57 y:562
+			OperatableStateMachine.add('rotation',
+										SaraMoveBase(reference="base_link"),
+										transitions={'arrived': 'look center_2', 'failed': 'id to 0'},
+										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'pose': 'pose'})
+
+			# x:51 y:486
+			OperatableStateMachine.add('pose with 180 rotation',
+										GenPoseEuler(x=0, y=0, z=0, roll=0, pitch=0, yaw=3.14),
+										transitions={'done': 'rotation'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'pose': 'pose'})
+
+			# x:492 y:34
+			OperatableStateMachine.add('look center_2',
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										transitions={'done': 'find waving person_4'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:481 y:110
+			OperatableStateMachine.add('find waving person_4',
+										SaraSay(sentence="", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'look left_2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:489 y:174
+			OperatableStateMachine.add('look left_2',
+										SaraSetHeadAngle(pitch=0.1, yaw=1.3),
+										transitions={'done': 'find waving person_2_2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:469 y:242
+			OperatableStateMachine.add('find waving person_2_2',
+										SaraSay(sentence="", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'look right_2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:481 y:310
+			OperatableStateMachine.add('look right_2',
+										SaraSetHeadAngle(pitch=0.1, yaw=-1.3),
+										transitions={'done': 'find waving person_3_2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:461 y:388
+			OperatableStateMachine.add('find waving person_3_2',
+										SaraSay(sentence="", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'id to 0'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:154 y:766
+			OperatableStateMachine.add('id to 0',
+										SetKey(Value=0),
+										transitions={'done': 'position to 0'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'customerID'})
+
+			# x:312 y:771
+			OperatableStateMachine.add('position to 0',
+										SetKey(Value=0),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'customerPosition'})
 
 
 		# x:790 y:769, x:747 y:100
