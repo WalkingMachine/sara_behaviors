@@ -8,13 +8,14 @@
 	<date>Mon Mar 11 2019</date>
 	<description>
 		Search items and put them at there place or in the trash can if the item is unknown
-
-( "___" : TO COMPLETE )
 	</description>
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Init_Sequence" />
+	<contains name="Action_Pass_Door" />
 	<contains name="Action_Move" />
+	<contains name="Action_pick" />
 	<contains name="Action_place" />
 
 	<!-- Available Parameters -->

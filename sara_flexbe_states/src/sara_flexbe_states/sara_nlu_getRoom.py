@@ -19,14 +19,13 @@ class SaraNLUgetRoom(EventState):
     <= fail     service unavailable.
     '''
 
-     def __init__(self):
+    def __init__(self):
         # See example_state.py for basic explanations.
-        super(SaraNLUgetRoom, self).__init__(outcomes=['understood', 'not_understood', 'fail'], input_keys=['sentence'],
-                                         output_keys=['answer'])
+        super(SaraNLUgetRoom, self).__init__(outcomes=['understood', 'not_understood', 'fail'], input_keys=['sentence'],output_keys=['answer'])
 
         serviceName = "/get_room"
 
-        Logger.loginfo("waiting forservice: " + HKGetRoom)
+        Logger.loginfo("waiting for service: "+serviceName)
         rospy.wait_for_service(serviceName)
 
         self.service = rospy.ServiceProxy(serviceName, HKGetRoom)
