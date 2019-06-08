@@ -37,7 +37,7 @@ class GetGraspFromEntity(EventState):
         self.graspList = msg.grasps
 
     def __init__(self):
-        super(GetGraspFromEntity, self).__init__(outcomes=['done', 'failed'], input_keys=['Entity'], output_keys=['GraspingPose'])
+        super(GetGraspFromEntity, self).__init__(outcomes=['done', 'failed'], input_keys=['Entity'], output_keys=['ApproachPose','GraspingPose'])
         #self.emotion=emotion
         self.graspList = None
         self.grasps_sub = rospy.Subscriber('/detect_grasps/clustered_grasps', GraspConfigList, self.graspCallback)
@@ -109,13 +109,14 @@ class GetGraspFromEntity(EventState):
 
 
         stocked_pose = None
-        stocked_z = 0
+        stocked_grasp = 0
+        approach_pose = Pose()
         for grasp in self.graspList:
             Logger.loginfo("TEST GRASP")
             pose = Pose()
             pose.position = grasp.top
             yaw = math.atan2(grasp.approach.y , grasp.approach.x)
-            pitch = math.atan2( grasp.approach.z , math.sqrt((grasp.approach.x*grasp.approach.x)+(grasp.approach.y*grasp.approach.y)) )
+            pitch = -math.atan2( grasp.approach.z , math.sqrt((grasp.approach.x*grasp.approach.x)+(grasp.approach.y*grasp.approach.y)) )
             binormal = [grasp.binormal.x, grasp.binormal.y, grasp.binormal.z]
             binormal_ref = np.cross( [0,0,1] , [grasp.approach.x, grasp.approach.y, grasp.approach.z] )
             roll = math.acos( np.dot(binormal, binormal_ref) / (np.linalg.norm(binormal)*np.linalg.norm(binormal_ref)) )
@@ -146,24 +147,54 @@ class GetGraspFromEntity(EventState):
             if grasp.approach.z > 0:
                 Logger.loginfo("APPROCHE VERS LE HAUT")
                 if stocked_pose is not None:
-                    if grasp.approach.z > stocked_z:
+                    if grasp.approach.z > stocked_grasp.approach.z:
                         stocked_pose = pose
-                        stocked_z = grasp.approach.z
+                        stocked_grasp = grasp
                 else:
                     stocked_pose = pose
-                    stocked_z = grasp.approach.z
+                    stocked_grasp = grasp
             else:
                 Logger.loginfo("APPROCHE VERS LE BAS")
-                marker_publisher.publish(markerArray)
+
 
                 userdata.GraspingPose = pose
+
+                approach_pose.orientation = pose.orientation
+                approach_pose.position.x = pose.position.x - 0.2 * grasp.approach.x / np.linalg.norm([grasp.approach.x , grasp.approach.y , grasp.approach.z])
+                approach_pose.position.y = pose.position.y - 0.2 * grasp.approach.y / np.linalg.norm([grasp.approach.x , grasp.approach.y , grasp.approach.z])
+                approach_pose.position.z = pose.position.z - 0.2 * grasp.approach.z / np.linalg.norm([grasp.approach.x , grasp.approach.y , grasp.approach.z])
+
+                userdata.ApproachPose = approach_pose
+
+                marker3 = copy.deepcopy(marker)
+                marker3.id = 3
+                marker3.pose = approach_pose
+                markerArray.markers.append(marker3)
+
+                marker_publisher.publish(markerArray)
+
                 return 'done'
 
         if stocked_pose is not None:
 
-            marker_publisher.publish(markerArray)
+
 
             userdata.GraspingPose = stocked_pose
+
+            approach_pose.orientation = stocked_pose.orientation
+            approach_pose.position.x = stocked_pose.position.x - 0.2 * stocked_grasp.approach.x / np.linalg.norm([stocked_grasp.approach.x , stocked_grasp.approach.y , stocked_grasp.approach.z])
+            approach_pose.position.y = stocked_pose.position.y - 0.2 * stocked_grasp.approach.y / np.linalg.norm([stocked_grasp.approach.x , stocked_grasp.approach.y , stocked_grasp.approach.z])
+            approach_pose.position.z = stocked_pose.position.z - 0.2 * stocked_grasp.approach.z / np.linalg.norm([stocked_grasp.approach.x , stocked_grasp.approach.y , stocked_grasp.approach.z])
+
+            userdata.ApproachPose = approach_pose
+
+            marker3 = copy.deepcopy(marker)
+            marker3.id = 3
+            marker3.pose = approach_pose
+            markerArray.markers.append(marker3)
+
+            marker_publisher.publish(markerArray)
+
             return 'done'
 
         marker_publisher.publish(markerArray)
