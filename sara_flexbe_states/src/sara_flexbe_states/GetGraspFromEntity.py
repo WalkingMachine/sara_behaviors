@@ -15,6 +15,7 @@ from std_msgs.msg import Header, Int64
 from geometry_msgs.msg import Point, Pose
 from sara_msgs.msg import Entity, Entities
 from gpd.msg import GraspConfigList
+from tf.transformations import quaternion_from_euler
 
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
@@ -90,16 +91,83 @@ class GetGraspFromEntity(EventState):
             if i > 20:
                 return 'failed'
 
+        topic = 'visualization_marker_array'
+        marker_publisher = rospy.Publisher(topic, MarkerArray)
 
+        markerArray = MarkerArray()
+        marker = Marker()
+        marker.header.frame_id = "/base_link"
+        marker.type = marker.ARROW
+        marker.scale.x = 0.02
+        marker.scale.y = 0.02
+        marker.scale.z = 0.02
+        marker.action = marker.ADD
+        marker.color.a = 1.0
+        marker.color.r = 1.0
+        marker.color.g = 1.0
+        marker.color.b = 0.0
+
+
+        stocked_pose = None
+        stocked_z = 0
         for grasp in self.graspList:
+            Logger.loginfo("TEST GRASP")
             pose = Pose()
-            pose.Point = grasp.top
-            yaw = atan2(grasp.approach.y , grasp.approach.x)
-            pitch = atan2( grasp.approach.z , sqrt((grasp.approach.x*grasp.approach.x)+(grasp.approach.y*grasp.approach.y)) )
-            roll = 0
+            pose.position = grasp.top
+            yaw = math.atan2(grasp.approach.y , grasp.approach.x)
+            pitch = math.atan2( grasp.approach.z , math.sqrt((grasp.approach.x*grasp.approach.x)+(grasp.approach.y*grasp.approach.y)) )
+            binormal = [grasp.binormal.x, grasp.binormal.y, grasp.binormal.z]
+            binormal_ref = np.cross( [0,0,1] , [grasp.approach.x, grasp.approach.y, grasp.approach.z] )
+            roll = math.acos( np.dot(binormal, binormal_ref) / (np.linalg.norm(binormal)*np.linalg.norm(binormal_ref)) )
 
+            if roll > math.pi/2:
+                roll = roll - math.pi
 
-        return 'done'
-        #return 'failed'
+            quat = quaternion_from_euler(roll, pitch, yaw, axes='sxyz')
+
+            pose.orientation.x = quat[0]
+            pose.orientation.y = quat[1]
+            pose.orientation.z = quat[2]
+            pose.orientation.w = quat[3]
+
+            marker1 = copy.deepcopy(marker)
+            marker1.id = 1
+            marker1.pose = pose
+            markerArray.markers.append(marker1)
+            marker2 = copy.deepcopy(marker)
+            marker2.type = marker.SPHERE
+            marker2.id = 2
+            marker2.pose.position.x = grasp.top.x + grasp.binormal.x / 20
+            marker2.pose.position.y = grasp.top.y + grasp.binormal.y / 20
+            marker2.pose.position.z = grasp.top.z + grasp.binormal.z / 20
+            markerArray.markers.append(marker2)
+
+            ## keep the pose with a negative z approach or the one with the closest z of zero if all positive
+            if grasp.approach.z > 0:
+                Logger.loginfo("APPROCHE VERS LE HAUT")
+                if stocked_pose is not None:
+                    if grasp.approach.z > stocked_z:
+                        stocked_pose = pose
+                        stocked_z = grasp.approach.z
+                else:
+                    stocked_pose = pose
+                    stocked_z = grasp.approach.z
+            else:
+                Logger.loginfo("APPROCHE VERS LE BAS")
+                marker_publisher.publish(markerArray)
+
+                userdata.GraspingPose = pose
+                return 'done'
+
+        if stocked_pose is not None:
+
+            marker_publisher.publish(markerArray)
+
+            userdata.GraspingPose = stocked_pose
+            return 'done'
+
+        marker_publisher.publish(markerArray)
+
+        return 'failed'
 
     
