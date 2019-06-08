@@ -51,7 +51,7 @@ class GetGraspFromEntity(EventState):
 	
 	self.idealRoll = 0.0
 	self.idealPitch = 0.0
-	self.idealYaw = 0.07 # Environ 4 degrés vers la gauche, relativement à SARA
+	self.idealYaw = 0.07 # 4 degrees to the right relatively to the robot POV
 
     def on_enter(self, userdata):
         self.entity = userdata.Entity
@@ -153,16 +153,16 @@ class GetGraspFromEntity(EventState):
 #	    addMarkersToArray(marker,pose,markerArray)
 
 	    poseScore = calculateGraspScore(pose)
-            # Poses with a negative approach gets à negative multiplier
+            # Poses with a negative approach gets a negative multiplier
             if grasp.approach.z > 0: #Approche par le haut
-		rospy.loginfo("Pose score (Positive approach): %s",str(poseScore))
+		rospy.loginfo("Total pose score (Positive approach): %s",str(poseScore))
 		if score > poseScore:
 		    score = poseScore
 		    stocked_pose = pose
                     stocked_grasp = grasp
 
             else: #Approche par le bas
-		rospy.loginfo("Pose score (Negative approach): %s",str(poseScore*10))
+		rospy.loginfo("Total pose score (Negative approach): %s",str(poseScore*10))
 		if score > poseScore*10:
 		    score = poseScore*10
 		    stocked_pose = pose
@@ -172,21 +172,21 @@ class GetGraspFromEntity(EventState):
             userdata.GraspingPose = stocked_pose
             userdata.ApproachPose = createApproachPose(stocked_pose,stocked_grasp,self.approachDistance)
 
-	    #Crée un marker pour la pose choisie
-	    addMarkersToArray(marker,pose,markerArray)
+	    #Creates markers for the chosen pose
+	    addMarkersToArray(marker,stocked_pose,markerArray)
             marker3 = copy.deepcopy(marker)
             marker3.id = 3
-            marker3.pose = approach_pose
+            marker3.pose = userdata.ApproachPose
             markerArray.markers.append(marker3)
 
             marker_publisher.publish(markerArray)
             return 'done'
 
         #marker_publisher.publish(markerArray)
-        return 'failed' #Si aucun score est inférieur à 9999.0, on est dans marde
+        return 'failed'  #If all scores are higher than the default value
 
     def createApproachPose(self,pose,grasp,dist):
-	# Crée une pose à la distance spécifié selon la normale
+	# Creates a pose at distance specified from grasping pose per gpd approach position
 	approach_pose = Pose()
 	approach_pose.orientation = pose.orientation
 	approach_pose.position.x = pose.position.x - dist * grasp.approach.x / np.linalg.norm([grasp.approach.x , grasp.approach.y , grasp.approach.z])
@@ -195,7 +195,7 @@ class GetGraspFromEntity(EventState):
 	return approach_pose
 
     def addMarkersToArray(self,marker,pose,markerArray):
-	# Ajoute des markeurs pour l'approche trouvée
+	# Adds markers for identified pose
         marker1 = copy.deepcopy(marker)
         marker1.id = 1
         marker1.pose = pose
@@ -210,13 +210,15 @@ class GetGraspFromEntity(EventState):
 	return True
 
     def calculateGraspScore(self,pose, grasp):
-	# Calcule un score pour le grasp donné; un score minimum est visé
+	# Calculates a score for a given grasp, a minimum score is prefered
 	# Pythagorean distance (except z) multiplied by a scoring multiplier
-	score = ((pose.position.x)^2+(pose.position.y)^2)^(1/2)*self.distanceScoringMultiplier
+	score1 = ((pose.position.x)^2+(pose.position.y)^2)^(1/2)*self.distanceScoringMultiplier
 	# Pythagorean angle multiplied by a scoring multiplier
 	(roll, pitch, yaw) = euler_from_quaternion([pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w])
-	score += ((self.idealRoll-roll)^2+(self.idealPitch-pitch)^2+(self.idealYaw-yaw)^2)^(1/2)*self.orientationScoringMultiplier
+	score2 = ((self.idealRoll-roll)^2+(self.idealPitch-pitch)^2+(self.idealYaw-yaw)^2)^(1/2)*self.orientationScoringMultiplier
 	# Inverse of normalized score minus 1 (so normalized best = 0) multiplied by a scoring multiplier
-	score += ((grasp.score/maxgraspScore)^(-1)-1)*self.graspScoringMultiplier
+	score3 = ((grasp.score/maxgraspScore)^(-1)-1)*self.graspScoringMultiplier
+	rospy.loginfo("Position score : %.2f, Orientation score : %.2f, Grasping score : %.2f",score1,score2,score3)
+	score = score1 + score2 + score3
 	return score
 
