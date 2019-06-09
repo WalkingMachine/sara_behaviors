@@ -58,6 +58,7 @@ class GetGraspFromEntity(EventState):
         self.maxgraspScore = 0.0
 
         self.pub = rospy.Publisher('cloud_indexed', CloudIndexed, queue_size=1)
+        self.marker_pub = rospy.Publisher('grapt_pose', Pose, queue_size=1)
 
 
     def on_enter(self, userdata):
@@ -109,24 +110,8 @@ class GetGraspFromEntity(EventState):
             if i > 20:
                 return 'failed'
 
-        topic = 'visualization_marker_array'
-        marker_publisher = rospy.Publisher(topic, MarkerArray)
-
-        markerArray = MarkerArray()
-        marker = Marker()
-        marker.header.frame_id = "/base_link"
-        marker.type = marker.ARROW
-        marker.scale.x = 0.02
-        marker.scale.y = 0.02
-        marker.scale.z = 0.02
-        marker.action = marker.ADD
-        marker.color.a = 1.0
-        marker.color.r = 1.0
-        marker.color.g = 1.0
-        marker.color.b = 0.0
 
         score = 99999.0
-
 
         stocked_pose = None
         stocked_grasp = 0
@@ -166,8 +151,6 @@ class GetGraspFromEntity(EventState):
             pose.orientation.z = quat[2]
             pose.orientation.w = quat[3]
 
-            #	    addMarkersToArray(marker,pose,markerArray)
-
             poseScore = self.calculateGraspScore(pose, grasp)
             # Poses with a negative approach gets a negative multiplier
             if grasp.approach.z > 0:  # Approche par le haut
@@ -189,13 +172,7 @@ class GetGraspFromEntity(EventState):
             approach_pose = self.createApproachPose(stocked_pose, stocked_grasp, self.approachDistance)
             userdata.ApproachPose = approach_pose
             # Creates markers for the chosen pose
-            self.addMarkersToArray(marker, stocked_pose, stocked_grasp, markerArray)
-            marker3 = copy.deepcopy(marker)
-            marker3.id = 3
-            marker3.pose = approach_pose
-            markerArray.markers.append(marker3)
-
-            marker_publisher.publish(markerArray)
+            self.marker_pub.publish(stocked_pose)
             return 'done'
 
         # marker_publisher.publish(markerArray)
