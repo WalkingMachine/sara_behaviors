@@ -143,9 +143,17 @@ class GetGraspFromEntity(EventState):
             yaw = math.atan2(grasp.approach.y, grasp.approach.x)
             pitch = -math.atan2(grasp.approach.z, math.sqrt(
                 (grasp.approach.x * grasp.approach.x) + (grasp.approach.y * grasp.approach.y)))
-            binormal = [grasp.binormal.x, grasp.binormal.y, grasp.binormal.z]
-            binormal_ref = np.cross([0, 0, 1], [grasp.approach.x, grasp.approach.y, grasp.approach.z])
-            roll = math.acos(np.dot(binormal, binormal_ref) / (np.linalg.norm(binormal) * np.linalg.norm(binormal_ref)))
+
+
+            approach = np.array([grasp.approach.x, grasp.approach.y, grasp.approach.z])
+            approach /= (approach**2).sum()**0.5  # Get the unit vector
+            binormal = np.array([grasp.binormal.x, grasp.binormal.y, grasp.binormal.z])
+            binormal /= (binormal**2).sum()**0.5  # Get the unit vector
+
+            binormal_ref_x = np.cross(np.array([0, 0, 1]), approach)
+            binormal_ref_y = np.cross(binormal_ref_x, approach)
+            roll = math.atan2(np.vdot(approach, binormal_ref_y), np.vdot(approach, binormal_ref_x))*math.pi/2
+
 
             #if roll > math.pi / 2:
             #    roll = roll - math.pi
