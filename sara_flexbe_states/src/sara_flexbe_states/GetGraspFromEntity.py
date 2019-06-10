@@ -54,7 +54,7 @@ class GetGraspFromEntity(EventState):
         self.graspList = None
         self.grasps_sub = rospy.Subscriber('/detect_grasps/clustered_grasps', GraspConfigList, self.graspCallback)
 
-        self.listener = TransformListener()
+        self.listener = TransformListener(20)
         self.idealRoll = 0.0
         self.idealPitch = 0.0
         self.idealYaw = 0.07  # 4 degrees to the right relatively to the robot POV
@@ -62,25 +62,28 @@ class GetGraspFromEntity(EventState):
 
         self.pub = rospy.Publisher('cloud_indexed', CloudIndexed, queue_size=1)
         self.marker_pub = rospy.Publisher('grasp_pose', PoseStamped, queue_size=1)
-
-
-    def on_enter(self, userdata):
-        self.entity = userdata.Entity
+        self.marker_pub_app = rospy.Publisher('approach_pose', PoseStamped, queue_size=1)
 
     def execute(self, userdata):
-        Logger.loginfo("Selected entity : " + str(self.entity.ID))
+
+        if userdata.Entity.pointcloud.header.frame_id == "":
+            return "failed"
+
+
+        Logger.loginfo("Selected entity : " + str(userdata.Entity.ID))
         Logger.loginfo(
-            "Current position : (" + str(self.entity.position.x) + ", " + str(self.entity.position.y) + ", " + str(
-                self.entity.position.x) + ")")
+            "Current position : (" + str(userdata.Entity.position.x) + ", " + str(userdata.Entity.position.y) + ", " + str(
+                userdata.Entity.position.x) + ")")
 
         # Convert to Pointcloud and change frame of reference to base)link
         pointCloud = PointCloud()
-        pointCloud.header = self.entity.pointcloud.header
-        for p in point_cloud2.read_points(self.entity.pointcloud):
+        pointCloud.header = userdata.Entity.pointcloud.header
+        for p in point_cloud2.read_points(userdata.Entity.pointcloud):
             point = Point32()
             point.x, point.y, point.z = [p[0], p[1], p[2]]
             pointCloud.points.append(point)
-        self.listener.waitForTransform(pointCloud.header.frame_id, "/base_link", pointCloud.header.stamp, rospy.Duration(10))
+        pointCloud.header.stamp = rospy.Time.now()-rospy.Duration(1)
+        self.listener.waitForTransform(pointCloud.header.frame_id, "/base_link", rospy.Time(0), rospy.Duration(10))
         pointCloud = self.listener.transformPointCloud("/base_link", pointCloud)
 
         cloud = []
@@ -105,7 +108,7 @@ class GetGraspFromEntity(EventState):
         header.frame_id = "/base_link"
         header.stamp = rospy.Time.now()
         msg.cloud_sources.cloud = point_cloud2.create_cloud_xyz32(header, cloud.tolist())
-        msg.cloud_sources.view_points.append(Point(0, 0, 0))
+        msg.cloud_sources.view_points.append(Point(0, 0, 1.5))
         for i in xrange(cloud.shape[0]):
             msg.cloud_sources.camera_source.append(Int64(0))
         for i in idx[0]:
@@ -123,116 +126,76 @@ class GetGraspFromEntity(EventState):
             if i > 20:
                 return 'failed'
 
-
-        score = 99999.0
-
-        stocked_pose = None
-        stocked_grasp = 0
-        approach_pose = Pose()
+        bestScore = 0
+        bestGrasp = None
         # Normalisation des scores de grasp
         for grasp in self.graspList:
             if grasp.score.data > self.maxgraspScore:
                 self.maxgraspScore = grasp.score.data
 
         for grasp in self.graspList:
-            Logger.loginfo("TEST GRASP")
-            pose = Pose()
-            pose.position = grasp.top
-            yaw = math.atan2(grasp.approach.y, grasp.approach.x)
-            pitch = -math.atan2(grasp.approach.z, math.sqrt(
-                (grasp.approach.x * grasp.approach.x) + (grasp.approach.y * grasp.approach.y)))
 
-
-            approach = np.array([grasp.approach.x, grasp.approach.y, grasp.approach.z])
-            approach /= (approach**2).sum()**0.5  # Get the unit vector
-            binormal = np.array([grasp.binormal.x, grasp.binormal.y, grasp.binormal.z])
-            binormal /= (binormal**2).sum()**0.5  # Get the unit vector
-
-            binormal_ref_x = np.cross(np.array([0, 0, 1]), approach)
-            binormal_ref_y = np.cross(binormal_ref_x, approach)
-            roll = math.atan2(np.vdot(approach, binormal_ref_y), np.vdot(approach, binormal_ref_x))*math.pi/2
-
-
-            #if roll > math.pi / 2:
-            #    roll = roll - math.pi
-            #roll += math.pi
-
-            # Transformation to quaternion for a Pose
-            quat = quaternion_from_euler(roll, pitch, yaw, axes='sxyz')
-            pose.orientation.x = quat[0]
-            pose.orientation.y = quat[1]
-            pose.orientation.z = quat[2]
-            pose.orientation.w = quat[3]
-
-            poseScore = self.calculateGraspScore(pose, grasp)
             # Poses with a negative approach gets a negative multiplier
-            if grasp.approach.z > 0:  # Approche par le haut
+            if grasp.approach.z < 0:  # Approche par le haut
+                # poseScore = self.calculateGraspScore(pose)
+                poseScore = grasp.score.data
                 rospy.loginfo("Total pose score (Positive approach): %s", str(poseScore))
-                if score > poseScore:
-                    score = poseScore
-                    stocked_pose = pose
-                    stocked_grasp = grasp
 
-            else:  # Approche par le bas
-                rospy.loginfo("Total pose score (Negative approach): %s", str(poseScore * 10))
-                if score > poseScore * 10:
-                    score = poseScore * 10
-                    stocked_pose = pose
-                    stocked_grasp = grasp
+                if bestScore < poseScore:
+                    bestScore = poseScore
+                    bestGrasp = grasp
 
-        if stocked_pose is not None:
-            userdata.GraspingPose = stocked_pose
-            approach_pose = self.createApproachPose(stocked_pose, stocked_grasp, self.approachDistance)
+        if bestGrasp is not None:
+            Logger.loginfo("TEST GRASP")
+
+            # Get pose
+            pose = self.graspToPose(bestGrasp)
+            userdata.GraspingPose = pose
+
+            # Generate approach pose
+            approach_pose = Pose()
+            applength = np.linalg.norm([bestGrasp.approach.x, bestGrasp.approach.y, bestGrasp.approach.z])
+            approach_pose.position.x = pose.position.x - bestGrasp.approach.x / applength * self.approachDistance
+            approach_pose.position.y = pose.position.y - bestGrasp.approach.y / applength * self.approachDistance
+            approach_pose.position.z = pose.position.z - bestGrasp.approach.z / applength * self.approachDistance
+            approach_pose.orientation = pose.orientation
             userdata.ApproachPose = approach_pose
+
             # Creates markers for the chosen pose
             stamped = PoseStamped()
             stamped.header.frame_id = "base_link"
             stamped.header.stamp = rospy.Time.now()
-            stamped.pose = stocked_pose
+            stamped.pose = pose
             self.marker_pub.publish(stamped)
+            stamped.pose = approach_pose
+            self.marker_pub_app.publish(stamped)
             return 'done'
 
         # marker_publisher.publish(markerArray)
         return 'failed'  # If all scores are higher than the default value
 
-    def createApproachPose(self, pose, grasp, dist):
-        # Creates a pose at distance specified from grasping pose per gpd approach position
-        approach_pose = Pose()
-        approach_pose.orientation = pose.orientation
-        approach_pose.position.x = pose.position.x - dist * grasp.approach.x / np.linalg.norm(
-            [grasp.approach.x, grasp.approach.y, grasp.approach.z])
-        approach_pose.position.y = pose.position.y - dist * grasp.approach.y / np.linalg.norm(
-            [grasp.approach.x, grasp.approach.y, grasp.approach.z])
-        approach_pose.position.z = pose.position.z - dist * grasp.approach.z / np.linalg.norm(
-            [grasp.approach.x, grasp.approach.y, grasp.approach.z])
-        return approach_pose
+    def graspToPose(self, grasp):
+        pose = Pose()
+        pose.position = grasp.top
 
-    def addMarkersToArray(self, marker, pose, grasp, markerArray):
-        # Adds markers for identified pose
-        marker1 = copy.deepcopy(marker)
-        marker1.id = 1
-        marker1.pose = pose
-        markerArray.markers.append(marker1)
-        marker2 = copy.deepcopy(marker)
-        marker2.type = marker.SPHERE
-        marker2.id = 2
-        marker2.pose.position.x = grasp.top.x + grasp.binormal.x / 20
-        marker2.pose.position.y = grasp.top.y + grasp.binormal.y / 20
-        marker2.pose.position.z = grasp.top.z + grasp.binormal.z / 20
-        markerArray.markers.append(marker2)
-        return True
+        yaw = math.atan2(grasp.approach.y, grasp.approach.x)
+        distXY = (grasp.approach.x**2 + grasp.approach.y**2)**0.5
+        pitch = -math.atan2(grasp.approach.z, distXY)
 
-    def calculateGraspScore(self, pose, grasp):
-        # Calculates a score for a given grasp, a minimum score is prefered
-        # Pythagorean distance (except z) multiplied by a scoring multiplier
-        score1 = ((pose.position.x) ** 2. + (pose.position.y) ** 2.) ** (0.5) * self.distanceScoringMultiplier
-        # Pythagorean angle multiplied by a scoring multiplier
-        (roll, pitch, yaw) = euler_from_quaternion(
-            [pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w])
-        score2 = ((self.idealRoll - roll) ** 2. + (self.idealPitch - pitch) ** 2. + (self.idealYaw - yaw) ** 2.) ** (
-                0.5) * self.orientationScoringMultiplier
-        # Inverse of normalized score minus 1 (so normalized best = 0) multiplied by a scoring multiplier
-        score3 = ((self.maxgraspScore / (grasp.score.data+0.1)) - 1) * self.graspScoringMultiplier
-        rospy.loginfo("Position score : %.4f, Orientation score : %.4f, Grasping score : %.4f", score1, score2, score3)
-        score = score1 + score2 + score3
-        return score
+        approach = np.array([grasp.approach.x, grasp.approach.y, grasp.approach.z])
+        approach /= (approach ** 2).sum() ** 0.5  # Get the unit vector
+        binormal = np.array([grasp.binormal.x, grasp.binormal.y, grasp.binormal.z])
+        binormal /= (binormal ** 2).sum() ** 0.5  # Get the unit vector
+
+        binormal_ref_x = np.cross(np.array([0, 0, 1]), approach)
+        binormal_ref_y = np.cross(binormal_ref_x, approach)
+        roll = math.atan2(np.vdot(approach, binormal_ref_y), np.vdot(approach, binormal_ref_x)) * math.pi / 2
+
+        # Transformation to quaternion for a Pose
+        quat = quaternion_from_euler(roll, pitch, yaw, axes='sxyz')
+        pose.orientation.x = quat[0]
+        pose.orientation.y = quat[1]
+        pose.orientation.z = quat[2]
+        pose.orientation.w = quat[3]
+
+        return pose
