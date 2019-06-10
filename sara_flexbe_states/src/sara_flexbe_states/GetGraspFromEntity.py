@@ -6,16 +6,18 @@ import rospy
 import copy
 from std_msgs.msg import UInt8
 
-from sensor_msgs.msg import PointCloud2
+from sensor_msgs.msg import PointCloud2, PointCloud
 from sensor_msgs import point_cloud2
 import numpy as np
 from scipy.linalg import lstsq
 from gpd.msg import CloudIndexed
 from std_msgs.msg import Header, Int64
-from geometry_msgs.msg import Point, Pose
+from geometry_msgs.msg import Point, Pose, PoseStamped, Point32
 from sara_msgs.msg import Entity, Entities
+from tf import TransformListener
 from gpd.msg import GraspConfigList
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
+
 
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
@@ -52,13 +54,14 @@ class GetGraspFromEntity(EventState):
         self.graspList = None
         self.grasps_sub = rospy.Subscriber('/detect_grasps/clustered_grasps', GraspConfigList, self.graspCallback)
 
+        self.listener = TransformListener()
         self.idealRoll = 0.0
         self.idealPitch = 0.0
         self.idealYaw = 0.07  # 4 degrees to the right relatively to the robot POV
         self.maxgraspScore = 0.0
 
         self.pub = rospy.Publisher('cloud_indexed', CloudIndexed, queue_size=1)
-        self.marker_pub = rospy.Publisher('grapt_pose', Pose, queue_size=1)
+        self.marker_pub = rospy.Publisher('grasp_pose', PoseStamped, queue_size=1)
 
 
     def on_enter(self, userdata):
@@ -70,9 +73,19 @@ class GetGraspFromEntity(EventState):
             "Current position : (" + str(self.entity.position.x) + ", " + str(self.entity.position.y) + ", " + str(
                 self.entity.position.x) + ")")
 
-        cloud = []
+        # Convert to Pointcloud and change frame of reference to base)link
+        pointCloud = PointCloud()
+        pointCloud.header = self.entity.pointcloud.header
         for p in point_cloud2.read_points(self.entity.pointcloud):
-            cloud.append([p[0], p[1], p[2]])
+            point = Point32()
+            point.x, point.y, point.z = [p[0], p[1], p[2]]
+            pointCloud.points.append(point)
+        self.listener.waitForTransform(pointCloud.header.frame_id, "/base_link", pointCloud.header.stamp, rospy.Duration(10))
+        pointCloud = self.listener.transformPointCloud("/base_link", pointCloud)
+
+        cloud = []
+        for p in pointCloud.points:
+            cloud.append([p.x, p.y, p.z])
 
         Logger.loginfo("Cloud size : " + str(len(cloud)))
 
@@ -172,7 +185,11 @@ class GetGraspFromEntity(EventState):
             approach_pose = self.createApproachPose(stocked_pose, stocked_grasp, self.approachDistance)
             userdata.ApproachPose = approach_pose
             # Creates markers for the chosen pose
-            self.marker_pub.publish(stocked_pose)
+            stamped = PoseStamped()
+            stamped.header.frame_id = "base_link"
+            stamped.header.stamp = rospy.Time.now()
+            stamped.pose = stocked_pose
+            self.marker_pub.publish(stamped)
             return 'done'
 
         # marker_publisher.publish(markerArray)
@@ -215,7 +232,7 @@ class GetGraspFromEntity(EventState):
         score2 = ((self.idealRoll - roll) ** 2. + (self.idealPitch - pitch) ** 2. + (self.idealYaw - yaw) ** 2.) ** (
                 0.5) * self.orientationScoringMultiplier
         # Inverse of normalized score minus 1 (so normalized best = 0) multiplied by a scoring multiplier
-        score3 = ((self.maxgraspScore / grasp.score.data) - 1) * self.graspScoringMultiplier
+        score3 = ((self.maxgraspScore / (grasp.score.data+0.1)) - 1) * self.graspScoringMultiplier
         rospy.loginfo("Position score : %.4f, Orientation score : %.4f, Grasping score : %.4f", score1, score2, score3)
         score = score1 + score2 + score3
         return score
