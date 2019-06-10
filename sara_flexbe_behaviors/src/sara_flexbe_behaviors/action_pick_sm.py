@@ -131,7 +131,7 @@ class Action_pickSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:84 y:544, x:349 y:211
+		# x:68 y:579, x:349 y:211
 		_sm_lift_object_3 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['grasp_pose'])
 
 		with _sm_lift_object_3:
@@ -152,7 +152,7 @@ class Action_pickSM(Behavior):
 			# x:42 y:382
 			OperatableStateMachine.add('move_back',
 										SaraMoveBase(reference="base_link"),
-										transitions={'arrived': 'failed', 'failed': 'done'},
+										transitions={'arrived': 'place arm', 'failed': 'place arm'},
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'backPose'})
 
@@ -162,6 +162,12 @@ class Action_pickSM(Behavior):
 										transitions={'done': 'genpose', 'failed': 'genpose'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'up_pose'})
+
+			# x:39 y:480
+			OperatableStateMachine.add('place arm',
+										RunTrajectory(file="transport", duration=0),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:263 y:214, x:271 y:492
@@ -251,7 +257,7 @@ class Action_pickSM(Behavior):
 
 			# x:268 y:240
 			OperatableStateMachine.add('cant reach',
-										SaraSay(sentence="Hum. I can't reach it.", input_keys=[], emotion=1, block=True),
+										SaraSay(sentence="Hum! I can't reach it.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'unreachable'},
 										autonomy={'done': Autonomy.Off})
 
