@@ -21,7 +21,7 @@ class MoveitMoveCartesian(EventState):
     
     def __init__(self, move=True, waitForExecution=True, group="RightArm"):
         # See example_state.py for basic explanations.
-        super(MoveitMove, self).__init__(outcomes=['done', 'failed'], input_keys=['targetPose'])
+        super(MoveitMoveCartesian, self).__init__(outcomes=['done', 'failed'], input_keys=['targetPose'])
         self.move = move
         self.waitForExecution = waitForExecution
         self.group = MoveGroupCommander(group)
@@ -57,19 +57,19 @@ class MoveitMoveCartesian(EventState):
         if type(userdata.targetPose) is Pose:
             Logger.loginfo('target is a pose')
             waypoints = [self.group.get_current_pose().pose, copy.deepcopy(userdata.targetPose)]
-        try:
-            (plan, fraction) = self.group.compute_cartesian_path(
-                waypoints,
-                self.movSteps,
-                self.jumpThresh)
-        except:
-            Logger.loginfo('Planning failed; could not compute path')
-            self.result = 'failed'
-            return
+            try:
+                (plan, fraction) = self.group.compute_cartesian_path(
+                    waypoints,
+                    self.movSteps,
+                    self.jumpThresh)
+            except:
+                Logger.loginfo('Planning failed; could not compute path')
+                self.result = 'failed'
+                return
         
         else:
             Logger.loginfo('ERROR in ' + str(self.name) + ' : target is not a Pose()')
-        self.result = 'failed'
+            self.result = 'failed'
     
         Logger.loginfo('target defined')
         

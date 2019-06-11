@@ -16,10 +16,11 @@ from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.run_trajectory import RunTrajectory
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.moveit_move import MoveitMove
-from sara_flexbe_states.gen_gripper_pose import GenGripperPose
+from sara_flexbe_states.moveit_moveCartesian import MoveitMoveCartesian
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.GetGraspFromEntity import GetGraspFromEntity
+from sara_flexbe_states.gen_gripper_pose import GenGripperPose
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -62,7 +63,7 @@ class Action_pickSM(Behavior):
 	def create(self):
 		# x:929 y:479, x:925 y:237, x:922 y:34, x:926 y:362
 		_state_machine = OperatableStateMachine(outcomes=['success', 'unreachable', 'not found', 'dropped'], input_keys=['objectID'])
-		_state_machine.userdata.objectID = 1
+		_state_machine.userdata.objectID = 210
 		_state_machine.userdata.PreGripPose = "pre_grip_pose"
 		_state_machine.userdata.entity = 0
 		_state_machine.userdata.grasp_pose = 0
@@ -101,16 +102,16 @@ class Action_pickSM(Behavior):
 			# x:76 y:26
 			OperatableStateMachine.add('open gripper',
 										SetGripperState(width=0.1, effort=0),
-										transitions={'object': 'move on it', 'no_object': 'move on it'},
+										transitions={'object': 'move forward', 'no_object': 'move forward'},
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
-			# x:66 y:170
-			OperatableStateMachine.add('move on it',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+			# x:64 y:158
+			OperatableStateMachine.add('move forward',
+										MoveitMoveCartesian(move=True, waitForExecution=True, group="RightArm"),
 										transitions={'done': 'done', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'grasp_pose'})
+										remapping={'targetPose': 'grasp_pose'})
 
 
 		# x:30 y:324, x:130 y:324
@@ -132,17 +133,23 @@ class Action_pickSM(Behavior):
 
 
 		# x:68 y:579, x:349 y:211
-		_sm_lift_object_3 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['approach_pose'])
+		_sm_lift_object_3 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['approach_pose', 'up_pose'])
 
 		with _sm_lift_object_3:
-			# x:30 y:40
-			OperatableStateMachine.add('gen up pose',
-										GenGripperPose(l=0, z=0.2, planar=False),
-										transitions={'done': 'move_lift_object', 'fail': 'failed'},
-										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
-										remapping={'pose_in': 'approach_pose', 'pose_out': 'up_pose'})
+			# x:45 y:34
+			OperatableStateMachine.add('move up',
+										MoveitMoveCartesian(move=True, waitForExecution=True, group="RightArm"),
+										transitions={'done': 'genpose', 'failed': 'genpose'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'targetPose': 'up_pose'})
 
-			# x:40 y:266
+			# x:39 y:480
+			OperatableStateMachine.add('place arm',
+										RunTrajectory(file="transport", duration=0),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:40 y:144
 			OperatableStateMachine.add('genpose',
 										GenPoseEuler(x=-0.2, y=0, z=0, roll=0, pitch=0, yaw=0),
 										transitions={'done': 'move_back'},
@@ -155,19 +162,6 @@ class Action_pickSM(Behavior):
 										transitions={'arrived': 'place arm', 'failed': 'place arm'},
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'backPose'})
-
-			# x:48 y:151
-			OperatableStateMachine.add('move_lift_object',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'genpose', 'failed': 'genpose'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'up_pose'})
-
-			# x:39 y:480
-			OperatableStateMachine.add('place arm',
-										RunTrajectory(file="transport", duration=0),
-										transitions={'done': 'done'},
-										autonomy={'done': Autonomy.Off})
 
 
 		# x:263 y:214, x:271 y:492
@@ -261,7 +255,7 @@ class Action_pickSM(Behavior):
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
-			# x:337 y:200
+			# x:262 y:267
 			OperatableStateMachine.add('cant reach',
 										SaraSay(sentence="Hum! I can't reach it.", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'unreachable'},
@@ -279,10 +273,10 @@ class Action_pickSM(Behavior):
 										transitions={'done': 'success'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:27 y:239
+			# x:5 y:211
 			OperatableStateMachine.add('validation and approach',
 										_sm_validation_and_approach_4,
-										transitions={'failed': 'say plan', 'done': 'get on it'},
+										transitions={'failed': 'say plan', 'done': 'gen up pose'},
 										autonomy={'failed': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'grasp_pose': 'grasp_pose', 'approach_pose': 'approach_pose'})
 
@@ -291,7 +285,7 @@ class Action_pickSM(Behavior):
 										_sm_lift_object_3,
 										transitions={'done': 'welcome', 'failed': 'welcome'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'approach_pose': 'approach_pose'})
+										remapping={'approach_pose': 'approach_pose', 'up_pose': 'up_pose'})
 
 			# x:482 y:344
 			OperatableStateMachine.add('get away from failure',
@@ -299,7 +293,7 @@ class Action_pickSM(Behavior):
 										transitions={'done': 'say missed', 'failed': 'say missed'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:41 y:127
+			# x:27 y:128
 			OperatableStateMachine.add('get grasps',
 										GetGraspFromEntity(approachDistance=0.2, distanceScoringMultiplier=1, orientationScoringMultiplier=2, graspScoringMultiplier=1),
 										transitions={'done': 'validation and approach', 'failed': 'say cant handle'},
@@ -318,18 +312,25 @@ class Action_pickSM(Behavior):
 										transitions={'done': 'unreachable'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:49 y:350
+			# x:13 y:403
 			OperatableStateMachine.add('get on it',
 										_sm_get_on_it_1,
 										transitions={'failed': 'cant reach', 'done': 'gripclose'},
 										autonomy={'failed': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'grasp_pose': 'grasp_pose'})
 
-			# x:255 y:260
+			# x:260 y:205
 			OperatableStateMachine.add('say plan',
 										SaraSay(sentence="Planing failed", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'unreachable'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:18 y:301
+			OperatableStateMachine.add('gen up pose',
+										GenGripperPose(l=0, z=0.1, planar=False),
+										transitions={'done': 'get on it', 'fail': 'unreachable'},
+										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'pose_in': 'grasp_pose', 'pose_out': 'up_pose'})
 
 
 		return _state_machine
