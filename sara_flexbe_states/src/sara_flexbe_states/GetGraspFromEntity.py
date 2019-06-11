@@ -108,7 +108,7 @@ class GetGraspFromEntity(EventState):
         header.frame_id = "/base_link"
         header.stamp = rospy.Time.now()
         msg.cloud_sources.cloud = point_cloud2.create_cloud_xyz32(header, cloud.tolist())
-        msg.cloud_sources.view_points.append(Point(0, 0, 1.5))
+        msg.cloud_sources.view_points.append(Point(0, -0.5, 1.5))
         for i in xrange(cloud.shape[0]):
             msg.cloud_sources.camera_source.append(Int64(0))
         for i in idx[0]:
@@ -138,7 +138,9 @@ class GetGraspFromEntity(EventState):
             # Poses with a negative approach gets a negative multiplier
             if grasp.approach.z < 0:  # Approche par le haut
                 # poseScore = self.calculateGraspScore(pose)
-                poseScore = grasp.score.data
+                ref = [0.577350269, 0.577350269, -0.577350269]
+                app = [grasp.approach.x, grasp.approach.y, grasp.approach.z]
+                poseScore = np.dot(app, ref)
                 rospy.loginfo("Total pose score (Positive approach): %s", str(poseScore))
 
                 if bestScore < poseScore:
