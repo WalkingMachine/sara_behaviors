@@ -59,7 +59,7 @@ class Action_AskSM(Behavior):
 		with _state_machine:
 			# x:79 y:95
 			OperatableStateMachine.add('say question',
-										SaraSay(sentence=lambda x: "x[0]", input_keys=["question"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: x[0], input_keys=["question"], emotion=0, block=True),
 										transitions={'done': 'get answer'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'question': 'question'})

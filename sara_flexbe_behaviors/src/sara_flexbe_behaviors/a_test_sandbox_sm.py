@@ -8,8 +8,7 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_behaviors.test_de_behavior_sm import testdebehaviorSM as sara_flexbe_behaviors__testdebehaviorSM
-from flexbe_states.log_state import LogState
+from sara_flexbe_states.sara_say import SaraSay
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -33,7 +32,6 @@ class ATestSandboxSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__testdebehaviorSM, 'test de behavior')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -45,7 +43,7 @@ class ATestSandboxSM(Behavior):
 
 
 	def create(self):
-		# x:537 y:110, x:515 y:330
+		# x:971 y:114, x:515 y:330
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.Pose1 = "PostGripPose"
 		_state_machine.userdata.Pose2 = "IdlePose"
@@ -56,6 +54,8 @@ class ATestSandboxSM(Behavior):
 		_state_machine.userdata.Action1 = ["move", "counter"]
 		_state_machine.userdata.Action2 = ["move", "table"]
 		_state_machine.userdata.pose = "Dining room"
+		_state_machine.userdata.say1 = "say one"
+		_state_machine.userdata.say2 = "say two"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -64,17 +64,12 @@ class ATestSandboxSM(Behavior):
 
 
 		with _state_machine:
-			# x:134 y:83
-			OperatableStateMachine.add('test de behavior',
-										self.use_behavior(sara_flexbe_behaviors__testdebehaviorSM, 'test de behavior'),
-										transitions={'finished': 'log', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
-
-			# x:411 y:111
-			OperatableStateMachine.add('log',
-										LogState(text="ok", severity=Logger.REPORT_HINT),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off})
+			# x:30 y:40
+			OperatableStateMachine.add('say',
+										SaraSay(sentence=lambda x: x[0]+ " and " + x[1], input_keys=["say1", "say2"], emotion=0, block=True),
+										transitions={'done': 'failed'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'say1': 'say1', 'say2': 'say2'})
 
 
 		return _state_machine
