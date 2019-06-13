@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    
+<behavior name="simple">
+
+    <executable package_path="sara_flexbe_behaviors.simple_sm" class="simpleSM" />
+
+    <tagstring>dsl,test</tagstring>
+    <author>Raphaël Duchaîne</author>
+    <date>Sun Mar 24 2019</date>
+
+    <description>
+    simple test behavior
+    </description>
+
+
+    <!-- Contained Behaviors -->
+
+    <!-- Available Parameters -->
+
+</behavior>
+
