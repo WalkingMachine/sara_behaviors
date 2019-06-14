@@ -168,7 +168,7 @@ class GetGraspFromEntity(EventState):
             i = i + 1
             rospy.sleep(1)
             if i > 20:
-                return 'failed'
+                return self.getGraspWithoutPointcloud(entity)
 
         bestScore = 0
         bestGrasp = None
@@ -204,6 +204,7 @@ class GetGraspFromEntity(EventState):
 
             return pose, approach_pose
 
+        return self.getGraspWithoutPointcloud(entity)
 
     def getGraspWithoutPointcloud(self, entity):
         # verifie si on recoit une pose ou un point
