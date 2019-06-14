@@ -803,7 +803,7 @@ class Scenario_RestaurantSM(Behavior):
 										remapping={'pose': 'robotPositionToCustomer'})
 
 
-		# x:707 y:680, x:468 y:681
+		# x:839 y:682, x:468 y:681
 		_sm_detect_people_waving_16 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['customerPosition', 'customerID'])
 
 		with _sm_detect_people_waving_16:
@@ -874,44 +874,58 @@ class Scenario_RestaurantSM(Behavior):
 			# x:64 y:103
 			OperatableStateMachine.add('find person arm up',
 										_sm_find_person_arm_up_9,
-										transitions={'found': 'finished', 'not_found': 'look left'},
+										transitions={'found': 'set distance to customer', 'not_found': 'look left'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'customerID': 'customerID', 'customerPosition': 'customerPosition'})
 
 			# x:47 y:406
 			OperatableStateMachine.add('find person arm up_3',
 										_sm_find_person_arm_up_3_8,
-										transitions={'found': 'finished', 'not_found': 'pose with 180 rotation'},
+										transitions={'found': 'set distance to customer', 'not_found': 'pose with 180 rotation'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'customerID': 'customerID', 'customerPosition': 'customerPosition'})
 
 			# x:45 y:252
 			OperatableStateMachine.add('find person arm up_2',
 										_sm_find_person_arm_up_2_7,
-										transitions={'found': 'finished', 'not_found': 'look right'},
+										transitions={'found': 'set distance to customer', 'not_found': 'look right'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'customerID': 'customerID', 'customerPosition': 'customerPosition'})
 
 			# x:465 y:94
 			OperatableStateMachine.add('find person arm up_4',
 										_sm_find_person_arm_up_4_6,
-										transitions={'found': 'finished', 'not_found': 'look left_2'},
+										transitions={'found': 'set distance to customer', 'not_found': 'look left_2'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'customerID': 'customerID', 'customerPosition': 'customerPosition'})
 
 			# x:464 y:238
 			OperatableStateMachine.add('find person arm up_5',
 										_sm_find_person_arm_up_5_5,
-										transitions={'found': 'finished', 'not_found': 'look right_2'},
+										transitions={'found': 'set distance to customer', 'not_found': 'look right_2'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'customerID': 'customerID', 'customerPosition': 'customerPosition'})
 
 			# x:461 y:375
 			OperatableStateMachine.add('find person arm up_6',
 										_sm_find_person_arm_up_6_4,
-										transitions={'found': 'finished', 'not_found': 'id to 0'},
+										transitions={'found': 'set distance to customer', 'not_found': 'id to 0'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'customerID': 'customerID', 'customerPosition': 'customerPosition'})
+
+			# x:617 y:644
+			OperatableStateMachine.add('reachable position',
+										Get_Reacheable_Waypoint(),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'pose_in': 'customerPosition', 'distance': 'distance', 'pose_out': 'customerPosition'})
+
+			# x:619 y:569
+			OperatableStateMachine.add('set distance to customer',
+										SetKey(Value=1),
+										transitions={'done': 'reachable position'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'distance'})
 
 
 		# x:790 y:769, x:747 y:100
