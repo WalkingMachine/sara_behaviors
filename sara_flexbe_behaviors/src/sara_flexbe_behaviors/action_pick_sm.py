@@ -63,7 +63,7 @@ class Action_pickSM(Behavior):
 	def create(self):
 		# x:929 y:479, x:925 y:237, x:922 y:34, x:926 y:362
 		_state_machine = OperatableStateMachine(outcomes=['success', 'unreachable', 'not found', 'dropped'], input_keys=['objectID'])
-		_state_machine.userdata.objectID = 210
+		_state_machine.userdata.objectID = 60
 		_state_machine.userdata.PreGripPose = "pre_grip_pose"
 		_state_machine.userdata.entity = 0
 		_state_machine.userdata.grasp_pose = 0
