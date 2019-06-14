@@ -12,7 +12,7 @@ import numpy as np
 from scipy.linalg import lstsq
 from gpd.msg import CloudIndexed
 from std_msgs.msg import Header, Int64
-from geometry_msgs.msg import Point, Pose, PoseStamped, Point32
+from geometry_msgs.msg import Point, Pose, PoseStamped, Point32, Quaternion
 from sara_msgs.msg import Entity, Entities
 from tf import TransformListener
 from gpd.msg import GraspConfigList
@@ -67,114 +67,24 @@ class GetGraspFromEntity(EventState):
     def execute(self, userdata):
 
         if userdata.Entity.pointcloud.header.frame_id == "":
-            return "failed"
+            grasp, approach = self.getGraspWithoutPointcloud()
+        else:
+            grasp, approach = self.getGraspFromPointcloud(userdata.Entity)
+
+        # return the chosen poses
+        userdata.GraspingPose = grasp
+        userdata.ApproachPose = approach
 
 
-        Logger.loginfo("Selected entity : " + str(userdata.Entity.ID))
-        Logger.loginfo(
-            "Current position : (" + str(userdata.Entity.position.x) + ", " + str(userdata.Entity.position.y) + ", " + str(
-                userdata.Entity.position.x) + ")")
-
-        # Convert to Pointcloud and change frame of reference to base)link
-        pointCloud = PointCloud()
-        pointCloud.header = userdata.Entity.pointcloud.header
-        for p in point_cloud2.read_points(userdata.Entity.pointcloud):
-            point = Point32()
-            point.x, point.y, point.z = [p[0], p[1], p[2]]
-            pointCloud.points.append(point)
-        pointCloud.header.stamp = rospy.Time.now()-rospy.Duration(1)
-        self.listener.waitForTransform(pointCloud.header.frame_id, "/base_link", rospy.Time(0), rospy.Duration(10))
-        pointCloud = self.listener.transformPointCloud("/base_link", pointCloud)
-
-        cloud = []
-        for p in pointCloud.points:
-            cloud.append([p.x, p.y, p.z])
-
-        Logger.loginfo("Cloud size : " + str(len(cloud)))
-
-        # if len(cloud) > 0:
-        cloud = np.asarray(cloud)
-        X = cloud
-        A = np.c_[X[:, 0], X[:, 1], np.ones(X.shape[0])]
-        C, _, _, _ = lstsq(A, X[:, 2])
-        a, b, c, d = C[0], C[1], -1., C[2]  # coefficients of the form: a*x + b*y + c*z + d = 0.
-        dist = ((a * X[:, 0] + b * X[:, 1] + d) - X[:, 2]) ** 2
-        err = dist.sum()
-        idx = np.where(dist > 0.01)
-
-
-        msg = CloudIndexed()
-        header = Header()
-        header.frame_id = "/base_link"
-        header.stamp = rospy.Time.now()
-        msg.cloud_sources.cloud = point_cloud2.create_cloud_xyz32(header, cloud.tolist())
-        msg.cloud_sources.view_points.append(Point(0, -0.5, 1.5))
-        for i in xrange(cloud.shape[0]):
-            msg.cloud_sources.camera_source.append(Int64(0))
-        for i in idx[0]:
-            msg.indices.append(Int64(i))
-            # s = raw_input('Hit [ENTER] to publish')
-        self.pub.publish(msg)
-
-        i = 0
-
-        ################################
-        # Temporary setting a timeout
-        while self.graspList == None:
-            i = i + 1
-            rospy.sleep(1)
-            if i > 20:
-                return 'failed'
-
-        bestScore = 0
-        bestGrasp = None
-        # Normalisation des scores de grasp
-        for grasp in self.graspList:
-            if grasp.score.data > self.maxgraspScore:
-                self.maxgraspScore = grasp.score.data
-
-        for grasp in self.graspList:
-
-            # Poses with a negative approach gets a negative multiplier
-            if grasp.approach.z < 0:  # Approche par le haut
-                # poseScore = self.calculateGraspScore(pose)
-                ref = [0.577350269, 0.577350269, -0.577350269]
-                app = [grasp.approach.x, grasp.approach.y, grasp.approach.z]
-                poseScore = np.dot(app, ref)
-                rospy.loginfo("Total pose score (Positive approach): %s", str(poseScore))
-
-                if bestScore < poseScore:
-                    bestScore = poseScore
-                    bestGrasp = grasp
-
-        if bestGrasp is not None:
-            Logger.loginfo("TEST GRASP")
-
-            # Get pose
-            pose = self.graspToPose(bestGrasp)
-            userdata.GraspingPose = pose
-
-            # Generate approach pose
-            approach_pose = Pose()
-            applength = np.linalg.norm([bestGrasp.approach.x, bestGrasp.approach.y, bestGrasp.approach.z])
-            approach_pose.position.x = pose.position.x - bestGrasp.approach.x / applength * self.approachDistance
-            approach_pose.position.y = pose.position.y - bestGrasp.approach.y / applength * self.approachDistance
-            approach_pose.position.z = pose.position.z - bestGrasp.approach.z / applength * self.approachDistance
-            approach_pose.orientation = pose.orientation
-            userdata.ApproachPose = approach_pose
-
-            # Creates markers for the chosen pose
-            stamped = PoseStamped()
-            stamped.header.frame_id = "base_link"
-            stamped.header.stamp = rospy.Time.now()
-            stamped.pose = pose
-            self.marker_pub.publish(stamped)
-            stamped.pose = approach_pose
-            self.marker_pub_app.publish(stamped)
-            return 'done'
-
-        # marker_publisher.publish(markerArray)
-        return 'failed'  # If all scores are higher than the default value
+        # Creates markers for the chosen pose
+        stamped = PoseStamped()
+        stamped.header.frame_id = "base_link"
+        stamped.header.stamp = rospy.Time.now()
+        stamped.pose = grasp
+        self.marker_pub.publish(stamped)
+        stamped.pose = approach
+        self.marker_pub_app.publish(stamped)
+        return 'done'
 
     def graspToPose(self, grasp):
         pose = Pose()
@@ -201,3 +111,134 @@ class GetGraspFromEntity(EventState):
         pose.orientation.w = quat[3]
 
         return pose
+
+    def getGraspFromPointcloud(self, entity):
+
+        Logger.loginfo("Selected entity : " + str(entity.ID))
+        Logger.loginfo(
+            "Current position : (" + str(entity.position.x) + ", " + str(
+                entity.position.y) + ", " + str(
+                entity.position.x) + ")")
+
+        # Convert to Pointcloud and change frame of reference to base)link
+        pointCloud = PointCloud()
+        pointCloud.header = entity.pointcloud.header
+        for p in point_cloud2.read_points(entity.pointcloud):
+            point = Point32()
+            point.x, point.y, point.z = [p[0], p[1], p[2]]
+            pointCloud.points.append(point)
+        pointCloud.header.stamp = rospy.Time.now() - rospy.Duration(1)
+        self.listener.waitForTransform(pointCloud.header.frame_id, "/base_link", rospy.Time(0), rospy.Duration(10))
+        pointCloud = self.listener.transformPointCloud("/base_link", pointCloud)
+
+        cloud = []
+        for p in pointCloud.points:
+            cloud.append([p.x, p.y, p.z])
+
+        Logger.loginfo("Cloud size : " + str(len(cloud)))
+
+        # if len(cloud) > 0:
+        cloud = np.asarray(cloud)
+        X = cloud
+        A = np.c_[X[:, 0], X[:, 1], np.ones(X.shape[0])]
+        C, _, _, _ = lstsq(A, X[:, 2])
+        a, b, c, d = C[0], C[1], -1., C[2]  # coefficients of the form: a*x + b*y + c*z + d = 0.
+        dist = ((a * X[:, 0] + b * X[:, 1] + d) - X[:, 2]) ** 2
+        err = dist.sum()
+        idx = np.where(dist > 0.01)
+
+        msg = CloudIndexed()
+        header = Header()
+        header.frame_id = "/base_link"
+        header.stamp = rospy.Time.now()
+        msg.cloud_sources.cloud = point_cloud2.create_cloud_xyz32(header, cloud.tolist())
+        msg.cloud_sources.view_points.append(Point(0, -0.5, 1.5))
+        for i in xrange(cloud.shape[0]):
+            msg.cloud_sources.camera_source.append(Int64(0))
+        for i in idx[0]:
+            msg.indices.append(Int64(i))
+            # s = raw_input('Hit [ENTER] to publish')
+        self.pub.publish(msg)
+
+        i = 0
+
+        ################################
+        # Temporary setting a timeout
+        while self.graspList == None:
+            i = i + 1
+            rospy.sleep(1)
+            if i > 20:
+                return self.getGraspWithoutPointcloud(entity)
+
+        bestScore = 0
+        bestGrasp = None
+        # Normalisation des scores de grasp
+        for grasp in self.graspList:
+            if grasp.score.data > self.maxgraspScore:
+                self.maxgraspScore = grasp.score.data
+
+        for grasp in self.graspList:
+
+            # Poses with a negative approach gets a negative multiplier
+            if grasp.approach.z < 0:  # Approche par le haut
+                # poseScore = self.calculateGraspScore(pose)
+                ref = [0.577350269, 0.577350269, -0.577350269]
+                app = [grasp.approach.x, grasp.approach.y, grasp.approach.z]
+                poseScore = np.dot(app, ref)
+                rospy.loginfo("Total pose score (Positive approach): %s", str(poseScore))
+
+                if bestScore < poseScore:
+                    bestScore = poseScore
+                    bestGrasp = grasp
+
+        if bestGrasp is not None:
+            pose = self.graspToPose(bestGrasp)
+
+            # Generate approach pose
+            approach_pose = Pose()
+            applength = np.linalg.norm([bestGrasp.approach.x, bestGrasp.approach.y, bestGrasp.approach.z])
+            approach_pose.position.x = pose.position.x - bestGrasp.approach.x / applength * self.approachDistance
+            approach_pose.position.y = pose.position.y - bestGrasp.approach.y / applength * self.approachDistance
+            approach_pose.position.z = pose.position.z - bestGrasp.approach.z / applength * self.approachDistance
+            approach_pose.orientation = pose.orientation
+
+            return pose, approach_pose
+
+        return self.getGraspWithoutPointcloud(entity)
+
+    def getGraspWithoutPointcloud(self, entity):
+        # verifie si on recoit une pose ou un point
+        grasp = Pose()
+        grasp.position = entity.position
+        gripperX = 0
+        gripperY = -0.5
+
+        # calcul des angles
+        yaw = math.atan2((grasp.position.y - gripperY), (grasp.position.x - gripperX))
+        dist = ((grasp.position.y - gripperY) ** 2 + (grasp.position.x - gripperX) ** 2) ** 0.5
+        pitch = 0
+
+        # calcul du quaternion
+        quat = quaternion_from_euler(0, pitch, yaw)
+        self.quat = Quaternion()
+        self.quat.x = quat[0]
+        self.quat.y = quat[1]
+        self.quat.z = quat[2]
+        self.quat.w = quat[3]
+        grasp.orientation = self.quat
+
+        # calcul du vecteur dapproche avec les points
+        dX = (gripperX - grasp.position.x)
+        dY = (gripperY - grasp.position.y)
+        length = (dX ** 2 + dY ** 2) ** 0.5
+        dX *= self.approachDistance / length
+        dY *= self.approachDistance / length
+
+        # applique le vecteur dapproche
+        approach = Pose()
+        approach.position.x = grasp.position.x+dX
+        approach.position.y = grasp.position.y+dY
+        approach.position.z = grasp.position.z
+        approach.orientation = self.quat
+
+        return grasp, approach
