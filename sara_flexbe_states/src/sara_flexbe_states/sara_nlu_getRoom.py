@@ -6,13 +6,12 @@ import rospy
 from wm_nlu.srv import HKGetRoom
 from std_msgs.msg import String
 
+
 class SaraNLUgetRoom(EventState):
     '''
     Use wm_nlu to parse a sentence and return a room
 
     ># sentence     string      sentence to parse
-    
-    #> ActionForms     string[]      list of ActionForms
     
     <= understood     Finished job.
     <= not_understood     Finished job but no commands detected.
@@ -21,7 +20,9 @@ class SaraNLUgetRoom(EventState):
 
     def __init__(self):
         # See example_state.py for basic explanations.
-        super(SaraNLUgetRoom, self).__init__(outcomes=['understood', 'not_understood', 'fail'], input_keys=['sentence'],output_keys=['answer'])
+        super(SaraNLUgetRoom, self).__init__(outcomes=['understood', 'not_understood', 'fail'],
+                                             input_keys=['sentence'],
+                                             output_keys=['answer'])
 
         serviceName = "/get_room"
 
@@ -36,9 +37,9 @@ class SaraNLUgetRoom(EventState):
         response = self.service(String(userdata.sentence))
 
         # Checking the validity of the response
-        if response.str.data is "":
+        if response.str.data is "" or "none":
             userdata.answer = response.str.data
-            return "fail"
+            return "not_understood"
 
         userdata.answer = response.str.data
         return "understood"

@@ -87,7 +87,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 		# O 971 172 /EnterArena
 		# SARA entre dans l'aréna et demande à l'opérateur dans quelle piece elle doir faire le ménage. Ensuite elle y va.|nSi SARA n'a aucune réponse ou si le NLU ne retrace pas la reponse, SARA va redemander la question une seconde fois.|nNote:|nIl va falloir qu'il y aie des waypoint qui matche le nom de la pièce cleanupRoom.
 
-		# O 875 394 
+		# O 752 25 
 		# SARA entre dans l'aréna|nEnsuite elle va dans la pièce désignée par l'opérateur.|nUne fois en place, elle va vérifier autour pour des objets à ranger.|nEnsuite elle le prend et le met jusqu'à l'endroit qu'il doit aller.
 
 		# O 430 83 /Loop
@@ -110,6 +110,9 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 		# O 550 62 /GoToRoom
 		# SARA goes the the room mentionned by the operator.|nIf its her first time it will be mentionned.
+
+		# O 815 327 
+		# ------------------|n----IMPORTANT-----|n------------------|n|nPeupler le WaypointToCheckDict pour chaque pièce de waypoints clés pour vérifier des objets.|n|nEXEMPLE:|n{"bedroom": ["bedroomWP1","bedroomWP2"], "kitchen": ["kitchenWP1","kitchenWP2"],|n"living area": ["living areaWP1","living areaWP2"], "hallway": ["hallwayWP1"]}|n|n|nS'assurer que ces wapoints existent dans RVIz
 
 
 
@@ -383,19 +386,19 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 		with _sm_scanaround_7:
 			# x:172 y:46
 			OperatableStateMachine.add('center',
-										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										SaraSetHeadAngle(pitch=0.3, yaw=0),
 										transitions={'done': 'w2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:304 y:122
 			OperatableStateMachine.add('right',
-										SaraSetHeadAngle(pitch=0.1, yaw=-1.5),
+										SaraSetHeadAngle(pitch=0.3, yaw=-1.5),
 										transitions={'done': 'w3'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:165 y:187
 			OperatableStateMachine.add('center2',
-										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										SaraSetHeadAngle(pitch=0.3, yaw=0),
 										transitions={'done': 'w4'},
 										autonomy={'done': Autonomy.Off})
 
@@ -425,13 +428,13 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 			# x:40 y:270
 			OperatableStateMachine.add('left',
-										SaraSetHeadAngle(pitch=0.1, yaw=1.5),
+										SaraSetHeadAngle(pitch=0.3, yaw=1.5),
 										transitions={'done': 'w1'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:317 y:277
 			OperatableStateMachine.add('center3',
-										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										SaraSetHeadAngle(pitch=0.3, yaw=0),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
@@ -534,19 +537,19 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 		with _sm_scanaround_9:
 			# x:172 y:46
 			OperatableStateMachine.add('center',
-										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										SaraSetHeadAngle(pitch=0.3, yaw=0),
 										transitions={'done': 'w2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:304 y:122
 			OperatableStateMachine.add('right',
-										SaraSetHeadAngle(pitch=0.1, yaw=-1.5),
+										SaraSetHeadAngle(pitch=0.3, yaw=-1.5),
 										transitions={'done': 'w3'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:165 y:187
 			OperatableStateMachine.add('center2',
-										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										SaraSetHeadAngle(pitch=0.3, yaw=0),
 										transitions={'done': 'w4'},
 										autonomy={'done': Autonomy.Off})
 
@@ -576,13 +579,13 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 			# x:40 y:270
 			OperatableStateMachine.add('left',
-										SaraSetHeadAngle(pitch=0.1, yaw=1.5),
+										SaraSetHeadAngle(pitch=0.3, yaw=1.5),
 										transitions={'done': 'w1'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:317 y:277
 			OperatableStateMachine.add('center3',
-										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										SaraSetHeadAngle(pitch=0.3, yaw=0),
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Off})
 
@@ -835,7 +838,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 			# x:234 y:259
 			OperatableStateMachine.add('RetryOnce',
-										ForLoop(repeat=2),
+										ForLoop(repeat=1),
 										transitions={'do': 'Ask', 'end': 'failed'},
 										autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
 										remapping={'index': 'index'})
