@@ -216,19 +216,19 @@ class FarewellSM(Behavior):
 		_sm_filtregender_3 = OperatableStateMachine(outcomes=['none_found', 'found person'], input_keys=['name'], output_keys=['pronoun', 'person'])
 
 		with _sm_filtregender_3:
-			# x:192 y:94
+			# x:109 y:51
 			OperatableStateMachine.add('List',
 										list_entities_by_name(frontality_level=0.5, distance_max=10),
-										transitions={'found': 'FiltreExitingwomen', 'none_found': 'none_found'},
+										transitions={'found': 'FiltreWave', 'none_found': 'none_found'},
 										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
 										remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
 
-			# x:183 y:199
+			# x:182 y:211
 			OperatableStateMachine.add('FiltreExitingwomen',
 										Filter(filter=lambda x: x.face.gender == "female"),
 										transitions={'done': 'no female?'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'input_list': 'entity_list', 'output_list': 'female'})
+										remapping={'input_list': 'persons', 'output_list': 'female'})
 
 			# x:181 y:292
 			OperatableStateMachine.add('no female?',
@@ -237,7 +237,7 @@ class FarewellSM(Behavior):
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'input_value': 'female'})
 
-			# x:358 y:301
+			# x:374 y:312
 			OperatableStateMachine.add('set pronoun female',
 										SetKey(Value="miss"),
 										transitions={'done': 'get first female'},
@@ -251,7 +251,7 @@ class FarewellSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'pronoun'})
 
-			# x:585 y:207
+			# x:599 y:290
 			OperatableStateMachine.add('get first female',
 										CalculationState(calculation=lambda x: x[0]),
 										transitions={'done': 'found person'},
@@ -265,10 +265,10 @@ class FarewellSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'entity_list', 'output_value': 'person'})
 
-			# x:401 y:72
+			# x:151 y:135
 			OperatableStateMachine.add('FiltreWave',
-										Filter(filter=lambda x: x.pose == "waving"),
-										transitions={'done': 'FiltreWave'},
+										Filter(filter=lambda x: x.pose.right_arm_up or x.pose.left_arm_up),
+										transitions={'done': 'FiltreExitingwomen'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_list': 'entity_list', 'output_list': 'persons'})
 
