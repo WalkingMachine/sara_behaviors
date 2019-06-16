@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Action_findPersonByID">
+
+	<executable package_path="sara_flexbe_behaviors.action_findpersonbyid_sm" class="Action_findPersonByIDSM" />
+	<tagstring>find person</tagstring>
+	<author>Quentin Gaillot</author>
+	<date>Sun May 05 2019</date>
+	<description>
+		Find a person with its ID
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="action_turn" />
+
+	<!-- Available Parameters -->
+
+</behavior>

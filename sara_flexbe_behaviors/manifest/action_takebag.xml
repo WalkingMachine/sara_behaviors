@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Action_TakeBag">
+
+	<executable package_path="sara_flexbe_behaviors.action_takebag_sm" class="Action_TakeBagSM" />
+	<tagstring>bag</tagstring>
+	<author>Quentin Gaillot</author>
+	<date>Thu May 16 2019</date>
+	<description>
+		Take bag pour le scenarion take out the garbage
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

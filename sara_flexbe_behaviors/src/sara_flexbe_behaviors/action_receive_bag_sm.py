@@ -8,11 +8,10 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_states.moveit_move import MoveitMove
-from sara_flexbe_states.torque_reader import ReadTorque
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.run_trajectory import RunTrajectory
+from sara_flexbe_states.torque_reader import ReadTorque
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -63,42 +62,14 @@ class Action_Receive_BagSM(Behavior):
 
 
 		with _state_machine:
-			# x:95 y:61
-			OperatableStateMachine.add('setTarget1',
-										SetKey(Value="Help_me_carry"),
-										transitions={'done': 'opengripper'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'target'})
+			# x:81 y:178
+			OperatableStateMachine.add('opengripper',
+										SetGripperState(width=0.25, effort=1),
+										transitions={'object': 'place arm', 'no_object': 'place arm'},
+										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
+										remapping={'object_size': 'object_size'})
 
-			# x:660 y:57
-			OperatableStateMachine.add('Go_to_Pose',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'finished', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'target'})
-
-			# x:381 y:295
-			OperatableStateMachine.add('Torque_Reader',
-										ReadTorque(watchdog=10, Joint="right_elbow_pitch_joint", Threshold=1, min_time=1),
-										transitions={'threshold': 'close_gripper', 'watchdog': 'Torque_Reader', 'fail': 'failed'},
-										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
-										remapping={'torque': 'torque'})
-
-			# x:668 y:133
-			OperatableStateMachine.add('setTarget2',
-										SetKey(Value="PostGripPose"),
-										transitions={'done': 'Go_to_Pose'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'target'})
-
-			# x:163 y:277
-			OperatableStateMachine.add('Go_to_receive_bag_pose',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'Torque_Reader', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'target'})
-
-			# x:498 y:273
+			# x:468 y:286
 			OperatableStateMachine.add('close_gripper',
 										SetGripperState(width=0, effort=1),
 										transitions={'object': 'thank you', 'no_object': 'thank you'},
@@ -107,16 +78,28 @@ class Action_Receive_BagSM(Behavior):
 
 			# x:638 y:216
 			OperatableStateMachine.add('thank you',
-										SaraSay(sentence="Thank you", emotion=1, block=True),
-										transitions={'done': 'setTarget2'},
+										SaraSay(sentence="Thank you", input_keys=[], emotion=1, block=True),
+										transitions={'done': 'place back arm'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:81 y:178
-			OperatableStateMachine.add('opengripper',
-										SetGripperState(width=0.25, effort=1),
-										transitions={'object': 'Go_to_receive_bag_pose', 'no_object': 'Go_to_receive_bag_pose'},
-										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
-										remapping={'object_size': 'object_size'})
+			# x:101 y:292
+			OperatableStateMachine.add('place arm',
+										RunTrajectory(file="receive_bag", duration=6),
+										transitions={'done': 'Torque_Reader'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:653 y:81
+			OperatableStateMachine.add('place back arm',
+										RunTrajectory(file="poubelle_transport", duration=0),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:263 y:293
+			OperatableStateMachine.add('Torque_Reader',
+										ReadTorque(watchdog=10, Joint="right_elbow_pitch_joint", Threshold=0.5, min_time=1),
+										transitions={'threshold': 'close_gripper', 'watchdog': 'Torque_Reader', 'fail': 'failed'},
+										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'torque': 'torque'})
 
 
 		return _state_machine
