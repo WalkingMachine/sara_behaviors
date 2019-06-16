@@ -51,42 +51,52 @@ class KeepLookingAt(EventState):
 
         self.Entity = None
 
-        Logger.loginfo('waiting for service /get_direction')
-        rospy.wait_for_service('/get_direction')
+        self.serviceName = '/get_direction'
+        Logger.loginfo('waiting for service '+str(self.serviceName))
+        self.serv = rospy.ServiceProxy(self.serviceName, get_direction)
+
+        self._active = True
+        try:
+            self.serv.wait_for_service(1)
+        except:
+            self._active = False
 
     def execute(self, userdata):
-        """Wait for action result and return outcome accordingly"""
+        if self._active:
+            """Wait for action result and return outcome accordingly"""
 
-        self.Entity = None
+            self.Entity = None
 
-        # Get the entity's object in the latest detections
-        if self._sub.has_msg(self.entities_topic):
-            message = self._sub.get_last_msg(self.entities_topic)
-            for entity in message.entities:
-                if entity.ID == userdata.ID:
-                    self.Entity = entity
-                    print("entity found: "+str(entity.ID))
+            # Get the entity's object in the latest detections
+            if self._sub.has_msg(self.entities_topic):
+                message = self._sub.get_last_msg(self.entities_topic)
+                for entity in message.entities:
+                    if entity.ID == userdata.ID:
+                        self.Entity = entity
+                        print("entity found: "+str(entity.ID))
 
-        # If entity is defined, get the direction to it
-        if self.Entity:
+            # If entity is defined, get the direction to it
+            if self.Entity:
 
-            if (self.Entity.name == "person"):
-                if (self.Entity.face.id != ""):
-                    self.Entity.position.z += self.Entity.face.boundingBox.Center.z
-                else:
-                    self.Entity.position.z += 1.6
+                if (self.Entity.name == "person"):
+                    if (self.Entity.face.id != ""):
+                        self.Entity.position.z += self.Entity.face.boundingBox.Center.z
+                    else:
+                        self.Entity.position.z += 1.6
 
-            ms = Float64()
-            serv = rospy.ServiceProxy('/get_direction', get_direction)
-            self.service.point = self.Entity.position
-            resp = serv(self.service)
-            # Publish to both Yaw and Pitch controllers
-            ms.data = min(max(-resp.pitch, -0), 1)
-            self.pubp.publish(ms)
-            ms.data = min(max(resp.yaw, -1.2), 1.2)
-            self.puby.publish(ms)
+                ms = Float64()
+                serv = rospy.ServiceProxy('/get_direction', get_direction)
+                self.service.point = self.Entity.position
+                resp = serv(self.service)
+                # Publish to both Yaw and Pitch controllers
+                ms.data = min(max(-resp.pitch, -0), 1)
+                self.pubp.publish(ms)
+                ms.data = min(max(resp.yaw, -1.2), 1.2)
+                self.puby.publish(ms)
+                return
+        else:
+            Logger.logwarn("simulation mode: let's assume I'm looking at something")
             return
-
 
         ms = Float64()
         ms.data = 0.3

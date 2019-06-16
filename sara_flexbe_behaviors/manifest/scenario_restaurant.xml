@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Scenario_Restaurant">
+
+	<executable package_path="sara_flexbe_behaviors.scenario_restaurant_sm" class="Scenario_RestaurantSM" />
+	<tagstring>scenario restaurant 2019</tagstring>
+	<author>Quentin Gaillot</author>
+	<date>Tue May 28 2019</date>
+	<description>
+		Scenario restaurant 2019
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_FindPersonByQuestion" />
+	<contains name="Action_Move" />
+	<contains name="Action_Ask" />
+	<contains name="Action_findPersonByID" />
+	<contains name="Action_find" />
+	<contains name="Action_pick" />
+	<contains name="Action_place" />
+
+	<!-- Available Parameters -->
+
+</behavior>
