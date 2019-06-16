@@ -12,17 +12,14 @@ Created on 16.06.2019
 @author: Alexandre Mongrain
 '''
 
-class GetPointedPositionAtPlane(EventState):
+class GetPointedPositionOnPlane(EventState):
     """
     Prend l'entite d'une personne et renvoie la position de l'intersection de la position pointee par le bras de la personne avec un plan de hauteur planeHeight.
 
-    ### InputKey
     ># entity  Entity    Entite de la personne qui pointe
-    
-    ### Input parameter
+
     -- planeHeight float hauteur a laquelle calculer l'intersection
 
-    ### OutputKey
     <= position  Point  Position 3D du point trouve
     """
 
@@ -30,9 +27,9 @@ class GetPointedPositionAtPlane(EventState):
         '''
         Constructor
         '''
-        super(GetPointedPositionAtPlane, self).__init__(outcomes=['done', 'not_pointing', 'pointing_up' , 'failed'],
-                                                 input_keys=['entity'],
-                                                 output_keys=['position'])
+        super(GetPointedPositionOnPlane, self).__init__(outcomes=['done', 'not_pointing', 'pointing_up' , 'failed'],
+                                                        input_keys=['entity'],
+                                                        output_keys=['position'])
 
         self.planeHeight = planeHeight
 
