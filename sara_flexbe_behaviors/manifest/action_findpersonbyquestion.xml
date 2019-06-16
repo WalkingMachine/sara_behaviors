@@ -13,6 +13,7 @@ Look 180 degres, do not rotate
 
 
 	<!-- Contained Behaviors -->
+	<contains name="Init_Sequence" />
 	<contains name="Action_Ask" />
 	<contains name="action_turn" />
 
