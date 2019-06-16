@@ -46,9 +46,15 @@ class GetPointedPositionOnPlane(EventState):
             partsId = [7, 9]
         else:  # Par defaut, prend le bras droit
             partsId = [8, 10]
-            
-        handPosition = userdata.entity.pose.parts[partsId[0]].position
-        elbowPosition = userdata.entity.pose.parts[partsId[1]].position
+        
+        partDict={}
+        for part in userdata.entity.pose.parts:
+            partDict[part.id] = part.position
+        try:
+            handPosition = partDict[partsId[0]]
+            elbowPosition = partDict[partsId[1]]
+        except:
+            return 'failed'
         
         if elbowPosition.z < handPosition.z:
             return 'pointing_up'

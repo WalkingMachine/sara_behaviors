@@ -49,8 +49,14 @@ class GenPointedPoints(EventState):
         else:  # Par defaut, prend le bras droit
             partsId = [8, 10]
             
-        handPosition = userdata.entity.pose.parts[partsId[0]].position
-        elbowPosition = userdata.entity.pose.parts[partsId[1]].position
+        partDict={}
+        for part in userdata.entity.pose.parts:
+            partDict[part.id] = part.position
+        try:
+            handPosition = partDict[partsId[0]]
+            elbowPosition = partDict[partsId[1]]
+        except:
+            return 'failed'
         
         dx, dy, dz = normalize(handPosition, elbowPosition)
         
