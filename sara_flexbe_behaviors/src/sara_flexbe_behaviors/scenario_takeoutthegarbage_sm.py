@@ -393,13 +393,6 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 
 
 		with _state_machine:
-			# x:277 y:63
-			OperatableStateMachine.add('First bin',
-										_sm_first_bin_7,
-										transitions={'finished': 'say take second bag', 'failed': 'try second bin'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'bin1Waypoint': 'bin1Waypoint', 'bin1Height': 'bin1Height', 'dropzoneWaypoint': 'dropzone1Waypoint'})
-
 			# x:304 y:394
 			OperatableStateMachine.add('second bin',
 										_sm_second_bin_6,
@@ -418,6 +411,13 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 										SaraSay(sentence="Good! I will now get rid of the second bag.", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'second bin'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:277 y:63
+			OperatableStateMachine.add('First bin',
+										_sm_first_bin_7,
+										transitions={'finished': 'say take second bag', 'failed': 'try second bin'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'bin1Waypoint': 'bin1Waypoint', 'bin1Height': 'bin1Height', 'dropzoneWaypoint': 'dropzone1Waypoint'})
 
 
 		return _state_machine
