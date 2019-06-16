@@ -13,20 +13,20 @@ from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_behaviors.action_findpersonbyquestion_sm import Action_FindPersonByQuestionSM as sara_flexbe_behaviors__Action_FindPersonByQuestionSM
+from sara_flexbe_states.FilterKey import FilterKey
+from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
+from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
-from sara_flexbe_states.Filter import Filter
-from sara_flexbe_states.GetAttribute import GetAttribute
-from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
+from sara_flexbe_states.GetAttribute import GetAttribute
 from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 from sara_flexbe_behaviors.action_ask_sm import Action_AskSM as sara_flexbe_behaviors__Action_AskSM
 from sara_flexbe_states.KeepLookingAt import KeepLookingAt
 from sara_flexbe_states.sara_nlu_restaurant import SaraNLUrestaurant
 from sara_flexbe_behaviors.action_findpersonbyid_sm import Action_findPersonByIDSM as sara_flexbe_behaviors__Action_findPersonByIDSM
 from flexbe_states.check_condition_state import CheckConditionState
-from flexbe_states.wait_state import WaitState
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
 from sara_flexbe_behaviors.action_find_sm import Action_findSM as sara_flexbe_behaviors__Action_findSM
 from sara_flexbe_behaviors.action_pick_sm import Action_pickSM as sara_flexbe_behaviors__Action_pickSM
@@ -259,250 +259,202 @@ class Scenario_RestaurantSM(Behavior):
 										remapping={'personID': 'personID'})
 
 
-		# x:30 y:436, x:130 y:436
-		_sm_find_person_arm_up_6_4 = OperatableStateMachine(outcomes=['found', 'not_found'], output_keys=['customerID', 'customerPosition'])
+		# x:30 y:458
+		_sm_look_around_2_4 = OperatableStateMachine(outcomes=['finished'])
 
-		with _sm_find_person_arm_up_6_4:
-			# x:46 y:40
-			OperatableStateMachine.add('set personKey',
+		with _sm_look_around_2_4:
+			# x:215 y:156
+			OperatableStateMachine.add('center',
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										transitions={'done': 'w2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:394 y:262
+			OperatableStateMachine.add('right',
+										SaraSetHeadAngle(pitch=0.1, yaw=-1.5),
+										transitions={'done': 'w3'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:206 y:372
+			OperatableStateMachine.add('center2',
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										transitions={'done': 'w4'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:38 y:596
+			OperatableStateMachine.add('w1',
+										WaitState(wait_time=4),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:413 y:159
+			OperatableStateMachine.add('w2',
+										WaitState(wait_time=4),
+										transitions={'done': 'right'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:415 y:370
+			OperatableStateMachine.add('w3',
+										WaitState(wait_time=4),
+										transitions={'done': 'center2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:39 y:371
+			OperatableStateMachine.add('w4',
+										WaitState(wait_time=4),
+										transitions={'done': 'left'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:25 y:482
+			OperatableStateMachine.add('left',
+										SaraSetHeadAngle(pitch=0.1, yaw=1.5),
+										transitions={'done': 'w1'},
+										autonomy={'done': Autonomy.Off})
+
+
+		# x:30 y:458
+		_sm_look_around_5 = OperatableStateMachine(outcomes=['finished'])
+
+		with _sm_look_around_5:
+			# x:215 y:156
+			OperatableStateMachine.add('center',
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										transitions={'done': 'w2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:394 y:262
+			OperatableStateMachine.add('right',
+										SaraSetHeadAngle(pitch=0.1, yaw=-1.5),
+										transitions={'done': 'w3'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:206 y:372
+			OperatableStateMachine.add('center2',
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										transitions={'done': 'w4'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:38 y:596
+			OperatableStateMachine.add('w1',
+										WaitState(wait_time=4),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:413 y:159
+			OperatableStateMachine.add('w2',
+										WaitState(wait_time=4),
+										transitions={'done': 'right'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:415 y:370
+			OperatableStateMachine.add('w3',
+										WaitState(wait_time=4),
+										transitions={'done': 'center2'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:39 y:371
+			OperatableStateMachine.add('w4',
+										WaitState(wait_time=4),
+										transitions={'done': 'left'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:25 y:482
+			OperatableStateMachine.add('left',
+										SaraSetHeadAngle(pitch=0.1, yaw=1.5),
+										transitions={'done': 'w1'},
+										autonomy={'done': Autonomy.Off})
+
+
+		# x:30 y:458, x:130 y:458
+		_sm_turn_around_6 = OperatableStateMachine(outcomes=['finished', 'failed'])
+
+		with _sm_turn_around_6:
+			# x:80 y:26
+			OperatableStateMachine.add('look around',
+										_sm_look_around_5,
+										transitions={'finished': 'pose with 180 rotation'},
+										autonomy={'finished': Autonomy.Inherit})
+
+			# x:66 y:286
+			OperatableStateMachine.add('rotation',
+										SaraMoveBase(reference="base_link"),
+										transitions={'arrived': 'look around_2', 'failed': 'failed'},
+										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'pose': 'pose'})
+
+			# x:56 y:388
+			OperatableStateMachine.add('look around_2',
+										_sm_look_around_2_4,
+										transitions={'finished': 'finished'},
+										autonomy={'finished': Autonomy.Inherit})
+
+			# x:63 y:133
+			OperatableStateMachine.add('pose with 180 rotation',
+										GenPoseEuler(x=0, y=0, z=0, roll=0, pitch=0, yaw=3.14),
+										transitions={'done': 'rotation'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'pose': 'pose'})
+
+
+		# x:30 y:458
+		_sm_get_waving_people_7 = OperatableStateMachine(outcomes=['finished'], output_keys=['waving_person'])
+
+		with _sm_get_waving_people_7:
+			# x:47 y:45
+			OperatableStateMachine.add('set name',
 										SetKey(Value="person"),
-										transitions={'done': 'get list of person'},
+										transitions={'done': 'list people'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'personKey'})
+										remapping={'Key': 'name'})
 
-			# x:30 y:182
-			OperatableStateMachine.add('find person who raise hand',
-										Filter(filter=lambda x: x.pose.right_arm_up is True or x.pose.left_arm_up is True),
-										transitions={'done': 'get first entity'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_list': 'entity_list', 'output_list': 'filtered_list'})
+			# x:40 y:236
+			OperatableStateMachine.add('filter waving',
+										FilterKey(filter_function=lambda x: x[0].pose.right_arm_up or x[0].pose.left_arm_up, input_keys=["input_list"]),
+										transitions={'not_empty': 'get first', 'empty': 'list people'},
+										autonomy={'not_empty': Autonomy.Off, 'empty': Autonomy.Off},
+										remapping={'input_list': 'entity_list', 'output_list': 'waving_peoples'})
 
-			# x:63 y:247
-			OperatableStateMachine.add('get first entity',
+			# x:53 y:326
+			OperatableStateMachine.add('get first',
 										CalculationState(calculation=lambda x: x[0]),
-										transitions={'done': 'get id and position'},
+										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'filtered_list', 'output_value': 'entity'})
+										remapping={'input_value': 'waving_peoples', 'output_value': 'waving_person'})
 
-			# x:53 y:320
-			OperatableStateMachine.add('get id and position',
-										GetAttribute(attributes=["ID","position"]),
-										transitions={'done': 'found'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'object': 'entity', 'ID': 'customerID', 'position': 'customerPosition'})
-
-			# x:41 y:101
-			OperatableStateMachine.add('get list of person',
-										list_entities_by_name(frontality_level=0.5, distance_max=8),
-										transitions={'found': 'find person who raise hand', 'none_found': 'not_found'},
+			# x:40 y:133
+			OperatableStateMachine.add('list people',
+										list_entities_by_name(frontality_level=0.5, distance_max=5),
+										transitions={'found': 'filter waving', 'none_found': 'list people'},
 										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
-										remapping={'name': 'personKey', 'entity_list': 'entity_list', 'number': 'number'})
+										remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
 
 
-		# x:30 y:436, x:130 y:436
-		_sm_find_person_arm_up_5_5 = OperatableStateMachine(outcomes=['found', 'not_found'], output_keys=['customerID', 'customerPosition'])
+		# x:30 y:458, x:130 y:458, x:230 y:458, x:330 y:458, x:430 y:458
+		_sm_look_for_waving_people_8 = ConcurrencyContainer(outcomes=['finished', 'failed'], output_keys=['waving_person'], conditions=[
+										('failed', [('turn around', 'failed')]),
+										('failed', [('turn around', 'finished')]),
+										('finished', [('get waving people', 'finished')])
+										])
 
-		with _sm_find_person_arm_up_5_5:
-			# x:46 y:40
-			OperatableStateMachine.add('set personKey',
-										SetKey(Value="person"),
-										transitions={'done': 'get list of person'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'personKey'})
+		with _sm_look_for_waving_people_8:
+			# x:268 y:118
+			OperatableStateMachine.add('get waving people',
+										_sm_get_waving_people_7,
+										transitions={'finished': 'finished'},
+										autonomy={'finished': Autonomy.Inherit},
+										remapping={'waving_person': 'waving_person'})
 
-			# x:30 y:182
-			OperatableStateMachine.add('find person who raise hand',
-										Filter(filter=lambda x: x.pose.right_arm_up is True or x.pose.left_arm_up is True),
-										transitions={'done': 'get first entity'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_list': 'entity_list', 'output_list': 'filtered_list'})
-
-			# x:63 y:247
-			OperatableStateMachine.add('get first entity',
-										CalculationState(calculation=lambda x: x[0]),
-										transitions={'done': 'get id and position'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'filtered_list', 'output_value': 'entity'})
-
-			# x:53 y:320
-			OperatableStateMachine.add('get id and position',
-										GetAttribute(attributes=["ID","position"]),
-										transitions={'done': 'found'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'object': 'entity', 'ID': 'customerID', 'position': 'customerPosition'})
-
-			# x:41 y:101
-			OperatableStateMachine.add('get list of person',
-										list_entities_by_name(frontality_level=0.5, distance_max=8),
-										transitions={'found': 'find person who raise hand', 'none_found': 'not_found'},
-										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
-										remapping={'name': 'personKey', 'entity_list': 'entity_list', 'number': 'number'})
-
-
-		# x:30 y:436, x:130 y:436
-		_sm_find_person_arm_up_4_6 = OperatableStateMachine(outcomes=['found', 'not_found'], output_keys=['customerID', 'customerPosition'])
-
-		with _sm_find_person_arm_up_4_6:
-			# x:46 y:40
-			OperatableStateMachine.add('set personKey',
-										SetKey(Value="person"),
-										transitions={'done': 'get list of person'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'personKey'})
-
-			# x:30 y:182
-			OperatableStateMachine.add('find person who raise hand',
-										Filter(filter=lambda x: x.pose.right_arm_up is True or x.pose.left_arm_up is True),
-										transitions={'done': 'get first entity'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_list': 'entity_list', 'output_list': 'filtered_list'})
-
-			# x:63 y:247
-			OperatableStateMachine.add('get first entity',
-										CalculationState(calculation=lambda x: x[0]),
-										transitions={'done': 'get id and position'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'filtered_list', 'output_value': 'entity'})
-
-			# x:53 y:320
-			OperatableStateMachine.add('get id and position',
-										GetAttribute(attributes=["ID","position"]),
-										transitions={'done': 'found'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'object': 'entity', 'ID': 'customerID', 'position': 'customerPosition'})
-
-			# x:41 y:101
-			OperatableStateMachine.add('get list of person',
-										list_entities_by_name(frontality_level=0.5, distance_max=8),
-										transitions={'found': 'find person who raise hand', 'none_found': 'not_found'},
-										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
-										remapping={'name': 'personKey', 'entity_list': 'entity_list', 'number': 'number'})
-
-
-		# x:30 y:436, x:130 y:436
-		_sm_find_person_arm_up_2_7 = OperatableStateMachine(outcomes=['found', 'not_found'], output_keys=['customerID', 'customerPosition'])
-
-		with _sm_find_person_arm_up_2_7:
-			# x:46 y:40
-			OperatableStateMachine.add('set personKey',
-										SetKey(Value="person"),
-										transitions={'done': 'get list of person'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'personKey'})
-
-			# x:30 y:182
-			OperatableStateMachine.add('find person who raise hand',
-										Filter(filter=lambda x: x.pose.right_arm_up is True or x.pose.left_arm_up is True),
-										transitions={'done': 'get first entity'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_list': 'entity_list', 'output_list': 'filtered_list'})
-
-			# x:63 y:247
-			OperatableStateMachine.add('get first entity',
-										CalculationState(calculation=lambda x: x[0]),
-										transitions={'done': 'get id and position'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'filtered_list', 'output_value': 'entity'})
-
-			# x:53 y:320
-			OperatableStateMachine.add('get id and position',
-										GetAttribute(attributes=["ID","position"]),
-										transitions={'done': 'found'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'object': 'entity', 'ID': 'customerID', 'position': 'customerPosition'})
-
-			# x:41 y:101
-			OperatableStateMachine.add('get list of person',
-										list_entities_by_name(frontality_level=0.5, distance_max=8),
-										transitions={'found': 'find person who raise hand', 'none_found': 'not_found'},
-										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
-										remapping={'name': 'personKey', 'entity_list': 'entity_list', 'number': 'number'})
-
-
-		# x:30 y:436, x:130 y:436
-		_sm_find_person_arm_up_3_8 = OperatableStateMachine(outcomes=['found', 'not_found'], output_keys=['customerID', 'customerPosition'])
-
-		with _sm_find_person_arm_up_3_8:
-			# x:46 y:40
-			OperatableStateMachine.add('set personKey',
-										SetKey(Value="person"),
-										transitions={'done': 'get list of person'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'personKey'})
-
-			# x:30 y:182
-			OperatableStateMachine.add('find person who raise hand',
-										Filter(filter=lambda x: x.pose.right_arm_up is True or x.pose.left_arm_up is True),
-										transitions={'done': 'get first entity'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_list': 'entity_list', 'output_list': 'filtered_list'})
-
-			# x:63 y:247
-			OperatableStateMachine.add('get first entity',
-										CalculationState(calculation=lambda x: x[0]),
-										transitions={'done': 'get id and position'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'filtered_list', 'output_value': 'entity'})
-
-			# x:53 y:320
-			OperatableStateMachine.add('get id and position',
-										GetAttribute(attributes=["ID","position"]),
-										transitions={'done': 'found'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'object': 'entity', 'ID': 'customerID', 'position': 'customerPosition'})
-
-			# x:41 y:101
-			OperatableStateMachine.add('get list of person',
-										list_entities_by_name(frontality_level=0.5, distance_max=8),
-										transitions={'found': 'find person who raise hand', 'none_found': 'not_found'},
-										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
-										remapping={'name': 'personKey', 'entity_list': 'entity_list', 'number': 'number'})
-
-
-		# x:266 y:451, x:388 y:129
-		_sm_find_person_arm_up_9 = OperatableStateMachine(outcomes=['found', 'not_found'], output_keys=['customerID', 'customerPosition'])
-
-		with _sm_find_person_arm_up_9:
-			# x:46 y:40
-			OperatableStateMachine.add('set personKey',
-										SetKey(Value="person"),
-										transitions={'done': 'get list of person'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'personKey'})
-
-			# x:30 y:182
-			OperatableStateMachine.add('find person who raise hand',
-										Filter(filter=lambda x: x.pose.right_arm_up is True or x.pose.left_arm_up is True),
-										transitions={'done': 'get first entity'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_list': 'entity_list', 'output_list': 'filtered_list'})
-
-			# x:63 y:247
-			OperatableStateMachine.add('get first entity',
-										CalculationState(calculation=lambda x: x[0]),
-										transitions={'done': 'get id and position'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'input_value': 'filtered_list', 'output_value': 'entity'})
-
-			# x:53 y:320
-			OperatableStateMachine.add('get id and position',
-										GetAttribute(attributes=["ID","position"]),
-										transitions={'done': 'found'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'object': 'entity', 'ID': 'customerID', 'position': 'customerPosition'})
-
-			# x:41 y:101
-			OperatableStateMachine.add('get list of person',
-										list_entities_by_name(frontality_level=0.5, distance_max=8),
-										transitions={'found': 'find person who raise hand', 'none_found': 'not_found'},
-										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
-										remapping={'name': 'personKey', 'entity_list': 'entity_list', 'number': 'number'})
+			# x:60 y:126
+			OperatableStateMachine.add('turn around',
+										_sm_turn_around_6,
+										transitions={'finished': 'failed', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 
 		# x:441 y:583, x:93 y:568
-		_sm_repeate_if_first_commande_10 = OperatableStateMachine(outcomes=['finished', 'repeate'], input_keys=['commandNumber'], output_keys=['commandNumber'])
+		_sm_repeate_if_first_commande_9 = OperatableStateMachine(outcomes=['finished', 'repeate'], input_keys=['commandNumber'], output_keys=['commandNumber'])
 
-		with _sm_repeate_if_first_commande_10:
+		with _sm_repeate_if_first_commande_9:
 			# x:242 y:97
 			OperatableStateMachine.add('if first command',
 										CheckConditionState(predicate=lambda x: x == 1),
@@ -519,9 +471,9 @@ class Scenario_RestaurantSM(Behavior):
 
 
 		# x:913 y:749, x:1068 y:149
-		_sm_take_objects_and_bring_the_order_to_customer_11 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['barPosition', 'orderList', 'robotPositionToCustomer'])
+		_sm_take_objects_and_bring_the_order_to_customer_10 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['barPosition', 'orderList', 'robotPositionToCustomer'])
 
-		with _sm_take_objects_and_bring_the_order_to_customer_11:
+		with _sm_take_objects_and_bring_the_order_to_customer_10:
 			# x:73 y:26
 			OperatableStateMachine.add('set indexkey',
 										SetKey(Value=0),
@@ -586,7 +538,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:508 y:321
 			OperatableStateMachine.add('say put in the gripper',
-										SaraSay(sentence="Please, put the "+x[0]+" in my gripper.", input_keys=["item"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "Please, put the "+x[0]+" in my gripper.", input_keys=["item"], emotion=0, block=True),
 										transitions={'done': 'open gripper'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'item': 'item'})
@@ -637,7 +589,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:63 y:110
 			OperatableStateMachine.add('one element by one element from the list',
-										FlexibleCalculationState(calculation=lambda x: x[0][x[1]], input_keys=["orderList", "indexKey"]),
+										FlexibleCalculationState(calculation=lambda x: x[0][x[1]].data, input_keys=["orderList", "indexKey"]),
 										transitions={'done': 'say search and grip'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'orderList': 'orderList', 'indexKey': 'indexKey', 'output_value': 'item'})
@@ -669,9 +621,9 @@ class Scenario_RestaurantSM(Behavior):
 
 
 		# x:242 y:352, x:1086 y:243
-		_sm_get_the_order_12 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['orderList'])
+		_sm_get_the_order_11 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['orderList'])
 
-		with _sm_get_the_order_12:
+		with _sm_get_the_order_11:
 			# x:68 y:39
 			OperatableStateMachine.add('length 1',
 										CheckConditionState(predicate=lambda x: len(x) == 1),
@@ -688,21 +640,21 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:228 y:111
 			OperatableStateMachine.add('say order_2',
-										SaraSay(sentence=lambda x: "For this order, I would like to have one "+x[0][0]+" and one "+x[0][1]+", please.", input_keys=["orderList"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "For this order, I would like to have one "+x[0][0].data+" and one "+x[0][1].data+", please.", input_keys=["orderList"], emotion=0, block=True),
 										transitions={'done': 'wait 5'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'orderList': 'orderList'})
 
 			# x:374 y:109
 			OperatableStateMachine.add('say order_3',
-										SaraSay(sentence=lambda x: "For this order, I would like to have one "+x[0][0]+", one "+x[0][1]+" and one "+x[0][2]+", please.", input_keys=["orderList"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "For this order, I would like to have one "+x[0][0].data+", one "+x[0][1].data+" and one "+x[0][2].data+", please.", input_keys=["orderList"], emotion=0, block=True),
 										transitions={'done': 'wait 5'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'orderList': 'orderList'})
 
 			# x:67 y:117
 			OperatableStateMachine.add('say order',
-										SaraSay(sentence=lambda x: "For this order, I would like to have one "+x[0][0]+", please.", input_keys=["orderList"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "For this order, I would like to have one "+x[0][0].data+", please.", input_keys=["orderList"], emotion=0, block=True),
 										transitions={'done': 'wait 5'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'orderList': 'orderList'})
@@ -715,9 +667,9 @@ class Scenario_RestaurantSM(Behavior):
 
 
 		# x:216 y:528, x:572 y:238
-		_sm_go_to_the_barman_13 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['barPosition', 'barmanID'])
+		_sm_go_to_the_barman_12 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['barPosition', 'barmanID'])
 
-		with _sm_go_to_the_barman_13:
+		with _sm_go_to_the_barman_12:
 			# x:30 y:102
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'go to the barman/Action_Move'),
@@ -747,9 +699,9 @@ class Scenario_RestaurantSM(Behavior):
 
 
 		# x:898 y:561, x:871 y:123
-		_sm_ask_and_save_order_14 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['customerID'], output_keys=['orderList'])
+		_sm_ask_and_save_order_13 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['customerID'], output_keys=['orderList'])
 
-		with _sm_ask_and_save_order_14:
+		with _sm_ask_and_save_order_13:
 			# x:70 y:112
 			OperatableStateMachine.add('say ready',
 										SaraSay(sentence="Hello.", input_keys=[], emotion=0, block=True),
@@ -785,9 +737,9 @@ class Scenario_RestaurantSM(Behavior):
 
 
 		# x:677 y:318, x:735 y:160
-		_sm_move_to_table_and_save_position_15 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['customerPosition'], output_keys=['robotPositionToCustomer'])
+		_sm_move_to_table_and_save_position_14 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['customerPosition'], output_keys=['robotPositionToCustomer'])
 
-		with _sm_move_to_table_and_save_position_15:
+		with _sm_move_to_table_and_save_position_14:
 			# x:69 y:24
 			OperatableStateMachine.add('set distance to person',
 										SetKey(Value=0.7),
@@ -823,141 +775,43 @@ class Scenario_RestaurantSM(Behavior):
 										remapping={'pose': 'robotPositionToCustomer'})
 
 
-		# x:839 y:682, x:583 y:704
-		_sm_detect_people_waving_16 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['customerPosition', 'customerID'])
+		# x:112 y:525, x:363 y:94
+		_sm_detect_people_waving_15 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['customerPosition', 'customerID'])
 
-		with _sm_detect_people_waving_16:
-			# x:70 y:29
-			OperatableStateMachine.add('look center',
-										SaraSetHeadAngle(pitch=0.1, yaw=0),
-										transitions={'done': 'find person arm up'},
-										autonomy={'done': Autonomy.Off})
+		with _sm_detect_people_waving_15:
+			# x:76 y:40
+			OperatableStateMachine.add('Look for waving people',
+										_sm_look_for_waving_people_8,
+										transitions={'finished': 'get attributes', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'waving_person': 'waving_person'})
 
-			# x:69 y:182
-			OperatableStateMachine.add('look left',
-										SaraSetHeadAngle(pitch=0.1, yaw=1.3),
-										transitions={'done': 'find person arm up_2'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:65 y:327
-			OperatableStateMachine.add('look right',
-										SaraSetHeadAngle(pitch=0.1, yaw=-1.3),
-										transitions={'done': 'find person arm up_3'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:57 y:562
-			OperatableStateMachine.add('rotation',
-										SaraMoveBase(reference="base_link"),
-										transitions={'arrived': 'look center_2', 'failed': 'id to 0'},
-										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'pose': 'pose'})
-
-			# x:51 y:486
-			OperatableStateMachine.add('pose with 180 rotation',
-										GenPoseEuler(x=0, y=0, z=0, roll=0, pitch=0, yaw=3.14),
-										transitions={'done': 'rotation'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose': 'pose'})
-
-			# x:492 y:34
-			OperatableStateMachine.add('look center_2',
-										SaraSetHeadAngle(pitch=0.1, yaw=0),
-										transitions={'done': 'find person arm up_4'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:489 y:174
-			OperatableStateMachine.add('look left_2',
-										SaraSetHeadAngle(pitch=0.1, yaw=1.3),
-										transitions={'done': 'find person arm up_5'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:481 y:310
-			OperatableStateMachine.add('look right_2',
-										SaraSetHeadAngle(pitch=0.1, yaw=-1.3),
-										transitions={'done': 'find person arm up_6'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:149 y:666
-			OperatableStateMachine.add('id to 0',
-										SetKey(Value=0),
-										transitions={'done': 'position to 0'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'customerID'})
-
-			# x:276 y:664
-			OperatableStateMachine.add('position to 0',
-										SetKey(Value=0),
-										transitions={'done': 'say dont find waving person'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'customerPosition'})
-
-			# x:64 y:103
-			OperatableStateMachine.add('find person arm up',
-										_sm_find_person_arm_up_9,
-										transitions={'found': 'set distance to customer', 'not_found': 'look left'},
-										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'customerID': 'customerID', 'customerPosition': 'customerPosition'})
-
-			# x:47 y:406
-			OperatableStateMachine.add('find person arm up_3',
-										_sm_find_person_arm_up_3_8,
-										transitions={'found': 'set distance to customer', 'not_found': 'pose with 180 rotation'},
-										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'customerID': 'customerID', 'customerPosition': 'customerPosition'})
-
-			# x:45 y:252
-			OperatableStateMachine.add('find person arm up_2',
-										_sm_find_person_arm_up_2_7,
-										transitions={'found': 'set distance to customer', 'not_found': 'look right'},
-										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'customerID': 'customerID', 'customerPosition': 'customerPosition'})
-
-			# x:465 y:94
-			OperatableStateMachine.add('find person arm up_4',
-										_sm_find_person_arm_up_4_6,
-										transitions={'found': 'set distance to customer', 'not_found': 'look left_2'},
-										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'customerID': 'customerID', 'customerPosition': 'customerPosition'})
-
-			# x:464 y:238
-			OperatableStateMachine.add('find person arm up_5',
-										_sm_find_person_arm_up_5_5,
-										transitions={'found': 'set distance to customer', 'not_found': 'look right_2'},
-										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'customerID': 'customerID', 'customerPosition': 'customerPosition'})
-
-			# x:461 y:375
-			OperatableStateMachine.add('find person arm up_6',
-										_sm_find_person_arm_up_6_4,
-										transitions={'found': 'set distance to customer', 'not_found': 'id to 0'},
-										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'customerID': 'customerID', 'customerPosition': 'customerPosition'})
-
-			# x:617 y:644
-			OperatableStateMachine.add('reachable position',
+			# x:73 y:375
+			OperatableStateMachine.add('reachable position_2',
 										Get_Reacheable_Waypoint(),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose_in': 'customerPosition', 'distance': 'distance', 'pose_out': 'customerPosition'})
 
-			# x:619 y:569
-			OperatableStateMachine.add('set distance to customer',
+			# x:77 y:256
+			OperatableStateMachine.add('set distance to customer_2',
 										SetKey(Value=1),
-										transitions={'done': 'reachable position'},
+										transitions={'done': 'reachable position_2'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'distance'})
 
-			# x:394 y:665
-			OperatableStateMachine.add('say dont find waving person',
-										SaraSay(sentence="I do not find any person waving.", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'failed'},
-										autonomy={'done': Autonomy.Off})
+			# x:94 y:163
+			OperatableStateMachine.add('get attributes',
+										GetAttribute(attributes=["ID", "position"]),
+										transitions={'done': 'set distance to customer_2'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'object': 'waving_person', 'ID': 'customerID', 'position': 'customerPosition'})
 
 
 		# x:874 y:499, x:747 y:100
-		_sm_save_bar_position_and_initiation_17 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['barPosition', 'commandNumber', 'barmanID'])
+		_sm_save_bar_position_and_initiation_16 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['barPosition', 'commandNumber', 'barmanID'])
 
-		with _sm_save_bar_position_and_initiation_17:
+		with _sm_save_bar_position_and_initiation_16:
 			# x:66 y:96
 			OperatableStateMachine.add('set question barman',
 										SetKey(Value="Are you the barman?"),
@@ -973,7 +827,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:83 y:406
 			OperatableStateMachine.add('save barman ID',
-										CalculationState(calculation=x.ID),
+										CalculationState(calculation=lambda x: x.ID),
 										transitions={'done': 'get current pose'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'personFound', 'output_value': 'barmanID'})
@@ -1017,56 +871,56 @@ class Scenario_RestaurantSM(Behavior):
 		with _state_machine:
 			# x:30 y:40
 			OperatableStateMachine.add('save bar position and initiation',
-										_sm_save_bar_position_and_initiation_17,
+										_sm_save_bar_position_and_initiation_16,
 										transitions={'finished': 'detect people waving', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'barPosition': 'barPosition', 'commandNumber': 'commandNumber', 'barmanID': 'barmanID'})
 
 			# x:131 y:141
 			OperatableStateMachine.add('detect people waving',
-										_sm_detect_people_waving_16,
+										_sm_detect_people_waving_15,
 										transitions={'finished': 'move to table and save position', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'customerPosition': 'customerPosition', 'customerID': 'customerID'})
 
 			# x:233 y:250
 			OperatableStateMachine.add('move to table and save position',
-										_sm_move_to_table_and_save_position_15,
+										_sm_move_to_table_and_save_position_14,
 										transitions={'finished': 'ask and save order', 'failed': 'detect people waving'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'customerPosition': 'customerPosition', 'robotPositionToCustomer': 'robotPositionToCustomer'})
 
 			# x:286 y:337
 			OperatableStateMachine.add('ask and save order',
-										_sm_ask_and_save_order_14,
+										_sm_ask_and_save_order_13,
 										transitions={'finished': 'go to the barman', 'failed': 'detect people waving'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'customerID': 'customerID', 'orderList': 'orderList'})
 
 			# x:264 y:434
 			OperatableStateMachine.add('go to the barman',
-										_sm_go_to_the_barman_13,
+										_sm_go_to_the_barman_12,
 										transitions={'finished': 'get the order', 'failed': 'detect people waving'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'barPosition': 'barPosition', 'barmanID': 'barmanID'})
 
 			# x:278 y:526
 			OperatableStateMachine.add('get the order',
-										_sm_get_the_order_12,
+										_sm_get_the_order_11,
 										transitions={'finished': 'take objects and bring the order to customer', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'orderList': 'orderList'})
 
 			# x:260 y:626
 			OperatableStateMachine.add('take objects and bring the order to customer',
-										_sm_take_objects_and_bring_the_order_to_customer_11,
+										_sm_take_objects_and_bring_the_order_to_customer_10,
 										transitions={'finished': 'repeate if first commande', 'failed': 'repeate if first commande'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'barPosition': 'barPosition', 'orderList': 'orderList', 'robotPositionToCustomer': 'robotPositionToCustomer'})
 
 			# x:118 y:735
 			OperatableStateMachine.add('repeate if first commande',
-										_sm_repeate_if_first_commande_10,
+										_sm_repeate_if_first_commande_9,
 										transitions={'finished': 'say finish', 'repeate': 'detect people waving'},
 										autonomy={'finished': Autonomy.Inherit, 'repeate': Autonomy.Inherit},
 										remapping={'commandNumber': 'commandNumber'})
