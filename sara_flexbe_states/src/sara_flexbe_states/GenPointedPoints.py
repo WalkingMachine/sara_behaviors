@@ -53,8 +53,8 @@ class GenPointedPoints(EventState):
         for part in userdata.entity.pose.parts:
             partDict[part.id] = part.position
         try:
-            handPosition = partDict[partsId[0]]
-            elbowPosition = partDict[partsId[1]]
+            handPosition = partDict[partsId[1]]
+            elbowPosition = partDict[partsId[0]]
         except:
             return 'failed'
         
@@ -62,7 +62,7 @@ class GenPointedPoints(EventState):
         
         positionList = []
         for i in range(self.qty):
-            point = Point()
+            pointToReturn = Point()
             pointToReturn.x = handPosition.x+dx*(i+1)
             pointToReturn.y = handPosition.y+dy*(i+1)
             pointToReturn.z = handPosition.z+dz*(i+1)
