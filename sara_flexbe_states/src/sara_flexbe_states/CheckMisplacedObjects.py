@@ -5,6 +5,7 @@ import json
 
 from flexbe_core import EventState, Logger
 from sara_msgs.msg import Entity, Entities
+import requests
 
 '''
 Created on 18.03.2019
