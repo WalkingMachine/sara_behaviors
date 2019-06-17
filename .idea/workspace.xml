@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="c8e57682-cf46-405b-a48b-86f014c880c2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/sara_nlu_getRoom.py" beforeDir="false" afterPath="$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/sara_nlu_getRoom.py" afterDir="false" />
+=======
+    <list default="true" id="6475a98e-022e-405b-9834-43fc2062eccf" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GenPointedPoints.py" beforeDir="false" afterPath="$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GenPointedPoints.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GetPointedPositionOnPlane.py" beforeDir="false" afterPath="$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GetPointedPositionOnPlane.py" afterDir="false" />
+>>>>>>> d8456d6f72bd1d9e636948544016415266958f23
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -12,11 +18,91 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+<<<<<<< HEAD
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/sara_nlu_getRoom.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="345">
               <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
+=======
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GetRosParam.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="301">
+              <caret line="27" column="84" selection-start-line="27" selection-start-column="84" selection-end-line="27" selection-end-column="84" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GenPointedPoints.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="375">
+              <caret line="67" column="53" lean-forward="true" selection-start-line="67" selection-start-column="53" selection-end-line="67" selection-end-column="53" />
+              <folding>
+                <element signature="e#22#35#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GetPointedPositionOnPlane.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="45">
+              <caret line="6" column="35" lean-forward="true" selection-start-line="6" selection-start-column="35" selection-end-line="6" selection-end-column="35" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/KeepLookingAt.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1035" />
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/LookAtPos.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="280">
+              <caret line="38" lean-forward="true" selection-start-line="38" selection-end-line="38" />
+              <folding>
+                <element signature="e#23#65#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/list_entities_near_point.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30">
+              <caret line="5" selection-start-line="5" selection-end-line="5" selection-end-column="34" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/list_entities_by_name.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="524">
+              <caret line="50" column="52" selection-start-line="50" selection-start-column="48" selection-end-line="50" selection-end-column="52" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/SetRosParam.py">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GetPositionToPlaceOnTable.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="5" selection-start-line="5" selection-end-line="5" selection-end-column="41" />
+>>>>>>> d8456d6f72bd1d9e636948544016415266958f23
             </state>
           </provider>
         </entry>
@@ -25,22 +111,46 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
+<<<<<<< HEAD
       <find>compare</find>
+=======
+      <find>userdata</find>
+      <find>_sub</find>
+      <find>frontality_level</find>
+      <find>found_ent</find>
+      <find>Entites</find>
+      <find>math</find>
+      <find>name</find>
+      <find>empty</find>
+      <find>tf</find>
+      <find>point</find>
+>>>>>>> d8456d6f72bd1d9e636948544016415266958f23
     </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+<<<<<<< HEAD
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$" value="feature/moveitCartesian" />
       </map>
     </option>
+=======
+>>>>>>> d8456d6f72bd1d9e636948544016415266958f23
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+<<<<<<< HEAD
         <option value="$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/moveit_moveCartesian.py" />
         <option value="$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/sara_nlu_getRoom.py" />
+=======
+        <option value="$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GetPointedPosition.py" />
+        <option value="$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/list_entities_near_point.py" />
+        <option value="$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GetPointedPositionOnPlane.py" />
+        <option value="$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/LookAtPos.py" />
+        <option value="$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GenPointedPoints.py" />
+>>>>>>> d8456d6f72bd1d9e636948544016415266958f23
       </list>
     </option>
   </component>
@@ -49,9 +159,14 @@
       <list>
         <option value="$PROJECT_DIR$/.idea/sara_behaviors.iml" />
         <option value="$PROJECT_DIR$/.idea/misc.xml" />
+<<<<<<< HEAD
         <option value="$PROJECT_DIR$/.idea/modules.xml" />
         <option value="$PROJECT_DIR$/.idea/vcs.xml" />
         <option value="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" />
+=======
+        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
+        <option value="$PROJECT_DIR$/.idea/modules.xml" />
+>>>>>>> d8456d6f72bd1d9e636948544016415266958f23
       </list>
     </option>
   </component>
@@ -61,7 +176,10 @@
     <option name="width" value="873" />
     <option name="height" value="930" />
   </component>
+<<<<<<< HEAD
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+=======
+>>>>>>> d8456d6f72bd1d9e636948544016415266958f23
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -100,10 +218,14 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+<<<<<<< HEAD
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="Git.Branch.Popup.ShowAllRemotes" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Python" />
+=======
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+>>>>>>> d8456d6f72bd1d9e636948544016415266958f23
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -122,18 +244,32 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
+<<<<<<< HEAD
       <changelist id="c8e57682-cf46-405b-a48b-86f014c880c2" name="Default Changelist" comment="" />
       <created>1560216203575</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1560216203575</updated>
+=======
+      <changelist id="6475a98e-022e-405b-9834-43fc2062eccf" name="Default Changelist" comment="" />
+      <created>1560707099297</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1560707099297</updated>
+>>>>>>> d8456d6f72bd1d9e636948544016415266958f23
     </task>
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="65" y="-4" width="1855" height="979" extended-state="6" />
+<<<<<<< HEAD
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.115720525" />
+=======
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18960752" />
+>>>>>>> d8456d6f72bd1d9e636948544016415266958f23
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -143,6 +279,7 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
+<<<<<<< HEAD
       <window_info anchor="bottom" id="Version Control" order="7" visible="true" weight="0.034246575" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
@@ -164,10 +301,39 @@
           <caret line="67" column="18" selection-start-line="67" selection-start-column="18" selection-end-line="67" selection-end-column="18" />
           <folding>
             <element signature="e#22#59#0" expanded="true" />
+=======
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32990867" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Python Console" order="10" visible="true" weight="0.32990867" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.016583748" />
+    </layout>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GetPositionToPlaceOnTable.py</url>
+          <line>1</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GetEntityFromListByID.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#23#35#0" expanded="true" />
+>>>>>>> d8456d6f72bd1d9e636948544016415266958f23
           </folding>
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/moveit_move.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -175,6 +341,69 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
           <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
+=======
+    <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GetPointedPosition.py" />
+    <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GetRosParam.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="301">
+          <caret line="27" column="84" selection-start-line="27" selection-start-column="84" selection-end-line="27" selection-end-column="84" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/SetRosParam.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GetPositionToPlaceOnTable.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" selection-start-line="5" selection-end-line="5" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/list_entities_by_name.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="524">
+          <caret line="50" column="52" selection-start-line="50" selection-start-column="48" selection-end-line="50" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/KeepLookingAt.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1035" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/list_entities_near_point.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="5" selection-start-line="5" selection-end-line="5" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/LookAtPos.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="280">
+          <caret line="38" lean-forward="true" selection-start-line="38" selection-end-line="38" />
+          <folding>
+            <element signature="e#23#65#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GetPointedPositionOnPlane.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="6" column="35" lean-forward="true" selection-start-line="6" selection-start-column="35" selection-end-line="6" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sara_flexbe_states/src/sara_flexbe_states/GenPointedPoints.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="67" column="53" lean-forward="true" selection-start-line="67" selection-start-column="53" selection-end-line="67" selection-end-column="53" />
+          <folding>
+            <element signature="e#22#35#0" expanded="true" />
+          </folding>
+>>>>>>> d8456d6f72bd1d9e636948544016415266958f23
         </state>
       </provider>
     </entry>
