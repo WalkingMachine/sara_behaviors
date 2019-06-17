@@ -17,7 +17,7 @@ class MoveitMove(EventState):
     <= failed   The plan could't be done.
     '''
 
-    def __init__(self, move=True, waitForExecution=True, group="RightArm", watchdog=10):
+    def __init__(self, move=True, waitForExecution=True, group="RightArm", watchdog=15):
         # See example_state.py for basic explanations.
         super(MoveitMove, self).__init__(outcomes=['done', 'failed'], input_keys=['target'])
         self.move = move
