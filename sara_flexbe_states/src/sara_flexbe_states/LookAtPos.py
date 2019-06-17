@@ -6,7 +6,7 @@ from flexbe_core.proxy import ProxyActionClient
 from actionlib_msgs.msg import GoalStatus
 from move_base_msgs.msg import *
 import rospy
-from geometry_msgs.msg import Pose, Point
+from geometry_msgs.msg import Pose, Point, PointStamped
 from flexbe_core.proxy import ProxySubscriberCached
 import math
 from std_msgs.msg import Float64
@@ -36,6 +36,7 @@ class LookAtPos(EventState):
 
         self.pubp = rospy.Publisher("/sara_head_pitch_controller/command", Float64, queue_size=1)
         self.puby = rospy.Publisher("/sara_head_yaw_controller/command", Float64, queue_size=1)
+        self.pubviz = rospy.Publisher("/look_at_pos", PointStamped, queue_size=1)
 
         # Reference from and reference to
         self.service = get_directionRequest()
@@ -54,7 +55,7 @@ class LookAtPos(EventState):
 
     def execute(self, userdata):
         if self._active:
-            if self.pos == Pose:
+            if userdata.pos == Pose:
                 position = userdata.pos.position
             else:
                 position = userdata.pos
@@ -64,7 +65,7 @@ class LookAtPos(EventState):
             self.service.point = position
             resp = serv(self.service)
 
-            ms.data = min(max(-resp.pitch, -0), 1)
+            ms.data = min(max(-resp.pitch, -0.2), 1)
             self.pubp.publish(ms)
             ms.data = min(max(resp.yaw, -1.2), 1.2)
             self.puby.publish(ms)
@@ -76,3 +77,13 @@ class LookAtPos(EventState):
             ms.data = 0
             self.puby.publish(ms)
             return "failed"
+
+    def on_enter(self, userdata):
+        pointStamped = PointStamped()
+
+        pointStamped.point = userdata.pos
+        pointStamped.header.stamp = rospy.Time.now()
+        pointStamped.header.frame_id = "/map"
+
+        self.pubviz.publish(pointStamped)
+

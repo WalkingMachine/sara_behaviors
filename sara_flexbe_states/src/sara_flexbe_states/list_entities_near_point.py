@@ -66,6 +66,7 @@ class list_entities_near_point(EventState):
             y = entity.position.y - self.position.y
             z = entity.position.z - self.position.z
             dist = (x**2 + y**2 + z**2)**0.5
+            #Logger.loginfo('dist: '+str(dist)+" name: "+entity.name)
             if (name == "" or entity.name == name or entity.category == name) and dist < self.radius:
                 wrap = wrapper()
                 wrap.init(self.position, entity)

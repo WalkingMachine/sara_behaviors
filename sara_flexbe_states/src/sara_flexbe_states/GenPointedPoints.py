@@ -63,10 +63,10 @@ class GenPointedPoints(EventState):
         positionList = []
         for i in range(self.qty):
             pointToReturn = Point()
-            pointToReturn.x = handPosition.x+dx*(i+1)
-            pointToReturn.y = handPosition.y+dy*(i+1)
-            pointToReturn.z = handPosition.z+dz*(i+1)
-            positionList.append(point)
+            pointToReturn.x = handPosition.x+dx*(i+1)*self.step
+            pointToReturn.y = handPosition.y+dy*(i+1)*self.step
+            pointToReturn.z = handPosition.z+dz*(i+1)*self.step
+            positionList.append(pointToReturn)
         userdata.positionList = positionList
         return 'done'
         
