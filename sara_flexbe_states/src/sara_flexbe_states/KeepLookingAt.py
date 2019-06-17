@@ -80,7 +80,7 @@ class KeepLookingAt(EventState):
 
                 if (self.Entity.name == "person"):
                     if (self.Entity.face.id != ""):
-                        self.Entity.position.z += self.Entity.face.boundingBox.Center.z
+                        self.Entity.position.z += self.Entity.face.boundingBox.Center.z-0.1
                     else:
                         self.Entity.position.z += 1.6
 

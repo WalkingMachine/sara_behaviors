@@ -62,12 +62,11 @@ class Action_Receive_BagSM(Behavior):
 
 
 		with _state_machine:
-			# x:81 y:178
-			OperatableStateMachine.add('opengripper',
-										SetGripperState(width=0.25, effort=1),
-										transitions={'object': 'place arm', 'no_object': 'place arm'},
-										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
-										remapping={'object_size': 'object_size'})
+			# x:101 y:292
+			OperatableStateMachine.add('place arm',
+										RunTrajectory(file="receive_bag", duration=6),
+										transitions={'done': 'opengripper'},
+										autonomy={'done': Autonomy.Off})
 
 			# x:468 y:286
 			OperatableStateMachine.add('close_gripper',
@@ -82,12 +81,6 @@ class Action_Receive_BagSM(Behavior):
 										transitions={'done': 'place back arm'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:101 y:292
-			OperatableStateMachine.add('place arm',
-										RunTrajectory(file="receive_bag", duration=6),
-										transitions={'done': 'Torque_Reader'},
-										autonomy={'done': Autonomy.Off})
-
 			# x:653 y:81
 			OperatableStateMachine.add('place back arm',
 										RunTrajectory(file="poubelle_transport", duration=0),
@@ -100,6 +93,13 @@ class Action_Receive_BagSM(Behavior):
 										transitions={'threshold': 'close_gripper', 'watchdog': 'Torque_Reader', 'fail': 'failed'},
 										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'torque': 'torque'})
+
+			# x:196 y:148
+			OperatableStateMachine.add('opengripper',
+										SetGripperState(width=0.25, effort=1),
+										transitions={'object': 'Torque_Reader', 'no_object': 'Torque_Reader'},
+										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
+										remapping={'object_size': 'object_size'})
 
 
 		return _state_machine

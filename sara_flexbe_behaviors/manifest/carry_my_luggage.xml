@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Carry my luggage">
+
+	<executable package_path="sara_flexbe_behaviors.carry_my_luggage_sm" class="CarrymyluggageSM" />
+	<tagstring>Party Host</tagstring>
+	<author>Huynh-Anh Le</author>
+	<date>Sat Mar 09 2019</date>
+	<description>
+		Sara helps someone carry a bag to his car
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_follow" />
+	<contains name="Action_Give_Back_Bag" />
+	<contains name="Init_Sequence" />
+	<contains name="Action_Move" />
+	<contains name="Action_point_at" />
+	<contains name="Action_Receive_Bag" />
+	<contains name="LookAtClosest" />
+
+	<!-- Available Parameters -->
+
+</behavior>
