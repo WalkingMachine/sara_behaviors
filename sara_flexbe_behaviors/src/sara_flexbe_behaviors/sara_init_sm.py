@@ -9,7 +9,8 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
-from sara_flexbe_states.run_trajectory import RunTrajectory
+from sara_flexbe_states.moveit_move import MoveitMove
+from sara_flexbe_states.sara_say import SaraSay
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -17,18 +18,18 @@ from sara_flexbe_states.run_trajectory import RunTrajectory
 
 
 '''
-Created on Thu Jul 27 2017
-@author: Redouane Laref Nicolas Nadeau
+Created on Mon Mar 18 2019
+@author: Huynh-Anh Le
 '''
-class Init_SequenceSM(Behavior):
+class Sara_InitSM(Behavior):
 	'''
-	Initialisation Sequence
+	Initialise la tete, le bras de Sara
 	'''
 
 
 	def __init__(self):
-		super(Init_SequenceSM, self).__init__()
-		self.name = 'Init_Sequence'
+		super(Sara_InitSM, self).__init__()
+		self.name = 'Sara_Init'
 
 		# parameters of this behavior
 
@@ -44,8 +45,9 @@ class Init_SequenceSM(Behavior):
 
 
 	def create(self):
-		# x:976 y:64, x:973 y:289
+		# x:123 y:357, x:288 y:339
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
+		_state_machine.userdata.Pose_Init = "IdlePose"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -54,16 +56,23 @@ class Init_SequenceSM(Behavior):
 
 
 		with _state_machine:
-			# x:42 y:72
-			OperatableStateMachine.add('INIT HEAD',
-										SaraSetHeadAngle(pitch=0.4, yaw=0),
-										transitions={'done': 'repos'},
+			# x:42 y:58
+			OperatableStateMachine.add('Hi',
+										SaraSay(sentence="Hi, my name is Sara and I will start", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'setHead'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:205 y:72
-			OperatableStateMachine.add('repos',
-										RunTrajectory(file="repos", duration=0),
-										transitions={'done': 'finished'},
+			# x:77 y:210
+			OperatableStateMachine.add('SetArm',
+										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										transitions={'done': 'finished', 'failed': 'failed'},
+										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
+										remapping={'target': 'Pose_Init'})
+
+			# x:72 y:130
+			OperatableStateMachine.add('setHead',
+										SaraSetHeadAngle(pitch=0, yaw=0),
+										transitions={'done': 'SetArm'},
 										autonomy={'done': Autonomy.Off})
 
 

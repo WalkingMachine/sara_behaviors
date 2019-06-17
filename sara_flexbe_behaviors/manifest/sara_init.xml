@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Sara_Init">
+
+	<executable package_path="sara_flexbe_behaviors.sara_init_sm" class="Sara_InitSM" />
+	<tagstring></tagstring>
+	<author>Huynh-Anh Le</author>
+	<date>Mon Mar 18 2019</date>
+	<description>
+		Initialise la tete, le bras de Sara
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
