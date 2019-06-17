@@ -66,7 +66,7 @@ class Action_Give_Back_BagSM(Behavior):
 
 			# x:50 y:231
 			OperatableStateMachine.add('Say_to take_bag',
-										SaraSay(sentence="Here is your bag.", input_keys=[], emotion=1, block=True),
+										SaraSay(sentence="Here is your bag.", input_keys=[], emotion=1, block=False),
 										transitions={'done': 'detectObject'},
 										autonomy={'done': Autonomy.Off})
 
@@ -86,7 +86,7 @@ class Action_Give_Back_BagSM(Behavior):
 
 			# x:47 y:466
 			OperatableStateMachine.add('Finished',
-										SaraSay(sentence="It was a pleasure", input_keys=[], emotion=0, block=True),
+										SaraSay(sentence="It was a pleasure", input_keys=[], emotion=0, block=False),
 										transitions={'done': 'Close'},
 										autonomy={'done': Autonomy.Off})
 

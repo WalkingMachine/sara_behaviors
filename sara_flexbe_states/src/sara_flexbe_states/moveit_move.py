@@ -38,7 +38,7 @@ class MoveitMove(EventState):
             curState = self.group.get_current_joint_values()
             diff = compareStates(curState, self.endState)
             print("diff="+str(diff))
-            if diff < self.tol or self.timeout+self.watchdog < rospy.Time.now():
+            if diff < self.tol or self.timeout+rospy.Duration(self.watchdog) < rospy.Time.now():
                 self.count += 1
                 if self.count > 3:
                     Logger.loginfo('Target reached :)')

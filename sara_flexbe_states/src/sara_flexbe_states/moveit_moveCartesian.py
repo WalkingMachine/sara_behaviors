@@ -4,6 +4,7 @@ from flexbe_core import EventState, Logger
 from moveit_commander import MoveGroupCommander
 from geometry_msgs.msg import Pose
 import copy
+import rospy
 
 
 class MoveitMoveCartesian(EventState):
@@ -42,7 +43,7 @@ class MoveitMoveCartesian(EventState):
             curState = self.group.get_current_joint_values()
             diff = compareStates(curState, self.endState)
             print("diff=" + str(diff))
-            if diff < self.tol or self.timeout+self.watchdog < rospy.Time.now():
+            if diff < self.tol or self.timeout+rospy.Duration(self.watchdog) < rospy.Time.now():
                 self.count += 1
                 if self.count > 3:
                     Logger.loginfo('Target reached :)')

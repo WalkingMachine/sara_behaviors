@@ -15,9 +15,10 @@
 	<contains name="Action_follow" />
 	<contains name="Action_Give_Back_Bag" />
 	<contains name="Init_Sequence" />
+	<contains name="Action_Move" />
+	<contains name="Action_point_at" />
 	<contains name="Action_Receive_Bag" />
 	<contains name="LookAtClosest" />
-	<contains name="Action_Move" />
 
 	<!-- Available Parameters -->
 
