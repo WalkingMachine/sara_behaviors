@@ -3,7 +3,7 @@ from __future__ import print_function
 from flexbe_core import EventState, Logger
 from moveit_commander import MoveGroupCommander
 from geometry_msgs.msg import Point, Pose
-
+import rospy
 
 class MoveitMove(EventState):
     '''
@@ -17,7 +17,7 @@ class MoveitMove(EventState):
     <= failed   The plan could't be done.
     '''
 
-    def __init__(self, move=True, waitForExecution=True, group="RightArm"):
+    def __init__(self, move=True, waitForExecution=True, group="RightArm", watchdog=15):
         # See example_state.py for basic explanations.
         super(MoveitMove, self).__init__(outcomes=['done', 'failed'], input_keys=['target'])
         self.move = move
@@ -26,7 +26,8 @@ class MoveitMove(EventState):
         self.tol = 0.06
         self.result = None
         self.count = 0
-        self.countlimit = 0
+        self.timeout = rospy.Time.now()
+        self.watchdog = watchdog
 
     def execute(self, userdata):
 
@@ -37,7 +38,7 @@ class MoveitMove(EventState):
             curState = self.group.get_current_joint_values()
             diff = compareStates(curState, self.endState)
             print("diff="+str(diff))
-            if diff < self.tol:
+            if diff < self.tol or self.timeout+self.watchdog < rospy.Time.now():
                 self.count += 1
                 if self.count > 3:
                     Logger.loginfo('Target reached :)')
@@ -50,6 +51,7 @@ class MoveitMove(EventState):
     def on_enter(self, userdata):
         Logger.loginfo('Enter Move Arm')
 
+        self.timeout = rospy.Time.now()
         if type(userdata.target) is Pose:
             Logger.loginfo('the target is a pose')
             self.group.set_pose_target(userdata.target)
