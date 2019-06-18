@@ -37,7 +37,7 @@ class SaraNLUgetRoom(EventState):
         response = self.service(String(userdata.sentence))
 
         # Checking the validity of the response
-        if response.str.data is "" or "none":
+        if response.str.data is "" or response.str.data is "none":
             userdata.answer = response.str.data
             return "not_understood"
 

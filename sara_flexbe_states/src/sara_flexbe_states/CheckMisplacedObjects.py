@@ -80,8 +80,9 @@ class CheckMisplacedObjects(EventState):
                 if self.compareWithList(entity, wonderland_entities):
                     correct.append(entity)
                 else:
-                    not_correct.append([entity, wonderland_buffer[entity.name][wonderland_buffer_index[entity.name]]])
-                    wonderland_buffer_index[entity.name] = max(wonderland_buffer_index[entity.name]+1, len(wonderland_buffer[entity.name]))
+                    if len(wonderland_buffer[entity.name]) != 0:
+                        not_correct.append([entity, wonderland_buffer[entity.name][wonderland_buffer_index[entity.name]]])
+                        wonderland_buffer_index[entity.name] = max(wonderland_buffer_index[entity.name]+1, len(wonderland_buffer[entity.name]))
             else:
                 not_correct.append([entity, bine])
 
