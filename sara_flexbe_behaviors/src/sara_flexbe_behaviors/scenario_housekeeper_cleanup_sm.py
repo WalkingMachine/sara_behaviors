@@ -19,14 +19,14 @@ from flexbe_states.log_key_state import LogKeyState
 from flexbe_states.decision_state import DecisionState
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
-from sara_flexbe_states.CheckMisplacedObjects import CheckMisplacedObjects
+from flexbe_states.calculation_state import CalculationState
+from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.wait_state import WaitState
-from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
-from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from sara_flexbe_states.for_loop_with_input import ForLoopWithInput
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
+from sara_flexbe_states.CheckMisplacedObjects import CheckMisplacedObjects
 from sara_flexbe_states.SetSegmentationRosParam import SetSegmentationRosParam
 from sara_flexbe_behaviors.action_pick_sm import Action_pickSM as sara_flexbe_behaviors__Action_pickSM
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
@@ -75,14 +75,14 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
         # Behavior comments:
 
-        # O 662 249 /PickMisplacedObject
+        # O 83 226 /PickMisplacedObject
         # Va à l'objet trouvé et prend l'objet|n|nRappel: MisplacedObject contient la liste [entité originale, pseudo-entité wonderland]|n|nTODO:|nRecovery si on est pas capable de se rendre (demander de déagager l'espace??)
 
         # O 829 281 /PutObjectInDesiredContainer
         # Va au contenant désiré de l'objet et dépose l'objet à celui-ci|nSi elle echappe l'objet, elle le signale.|nTODO: Si elle ne peut pas se rendre a la destination ?
 
-        # O 616 354 /CheckForMisplacedObjects
-        # SARA va regarder autour pour trouver des objets.|nVérifie la liste d'objet connus si il y en a qui ne sont pas à la bonne place.|nSi aucun n'est trouvé après avoir regardé deux fois; SARAva tenter d'aller à des waypoints pré-déterminés dans la pièce.
+        # O 16 335 /CheckForMisplacedObjects
+        # SARA va regarder autour pour trouver des objets.|nVérifie la liste d'objet connus si il y en a qui ne sont pas à la bonne place.|nSi aucun n'est trouvé après avoir regardé deux fois; SARA va tenter d'aller à des waypoints pré-déterminés dans la pièce.
 
         # O 971 172 /EnterArena
         # SARA entre dans l'aréna et demande à l'opérateur dans quelle piece elle doir faire le ménage. Ensuite elle y va.|nSi SARA n'a aucune réponse ou si le NLU ne retrace pas la reponse, SARA va redemander la question une seconde fois.|nNote:|nIl va falloir qu'il y aie des waypoint qui matche le nom de la pièce cleanupRoom.
@@ -96,11 +96,11 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
         # O 353 125 /PickMisplacedObject/GrabMisplacedObject/DeusExPickRecovery
         # NOTE: noms des position de réception pour l'item à vérifier !
 
-        # O 528 83 /CheckForMisplacedObjects/ScanAround
-        # Liseter les entités en concurrent et checker si c'est des misplace. Lorsque Un est trouvé faire un interrupt
+        # O 643 67 /CheckForMisplacedObjects/ScanAround
+        # Lister les entités en concurrence et checker si misplaced. Lorsque Un est trouvé faire un interrupt
 
-        # O 51 440 /PickMisplacedObject/GrabMisplacedObject/DeusExPickRecovery/ReceiveItem
-        # Remplacer Moveit Par RunTrajectory|n|nfail si pas recus à close
+        # O 27 326 /PickMisplacedObject/GrabMisplacedObject/DeusExPickRecovery/ReceiveItem
+        # Avons remplacé Moveit Par RunTrajectory|n|nPour fail si pas recus à close
 
         # O 826 61 /CheckForMisplacedObjects/CheckAtWaypoints
         # SARA va aller à un des waypints prédéfinis et va regarder autour pour trouver des objets.|nVérifie la liste d'objet connus si il y en a qui ne sont pas à la bonne place.|nSi aucun n'est trouvé après avoir regardé à chaque waypoint, SARA va semorfondre dans son impuissance de faire du ménage.
@@ -252,25 +252,25 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
                                         remapping={'pose': 'targetWaypoint'})
 
 
-        # x:300 y:141, x:893 y:63
+        # x:403 y:441, x:893 y:63
         _sm_receiveitem_4 = OperatableStateMachine(outcomes=['failed', 'success'])
 
         with _sm_receiveitem_4:
             # x:69 y:47
             OperatableStateMachine.add('opengripper',
                                         SetGripperState(width=0.25, effort=1),
-                                        transitions={'object': 'traj1', 'no_object': 'traj1'},
+                                        transitions={'object': 'receive_bag__Trajectory', 'no_object': 'receive_bag__Trajectory'},
                                         autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
                                         remapping={'object_size': 'object_size'})
 
-            # x:280 y:263
+            # x:272 y:246
             OperatableStateMachine.add('Torque_Reader',
                                         ReadTorque(watchdog=10, Joint="right_elbow_pitch_joint", Threshold=1, min_time=1),
                                         transitions={'threshold': 'close_gripper', 'watchdog': 'Torque_Reader', 'fail': 'failed'},
                                         autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
                                         remapping={'torque': 'torque'})
 
-            # x:450 y:274
+            # x:451 y:316
             OperatableStateMachine.add('close_gripper',
                                         SetGripperState(width=0, effort=1),
                                         transitions={'object': 'thank you', 'no_object': 'failed'},
@@ -280,61 +280,61 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
             # x:640 y:273
             OperatableStateMachine.add('thank you',
                                         SaraSay(sentence="Thank you", input_keys=[], emotion=1, block=True),
-                                        transitions={'done': 'traj1_2'},
+                                        transitions={'done': 'transport__Trajectory'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:101 y:214
-            OperatableStateMachine.add('traj1',
+            # x:52 y:210
+            OperatableStateMachine.add('receive_bag__Trajectory',
                                         RunTrajectory(file="receive_bag", duration=0),
                                         transitions={'done': 'Torque_Reader'},
                                         autonomy={'done': Autonomy.Off})
 
             # x:750 y:114
-            OperatableStateMachine.add('traj1_2',
+            OperatableStateMachine.add('transport__Trajectory',
                                         RunTrajectory(file="transport", duration=0),
                                         transitions={'done': 'success'},
                                         autonomy={'done': Autonomy.Off})
 
 
-        # x:169 y:514, x:508 y:495
+        # x:171 y:527, x:508 y:495
         _sm_deusexpickrecovery_5 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['misplacedObject'])
 
         with _sm_deusexpickrecovery_5:
-            # x:102 y:147
+            # x:66 y:49
             OperatableStateMachine.add('posePlusEnArriere',
                                         GenPoseEuler(x=-0.2, y=0, z=0, roll=0, pitch=0, yaw=0),
                                         transitions={'done': 'moveBack'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'pose': 'pose'})
 
-            # x:190 y:348
+            # x:133 y:404
             OperatableStateMachine.add('ReceiveItem',
                                         _sm_receiveitem_4,
                                         transitions={'failed': 'Oh fuck', 'success': 'finished'},
                                         autonomy={'failed': Autonomy.Inherit, 'success': Autonomy.Inherit})
 
-            # x:380 y:361
+            # x:529 y:204
             OperatableStateMachine.add('Oh fuck',
                                         SaraSay(sentence="Oh. Nevermind then.", input_keys=[], emotion=2, block=True),
                                         transitions={'done': 'failed'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:97 y:242
+            # x:98 y:158
             OperatableStateMachine.add('moveBack',
                                         SaraMoveBase(reference="base_link"),
-                                        transitions={'arrived': 'GimmeTheObjict', 'failed': 'Oh fuck'},
+                                        transitions={'arrived': 'GimmeTheObject', 'failed': 'Oh fuck'},
                                         autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
                                         remapping={'pose': 'pose'})
 
-            # x:242 y:232
-            OperatableStateMachine.add('GimmeTheObjict',
+            # x:113 y:276
+            OperatableStateMachine.add('GimmeTheObject',
                                         SaraSay(sentence=lambda x: "Could you give me the "+x[0][0].name+", please ?", input_keys=["misplacedObject"], emotion=0, block=True),
                                         transitions={'done': 'ReceiveItem'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'misplacedObject': 'misplacedObject'})
 
 
-        # x:676 y:610, x:1158 y:270
+        # x:631 y:390, x:1158 y:270
         _sm_grabmisplacedobject_6 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['misplacedObject'])
 
         with _sm_grabmisplacedobject_6:
@@ -378,10 +378,108 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
                                         remapping={'misplacedObject': 'misplacedObject'})
 
 
-        # x:30 y:426
-        _sm_scanaround_7 = OperatableStateMachine(outcomes=['done'])
+        # x:30 y:322
+        _sm_listentities_7 = OperatableStateMachine(outcomes=['found'], input_keys=['nameFilter'], output_keys=['entity_list'])
 
-        with _sm_scanaround_7:
+        with _sm_listentities_7:
+            # x:123 y:82
+            OperatableStateMachine.add('ListEntities',
+                                        list_entities_by_name(frontality_level=0.5, distance_max=10),
+                                        transitions={'found': 'found', 'none_found': 'wait'},
+                                        autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
+                                        remapping={'name': 'nameFilter', 'entity_list': 'entity_list', 'number': 'number'})
+
+            # x:375 y:81
+            OperatableStateMachine.add('wait',
+                                        WaitState(wait_time=0.2),
+                                        transitions={'done': 'ListEntities'},
+                                        autonomy={'done': Autonomy.Off})
+
+
+        # x:380 y:360
+        _sm_spinonyourself_8 = OperatableStateMachine(outcomes=['done'])
+
+        with _sm_spinonyourself_8:
+            # x:56 y:40
+            OperatableStateMachine.add('center',
+                                        SaraSetHeadAngle(pitch=0.5, yaw=0),
+                                        transitions={'done': 'w2'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:349 y:43
+            OperatableStateMachine.add('right',
+                                        SaraSetHeadAngle(pitch=0.5, yaw=-1.5),
+                                        transitions={'done': 'w3'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:201 y:127
+            OperatableStateMachine.add('center2',
+                                        SaraSetHeadAngle(pitch=0.5, yaw=0),
+                                        transitions={'done': 'w4'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:189 y:251
+            OperatableStateMachine.add('w1',
+                                        WaitState(wait_time=3),
+                                        transitions={'done': 'center3'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:220 y:42
+            OperatableStateMachine.add('w2',
+                                        WaitState(wait_time=3),
+                                        transitions={'done': 'right'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:356 y:123
+            OperatableStateMachine.add('w3',
+                                        WaitState(wait_time=3),
+                                        transitions={'done': 'center2'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:74 y:124
+            OperatableStateMachine.add('w4',
+                                        WaitState(wait_time=3),
+                                        transitions={'done': 'left'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:30 y:249
+            OperatableStateMachine.add('left',
+                                        SaraSetHeadAngle(pitch=0.5, yaw=1.5),
+                                        transitions={'done': 'w1'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:327 y:248
+            OperatableStateMachine.add('center3',
+                                        SaraSetHeadAngle(pitch=0.5, yaw=0),
+                                        transitions={'done': 'done'},
+                                        autonomy={'done': Autonomy.Off})
+
+
+        # x:147 y:322, x:216 y:333, x:469 y:147, x:320 y:202, x:430 y:322, x:189 y:211, x:630 y:322
+        _sm_scanaround_9 = ConcurrencyContainer(outcomes=['found', 'not_found'], input_keys=['nameFilter'], output_keys=['entity_list'], conditions=[
+                                        ('found', [('ListEntities', 'found')]),
+                                        ('not_found', [('SpinOnYourself', 'done')])
+                                        ])
+
+        with _sm_scanaround_9:
+            # x:126 y:68
+            OperatableStateMachine.add('SpinOnYourself',
+                                        _sm_spinonyourself_8,
+                                        transitions={'done': 'not_found'},
+                                        autonomy={'done': Autonomy.Inherit})
+
+            # x:330 y:51
+            OperatableStateMachine.add('ListEntities',
+                                        _sm_listentities_7,
+                                        transitions={'found': 'found'},
+                                        autonomy={'found': Autonomy.Inherit},
+                                        remapping={'nameFilter': 'nameFilter', 'entity_list': 'entity_list'})
+
+
+        # x:30 y:426
+        _sm_scanaround_10 = OperatableStateMachine(outcomes=['done'])
+
+        with _sm_scanaround_10:
             # x:172 y:46
             OperatableStateMachine.add('center',
                                         SaraSetHeadAngle(pitch=0.8, yaw=0),
@@ -437,10 +535,42 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
                                         autonomy={'done': Autonomy.Off})
 
 
-        # x:672 y:525, x:685 y:120, x:91 y:353
-        _sm_checkatwaypoints_8 = OperatableStateMachine(outcomes=['found', 'noneFound', 'failed'], input_keys=['waypointToCheckDict', 'cleaningRoom', 'nameFilter'], output_keys=['misplacedObject'])
+        # x:392 y:260, x:455 y:51
+        _sm_checkaroundformisplacedobjects_11 = OperatableStateMachine(outcomes=['unexpected', 'end'], input_keys=['nameFilter'], output_keys=['unexpected_objects'])
 
-        with _sm_checkatwaypoints_8:
+        with _sm_checkaroundformisplacedobjects_11:
+            # x:222 y:40
+            OperatableStateMachine.add('RetryOnce',
+                                        ForLoop(repeat=2),
+                                        transitions={'do': 'ScanAround', 'end': 'end'},
+                                        autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
+                                        remapping={'index': 'index'})
+
+            # x:51 y:100
+            OperatableStateMachine.add('ScanAround',
+                                        _sm_scanaround_9,
+                                        transitions={'found': 'CheckMisplacedObjects', 'not_found': 'RetryOnce'},
+                                        autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
+                                        remapping={'nameFilter': 'nameFilter', 'entity_list': 'entity_list'})
+
+            # x:384 y:156
+            OperatableStateMachine.add('EverythingsFine',
+                                        SaraSay(sentence="Everything seems in order. I'll check again.", input_keys=[], emotion=1, block=True),
+                                        transitions={'done': 'RetryOnce'},
+                                        autonomy={'done': Autonomy.Off})
+
+            # x:43 y:249
+            OperatableStateMachine.add('CheckMisplacedObjects',
+                                        CheckMisplacedObjects(position_tolerance=0.1, default_destination="bin"),
+                                        transitions={'all_expected': 'EverythingsFine', 'unexpected': 'unexpected'},
+                                        autonomy={'all_expected': Autonomy.Off, 'unexpected': Autonomy.Off},
+                                        remapping={'entities': 'entity_list', 'expected_objects': 'expected_objects', 'unexpected_objects': 'unexpected_objects'})
+
+
+        # x:672 y:525, x:685 y:120, x:91 y:353
+        _sm_checkatwaypoints_12 = OperatableStateMachine(outcomes=['found', 'noneFound', 'failed'], input_keys=['waypointToCheckDict', 'cleaningRoom', 'nameFilter'], output_keys=['misplacedObject'])
+
+        with _sm_checkatwaypoints_12:
             # x:60 y:44
             OperatableStateMachine.add('GetNbOfWaypoints',
                                         FlexibleCalculationState(calculation=lambda x: len(x[1][x[0]]), input_keys=["cleaningRoom","waypointToCheckDict"]),
@@ -450,7 +580,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
             # x:181 y:424
             OperatableStateMachine.add('ScanAround',
-                                        _sm_scanaround_7,
+                                        _sm_scanaround_10,
                                         transitions={'done': 'StopCheckingForUnknownObj'},
                                         autonomy={'done': Autonomy.Inherit})
 
@@ -536,69 +666,10 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
                                         remapping={'data': 'lenWaypointDict'})
 
 
-        # x:547 y:290
-        _sm_scanaround_9 = OperatableStateMachine(outcomes=['done'], input_keys=['input_value'])
-
-        with _sm_scanaround_9:
-            # x:172 y:46
-            OperatableStateMachine.add('center',
-                                        SaraSetHeadAngle(pitch=0.5, yaw=0),
-                                        transitions={'done': 'w2'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:304 y:122
-            OperatableStateMachine.add('right',
-                                        SaraSetHeadAngle(pitch=0.5, yaw=-1.5),
-                                        transitions={'done': 'w3'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:165 y:187
-            OperatableStateMachine.add('center2',
-                                        SaraSetHeadAngle(pitch=0.5, yaw=0),
-                                        transitions={'done': 'w4'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:195 y:276
-            OperatableStateMachine.add('w1',
-                                        WaitState(wait_time=3),
-                                        transitions={'done': 'center3'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:367 y:47
-            OperatableStateMachine.add('w2',
-                                        WaitState(wait_time=3),
-                                        transitions={'done': 'right'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:308 y:187
-            OperatableStateMachine.add('w3',
-                                        WaitState(wait_time=3),
-                                        transitions={'done': 'center2'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:56 y:191
-            OperatableStateMachine.add('w4',
-                                        WaitState(wait_time=3),
-                                        transitions={'done': 'left'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:40 y:270
-            OperatableStateMachine.add('left',
-                                        SaraSetHeadAngle(pitch=0.5, yaw=1.5),
-                                        transitions={'done': 'w1'},
-                                        autonomy={'done': Autonomy.Off})
-
-            # x:317 y:277
-            OperatableStateMachine.add('center3',
-                                        SaraSetHeadAngle(pitch=0.5, yaw=0),
-                                        transitions={'done': 'done'},
-                                        autonomy={'done': Autonomy.Off})
-
-
         # x:293 y:350, x:857 y:186
-        _sm_ask_10 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['roomQuestion'], output_keys=['roomAnswer'])
+        _sm_ask_13 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['roomQuestion'], output_keys=['roomAnswer'])
 
-        with _sm_ask_10:
+        with _sm_ask_13:
             # x:79 y:95
             OperatableStateMachine.add('say question',
                                         SaraSay(sentence=lambda x: x[0], input_keys=["question"], emotion=0, block=True),
@@ -634,9 +705,9 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 
         # x:30 y:365, x:424 y:392
-        _sm_nlu_11 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['roomAnswer'], output_keys=['cleanupRoom'])
+        _sm_nlu_14 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['roomAnswer'], output_keys=['cleanupRoom'])
 
-        with _sm_nlu_11:
+        with _sm_nlu_14:
             # x:212 y:89
             OperatableStateMachine.add('NLU',
                                         SaraNLUgetRoom(),
@@ -646,9 +717,9 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 
         # x:736 y:312
-        _sm_putobjectindesiredcontainer_12 = OperatableStateMachine(outcomes=['finished'], input_keys=['misplacedObject', 'placedObjects'], output_keys=['placedObjects'])
+        _sm_putobjectindesiredcontainer_15 = OperatableStateMachine(outcomes=['finished'], input_keys=['misplacedObject', 'placedObjects'], output_keys=['placedObjects'])
 
-        with _sm_putobjectindesiredcontainer_12:
+        with _sm_putobjectindesiredcontainer_15:
             # x:138 y:153
             OperatableStateMachine.add('GotoDesiredContainer',
                                         _sm_gotodesiredcontainer_3,
@@ -678,11 +749,11 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
                                         remapping={'input_value': 'placedObjects', 'output_value': 'placedObjects'})
 
 
-        # x:609 y:528, x:593 y:240
-        _sm_pickmisplacedobject_13 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['misplacedObject', 'waypointGenerationDistance'])
+        # x:592 y:92, x:527 y:277
+        _sm_pickmisplacedobject_16 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['misplacedObject', 'waypointGenerationDistance'])
 
-        with _sm_pickmisplacedobject_13:
-            # x:58 y:514
+        with _sm_pickmisplacedobject_16:
+            # x:162 y:126
             OperatableStateMachine.add('GrabMisplacedObject',
                                         _sm_grabmisplacedobject_6,
                                         transitions={'done': 'finished', 'failed': 'failed'},
@@ -691,49 +762,22 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 
         # x:932 y:182, x:535 y:369, x:800 y:304
-        _sm_checkformisplacedobjects_14 = OperatableStateMachine(outcomes=['noneLeft', 'found', 'failed'], input_keys=['nameFilter', 'waypointToCheckDict', 'cleaningRoom', 'placedObjects'], output_keys=['misplacedObject'])
+        _sm_checkformisplacedobjects_17 = OperatableStateMachine(outcomes=['noneLeft', 'found', 'failed'], input_keys=['nameFilter', 'waypointToCheckDict', 'cleaningRoom', 'placedObjects'], output_keys=['misplacedObject'])
 
-        with _sm_checkformisplacedobjects_14:
+        with _sm_checkformisplacedobjects_17:
             # x:241 y:59
             OperatableStateMachine.add('CheckIf5Placed',
                                         CheckConditionState(predicate=lambda x: x >= 5),
-                                        transitions={'true': 'OkItsClean', 'false': 'RetryOnce'},
+                                        transitions={'true': 'OkItsClean', 'false': 'CheckAroundForMisplacedObjects'},
                                         autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
                                         remapping={'input_value': 'placedObjects'})
 
-            # x:115 y:477
-            OperatableStateMachine.add('CheckMisplacedObjects',
-                                        CheckMisplacedObjects(position_tolerance=0.1, default_destination="bin"),
-                                        transitions={'all_expected': 'EverythingsFine', 'unexpected': 'GetFirstElement'},
-                                        autonomy={'all_expected': Autonomy.Off, 'unexpected': Autonomy.Off},
-                                        remapping={'entities': 'entity_list', 'expected_objects': 'expected_objects', 'unexpected_objects': 'unexpected_objects'})
-
-            # x:76 y:251
-            OperatableStateMachine.add('ScanAround',
-                                        _sm_scanaround_9,
-                                        transitions={'done': 'ListEntities'},
-                                        autonomy={'done': Autonomy.Inherit},
-                                        remapping={'input_value': 'nameFilter'})
-
-            # x:300 y:486
+            # x:333 y:483
             OperatableStateMachine.add('GetFirstElement',
                                         CalculationState(calculation=lambda x : x[0]),
                                         transitions={'done': 'found'},
                                         autonomy={'done': Autonomy.Off},
                                         remapping={'input_value': 'unexpected_objects', 'output_value': 'misplacedObject'})
-
-            # x:77 y:360
-            OperatableStateMachine.add('ListEntities',
-                                        list_entities_by_name(frontality_level=0.5, distance_max=10),
-                                        transitions={'found': 'CheckMisplacedObjects', 'none_found': 'RetryOnce'},
-                                        autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
-                                        remapping={'name': 'nameFilter', 'entity_list': 'entity_list', 'number': 'number'})
-
-            # x:305 y:355
-            OperatableStateMachine.add('EverythingsFine',
-                                        SaraSay(sentence="Everything seems in order. I'll check again.", input_keys=[], emotion=1, block=True),
-                                        transitions={'done': 'RetryOnce'},
-                                        autonomy={'done': Autonomy.Off})
 
             # x:738 y:175
             OperatableStateMachine.add('OkItsClean',
@@ -743,23 +787,23 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
             # x:488 y:226
             OperatableStateMachine.add('CheckAtWaypoints',
-                                        _sm_checkatwaypoints_8,
+                                        _sm_checkatwaypoints_12,
                                         transitions={'found': 'found', 'noneFound': 'OkItsClean', 'failed': 'failed'},
                                         autonomy={'found': Autonomy.Inherit, 'noneFound': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'waypointToCheckDict': 'waypointToCheckDict', 'cleaningRoom': 'cleaningRoom', 'nameFilter': 'nameFilter', 'misplacedObject': 'misplacedObject'})
 
-            # x:268 y:226
-            OperatableStateMachine.add('RetryOnce',
-                                        ForLoop(repeat=2),
-                                        transitions={'do': 'ScanAround', 'end': 'CheckAtWaypoints'},
-                                        autonomy={'do': Autonomy.Off, 'end': Autonomy.Off},
-                                        remapping={'index': 'index'})
+            # x:93 y:243
+            OperatableStateMachine.add('CheckAroundForMisplacedObjects',
+                                        _sm_checkaroundformisplacedobjects_11,
+                                        transitions={'unexpected': 'GetFirstElement', 'end': 'CheckAtWaypoints'},
+                                        autonomy={'unexpected': Autonomy.Inherit, 'end': Autonomy.Inherit},
+                                        remapping={'nameFilter': 'nameFilter', 'unexpected_objects': 'unexpected_objects'})
 
 
         # x:644 y:459, x:651 y:336
-        _sm_gotoroom_15 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['cleanupRoom', 'firstTimeInRoom'], output_keys=['firstTimeInRoom'])
+        _sm_gotoroom_18 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['cleanupRoom', 'firstTimeInRoom'], output_keys=['firstTimeInRoom'])
 
-        with _sm_gotoroom_15:
+        with _sm_gotoroom_18:
             # x:141 y:121
             OperatableStateMachine.add('IsItMyFirstTime',
                                         DecisionState(outcomes=["no", "yes"], conditions=lambda x: x),
@@ -797,9 +841,9 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 
         # x:709 y:520, x:850 y:66
-        _sm_enterarena_16 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['roomQuestion', 'doorName', 'skipDoorEntrance'], output_keys=['cleanupRoom'])
+        _sm_enterarena_19 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['roomQuestion', 'doorName', 'skipDoorEntrance'], output_keys=['cleanupRoom'])
 
-        with _sm_enterarena_16:
+        with _sm_enterarena_19:
             # x:77 y:28
             OperatableStateMachine.add('Init_Sequence',
                                         self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'EnterArena/Init_Sequence'),
@@ -808,7 +852,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
             # x:278 y:473
             OperatableStateMachine.add('NLU',
-                                        _sm_nlu_11,
+                                        _sm_nlu_14,
                                         transitions={'done': 'done', 'failed': 'Sorry'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'roomAnswer': 'roomAnswer', 'cleanupRoom': 'cleanupRoom'})
@@ -842,7 +886,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
             # x:51 y:354
             OperatableStateMachine.add('Ask',
-                                        _sm_ask_10,
+                                        _sm_ask_13,
                                         transitions={'finished': 'log', 'failed': 'RetryOnce'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'roomQuestion': 'roomQuestion', 'roomAnswer': 'roomAnswer'})
@@ -859,35 +903,35 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
         with _state_machine:
             # x:131 y:130
             OperatableStateMachine.add('EnterArena',
-                                        _sm_enterarena_16,
+                                        _sm_enterarena_19,
                                         transitions={'done': 'GoToRoom', 'failed': 'failed'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'roomQuestion': 'roomQuestion', 'doorName': 'doorName', 'skipDoorEntrance': 'skipDoorEntrance', 'cleanupRoom': 'cleanupRoom'})
 
             # x:286 y:217
             OperatableStateMachine.add('GoToRoom',
-                                        _sm_gotoroom_15,
+                                        _sm_gotoroom_18,
                                         transitions={'done': 'CheckForMisplacedObjects', 'failed': 'failed'},
                                         autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'cleanupRoom': 'cleanupRoom', 'firstTimeInRoom': 'firstTimeInRoom'})
 
             # x:652 y:203
             OperatableStateMachine.add('CheckForMisplacedObjects',
-                                        _sm_checkformisplacedobjects_14,
+                                        _sm_checkformisplacedobjects_17,
                                         transitions={'noneLeft': 'done', 'found': 'PickMisplacedObject', 'failed': 'failed'},
                                         autonomy={'noneLeft': Autonomy.Inherit, 'found': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'nameFilter': 'nameFilter', 'waypointToCheckDict': 'waypointToCheckDict', 'cleaningRoom': 'cleanupRoom', 'placedObjects': 'placedObjects', 'misplacedObject': 'misplacedObject'})
 
             # x:488 y:365
             OperatableStateMachine.add('PickMisplacedObject',
-                                        _sm_pickmisplacedobject_13,
+                                        _sm_pickmisplacedobject_16,
                                         transitions={'finished': 'PutObjectInDesiredContainer', 'failed': 'GoToRoom'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
                                         remapping={'misplacedObject': 'misplacedObject', 'waypointGenerationDistance': 'waypointGenerationDistance'})
 
             # x:199 y:410
             OperatableStateMachine.add('PutObjectInDesiredContainer',
-                                        _sm_putobjectindesiredcontainer_12,
+                                        _sm_putobjectindesiredcontainer_15,
                                         transitions={'finished': 'GoToRoom'},
                                         autonomy={'finished': Autonomy.Inherit},
                                         remapping={'misplacedObject': 'misplacedObject', 'placedObjects': 'placedObjects'})
