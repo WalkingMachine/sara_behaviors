@@ -8,9 +8,9 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
+from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_behaviors.farewell_sm import FarewellSM as sara_flexbe_behaviors__FarewellSM
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -35,9 +35,10 @@ class Scenario_FarewellSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__FarewellSM, 'Farewell')
 		self.add_behavior(sara_flexbe_behaviors__FarewellSM, 'Farewell_2')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move')
+		self.add_behavior(sara_flexbe_behaviors__FarewellSM, 'Farewell')
+		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move_2')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -49,7 +50,7 @@ class Scenario_FarewellSM(Behavior):
 
 
 	def create(self):
-		# x:1141 y:183, x:1069 y:298
+		# x:1244 y:151, x:1069 y:298
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 
 		# Additional creation code can be added inside the following tags
@@ -59,55 +60,62 @@ class Scenario_FarewellSM(Behavior):
 
 
 		with _state_machine:
-			# x:18 y:57
+			# x:18 y:27
 			OperatableStateMachine.add('GetOrigin',
 										Get_Robot_Pose(),
 										transitions={'done': 'Farewell'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'poseOrigin'})
 
-			# x:750 y:145
+			# x:648 y:109
 			OperatableStateMachine.add('Farewell_2',
 										self.use_behavior(sara_flexbe_behaviors__FarewellSM, 'Farewell_2'),
 										transitions={'finished': 'finish', 'failed': 'didnt succed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:410 y:182
+			# x:287 y:199
 			OperatableStateMachine.add('Try again',
 										SaraSay(sentence="I will try with the next person", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:403 y:47
+			# x:348 y:30
 			OperatableStateMachine.add('say next',
 										SaraSay(sentence="I will now get the net person.", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:549 y:98
+			# x:449 y:113
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move'),
 										transitions={'finished': 'Farewell_2', 'failed': 'Action_Move'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'poseOrigin'})
 
-			# x:1020 y:75
+			# x:801 y:37
 			OperatableStateMachine.add('finish',
 										SaraSay(sentence="I am done BYe bye", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'finished'},
+										transitions={'done': 'Action_Move_2'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:906 y:243
+			# x:771 y:211
 			OperatableStateMachine.add('didnt succed',
 										SaraSay(sentence="I failed sorry", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'failed'},
+										transitions={'done': 'Action_Move_2'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:173 y:106
+			# x:157 y:74
 			OperatableStateMachine.add('Farewell',
 										self.use_behavior(sara_flexbe_behaviors__FarewellSM, 'Farewell'),
 										transitions={'finished': 'say next', 'failed': 'Try again'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+
+			# x:982 y:154
+			OperatableStateMachine.add('Action_Move_2',
+										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move_2'),
+										transitions={'finished': 'finished', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'pose': 'poseOrigin'})
 
 
 		return _state_machine

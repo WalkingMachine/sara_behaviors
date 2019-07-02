@@ -553,14 +553,14 @@ class FarewellSM(Behavior):
 										])
 
 		with _sm_confirm_12:
-			# x:95 y:163
+			# x:95 y:96
 			OperatableStateMachine.add('Confirm',
 										_sm_confirm_2,
 										transitions={'false': 'false', 'done': 'done'},
 										autonomy={'false': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Person': 'person', 'pronoun': 'pronoun'})
 
-			# x:309 y:162
+			# x:608 y:196
 			OperatableStateMachine.add('LookAtClosest',
 										self.use_behavior(sara_flexbe_behaviors__LookAtClosestSM, 'confirm/LookAtClosest'),
 										transitions={'failed': 'false'},
@@ -635,7 +635,7 @@ class FarewellSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'poseOrigin'})
 
-			# x:63 y:574
+			# x:57 y:576
 			OperatableStateMachine.add('GetTaxi',
 										_sm_gettaxi_13,
 										transitions={'finished': 'say succeed', 'failed': 'say fail'},
@@ -645,7 +645,7 @@ class FarewellSM(Behavior):
 			# x:103 y:369
 			OperatableStateMachine.add('confirm',
 										_sm_confirm_12,
-										transitions={'false': 'nevermind', 'done': 'say taxi'},
+										transitions={'false': 'nevermind', 'done': 'RetrieveCoat'},
 										autonomy={'false': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'person': 'person', 'pronoun': 'pronoun'})
 
@@ -663,7 +663,7 @@ class FarewellSM(Behavior):
 
 			# x:245 y:595
 			OperatableStateMachine.add('say succeed',
-										SaraSay(sentence="Where is the taxy driver.", input_keys=[], emotion=5, block=True),
+										SaraSay(sentence="Here is the taxy driver.", input_keys=[], emotion=5, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
@@ -673,12 +673,6 @@ class FarewellSM(Behavior):
 										transitions={'finished': 'confirm'},
 										autonomy={'finished': Autonomy.Inherit},
 										remapping={'distance': 'distance', 'person': 'person'})
-
-			# x:103 y:483
-			OperatableStateMachine.add('say taxi',
-										SaraSay(sentence="Ok, follow me to the taxi then.", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'GetTaxi'},
-										autonomy={'done': Autonomy.Off})
 
 			# x:75 y:110
 			OperatableStateMachine.add('Init_Sequence',
@@ -699,6 +693,12 @@ class FarewellSM(Behavior):
 										transitions={'none_found': 'say nobody', 'done': 'Get closer'},
 										autonomy={'none_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'name': 'name', 'distance': 'distance', 'person': 'person', 'pronoun': 'pronoun'})
+
+			# x:51 y:486
+			OperatableStateMachine.add('RetrieveCoat',
+										SaraSay(sentence="PLease retrieve your own coat and follow me to the taxi.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'GetTaxi'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine
