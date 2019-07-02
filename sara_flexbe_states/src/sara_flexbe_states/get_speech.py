@@ -26,7 +26,7 @@ class GetSpeech(EventState):
         '''
         super(GetSpeech, self).__init__(outcomes=['done', 'nothing', 'fail'], output_keys=['words'])
         self._topic_sub = "/sara_command"
-        self._topic_pub = "/wm_snips_asr/enable_listening"  # TODO get topic
+        self._topic_pub = "/wm_snips_asr/enable_listening"
         self._connected = False
         self.watchdog = watchdog
 
@@ -40,7 +40,7 @@ class GetSpeech(EventState):
             message = self._sub.get_last_msg(self._topic_sub)
             userdata.words = message.data
             self._sub.remove_last_msg(self._topic_sub)
-            if message.data == "":
+            if not message.data or message.data.isspace():
                 return "nothing"
             return 'done'
         if (self.time-get_time() <= 0):
