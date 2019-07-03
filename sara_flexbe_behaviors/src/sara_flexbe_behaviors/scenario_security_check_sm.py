@@ -53,10 +53,10 @@ class Scenario_Security_CheckSM(Behavior):
 		# x:358 y:506
 		_state_machine = OperatableStateMachine(outcomes=['finished'])
 		_state_machine.userdata.relative = False
-		_state_machine.userdata.EntryName = "door1/enter"
+		_state_machine.userdata.EntryName = "door_1_entry"
 		_state_machine.userdata.container = None
-		_state_machine.userdata.TestName = "Dining Room"
-		_state_machine.userdata.ExitName = "door2/exit"
+		_state_machine.userdata.TestName = "living room"
+		_state_machine.userdata.ExitName = "door_2_exit"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
