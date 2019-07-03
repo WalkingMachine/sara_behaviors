@@ -120,6 +120,9 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 		# O 685 473 
 		# Créer les waypoints wonderland: |n{"living room": ["lr1", "lr2","lr3","lr4","lr5","lr6"],|n"office": ["of1","of2","of3","of4"],|n"kitchen": ["ki1","ki2","ki3","ki4","ki5","ki6"],|n"bedroom": ["br1","br2","br3","br4","br5","br6"]}|n
 
+		# O 492 556 /PutObjectInDesiredContainer/PutDownObject/DeusExPlaceRecovery
+		# lambda x: "Looks like I dropped "+str(x[0][0].name)+". Can you put it in the "+ x[1].name+"?"
+
 
 
 	def create(self):
@@ -203,12 +206,12 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'misplacedObject', 'output_value': 'containerId'})
 
-			# x:366 y:284
+			# x:538 y:318
 			OperatableStateMachine.add('ItGoesThere',
-										SaraSay(sentence=lambda x: "Looks like I dropped "+str(x[0][0].name)+". Can you put it in the "+ x[1].name+"?", input_keys=["misplacedObject","containerEntity"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "Looks like I dropped the object. Can you put it in the "+ x[0].name+"?", input_keys=["containerEntity"], emotion=0, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'misplacedObject': 'misplacedObject', 'containerEntity': 'containerEntity'})
+										remapping={'containerEntity': 'containerEntity'})
 
 			# x:375 y:91
 			OperatableStateMachine.add('getContainerEntity',
@@ -270,7 +273,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 		with _sm_putdownobject_4:
 			# x:65 y:214
 			OperatableStateMachine.add('GetDroppingPose_2',
-										GenPoseEuler(x=0.7, y=-0.1, z=0.75, roll=0.0, pitch=0.0, yaw=0.0),
+										GenPoseEuler(x=0.8, y=-0.2, z=0.8, roll=0.0, pitch=0.0, yaw=0.0),
 										transitions={'done': 'TF_transformation'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose': 'pos'})
