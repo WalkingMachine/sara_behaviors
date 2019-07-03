@@ -419,12 +419,12 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 
 
         with _state_machine:
-            # x:304 y:394
-            OperatableStateMachine.add('second bin',
-                                        _sm_second_bin_7,
-                                        transitions={'finished': 'finished', 'failed': 'failed'},
+            # x:277 y:63
+            OperatableStateMachine.add('First bin',
+                                        _sm_first_bin_6,
+                                        transitions={'finished': 'say take second bag', 'failed': 'try second bin'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'bin2Waypoint': 'bin2Waypoint', 'bin2Height': 'bin2Height', 'dropzoneWaypoint': 'dropzone2Waypoint'})
+                                        remapping={'bin1Waypoint': 'bin1Waypoint', 'bin1Height': 'bin1Height', 'dropzoneWaypoint': 'dropzone1Waypoint'})
 
             # x:485 y:201
             OperatableStateMachine.add('try second bin',
@@ -438,12 +438,12 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
                                         transitions={'done': 'second bin'},
                                         autonomy={'done': Autonomy.Off})
 
-            # x:277 y:63
-            OperatableStateMachine.add('First bin',
-                                        _sm_first_bin_6,
-                                        transitions={'finished': 'say take second bag', 'failed': 'try second bin'},
+            # x:304 y:394
+            OperatableStateMachine.add('second bin',
+                                        _sm_second_bin_7,
+                                        transitions={'finished': 'finished', 'failed': 'failed'},
                                         autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-                                        remapping={'bin1Waypoint': 'bin1Waypoint', 'bin1Height': 'bin1Height', 'dropzoneWaypoint': 'dropzone1Waypoint'})
+                                        remapping={'bin2Waypoint': 'bin2Waypoint', 'bin2Height': 'bin2Height', 'dropzoneWaypoint': 'dropzone2Waypoint'})
 
 
         return _state_machine
