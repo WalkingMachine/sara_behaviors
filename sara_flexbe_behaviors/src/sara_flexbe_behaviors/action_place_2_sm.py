@@ -11,11 +11,12 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from sara_flexbe_states.TF_transform import TF_transformation
 from flexbe_states.log_key_state import LogKeyState
 from sara_flexbe_states.set_gripper_state import SetGripperState
-from sara_flexbe_states.moveit_move import MoveitMove
+from sara_flexbe_states.moveit_moveCartesian import MoveitMoveCartesian
 from flexbe_states.log_state import LogState
 from sara_flexbe_states.torque_reader import ReadTorque
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.gen_gripper_pose import GenGripperPose
+from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.sara_say import SaraSay
@@ -140,12 +141,12 @@ class Action_place_2SM(Behavior):
 		_sm_go_down_2 = OperatableStateMachine(outcomes=['done'], input_keys=['GripPose'])
 
 		with _sm_go_down_2:
-			# x:126 y:194
-			OperatableStateMachine.add('movePlace',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
+			# x:92 y:127
+			OperatableStateMachine.add('place down',
+										MoveitMoveCartesian(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'done', 'failed': 'done'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'GripPose'})
+										remapping={'targetPose': 'GripPose'})
 
 
 		# x:30 y:324, x:130 y:324
@@ -322,7 +323,7 @@ class Action_place_2SM(Behavior):
 
 			# x:159 y:139
 			OperatableStateMachine.add('Pregrip',
-										RunTrajectory(file="pre_grip_pose", duration=0),
+										RunTrajectory(file="pre_grip_pose", duration=6),
 										transitions={'done': 'Prepare grip'},
 										autonomy={'done': Autonomy.Off})
 
