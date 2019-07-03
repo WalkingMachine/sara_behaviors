@@ -3,7 +3,7 @@
 <behavior name="Scenario_TakeOutTheGarbage">
 
 	<executable package_path="sara_flexbe_behaviors.scenario_takeoutthegarbage_sm" class="Scenario_TakeOutTheGarbageSM" />
-	<tagstring>2019, house keeper, scenario, take out the garbage</tagstring>
+	<tagstring>2019, housekeeper, scenario, takeOutTheGarbage</tagstring>
 	<author>Quentin Gaillot</author>
 	<date>Mon May 13 2019</date>
 	<description>
