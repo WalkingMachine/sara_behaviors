@@ -49,7 +49,7 @@ Demande le id de la personne a suivre
 
 
 	def create(self):
-		# x:572 y:135
+		# x:272 y:55
 		_state_machine = OperatableStateMachine(outcomes=['failed'], input_keys=['ID'])
 		_state_machine.userdata.ID = 4
 
@@ -58,7 +58,7 @@ Demande le id de la personne a suivre
         
         # [/MANUAL_CREATE]
 
-		# x:19 y:459
+		# x:470 y:563
 		_sm_delai_0 = OperatableStateMachine(outcomes=['finished'])
 
 		with _sm_delai_0:
@@ -82,20 +82,32 @@ Demande le id de la personne a suivre
 
 			# x:173 y:278
 			OperatableStateMachine.add('delay2',
-										WaitState(wait_time=4),
+										WaitState(wait_time=3),
 										transitions={'done': 'say face 2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:169 y:448
 			OperatableStateMachine.add('delay3',
-										WaitState(wait_time=10),
-										transitions={'done': 'finished'},
+										WaitState(wait_time=4),
+										transitions={'done': 'say get closer'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:176 y:108
 			OperatableStateMachine.add('delay',
-										WaitState(wait_time=5),
+										WaitState(wait_time=3),
 										transitions={'done': 'say wait'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:142 y:547
+			OperatableStateMachine.add('say get closer',
+										SaraSay(sentence="I need you to get closer please.", input_keys=[], emotion=0, block=False),
+										transitions={'done': 'delais4'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:315 y:543
+			OperatableStateMachine.add('delais4',
+										WaitState(wait_time=5),
+										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
 
@@ -265,7 +277,7 @@ Demande le id de la personne a suivre
 
 
 		with _state_machine:
-			# x:150 y:130
+			# x:74 y:38
 			OperatableStateMachine.add('Follow',
 										_sm_follow_6,
 										transitions={'not_found': 'failed'},
