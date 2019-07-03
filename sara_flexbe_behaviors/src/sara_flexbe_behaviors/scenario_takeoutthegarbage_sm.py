@@ -73,7 +73,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 		# x:910 y:782, x:907 y:184
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.bin1Waypoint = "trash bin"
-		_state_machine.userdata.bin2Waypoint = "trash bin"
+		_state_machine.userdata.bin2Waypoint = "trash bin 2"
 		_state_machine.userdata.bin1Height = "1"
 		_state_machine.userdata.bin2Height = "1"
 		_state_machine.userdata.dropzone1Waypoint = "coat hanger"

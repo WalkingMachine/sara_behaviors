@@ -9,9 +9,8 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
-from flexbe_states.log_state import LogState
-from sara_flexbe_states.moveit_moveCartesian import MoveitMoveCartesian
-from sara_flexbe_states.moveit_move import MoveitMove
+from sara_flexbe_behaviors.action_place_2_sm import Action_place_2SM as sara_flexbe_behaviors__Action_place_2SM
+from sara_flexbe_states.TF_transform import TF_transformation
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -35,6 +34,7 @@ class ATestSandboxSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
+		self.add_behavior(sara_flexbe_behaviors__Action_place_2SM, 'Action_place_2')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -46,7 +46,6 @@ class ATestSandboxSM(Behavior):
 
 
 	def create(self):
-
 		# x:537 y:110, x:166 y:479
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.Pose1 = "PostGripPose"
@@ -63,6 +62,10 @@ class ATestSandboxSM(Behavior):
 		_state_machine.userdata.index = -1
 		_state_machine.userdata.name = "person"
 		_state_machine.userdata.name2 = "apple"
+		_state_machine.userdata.nameFilter = ""
+		_state_machine.userdata.waypointToCheckDict = {"bad_table":["bad_table"]}
+		_state_machine.userdata.cleanupRoom = "bad_table"
+		_state_machine.userdata.placedObjects = 0
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -71,40 +74,27 @@ class ATestSandboxSM(Behavior):
 
 
 		with _state_machine:
-
-			# x:47 y:88
-			OperatableStateMachine.add('gen',
-										GenPoseEuler(x=0.8, y=0, z=1.1, roll=0, pitch=0, yaw=0),
-										transitions={'done': 'gen2'},
+			# x:0 y:153
+			OperatableStateMachine.add('GetDroppingPose',
+										GenPoseEuler(x=0.7, y=-0.1, z=0.75, roll=0.0, pitch=0.0, yaw=0.0),
+										transitions={'done': 'TF_transformation'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'pose': 'pose1'})
+										remapping={'pose': 'pos'})
 
-			# x:411 y:111
-			OperatableStateMachine.add('log',
-										LogState(text="ok", severity=Logger.REPORT_HINT),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off})
+			# x:330 y:118
+			OperatableStateMachine.add('Action_place_2',
+										self.use_behavior(sara_flexbe_behaviors__Action_place_2SM, 'Action_place_2'),
+										transitions={'finished': 'finished', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'pos': 'droppingPose'})
 
-			# x:302 y:211
-			OperatableStateMachine.add('mp',
-										MoveitMoveCartesian(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'log', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'targetPose': 'pose2'})
+			# x:151 y:145
+			OperatableStateMachine.add('TF_transformation',
+										TF_transformation(in_ref="base_link", out_ref="map"),
+										transitions={'done': 'Action_place_2', 'fail': 'Action_place_2'},
+										autonomy={'done': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'in_pos': 'pos', 'out_pos': 'droppingPose'})
 
-			# x:61 y:235
-			OperatableStateMachine.add('move',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
-										transitions={'done': 'mp', 'failed': 'failed'},
-										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'target': 'pose1'})
-
-			# x:203 y:94
-			OperatableStateMachine.add('gen2',
-										GenPoseEuler(x=0.8, y=-0.5, z=1.1, roll=0, pitch=0, yaw=0),
-										transitions={'done': 'move'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose': 'pose2'})
 
 		return _state_machine
 

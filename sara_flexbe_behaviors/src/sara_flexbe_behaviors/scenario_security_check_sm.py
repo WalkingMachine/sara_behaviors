@@ -55,7 +55,7 @@ class Scenario_Security_CheckSM(Behavior):
 		_state_machine.userdata.relative = False
 		_state_machine.userdata.EntryName = "door_1_entry"
 		_state_machine.userdata.container = None
-		_state_machine.userdata.TestName = "living room"
+		_state_machine.userdata.TestName = "inspection"
 		_state_machine.userdata.ExitName = "door_2_exit"
 
 		# Additional creation code can be added inside the following tags
@@ -65,10 +65,10 @@ class Scenario_Security_CheckSM(Behavior):
 
 
 		with _state_machine:
-			# x:52 y:27
+			# x:224 y:22
 			OperatableStateMachine.add('Bouton to start',
 										ContinueButton(),
-										transitions={'true': 'Action_Pass_Door', 'false': 'Bouton to start'},
+										transitions={'true': 'Action_Pass_Door', 'false': 'Action_Pass_Door'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
 
 			# x:41 y:430

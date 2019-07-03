@@ -67,7 +67,7 @@ class GetGraspFromEntity(EventState):
     def execute(self, userdata):
 
         if userdata.Entity.pointcloud.header.frame_id == "":
-            grasp, approach = self.getGraspWithoutPointcloud()
+            grasp, approach = self.getGraspWithoutPointcloud(userdata.Entity)
         else:
             grasp, approach = self.getGraspFromPointcloud(userdata.Entity)
 

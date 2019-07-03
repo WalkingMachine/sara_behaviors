@@ -29,6 +29,7 @@ from sara_flexbe_behaviors.action_findpersonbyid_sm import Action_findPersonByID
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.FilterKey import FilterKey
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
+from sara_flexbe_states.continue_button import ContinueButton
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -89,7 +90,7 @@ class Scenario_ReceptionistSM(Behavior):
 		_state_machine.userdata.personAlreadyInLocation = "living room"
 		_state_machine.userdata.personAlreadyInName = "John"
 		_state_machine.userdata.personAlreadyInDrink = "coke"
-		_state_machine.userdata.entranceLocation = "taxi"
+		_state_machine.userdata.entranceLocation = "door_1_exit"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -1147,11 +1148,11 @@ class Scenario_ReceptionistSM(Behavior):
 
 
 		with _state_machine:
-			# x:283 y:41
-			OperatableStateMachine.add('Init_Sequence',
-										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence'),
-										transitions={'finished': 'welcome Guest1', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
+			# x:75 y:32
+			OperatableStateMachine.add('continue',
+										ContinueButton(),
+										transitions={'true': 'Init_Sequence', 'false': 'Init_Sequence'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
 
 			# x:326 y:486
 			OperatableStateMachine.add('Welcome Guest2',
@@ -1180,6 +1181,12 @@ class Scenario_ReceptionistSM(Behavior):
 										transitions={'finished': 'Guide G1 and introduice people', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'entranceLocation': 'entranceLocation', 'Guest1Drink': 'Guest1Drink', 'Guest1Name': 'Guest1Name', 'Guest1ID': 'Guest1ID'})
+
+			# x:283 y:41
+			OperatableStateMachine.add('Init_Sequence',
+										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence'),
+										transitions={'finished': 'welcome Guest1', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 
 		return _state_machine

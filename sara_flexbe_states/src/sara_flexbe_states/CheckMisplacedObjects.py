@@ -81,8 +81,8 @@ class CheckMisplacedObjects(EventState):
                     correct.append(entity)
                 else:
                     if len(wonderland_buffer[entity.name]) != 0:
-                        not_correct.append([entity, wonderland_buffer[entity.name][wonderland_buffer_index[entity.name]]])
-                        wonderland_buffer_index[entity.name] = max(wonderland_buffer_index[entity.name]+1, len(wonderland_buffer[entity.name]))
+                        not_correct.append([entity, wonderland_entities[wonderland_buffer_index[entity.name]]])
+                        wonderland_buffer_index[entity.name] = min(wonderland_buffer_index[entity.name]+1, len(wonderland_entities))
             else:
                 not_correct.append([entity, bine])
 
@@ -97,8 +97,8 @@ class CheckMisplacedObjects(EventState):
 
     # Return true if the entities are close
     def compareEntities(self, entity1, entity2):
-        dist = ((entity1.waypoint.x - entity2.waypoint.x) ** 2
-                + (entity1.waypoint.y - entity2.waypoint.y) ** 2) ** 0.5
+        dist = ((entity1.position.x - entity2.waypoint.x) ** 2
+                + (entity1.position.y - entity2.waypoint.y) ** 2) ** 0.5
         Logger.loginfo("object "+str(entity1.name)+" and "+str(entity2.name)+" distance = "+str(dist))
         return dist < self.position_tolerance
 

@@ -3,7 +3,7 @@
 <behavior name="Scenario_Housekeeper_CleanUp">
 
 	<executable package_path="sara_flexbe_behaviors.scenario_housekeeper_cleanup_sm" class="Scenario_Housekeeper_CleanUpSM" />
-	<tagstring>scenario,housekeeper</tagstring>
+	<tagstring>scenario,housekeeper,2019</tagstring>
 	<author>Raphaël Duchaîne</author>
 	<date>Mon Mar 11 2019</date>
 	<description>
@@ -12,11 +12,12 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Init_Sequence" />
-	<contains name="Action_Pass_Door" />
 	<contains name="Action_Move" />
 	<contains name="Action_pick" />
+	<contains name="Action_place_2" />
 	<contains name="Action_place" />
+	<contains name="Init_Sequence" />
+	<contains name="Action_Pass_Door" />
 
 	<!-- Available Parameters -->
 

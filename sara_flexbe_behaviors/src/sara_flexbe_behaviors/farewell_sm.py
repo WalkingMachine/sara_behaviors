@@ -722,7 +722,7 @@ class FarewellSM(Behavior):
 
 			# x:103 y:483
 			OperatableStateMachine.add('say taxi',
-										SaraSay(sentence="Ok, follow me to the taxi then.", input_keys=[], emotion=0, block=True),
+										SaraSay(sentence="Ok, follow me to the taxi then and please retrieve your coat.", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'GetTaxi'},
 										autonomy={'done': Autonomy.Off})
 
