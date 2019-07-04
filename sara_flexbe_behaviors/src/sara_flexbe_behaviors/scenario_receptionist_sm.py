@@ -866,7 +866,7 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:465 y:492
 			OperatableStateMachine.add('filter the list',
-										FilterKey(filter_function=lambda x: x[0].name == "person" && x[0].ID != x[1]  && x[0].ID != x[2], input_keys=["entity_list", "Guest1ID", "Guest2ID"]),
+										FilterKey(filter_function=lambda x: x[0].name == "person" and x[0].ID != x[1] and x[0].ID != x[2], input_keys=["entity_list", "Guest1ID", "Guest2ID"]),
 										transitions={'not_empty': 'take first entity', 'empty': 'say not/cannot found person already in but say name/drink'},
 										autonomy={'not_empty': Autonomy.Off, 'empty': Autonomy.Off},
 										remapping={'entity_list': 'entity_list', 'Guest1ID': 'Guest1ID', 'Guest2ID': 'Guest2ID', 'output_list': 'output_list'})
