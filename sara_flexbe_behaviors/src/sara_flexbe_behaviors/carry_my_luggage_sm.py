@@ -289,7 +289,7 @@ class CarrymyluggageSM(Behavior):
 		with _sm_listen_8:
 			# x:50 y:76
 			OperatableStateMachine.add('SayFollow',
-										SaraSay(sentence="I will follow you to the car now. Tell me when to stop.", input_keys=[], emotion=0, block=False),
+										SaraSay(sentence="I will follow you to the car now. Tell me when we get to the car.", input_keys=[], emotion=0, block=False),
 										transitions={'done': 'LIsten'},
 										autonomy={'done': Autonomy.Off})
 
@@ -302,8 +302,8 @@ class CarrymyluggageSM(Behavior):
 
 			# x:201 y:256
 			OperatableStateMachine.add('Listen2',
-										RegexTester(regex=".*(stop).*"),
-										transitions={'true': 'done', 'false': 'LIsten'},
+										RegexTester(regex=".*((car)|(here it is)|(now)).*"),
+										transitions={'true': 'done', 'false': 'Listen2'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'text': 'words', 'result': 'result'})
 
