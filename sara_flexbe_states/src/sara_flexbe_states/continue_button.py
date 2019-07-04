@@ -20,7 +20,7 @@ class ContinueButton(EventState):
         Constructor
         '''
         super(ContinueButton, self).__init__(outcomes=['true', 'false'])
-        self._topic = "/ui/continue"
+        self._topic = "/continue_button"
         self._connected = False
 
         self._sub = ProxySubscriberCached({self._topic: Bool})
