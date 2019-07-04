@@ -27,6 +27,7 @@ from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM as sara_flexbe_behaviors__LookAtClosestSM
 from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as sara_flexbe_behaviors__Init_SequenceSM
+from sara_flexbe_states.sara_follow import SaraFollow
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -54,7 +55,6 @@ class FarewellSM(Behavior):
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'GetTaxi/Action_Move')
 		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'GetTaxi/Find umbrella/gettaxihuman/Rotation/action_turn')
 		self.add_behavior(sara_flexbe_behaviors__LookAtClosestSM, 'confirm/LookAtClosest')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Get closer/Action_Move')
 		self.add_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'nevermind/Action_Move')
 
@@ -86,7 +86,7 @@ class FarewellSM(Behavior):
 		# x:712 y:612, x:820 y:97
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
 		_state_machine.userdata.name = "person"
-		_state_machine.userdata.distance = 1.27
+		_state_machine.userdata.distance = 1.05
 		_state_machine.userdata.taxi = "taxi"
 		_state_machine.userdata.umbrella = "umbrella"
 
@@ -95,11 +95,32 @@ class FarewellSM(Behavior):
 		
 		# [/MANUAL_CREATE]
 
-		# x:313 y:550
-		_sm_scan_0 = OperatableStateMachine(outcomes=['finished'])
+		# x:30 y:365, x:130 y:365, x:230 y:365
+		_sm_get_closer_0 = ConcurrencyContainer(outcomes=['finished'], input_keys=['ID'], conditions=[
+										('finished', [('follow', 'failed')]),
+										('finished', [('wait 3', 'done')])
+										])
 
-		with _sm_scan_0:
-			# x:41 y:92
+		with _sm_get_closer_0:
+			# x:46 y:131
+			OperatableStateMachine.add('follow',
+										SaraFollow(distance=1.15, ReplanPeriod=0.5),
+										transitions={'failed': 'finished'},
+										autonomy={'failed': Autonomy.Off},
+										remapping={'ID': 'ID'})
+
+			# x:223 y:134
+			OperatableStateMachine.add('wait 3',
+										WaitState(wait_time=4),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
+
+		# x:571 y:592
+		_sm_scan_1 = OperatableStateMachine(outcomes=['finished'])
+
+		with _sm_scan_1:
+			# x:42 y:66
 			OperatableStateMachine.add('Looking',
 										SaraSay(sentence="I am trying to find who wants to leave. Please raise your hand.", input_keys=[], emotion=0, block=False),
 										transitions={'done': 'center'},
@@ -119,25 +140,25 @@ class FarewellSM(Behavior):
 
 			# x:34 y:589
 			OperatableStateMachine.add('w1',
-										WaitState(wait_time=2),
-										transitions={'done': 'finished'},
+										WaitState(wait_time=3),
+										transitions={'done': 'center3'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:413 y:159
 			OperatableStateMachine.add('w2',
-										WaitState(wait_time=2),
+										WaitState(wait_time=3),
 										transitions={'done': 'right'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:415 y:370
 			OperatableStateMachine.add('w3',
-										WaitState(wait_time=2),
+										WaitState(wait_time=3),
 										transitions={'done': 'center2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:39 y:371
 			OperatableStateMachine.add('w4',
-										WaitState(wait_time=2),
+										WaitState(wait_time=3),
 										transitions={'done': 'left'},
 										autonomy={'done': Autonomy.Off})
 
@@ -153,11 +174,23 @@ class FarewellSM(Behavior):
 										transitions={'done': 'w2'},
 										autonomy={'done': Autonomy.Off})
 
+			# x:213 y:579
+			OperatableStateMachine.add('center3',
+										SaraSetHeadAngle(pitch=0.1, yaw=0),
+										transitions={'done': 'wait'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:393 y:576
+			OperatableStateMachine.add('wait',
+										WaitState(wait_time=4),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
 
 		# x:32 y:494, x:627 y:411
-		_sm_filtregender_1 = OperatableStateMachine(outcomes=['none_found', 'found person'], input_keys=['name'], output_keys=['pronoun', 'person'])
+		_sm_filtregender_2 = OperatableStateMachine(outcomes=['none_found', 'found person'], input_keys=['name'], output_keys=['pronoun', 'person'])
 
-		with _sm_filtregender_1:
+		with _sm_filtregender_2:
 			# x:109 y:51
 			OperatableStateMachine.add('List',
 										list_entities_by_name(frontality_level=0.5, distance_max=10),
@@ -222,11 +255,11 @@ class FarewellSM(Behavior):
 										remapping={'input_value': 'persons'})
 
 
-		# x:381 y:322, x:360 y:516
-		_sm_confirm_2 = OperatableStateMachine(outcomes=['false', 'done'], input_keys=['Person', 'pronoun'])
+		# x:772 y:208, x:360 y:516
+		_sm_confirm_3 = OperatableStateMachine(outcomes=['false', 'done'], input_keys=['Person', 'pronoun'])
 
-		with _sm_confirm_2:
-			# x:87 y:59
+		with _sm_confirm_3:
+			# x:66 y:83
 			OperatableStateMachine.add('Confirm',
 										SaraSay(sentence=lambda x: "would you like to leave, " + x[0] + "?", input_keys=["pronoun"], emotion=0, block=True),
 										transitions={'done': 'GetSpeech'},
@@ -240,10 +273,10 @@ class FarewellSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Value': 'ID'})
 
-			# x:83 y:312
+			# x:67 y:298
 			OperatableStateMachine.add('if yes',
 										RegexTester(regex=".*((yes)|(I do)).*"),
-										transitions={'true': 'get id', 'false': 'false'},
+										transitions={'true': 'get id', 'false': 'test no'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'text': 'text', 'result': 'result'})
 
@@ -257,15 +290,42 @@ class FarewellSM(Behavior):
 			# x:87 y:188
 			OperatableStateMachine.add('GetSpeech',
 										GetSpeech(watchdog=10),
-										transitions={'done': 'if yes', 'nothing': 'false', 'fail': 'if yes'},
+										transitions={'done': 'if yes', 'nothing': 'sayno', 'fail': 'if yes'},
 										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'words': 'text'})
 
+			# x:259 y:193
+			OperatableStateMachine.add('sayno',
+										SaraSay(sentence="Sorry, did you say that you wanted to leave?", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'getno'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:439 y:179
+			OperatableStateMachine.add('getno',
+										GetSpeech(watchdog=10),
+										transitions={'done': 'getNO', 'nothing': 'false', 'fail': 'false'},
+										autonomy={'done': Autonomy.Off, 'nothing': Autonomy.Off, 'fail': Autonomy.Off},
+										remapping={'words': 'text'})
+
+			# x:603 y:337
+			OperatableStateMachine.add('getNO',
+										RegexTester(regex=".*((yes)|(I do)).*"),
+										transitions={'true': 'get id', 'false': 'false'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'text': 'text', 'result': 'result'})
+
+			# x:246 y:298
+			OperatableStateMachine.add('test no',
+										RegexTester(regex=".*((no)|(not)).*"),
+										transitions={'true': 'false', 'false': 'sayno'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'text': 'text', 'result': 'result'})
+
 
 		# x:228 y:419
-		_sm_find_raising_arm_3 = OperatableStateMachine(outcomes=['finished'], output_keys=['umbrella'])
+		_sm_find_raising_arm_4 = OperatableStateMachine(outcomes=['finished'], output_keys=['umbrella'])
 
-		with _sm_find_raising_arm_3:
+		with _sm_find_raising_arm_4:
 			# x:33 y:48
 			OperatableStateMachine.add('setperson',
 										SetKey(Value="person"),
@@ -303,9 +363,9 @@ class FarewellSM(Behavior):
 
 
 		# x:30 y:365
-		_sm_rotation_4 = OperatableStateMachine(outcomes=['end'])
+		_sm_rotation_5 = OperatableStateMachine(outcomes=['end'])
 
-		with _sm_rotation_4:
+		with _sm_rotation_5:
 			# x:51 y:38
 			OperatableStateMachine.add('Set 180 degres',
 										SetKey(Value=3.1416),
@@ -370,9 +430,9 @@ class FarewellSM(Behavior):
 
 
 		# x:30 y:365
-		_sm_find_entity_5 = OperatableStateMachine(outcomes=['found'], input_keys=['className'], output_keys=['entity'])
+		_sm_find_entity_6 = OperatableStateMachine(outcomes=['found'], input_keys=['className'], output_keys=['entity'])
 
-		with _sm_find_entity_5:
+		with _sm_find_entity_6:
 			# x:181 y:178
 			OperatableStateMachine.add('find_entity',
 										list_entities_by_name(frontality_level=0.5, distance_max=4),
@@ -395,38 +455,38 @@ class FarewellSM(Behavior):
 
 
 		# x:34 y:496, x:130 y:365, x:475 y:291, x:330 y:365, x:430 y:365
-		_sm_gettaxihuman_6 = ConcurrencyContainer(outcomes=['found', 'not_found'], input_keys=['umbrella'], output_keys=['umbrella'], conditions=[
+		_sm_gettaxihuman_7 = ConcurrencyContainer(outcomes=['found', 'not_found'], input_keys=['umbrella'], output_keys=['umbrella'], conditions=[
 										('not_found', [('Rotation', 'end')]),
 										('found', [('Find Entity', 'found')]),
 										('found', [('FInd raising arm', 'finished')])
 										])
 
-		with _sm_gettaxihuman_6:
+		with _sm_gettaxihuman_7:
 			# x:127 y:67
 			OperatableStateMachine.add('Find Entity',
-										_sm_find_entity_5,
+										_sm_find_entity_6,
 										transitions={'found': 'found'},
 										autonomy={'found': Autonomy.Inherit},
 										remapping={'className': 'umbrella', 'entity': 'umbrella'})
 
 			# x:129 y:180
 			OperatableStateMachine.add('Rotation',
-										_sm_rotation_4,
+										_sm_rotation_5,
 										transitions={'end': 'not_found'},
 										autonomy={'end': Autonomy.Inherit})
 
 			# x:377 y:127
 			OperatableStateMachine.add('FInd raising arm',
-										_sm_find_raising_arm_3,
+										_sm_find_raising_arm_4,
 										transitions={'finished': 'found'},
 										autonomy={'finished': Autonomy.Inherit},
 										remapping={'umbrella': 'umbrella'})
 
 
 		# x:73 y:441, x:586 y:51
-		_sm_find_umbrella_7 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['umbrella'], output_keys=['umbrella'])
+		_sm_find_umbrella_8 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['umbrella'], output_keys=['umbrella'])
 
-		with _sm_find_umbrella_7:
+		with _sm_find_umbrella_8:
 			# x:67 y:42
 			OperatableStateMachine.add('Look Center',
 										SaraSetHeadAngle(pitch=0.1, yaw=0),
@@ -448,7 +508,7 @@ class FarewellSM(Behavior):
 
 			# x:63 y:126
 			OperatableStateMachine.add('gettaxihuman',
-										_sm_gettaxihuman_6,
+										_sm_gettaxihuman_7,
 										transitions={'found': 'WaitState', 'not_found': 'Look Center Not Found'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'umbrella': 'umbrella'})
@@ -461,9 +521,9 @@ class FarewellSM(Behavior):
 
 
 		# x:83 y:284
-		_sm_lift_head_8 = OperatableStateMachine(outcomes=['finished'])
+		_sm_lift_head_9 = OperatableStateMachine(outcomes=['finished'])
 
-		with _sm_lift_head_8:
+		with _sm_lift_head_9:
 			# x:53 y:42
 			OperatableStateMachine.add('lift head',
 										SaraSetHeadAngle(pitch=0, yaw=0),
@@ -477,10 +537,29 @@ class FarewellSM(Behavior):
 										autonomy={'done': Autonomy.Off})
 
 
-		# x:607 y:98, x:558 y:330
-		_sm_get_gender_9 = OperatableStateMachine(outcomes=['none_found', 'done'], input_keys=['name', 'distance'], output_keys=['person', 'pronoun'])
+		# x:30 y:365
+		_sm_get_closer_10 = OperatableStateMachine(outcomes=['finished'], input_keys=['person'])
 
-		with _sm_get_gender_9:
+		with _sm_get_closer_10:
+			# x:151 y:63
+			OperatableStateMachine.add('get ID',
+										GetAttribute(attributes=["ID"]),
+										transitions={'done': 'Get closer'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'object': 'person', 'ID': 'ID'})
+
+			# x:135 y:194
+			OperatableStateMachine.add('Get closer',
+										_sm_get_closer_0,
+										transitions={'finished': 'finished'},
+										autonomy={'finished': Autonomy.Inherit},
+										remapping={'ID': 'ID'})
+
+
+		# x:607 y:98, x:558 y:330
+		_sm_get_gender_11 = OperatableStateMachine(outcomes=['none_found', 'done'], input_keys=['name', 'distance'], output_keys=['person', 'pronoun'])
+
+		with _sm_get_gender_11:
 			# x:30 y:40
 			OperatableStateMachine.add('set head',
 										SaraSetHeadAngle(pitch=0, yaw=0),
@@ -489,25 +568,25 @@ class FarewellSM(Behavior):
 
 			# x:441 y:109
 			OperatableStateMachine.add('FiltreGender',
-										_sm_filtregender_1,
+										_sm_filtregender_2,
 										transitions={'none_found': 'none_found', 'found person': 'done'},
 										autonomy={'none_found': Autonomy.Inherit, 'found person': Autonomy.Inherit},
 										remapping={'name': 'name', 'pronoun': 'pronoun', 'person': 'person'})
 
 			# x:211 y:93
 			OperatableStateMachine.add('Scan',
-										_sm_scan_0,
+										_sm_scan_1,
 										transitions={'finished': 'FiltreGender'},
 										autonomy={'finished': Autonomy.Inherit})
 
 
 		# x:30 y:373, x:130 y:373
-		_sm_nevermind_10 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['poseOrigin'])
+		_sm_nevermind_12 = OperatableStateMachine(outcomes=['done', 'failed'], input_keys=['poseOrigin'])
 
-		with _sm_nevermind_10:
+		with _sm_nevermind_12:
 			# x:30 y:40
 			OperatableStateMachine.add('say ok',
-										SaraSay(sentence="Ok, nevermind.", input_keys=[], emotion=0, block=False),
+										SaraSay(sentence="I will try again", input_keys=[], emotion=0, block=False),
 										transitions={'done': 'Action_Move'},
 										autonomy={'done': Autonomy.Off})
 
@@ -519,43 +598,17 @@ class FarewellSM(Behavior):
 										remapping={'pose': 'poseOrigin'})
 
 
-		# x:139 y:372
-		_sm_get_closer_11 = OperatableStateMachine(outcomes=['finished'], input_keys=['distance', 'person'])
-
-		with _sm_get_closer_11:
-			# x:91 y:37
-			OperatableStateMachine.add('GetPose',
-										GetAttribute(attributes=["position"]),
-										transitions={'done': 'GetCloser'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'object': 'person', 'position': 'position'})
-
-			# x:82 y:134
-			OperatableStateMachine.add('GetCloser',
-										Get_Reacheable_Waypoint(),
-										transitions={'done': 'Action_Move'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose_in': 'position', 'distance': 'distance', 'pose_out': 'pose_out'})
-
-			# x:83 y:246
-			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Get closer/Action_Move'),
-										transitions={'finished': 'finished', 'failed': 'finished'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'pose_out'})
-
-
 		# x:30 y:458, x:130 y:458, x:230 y:458, x:330 y:458, x:430 y:458
-		_sm_confirm_12 = ConcurrencyContainer(outcomes=['false', 'done'], input_keys=['person', 'pronoun'], conditions=[
+		_sm_confirm_13 = ConcurrencyContainer(outcomes=['false', 'done'], input_keys=['person', 'pronoun'], conditions=[
 										('false', [('Confirm', 'false')]),
 										('done', [('Confirm', 'done')]),
 										('false', [('LookAtClosest', 'failed')])
 										])
 
-		with _sm_confirm_12:
+		with _sm_confirm_13:
 			# x:95 y:163
 			OperatableStateMachine.add('Confirm',
-										_sm_confirm_2,
+										_sm_confirm_3,
 										transitions={'false': 'false', 'done': 'done'},
 										autonomy={'false': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Person': 'person', 'pronoun': 'pronoun'})
@@ -568,9 +621,9 @@ class FarewellSM(Behavior):
 
 
 		# x:65 y:581, x:688 y:449
-		_sm_gettaxi_13 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['distance', 'taxi', 'umbrella'])
+		_sm_gettaxi_14 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['distance', 'taxi', 'umbrella'])
 
-		with _sm_gettaxi_13:
+		with _sm_gettaxi_14:
 			# x:103 y:28
 			OperatableStateMachine.add('Action_Move_to taxi',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'GetTaxi/Action_Move_to taxi'),
@@ -601,7 +654,7 @@ class FarewellSM(Behavior):
 
 			# x:108 y:131
 			OperatableStateMachine.add('Lift head',
-										_sm_lift_head_8,
+										_sm_lift_head_9,
 										transitions={'finished': 'Find umbrella'},
 										autonomy={'finished': Autonomy.Inherit})
 
@@ -620,7 +673,7 @@ class FarewellSM(Behavior):
 
 			# x:111 y:204
 			OperatableStateMachine.add('Find umbrella',
-										_sm_find_umbrella_7,
+										_sm_find_umbrella_8,
 										transitions={'finished': 'say see taxy', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'umbrella': 'umbrella'})
@@ -628,7 +681,7 @@ class FarewellSM(Behavior):
 
 
 		with _state_machine:
-			# x:69 y:33
+			# x:46 y:16
 			OperatableStateMachine.add('GetOrigin',
 										Get_Robot_Pose(),
 										transitions={'done': 'Init_Sequence'},
@@ -637,14 +690,14 @@ class FarewellSM(Behavior):
 
 			# x:63 y:574
 			OperatableStateMachine.add('GetTaxi',
-										_sm_gettaxi_13,
+										_sm_gettaxi_14,
 										transitions={'finished': 'say succeed', 'failed': 'say fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'distance': 'distance', 'taxi': 'taxi', 'umbrella': 'umbrella'})
 
 			# x:103 y:369
 			OperatableStateMachine.add('confirm',
-										_sm_confirm_12,
+										_sm_confirm_13,
 										transitions={'false': 'nevermind', 'done': 'say taxi'},
 										autonomy={'false': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'person': 'person', 'pronoun': 'pronoun'})
@@ -663,16 +716,9 @@ class FarewellSM(Behavior):
 
 			# x:245 y:595
 			OperatableStateMachine.add('say succeed',
-										SaraSay(sentence="Where is the taxy driver.", input_keys=[], emotion=5, block=True),
+										SaraSay(sentence="here is the taxy driver.", input_keys=[], emotion=5, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
-
-			# x:214 y:270
-			OperatableStateMachine.add('Get closer',
-										_sm_get_closer_11,
-										transitions={'finished': 'confirm'},
-										autonomy={'finished': Autonomy.Inherit},
-										remapping={'distance': 'distance', 'person': 'person'})
 
 			# x:103 y:483
 			OperatableStateMachine.add('say taxi',
@@ -680,7 +726,7 @@ class FarewellSM(Behavior):
 										transitions={'done': 'GetTaxi'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:75 y:110
+			# x:49 y:101
 			OperatableStateMachine.add('Init_Sequence',
 										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence'),
 										transitions={'finished': 'Get Gender', 'failed': 'say fail'},
@@ -688,17 +734,24 @@ class FarewellSM(Behavior):
 
 			# x:17 y:288
 			OperatableStateMachine.add('nevermind',
-										_sm_nevermind_10,
+										_sm_nevermind_12,
 										transitions={'done': 'Get Gender', 'failed': 'say fail'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'poseOrigin': 'poseOrigin'})
 
-			# x:58 y:201
+			# x:30 y:192
 			OperatableStateMachine.add('Get Gender',
-										_sm_get_gender_9,
-										transitions={'none_found': 'say nobody', 'done': 'Get closer'},
+										_sm_get_gender_11,
+										transitions={'none_found': 'say nobody', 'done': 'get closer'},
 										autonomy={'none_found': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'name': 'name', 'distance': 'distance', 'person': 'person', 'pronoun': 'pronoun'})
+
+			# x:259 y:310
+			OperatableStateMachine.add('get closer',
+										_sm_get_closer_10,
+										transitions={'finished': 'confirm'},
+										autonomy={'finished': Autonomy.Inherit},
+										remapping={'person': 'person'})
 
 
 		return _state_machine

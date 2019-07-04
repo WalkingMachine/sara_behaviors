@@ -8,7 +8,7 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
+from sara_flexbe_states.continue_button import ContinueButton
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
@@ -30,6 +30,7 @@ from sara_flexbe_behaviors.action_receive_bag_sm import Action_Receive_BagSM as 
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM as sara_flexbe_behaviors__LookAtClosestSM
+from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -53,7 +54,7 @@ class CarrymyluggageSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_followSM, 'Follow and listen/Action_follow')
+		self.add_behavior(sara_flexbe_behaviors__Action_followSM, 'Follow and listen/follow/Action_follow')
 		self.add_behavior(sara_flexbe_behaviors__Action_Give_Back_BagSM, 'Action_Give_Back_Bag')
 		self.add_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move')
@@ -307,14 +308,47 @@ class CarrymyluggageSM(Behavior):
 										remapping={'text': 'words', 'result': 'result'})
 
 
+		# x:520 y:327
+		_sm_follow_9 = OperatableStateMachine(outcomes=['failed'], input_keys=['ID'])
+
+		with _sm_follow_9:
+			# x:128 y:127
+			OperatableStateMachine.add('Action_follow',
+										self.use_behavior(sara_flexbe_behaviors__Action_followSM, 'Follow and listen/follow/Action_follow'),
+										transitions={'failed': 'set name'},
+										autonomy={'failed': Autonomy.Inherit},
+										remapping={'ID': 'ID'})
+
+			# x:288 y:346
+			OperatableStateMachine.add('list people',
+										list_entities_by_name(frontality_level=0.5, distance_max=10),
+										transitions={'found': 'get first ID', 'none_found': 'failed'},
+										autonomy={'found': Autonomy.Off, 'none_found': Autonomy.Off},
+										remapping={'name': 'name', 'entity_list': 'entity_list', 'number': 'number'})
+
+			# x:109 y:334
+			OperatableStateMachine.add('get first ID',
+										CalculationState(calculation=lambda x: x[0].ID),
+										transitions={'done': 'Action_follow'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'entity_list', 'output_value': 'ID'})
+
+			# x:349 y:116
+			OperatableStateMachine.add('set name',
+										SetKey(Value="person"),
+										transitions={'done': 'list people'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'name'})
+
+
 		# x:30 y:365, x:130 y:365, x:230 y:365, x:330 y:365, x:430 y:365
-		_sm_recevoir_sac_9 = ConcurrencyContainer(outcomes=['failed', 'done'], input_keys=['Closed_Gripper_Width', 'Open_Gripper_Width'], conditions=[
+		_sm_recevoir_sac_10 = ConcurrencyContainer(outcomes=['failed', 'done'], input_keys=['Closed_Gripper_Width', 'Open_Gripper_Width'], conditions=[
 										('failed', [('Recevoir sac', 'failed')]),
 										('done', [('Recevoir sac', 'done')]),
 										('done', [('LookAtClosest', 'failed')])
 										])
 
-		with _sm_recevoir_sac_9:
+		with _sm_recevoir_sac_10:
 			# x:30 y:40
 			OperatableStateMachine.add('Recevoir sac',
 										_sm_recevoir_sac_7,
@@ -329,16 +363,18 @@ class CarrymyluggageSM(Behavior):
 										autonomy={'failed': Autonomy.Inherit})
 
 
-		# x:390 y:296, x:111 y:269, x:230 y:365, x:330 y:365
-		_sm_follow_and_listen_10 = ConcurrencyContainer(outcomes=['done', 'failed'], input_keys=['ID'], conditions=[
-										('failed', [('Action_follow', 'failed')]),
-										('done', [('Listen', 'done')])
+		# x:390 y:296, x:111 y:269, x:230 y:365, x:542 y:339, x:465 y:331, x:530 y:380
+		_sm_follow_and_listen_11 = ConcurrencyContainer(outcomes=['done', 'failed'], input_keys=['ID'], conditions=[
+										('done', [('Listen', 'done')]),
+										('failed', [('follow', 'failed')]),
+										('done', [('continue', 'true')]),
+										('done', [('continue', 'false')])
 										])
 
-		with _sm_follow_and_listen_10:
+		with _sm_follow_and_listen_11:
 			# x:132 y:90
-			OperatableStateMachine.add('Action_follow',
-										self.use_behavior(sara_flexbe_behaviors__Action_followSM, 'Follow and listen/Action_follow'),
+			OperatableStateMachine.add('follow',
+										_sm_follow_9,
 										transitions={'failed': 'failed'},
 										autonomy={'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
@@ -349,11 +385,17 @@ class CarrymyluggageSM(Behavior):
 										transitions={'done': 'done'},
 										autonomy={'done': Autonomy.Inherit})
 
+			# x:485 y:162
+			OperatableStateMachine.add('continue',
+										ContinueButton(),
+										transitions={'true': 'done', 'false': 'done'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
+
 
 		# x:76 y:535
-		_sm_getidope_11 = OperatableStateMachine(outcomes=['done'], output_keys=['ID'])
+		_sm_getidope_12 = OperatableStateMachine(outcomes=['done'], output_keys=['ID'])
 
-		with _sm_getidope_11:
+		with _sm_getidope_12:
 			# x:55 y:63
 			OperatableStateMachine.add('Person',
 										SetKey(Value="person"),
@@ -385,14 +427,13 @@ class CarrymyluggageSM(Behavior):
 
 
 		with _state_machine:
-			# x:46 y:41
-			OperatableStateMachine.add('GEtPose',
-										Get_Robot_Pose(),
-										transitions={'done': 'Init_Sequence'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'pose': 'Origin'})
+			# x:38 y:33
+			OperatableStateMachine.add('continue',
+										ContinueButton(),
+										transitions={'true': 'GEtPose', 'false': 'GEtPose'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
 
-			# x:35 y:321
+			# x:35 y:351
 			OperatableStateMachine.add('ImHere',
 										SaraSay(sentence="I am ready to carry your luggage!", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'recevoir sac'},
@@ -400,14 +441,14 @@ class CarrymyluggageSM(Behavior):
 
 			# x:28 y:539
 			OperatableStateMachine.add('GetIDOpe',
-										_sm_getidope_11,
+										_sm_getidope_12,
 										transitions={'done': 'Follow and listen'},
 										autonomy={'done': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
 
 			# x:220 y:536
 			OperatableStateMachine.add('Follow and listen',
-										_sm_follow_and_listen_10,
+										_sm_follow_and_listen_11,
 										transitions={'done': 'Action_Give_Back_Bag', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
@@ -418,7 +459,7 @@ class CarrymyluggageSM(Behavior):
 										transitions={'finished': 'GoBackHome', 'failed': 'Action_Give_Back_Bag'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:24 y:135
+			# x:16 y:206
 			OperatableStateMachine.add('Init_Sequence',
 										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence'),
 										transitions={'finished': 'move head up', 'failed': 'failed'},
@@ -437,7 +478,7 @@ class CarrymyluggageSM(Behavior):
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'Origin'})
 
-			# x:35 y:230
+			# x:35 y:281
 			OperatableStateMachine.add('move head up',
 										SaraSetHeadAngle(pitch=0.1, yaw=0),
 										transitions={'done': 'ImHere'},
@@ -445,10 +486,17 @@ class CarrymyluggageSM(Behavior):
 
 			# x:35 y:427
 			OperatableStateMachine.add('recevoir sac',
-										_sm_recevoir_sac_9,
+										_sm_recevoir_sac_10,
 										transitions={'failed': 'failed', 'done': 'GetIDOpe'},
 										autonomy={'failed': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Closed_Gripper_Width': 'Closed_Gripper_Width', 'Open_Gripper_Width': 'Open_Gripper_Width'})
+
+			# x:24 y:134
+			OperatableStateMachine.add('GEtPose',
+										Get_Robot_Pose(),
+										transitions={'done': 'Init_Sequence'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'pose': 'Origin'})
 
 
 		return _state_machine
