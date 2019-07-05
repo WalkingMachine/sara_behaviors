@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="ScenarioWhereIsThis">
+
+	<executable package_path="sara_flexbe_behaviors.scenariowhereisthis_sm" class="ScenarioWhereIsThisSM" />
+	<tagstring></tagstring>
+	<author>Mongrain</author>
+	<date>Fri Jul 05 2019</date>
+	<description>
+		Where is this Scenario for Stage 2 2019
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_Pass_Door" />
+	<contains name="Action_Move" />
+	<contains name="Action_Ask" />
+
+	<!-- Available Parameters -->
+
+</behavior>
