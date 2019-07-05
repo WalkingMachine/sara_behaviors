@@ -49,10 +49,10 @@ class TourGuide(EventState):
         destinationPos = userdata.dictObject[userdata.object][0]
         destinationKey = userdata.originPose+destinationPos
         seq1 = userdata.dictObject[userdata.object][1][userdata.originPose][0]
-        seq2=userdata.dictDirect[destinationKey]
-        seq3=userdata.dictObject[userdata.object][1][userdata.originPose][1]
-
+        seq2 = userdata.dictDirect[destinationKey]
+        seq3 = userdata.dictObject[userdata.object][1][userdata.originPose][1]
         userdata.sequence = seq1 + seq2 + seq3
+
 
         # nothing to check
         return 'done'
