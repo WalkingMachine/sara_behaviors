@@ -326,10 +326,10 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 		_sm_first_bin_6 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['bin1Waypoint', 'bin1Height', 'dropzoneWaypoint', 'exit_door'])
 
 		with _sm_first_bin_6:
-			# x:57 y:26
+			# x:30 y:27
 			OperatableStateMachine.add('Init_Sequence',
 										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'First bin/Init_Sequence'),
-										transitions={'finished': 'go to bin', 'failed': 'go to bin'},
+										transitions={'finished': 'say remove chairs', 'failed': 'say remove chairs'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 			# x:257 y:329
@@ -338,7 +338,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 										transitions={'finished': 'go to drop the bag', 'failed': 'Missed It once'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:275 y:35
+			# x:377 y:52
 			OperatableStateMachine.add('go to bin',
 										_sm_go_to_bin_2,
 										transitions={'finished': 'find the bin', 'failed': 'failed'},
@@ -370,6 +370,12 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'dropzoneWaypoint': 'dropzoneWaypoint', 'exit_door': 'exit_door'})
+
+			# x:212 y:42
+			OperatableStateMachine.add('say remove chairs',
+										SaraSay(sentence="I am ready to take out the garbage. Please remove all the chairs from the kitchen table.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'go to bin'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:946 y:467, x:907 y:75
@@ -449,7 +455,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'bin2Waypoint': 'bin2Waypoint', 'bin2Height': 'bin2Height', 'dropzoneWaypoint': 'dropzone2Waypoint', 'exit_door': 'exit_door'})
 
-			# x:94 y:153
+			# x:131 y:167
 			OperatableStateMachine.add('IllManageSomehow',
 										SaraSay(sentence="Hmmm. This is a hard door to pass...", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'First bin'},

@@ -16,6 +16,7 @@
 	<contains name="action_turn" />
 	<contains name="LookAtClosest" />
 	<contains name="Init_Sequence" />
+	<contains name="Action_Pass_Door" />
 
 	<!-- Available Parameters -->
 

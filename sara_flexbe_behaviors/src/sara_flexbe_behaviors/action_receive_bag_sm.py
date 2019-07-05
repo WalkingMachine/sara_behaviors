@@ -8,9 +8,9 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
+from sara_flexbe_states.run_trajectory import RunTrajectory
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_states.run_trajectory import RunTrajectory
 from sara_flexbe_states.torque_reader import ReadTorque
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -83,14 +83,14 @@ class Action_Receive_BagSM(Behavior):
 
 			# x:653 y:81
 			OperatableStateMachine.add('place back arm',
-										RunTrajectory(file="poubelle_transport", duration=0),
+										RunTrajectory(file="sac_transport", duration=0),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:263 y:293
 			OperatableStateMachine.add('Torque_Reader',
-										ReadTorque(watchdog=10, Joint="right_elbow_pitch_joint", Threshold=0.5, min_time=1),
-										transitions={'threshold': 'close_gripper', 'watchdog': 'Torque_Reader', 'fail': 'failed'},
+										ReadTorque(watchdog=5, Joint="right_elbow_pitch_joint", Threshold=0.5, min_time=1),
+										transitions={'threshold': 'close_gripper', 'watchdog': 'close_gripper', 'fail': 'failed'},
 										autonomy={'threshold': Autonomy.Off, 'watchdog': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'torque': 'torque'})
 

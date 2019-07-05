@@ -8,7 +8,7 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.continue_button import ContinueButton
+from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
@@ -17,6 +17,7 @@ from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_behaviors.action_follow_sm import Action_followSM as sara_flexbe_behaviors__Action_followSM
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.regex_tester import RegexTester
+from sara_flexbe_states.continue_button import ContinueButton
 from sara_flexbe_behaviors.action_give_back_bag_sm import Action_Give_Back_BagSM as sara_flexbe_behaviors__Action_Give_Back_BagSM
 from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as sara_flexbe_behaviors__Init_SequenceSM
 from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
@@ -30,7 +31,7 @@ from sara_flexbe_behaviors.action_receive_bag_sm import Action_Receive_BagSM as 
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM as sara_flexbe_behaviors__LookAtClosestSM
-from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
+from sara_flexbe_states.run_trajectory import RunTrajectory
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -258,7 +259,7 @@ class CarrymyluggageSM(Behavior):
 										remapping={'position': 'position'})
 
 
-		# x:30 y:365, x:130 y:365
+		# x:30 y:365, x:182 y:454
 		_sm_recevoir_sac_7 = OperatableStateMachine(outcomes=['failed', 'done'], input_keys=['Closed_Gripper_Width', 'Open_Gripper_Width'])
 
 		with _sm_recevoir_sac_7:
@@ -271,7 +272,7 @@ class CarrymyluggageSM(Behavior):
 			# x:41 y:267
 			OperatableStateMachine.add('receive it',
 										_sm_receive_it_5,
-										transitions={'finished': 'done', 'failed': 'failed'},
+										transitions={'finished': 'sayCAr', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Closed_Gripper_Width': 'Closed_Gripper_Width', 'Open_Gripper_Width': 'Open_Gripper_Width'})
 
@@ -281,6 +282,12 @@ class CarrymyluggageSM(Behavior):
 										transitions={'object': 'receive it', 'no_object': 'receive it'},
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
+
+			# x:139 y:334
+			OperatableStateMachine.add('sayCAr',
+										SaraSay(sentence="PLease tell me when we get to the car.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:30 y:365
@@ -468,10 +475,10 @@ class CarrymyluggageSM(Behavior):
 			# x:634 y:522
 			OperatableStateMachine.add('GoBackHome',
 										SaraSay(sentence="I will go back home now. Have a good day!", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'Action_Move'},
+										transitions={'done': 'setarm'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:827 y:516
+			# x:922 y:519
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
@@ -490,6 +497,12 @@ class CarrymyluggageSM(Behavior):
 										transitions={'failed': 'failed', 'done': 'GetIDOpe'},
 										autonomy={'failed': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Closed_Gripper_Width': 'Closed_Gripper_Width', 'Open_Gripper_Width': 'Open_Gripper_Width'})
+
+			# x:770 y:526
+			OperatableStateMachine.add('setarm',
+										RunTrajectory(file="sac_transport", duration=0),
+										transitions={'done': 'Action_Move'},
+										autonomy={'done': Autonomy.Off})
 
 			# x:24 y:134
 			OperatableStateMachine.add('GEtPose',
