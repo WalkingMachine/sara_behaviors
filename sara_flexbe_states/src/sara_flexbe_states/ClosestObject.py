@@ -31,6 +31,16 @@ class ClosestObject(EventState):
                                                         output_keys=['closestObject'])
         self.entities = []
 
+    def execute(self, userdata):
+
+        result = self.getclosest(userdata.object)
+        userdata.closestObject = result
+        if result:
+            return "found"
+        else:
+            return "not_found"
+
+
     def getEntities(self, name, containers):
         # Generate URL to contact
 
@@ -68,11 +78,11 @@ class ClosestObject(EventState):
     def getclosest(self,item):
         min = 100000
 
-        item=self.getEntities(item,[])
+        item=self.getEntities(item,"")[0]
 
-        for i in self.getEntities([],[]):
-
-            distance = ((item.waypoint.x - i.waypoint.x) ** 2 +
+        for i in self.getEntities("",""):
+            if i.wonderlandId != item.wonderlandId:
+                distance = ((item.waypoint.x - i.waypoint.x) ** 2 +
                   (item.waypoint.y - i.waypoint.y) ** 2) ** 0.5
 
             if(distance < min):
