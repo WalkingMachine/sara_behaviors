@@ -46,9 +46,8 @@ class leftOrRightSM(Behavior):
 
 	def create(self):
 		# x:818 y:151, x:162 y:460
-		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['PosFInal', 'object'])
-		_state_machine.userdata.object = object
-		_state_machine.userdata.PosFInal = PosFinal
+		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['object'])
+		_state_machine.userdata.object = "snacks"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -60,8 +59,8 @@ class leftOrRightSM(Behavior):
 			# x:124 y:77
 			OperatableStateMachine.add('ClosestObject',
 										ClosestObject(),
-										transitions={'found': 'CheckAngle', 'not_found': 'failed'},
-										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
+										transitions={'found': 'CheckAngle', 'not_found': 'failed', 'non_existant': 'failed'},
+										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off, 'non_existant': Autonomy.Off},
 										remapping={'object': 'object', 'angle': 'angle', 'closestObject': 'closestObject'})
 
 			# x:342 y:132
@@ -73,14 +72,14 @@ class leftOrRightSM(Behavior):
 
 			# x:552 y:92
 			OperatableStateMachine.add('left',
-										SaraSay(sentence=lambda x: "The "+ str(x[0]) + " is on the left of" + str(x[0]), input_keys=["object", "closestObject"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "The "+ str(x[1]) + " is on the left of the" + str(x[0].name), input_keys=["object", "closestObject"], emotion=0, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'object': 'object', 'closestObject': 'closestObject'})
 
 			# x:441 y:296
 			OperatableStateMachine.add('sayright',
-										SaraSay(sentence=lambda x: "The " + str(x[0]) + " is close to ", input_keys=["object","closestObject"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "The " + str(x[1]) + " is on the right of the " + str(x[0].name), input_keys=["object","closestObject"], emotion=0, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'object': 'object', 'closestObject': 'closestObject'})
