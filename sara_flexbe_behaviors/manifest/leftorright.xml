@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="leftOrRight">
+
+	<executable package_path="sara_flexbe_behaviors.leftorright_sm" class="leftOrRightSM" />
+	<tagstring>closest object</tagstring>
+	<author>Huynh-Anh</author>
+	<date>Fri Jul 05 2019</date>
+	<description>
+		return if an object is at the left or right of the robot
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
