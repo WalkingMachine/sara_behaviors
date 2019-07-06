@@ -29,15 +29,16 @@ class ClosestObject(EventState):
         # See example_state.py for basic explanations.
         super(ClosestObject, self).__init__(outcomes=['found', 'not_found'],
                                                         input_keys=['object'],
-                                                        output_keys=['angle'])
+                                                        output_keys=['angle','closestObject'])
         self.entities = []
 
     def execute(self, userdata):
 
-        result = self.getclosest(userdata.object)
-        userdata.closestObject = result
+        angle, closest = self.getclosest(userdata.object)
+        userdata.closestObject = closest
+        userdata.angle = angle
 
-        if result:
+        if closest:
             return "found"
         else:
             return "not_found"
@@ -83,7 +84,7 @@ class ClosestObject(EventState):
         item=self.getEntities(item,"")[0]
 
         for i in self.getEntities("",""):
-            if i.wonderlandId != item.wonderlandId:
+            if i.wonderlandId != item.wonderlandId :
                 distance = ((item.waypoint.x - i.waypoint.x) ** 2 +
                   (item.waypoint.y - i.waypoint.y) ** 2) ** 0.5
 
@@ -93,13 +94,11 @@ class ClosestObject(EventState):
                 min = distance
                 closest = i
 
-        dx = item.x-closest.x
+        dx = item.x- closest.x
         dy = item.y-closest.y
         angle = math.atan2(dy,dx)
 
-        #compare avec le waypoint de litem
 
-        return  angle-item.waypoint.theta
 
     def generateEntity(self, data):
         entity = Entity()
