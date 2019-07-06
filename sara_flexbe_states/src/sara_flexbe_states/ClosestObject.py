@@ -27,7 +27,7 @@ class ClosestObject(EventState):
 
     def __init__(self):
         # See example_state.py for basic explanations.
-        super(ClosestObject, self).__init__(outcomes=['found', 'not_found'],
+        super(ClosestObject, self).__init__(outcomes=['found', 'not_found', "non_existant"],
                                                         input_keys=['object'],
                                                         output_keys=['angle','closestObject'])
         self.entities = []
@@ -35,6 +35,9 @@ class ClosestObject(EventState):
     def execute(self, userdata):
 
         angle, closest = self.getclosest(userdata.object)
+        if angle is None or closest is None:
+            return "non_existant"
+
         userdata.closestObject = closest
         userdata.angle = angle
 
@@ -81,23 +84,26 @@ class ClosestObject(EventState):
     def getclosest(self,item):
         min = 100000
 
-        item=self.getEntities(item,"")[0]
+        item=self.getEntities(item,"")
+        if not item:
+            Logger.logerr("Cannot get object")
+            return None, None
+        item = item[0]
 
         for i in self.getEntities("",""):
             if i.wonderlandId != item.wonderlandId :
                 distance = ((item.waypoint.x - i.waypoint.x) ** 2 +
                   (item.waypoint.y - i.waypoint.y) ** 2) ** 0.5
 
-        #trouve lobjet le plus proche
+                #trouve lobjet le plus proche
+                if(distance < min):
+                    min = distance
+                    closest = i
 
-            if(distance < min):
-                min = distance
-                closest = i
-
-        dx = item.x- closest.x
-        dy = item.y-closest.y
+        dx = item.waypoint.x- closest.waypoint.x
+        dy = item.waypoint.y-closest.waypoint.y
         angle = math.atan2(dy,dx)
-
+        return angle, closest
 
 
     def generateEntity(self, data):
