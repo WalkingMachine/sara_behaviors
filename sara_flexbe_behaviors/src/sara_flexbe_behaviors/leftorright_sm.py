@@ -9,7 +9,8 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.ClosestObject import ClosestObject
-from sara_flexbe_states.GetAttribute import GetAttribute
+from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.sara_say import SaraSay
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -44,7 +45,7 @@ class leftOrRightSM(Behavior):
 
 
 	def create(self):
-		# x:576 y:495, x:162 y:460
+		# x:818 y:151, x:162 y:460
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['PosFInal', 'object'])
 		_state_machine.userdata.object = object
 		_state_machine.userdata.PosFInal = PosFinal
@@ -59,16 +60,30 @@ class leftOrRightSM(Behavior):
 			# x:124 y:77
 			OperatableStateMachine.add('ClosestObject',
 										ClosestObject(),
-										transitions={'found': 'getpos', 'not_found': 'failed'},
+										transitions={'found': 'CheckAngle', 'not_found': 'failed'},
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off},
-										remapping={'object': 'object', 'closestObject': 'closestObject'})
+										remapping={'object': 'object', 'angle': 'angle', 'closestObject': 'closestObject'})
 
-			# x:364 y:138
-			OperatableStateMachine.add('getpos',
-										GetAttribute(attributes=["pos"]),
+			# x:342 y:132
+			OperatableStateMachine.add('CheckAngle',
+										CheckConditionState(predicate=lambda x: x>0),
+										transitions={'true': 'left', 'false': 'sayright'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'angle'})
+
+			# x:552 y:92
+			OperatableStateMachine.add('left',
+										SaraSay(sentence=lambda x: "The "+ str(x[0]) + " is on the left of" + str(x[0]), input_keys=["object", "closestObject"], emotion=0, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'object': 'closestObject', 'pos': 'posClosestObject'})
+										remapping={'object': 'object', 'closestObject': 'closestObject'})
+
+			# x:441 y:296
+			OperatableStateMachine.add('sayright',
+										SaraSay(sentence=lambda x: "The " + str(x[0]) + " is close to ", input_keys=["object","closestObject"], emotion=0, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'object': 'object', 'closestObject': 'closestObject'})
 
 
 		return _state_machine
