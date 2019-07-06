@@ -3,9 +3,10 @@
 
 import json
 
-import requests
+import requests,math
 from flexbe_core import EventState, Logger
 from sara_msgs.msg import Entity, Entities
+
 
 """
 Created on 05/07/2019
@@ -28,13 +29,14 @@ class ClosestObject(EventState):
         # See example_state.py for basic explanations.
         super(ClosestObject, self).__init__(outcomes=['found', 'not_found'],
                                                         input_keys=['object'],
-                                                        output_keys=['closestObject'])
+                                                        output_keys=['angle'])
         self.entities = []
 
     def execute(self, userdata):
 
         result = self.getclosest(userdata.object)
         userdata.closestObject = result
+
         if result:
             return "found"
         else:
@@ -85,12 +87,19 @@ class ClosestObject(EventState):
                 distance = ((item.waypoint.x - i.waypoint.x) ** 2 +
                   (item.waypoint.y - i.waypoint.y) ** 2) ** 0.5
 
+        #trouve lobjet le plus proche
+
             if(distance < min):
                 min = distance
                 closest = i
 
-        return closest
+        dx = item.x-closest.x
+        dy = item.y-closest.y
+        angle = math.atan2(dy,dx)
 
+        #compare avec le waypoint de litem
+
+        return  angle-item.position.theta
 
     def generateEntity(self, data):
         entity = Entity()
