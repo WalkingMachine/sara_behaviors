@@ -239,7 +239,7 @@ class ScenarioWhereIsThisSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'index': 'index', 'SequenceList': 'SequenceList', 'output_value': 'actionName'})
 
-			# x:352 y:351
+			# x:342 y:351
 			OperatableStateMachine.add('SelectAction',
 										DecisionState(outcomes=["ask","passdoor","move"], conditions=lambda x: x),
 										transitions={'ask': 'SaySomething', 'passdoor': 'Action_Pass_Door', 'move': 'Action_Move'},
