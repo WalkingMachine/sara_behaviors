@@ -99,7 +99,7 @@ class ClosestObject(EventState):
 
         #compare avec le waypoint de litem
 
-        return  angle-item.position.theta
+        return  angle-item.waypoint.theta
 
     def generateEntity(self, data):
         entity = Entity()
