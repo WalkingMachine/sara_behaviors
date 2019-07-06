@@ -84,10 +84,9 @@ class ScenarioWhereIsThisSM(Behavior):
 	def create(self):
 		# x:65 y:417, x:387 y:222
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
-		_state_machine.userdata.entranceDoorName = ""
+		_state_machine.userdata.entranceDoorName = "door_1_entry"
 		_state_machine.userdata.infoPointWaypoint = ""
 		_state_machine.userdata.containers = ""
-		_state_machine.userdata.dictRoomToRoom = ""
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -255,7 +254,7 @@ class ScenarioWhereIsThisSM(Behavior):
 
 
 		# x:254 y:666, x:1054 y:22
-		_sm_whereisitandhowdoidothat_4 = OperatableStateMachine(outcomes=['finished', 'oopsNoObject'], input_keys=['targetObjectName', 'containers', 'informationPointRoomName', 'dictRoomToRoom'], output_keys=['targetWaypoint', 'SequenceList', 'wonderlandEntity'])
+		_sm_whereisitandhowdoidothat_4 = OperatableStateMachine(outcomes=['finished', 'oopsNoObject'], input_keys=['targetObjectName', 'containers', 'informationPointRoomName'], output_keys=['targetWaypoint', 'SequenceList', 'wonderlandEntity'])
 
 		with _sm_whereisitandhowdoidothat_4:
 			# x:37 y:28
@@ -339,7 +338,7 @@ class ScenarioWhereIsThisSM(Behavior):
 										TourGuide(),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'object': 'targetObjectName', 'startingRoom': 'informationPointRoomName', 'endingRoom': 'roomName', 'dictRoomToRoom': 'dictRoomToRoom', 'sequence': 'sequence'})
+										remapping={'object': 'targetObjectName', 'startingRoom': 'informationPointRoomName', 'endingRoom': 'roomName', 'sequence': 'sequence'})
 
 
 		# x:97 y:633, x:567 y:94
@@ -472,7 +471,7 @@ class ScenarioWhereIsThisSM(Behavior):
 										_sm_whereisitandhowdoidothat_4,
 										transitions={'finished': 'ExecuteTheSequence', 'oopsNoObject': 'ListenForQuestion'},
 										autonomy={'finished': Autonomy.Inherit, 'oopsNoObject': Autonomy.Inherit},
-										remapping={'targetObjectName': 'targetObjectName', 'containers': 'containers', 'informationPointRoomName': 'informationPointRoomName', 'dictRoomToRoom': 'dictRoomToRoom', 'targetWaypoint': 'targetWaypoint', 'SequenceList': 'SequenceList', 'wonderlandEntity': 'wonderlandEntity'})
+										remapping={'targetObjectName': 'targetObjectName', 'containers': 'containers', 'informationPointRoomName': 'informationPointRoomName', 'targetWaypoint': 'targetWaypoint', 'SequenceList': 'SequenceList', 'wonderlandEntity': 'wonderlandEntity'})
 
 			# x:61 y:304
 			OperatableStateMachine.add('ExecuteTheSequence',
