@@ -75,9 +75,9 @@ class ClosestObject(EventState):
             distance = ((item.waypoint.x - i.waypoint.x) ** 2 +
                   (item.waypoint.y - i.waypoint.y) ** 2) ** 0.5
 
-            if(distance < min)
+            if(distance < min):
                 min = distance
-                closest=i
+                closest = i
 
         return closest
 
