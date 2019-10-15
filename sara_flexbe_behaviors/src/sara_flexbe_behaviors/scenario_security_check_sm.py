@@ -10,9 +10,9 @@
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.continue_button import ContinueButton
 from sara_flexbe_states.sara_sound import SaraSound
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as sara_flexbe_behaviors__Action_Pass_DoorSM
+from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as Action_Pass_DoorSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -36,9 +36,9 @@ class Scenario_Security_CheckSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Move to test zone')
-		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Action_Pass_Door')
-		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Action_Pass_Door_2')
+		self.add_behavior(Action_MoveSM, 'Move to test zone')
+		self.add_behavior(Action_Pass_DoorSM, 'Action_Pass_Door')
+		self.add_behavior(Action_Pass_DoorSM, 'Action_Pass_Door_2')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -85,7 +85,7 @@ class Scenario_Security_CheckSM(Behavior):
 
 			# x:310 y:111
 			OperatableStateMachine.add('Move to test zone',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Move to test zone'),
+										self.use_behavior(Action_MoveSM, 'Move to test zone'),
 										transitions={'finished': 'say ready', 'failed': 'Failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'TestName'})
@@ -98,7 +98,7 @@ class Scenario_Security_CheckSM(Behavior):
 
 			# x:34 y:115
 			OperatableStateMachine.add('Action_Pass_Door',
-										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Action_Pass_Door'),
+										self.use_behavior(Action_Pass_DoorSM, 'Action_Pass_Door'),
 										transitions={'Done': 'Move to test zone', 'Fail': 'Failed'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
 										remapping={'DoorName': 'EntryName'})
@@ -111,7 +111,7 @@ class Scenario_Security_CheckSM(Behavior):
 
 			# x:513 y:432
 			OperatableStateMachine.add('Action_Pass_Door_2',
-										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Action_Pass_Door_2'),
+										self.use_behavior(Action_Pass_DoorSM, 'Action_Pass_Door_2'),
 										transitions={'Done': 'finished', 'Fail': 'Failed'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
 										remapping={'DoorName': 'ExitName'})

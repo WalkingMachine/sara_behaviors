@@ -9,7 +9,7 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.GetAttribute import GetAttribute
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
@@ -19,14 +19,14 @@ from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as sara_flexbe_behaviors__action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.Filter import Filter
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.get_speech import GetSpeech
-from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM as sara_flexbe_behaviors__LookAtClosestSM
-from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as sara_flexbe_behaviors__Init_SequenceSM
+from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM as LookAtClosestSM
+from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as Init_SequenceSM
 from sara_flexbe_states.sara_follow import SaraFollow
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -51,12 +51,12 @@ class FarewellSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'GetTaxi/Action_Move_to taxi')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'GetTaxi/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'GetTaxi/Find umbrella/gettaxihuman/Rotation/action_turn')
-		self.add_behavior(sara_flexbe_behaviors__LookAtClosestSM, 'confirm/LookAtClosest')
-		self.add_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'nevermind/Action_Move')
+		self.add_behavior(Action_MoveSM, 'GetTaxi/Action_Move_to taxi')
+		self.add_behavior(Action_MoveSM, 'GetTaxi/Action_Move')
+		self.add_behavior(action_turnSM, 'GetTaxi/Find umbrella/gettaxihuman/Rotation/action_turn')
+		self.add_behavior(LookAtClosestSM, 'confirm/LookAtClosest')
+		self.add_behavior(Init_SequenceSM, 'Init_Sequence')
+		self.add_behavior(Action_MoveSM, 'nevermind/Action_Move')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -375,7 +375,7 @@ class FarewellSM(Behavior):
 
 			# x:613 y:470
 			OperatableStateMachine.add('action_turn',
-										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'GetTaxi/Find umbrella/gettaxihuman/Rotation/action_turn'),
+										self.use_behavior(action_turnSM, 'GetTaxi/Find umbrella/gettaxihuman/Rotation/action_turn'),
 										transitions={'finished': 'Look Right', 'failed': 'Look Right'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
@@ -592,7 +592,7 @@ class FarewellSM(Behavior):
 
 			# x:26 y:192
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'nevermind/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'nevermind/Action_Move'),
 										transitions={'finished': 'done', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'poseOrigin'})
@@ -615,7 +615,7 @@ class FarewellSM(Behavior):
 
 			# x:309 y:162
 			OperatableStateMachine.add('LookAtClosest',
-										self.use_behavior(sara_flexbe_behaviors__LookAtClosestSM, 'confirm/LookAtClosest'),
+										self.use_behavior(LookAtClosestSM, 'confirm/LookAtClosest'),
 										transitions={'failed': 'false'},
 										autonomy={'failed': Autonomy.Inherit})
 
@@ -626,14 +626,14 @@ class FarewellSM(Behavior):
 		with _sm_gettaxi_14:
 			# x:103 y:28
 			OperatableStateMachine.add('Action_Move_to taxi',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'GetTaxi/Action_Move_to taxi'),
+										self.use_behavior(Action_MoveSM, 'GetTaxi/Action_Move_to taxi'),
 										transitions={'finished': 'Lift head', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'taxi'})
 
 			# x:220 y:546
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'GetTaxi/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'GetTaxi/Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'pose_out'})
@@ -728,7 +728,7 @@ class FarewellSM(Behavior):
 
 			# x:49 y:101
 			OperatableStateMachine.add('Init_Sequence',
-										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence'),
+										self.use_behavior(Init_SequenceSM, 'Init_Sequence'),
 										transitions={'finished': 'Get Gender', 'failed': 'say fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 

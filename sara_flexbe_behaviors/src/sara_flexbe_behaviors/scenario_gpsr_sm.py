@@ -8,7 +8,7 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as sara_flexbe_behaviors__Action_Pass_DoorSM
+from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as Action_Pass_DoorSM
 from sara_flexbe_states.story import Set_Story
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.set_a_step import Set_a_step
@@ -17,10 +17,10 @@ from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_behaviors.action_executor_sm import Action_ExecutorSM as sara_flexbe_behaviors__Action_ExecutorSM
+from sara_flexbe_behaviors.action_executor_sm import Action_ExecutorSM as Action_ExecutorSM
 from sara_flexbe_states.StoryboardSetStepKey import StoryboardSetStepKey
 from sara_flexbe_states.GetRosParam import GetRosParam
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.sara_nlu_gpsr import SaraNLUgpsr
 from sara_flexbe_states.get_speech import GetSpeech
@@ -54,11 +54,11 @@ class Scenario_GPSRSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Initialisation/Action_Pass_Door')
-		self.add_behavior(sara_flexbe_behaviors__Action_ExecutorSM, 'Do the actions/Action_Executor')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Fail state/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'End/Action_Pass_Door')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move')
+		self.add_behavior(Action_Pass_DoorSM, 'Initialisation/Action_Pass_Door')
+		self.add_behavior(Action_ExecutorSM, 'Do the actions/Action_Executor')
+		self.add_behavior(Action_MoveSM, 'Fail state/Action_Move')
+		self.add_behavior(Action_Pass_DoorSM, 'End/Action_Pass_Door')
+		self.add_behavior(Action_MoveSM, 'Action_Move')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -203,7 +203,7 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:33 y:163
 			OperatableStateMachine.add('Action_Pass_Door',
-										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'End/Action_Pass_Door'),
+										self.use_behavior(Action_Pass_DoorSM, 'End/Action_Pass_Door'),
 										transitions={'Done': 'say yay', 'Fail': 'done'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
 										remapping={'DoorName': 'ExitName'})
@@ -262,7 +262,7 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:25 y:172
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Fail state/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'Fail state/Action_Move'),
 										transitions={'finished': 'get error', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'StartPosition'})
@@ -302,7 +302,7 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:72 y:479
 			OperatableStateMachine.add('Action_Executor',
-										self.use_behavior(sara_flexbe_behaviors__Action_ExecutorSM, 'Do the actions/Action_Executor'),
+										self.use_behavior(Action_ExecutorSM, 'Do the actions/Action_Executor'),
 										transitions={'finished': '++i', 'failed': 'failed', 'critical_fail': 'critical fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'ActionForm'})
@@ -321,7 +321,7 @@ class Scenario_GPSRSM(Behavior):
 		with _sm_initialisation_7:
 			# x:62 y:79
 			OperatableStateMachine.add('Action_Pass_Door',
-										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Initialisation/Action_Pass_Door'),
+										self.use_behavior(Action_Pass_DoorSM, 'Initialisation/Action_Pass_Door'),
 										transitions={'Done': 'set step', 'Fail': 'done'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
 										remapping={'DoorName': 'EntryName'})
@@ -442,7 +442,7 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:21 y:185
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move'),
+										self.use_behavior(Action_MoveSM, 'Action_Move'),
 										transitions={'finished': 'lift head', 'failed': 'critical'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'StartPosition'})

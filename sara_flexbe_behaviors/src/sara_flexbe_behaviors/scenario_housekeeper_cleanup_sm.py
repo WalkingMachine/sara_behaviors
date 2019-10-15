@@ -8,16 +8,16 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as sara_flexbe_behaviors__Init_SequenceSM
+from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as Init_SequenceSM
 from sara_flexbe_states.sara_nlu_getRoom import SaraNLUgetRoom
-from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as sara_flexbe_behaviors__Action_Pass_DoorSM
+from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as Action_Pass_DoorSM
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.get_speech import GetSpeech
 from flexbe_states.decision_state import DecisionState
 from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
 from sara_flexbe_states.CheckMisplacedObjects import CheckMisplacedObjects
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.wait_state import WaitState
@@ -28,12 +28,12 @@ from sara_flexbe_states.for_loop_with_input import ForLoopWithInput
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
 from sara_flexbe_states.SetSegmentationRosParam import SetSegmentationRosParam
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
-from sara_flexbe_behaviors.action_pick_sm import Action_pickSM as sara_flexbe_behaviors__Action_pickSM
+from sara_flexbe_behaviors.action_pick_sm import Action_pickSM as Action_pickSM
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.torque_reader import ReadTorque
 from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
-from sara_flexbe_behaviors.action_place_sm import Action_placeSM as sara_flexbe_behaviors__Action_placeSM
+from sara_flexbe_behaviors.action_place_sm import Action_placeSM as Action_placeSM
 from sara_flexbe_states.WonderlandGetEntityByID import WonderlandGetEntityByID
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -58,15 +58,15 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'EnterArena/Init_Sequence')
-		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'EnterArena/Action_Pass_Door')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'GoToRoom/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'CheckForMisplacedObjects/CheckAtWaypoints/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'PickMisplacedObject/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_pickSM, 'PickMisplacedObject/GrabMisplacedObject/Action_pick')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'PutObjectInDesiredContainer/GotoDesiredContainer/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_placeSM, 'PutObjectInDesiredContainer/PutDownObject/Action_place')
-		self.add_behavior(sara_flexbe_behaviors__Action_placeSM, 'PutObjectInDesiredContainer/CantGoToDestination/Action_place')
+		self.add_behavior(Init_SequenceSM, 'EnterArena/Init_Sequence')
+		self.add_behavior(Action_Pass_DoorSM, 'EnterArena/Action_Pass_Door')
+		self.add_behavior(Action_MoveSM, 'GoToRoom/Action_Move')
+		self.add_behavior(Action_MoveSM, 'CheckForMisplacedObjects/CheckAtWaypoints/Action_Move')
+		self.add_behavior(Action_MoveSM, 'PickMisplacedObject/Action_Move')
+		self.add_behavior(Action_pickSM, 'PickMisplacedObject/GrabMisplacedObject/Action_pick')
+		self.add_behavior(Action_MoveSM, 'PutObjectInDesiredContainer/GotoDesiredContainer/Action_Move')
+		self.add_behavior(Action_placeSM, 'PutObjectInDesiredContainer/PutDownObject/Action_place')
+		self.add_behavior(Action_placeSM, 'PutObjectInDesiredContainer/CantGoToDestination/Action_place')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -171,7 +171,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 			# x:463 y:245
 			OperatableStateMachine.add('Action_place',
-										self.use_behavior(sara_flexbe_behaviors__Action_placeSM, 'PutObjectInDesiredContainer/CantGoToDestination/Action_place'),
+										self.use_behavior(Action_placeSM, 'PutObjectInDesiredContainer/CantGoToDestination/Action_place'),
 										transitions={'finished': 'finished', 'failed': 'finished'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pos': 'droppingPose'})
@@ -217,7 +217,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 			# x:269 y:215
 			OperatableStateMachine.add('Action_place',
-										self.use_behavior(sara_flexbe_behaviors__Action_placeSM, 'PutObjectInDesiredContainer/PutDownObject/Action_place'),
+										self.use_behavior(Action_placeSM, 'PutObjectInDesiredContainer/PutDownObject/Action_place'),
 										transitions={'finished': 'done', 'failed': 'DeusExPlaceRecovery'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pos': 'droppingPose'})
@@ -243,7 +243,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 			# x:275 y:79
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'PutObjectInDesiredContainer/GotoDesiredContainer/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'PutObjectInDesiredContainer/GotoDesiredContainer/Action_Move'),
 										transitions={'finished': 'done', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'targetWaypoint'})
@@ -364,7 +364,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 			# x:42 y:275
 			OperatableStateMachine.add('Action_pick',
-										self.use_behavior(sara_flexbe_behaviors__Action_pickSM, 'PickMisplacedObject/GrabMisplacedObject/Action_pick', default_keys=['Entity']),
+										self.use_behavior(Action_pickSM, 'PickMisplacedObject/GrabMisplacedObject/Action_pick', default_keys=['Entity']),
 										transitions={'success': 'done', 'unreachable': 'oops_2', 'not found': 'oops_3', 'dropped': 'oops'},
 										autonomy={'success': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not found': Autonomy.Inherit, 'dropped': Autonomy.Inherit},
 										remapping={'objectID': 'misplacedObjectID', 'Entity': 'Entity'})
@@ -475,7 +475,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 			# x:184 y:289
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'CheckForMisplacedObjects/CheckAtWaypoints/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'CheckForMisplacedObjects/CheckAtWaypoints/Action_Move'),
 										transitions={'finished': 'CheckForUnknownObjs', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'waypointToGo'})
@@ -683,7 +683,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 			# x:67 y:304
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'PickMisplacedObject/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'PickMisplacedObject/Action_Move'),
 										transitions={'finished': 'GrabMisplacedObject', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'misplacedObjectWaypoint'})
@@ -803,7 +803,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 			# x:320 y:326
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'GoToRoom/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'GoToRoom/Action_Move'),
 										transitions={'finished': 'IWentThere', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'cleanupRoom'})
@@ -815,7 +815,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 		with _sm_enterarena_16:
 			# x:77 y:28
 			OperatableStateMachine.add('Init_Sequence',
-										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'EnterArena/Init_Sequence'),
+										self.use_behavior(Init_SequenceSM, 'EnterArena/Init_Sequence'),
 										transitions={'finished': 'SkipEntrance', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
@@ -828,7 +828,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 			# x:467 y:87
 			OperatableStateMachine.add('Action_Pass_Door',
-										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'EnterArena/Action_Pass_Door'),
+										self.use_behavior(Action_Pass_DoorSM, 'EnterArena/Action_Pass_Door'),
 										transitions={'Done': 'RetryOnce', 'Fail': 'failed'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
 										remapping={'DoorName': 'doorName'})

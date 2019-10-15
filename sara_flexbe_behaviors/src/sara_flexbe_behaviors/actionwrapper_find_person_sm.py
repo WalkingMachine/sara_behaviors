@@ -8,10 +8,10 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as sara_flexbe_behaviors__Action_findPersonSM
+from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as Action_findPersonSM
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.for_loop import ForLoop
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as sara_flexbe_behaviors__action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.SetRosParam import SetRosParam
 from flexbe_states.calculation_state import CalculationState
@@ -44,8 +44,8 @@ class ActionWrapper_Find_PersonSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Action_findPerson')
-		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'action_turn')
+		self.add_behavior(Action_findPersonSM, 'Action_findPerson')
+		self.add_behavior(action_turnSM, 'action_turn')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -222,7 +222,7 @@ class ActionWrapper_Find_PersonSM(Behavior):
 		with _state_machine:
 			# x:62 y:38
 			OperatableStateMachine.add('Action_findPerson',
-										self.use_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Action_findPerson'),
+										self.use_behavior(Action_findPersonSM, 'Action_findPerson'),
 										transitions={'done': 'If need the one', 'pas_done': 'reset Head'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
 										remapping={'className': 'className', 'entity': 'entity'})
@@ -248,7 +248,7 @@ class ActionWrapper_Find_PersonSM(Behavior):
 
 			# x:63 y:310
 			OperatableStateMachine.add('action_turn',
-										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'action_turn'),
+										self.use_behavior(action_turnSM, 'action_turn'),
 										transitions={'finished': 'Action_findPerson', 'failed': 'reset Head'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})

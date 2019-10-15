@@ -15,7 +15,7 @@ from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_states.get_speech import GetSpeech
@@ -44,7 +44,7 @@ class Get_operatorSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Move to person/Action_Move')
+		self.add_behavior(Action_MoveSM, 'Move to person/Action_Move')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -79,7 +79,7 @@ class Get_operatorSM(Behavior):
 
 			# x:35 y:450
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Move to person/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'Move to person/Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'Pose', 'relative': 'relative'})

@@ -8,10 +8,10 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_behaviors.farewell_sm import FarewellSM as sara_flexbe_behaviors__FarewellSM
+from sara_flexbe_behaviors.farewell_sm import FarewellSM as FarewellSM
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -35,9 +35,9 @@ class Scenario_FarewellSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__FarewellSM, 'Farewell')
-		self.add_behavior(sara_flexbe_behaviors__FarewellSM, 'Farewell_2')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move')
+		self.add_behavior(FarewellSM, 'Farewell')
+		self.add_behavior(FarewellSM, 'Farewell_2')
+		self.add_behavior(Action_MoveSM, 'Action_Move')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -68,7 +68,7 @@ class Scenario_FarewellSM(Behavior):
 
 			# x:750 y:145
 			OperatableStateMachine.add('Farewell_2',
-										self.use_behavior(sara_flexbe_behaviors__FarewellSM, 'Farewell_2'),
+										self.use_behavior(FarewellSM, 'Farewell_2'),
 										transitions={'finished': 'finish', 'failed': 'didnt succed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
@@ -86,7 +86,7 @@ class Scenario_FarewellSM(Behavior):
 
 			# x:549 y:98
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move'),
+										self.use_behavior(Action_MoveSM, 'Action_Move'),
 										transitions={'finished': 'Farewell_2', 'failed': 'Action_Move'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'poseOrigin'})
@@ -105,7 +105,7 @@ class Scenario_FarewellSM(Behavior):
 
 			# x:173 y:106
 			OperatableStateMachine.add('Farewell',
-										self.use_behavior(sara_flexbe_behaviors__FarewellSM, 'Farewell'),
+										self.use_behavior(FarewellSM, 'Farewell'),
 										transitions={'finished': 'say next', 'failed': 'Try again'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 

@@ -10,11 +10,11 @@
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.continue_button import ContinueButton
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as sara_flexbe_behaviors__Init_SequenceSM
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
+from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as Init_SequenceSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
 from sara_flexbe_states.run_trajectory import RunTrajectory
 from sara_flexbe_states.set_gripper_state import SetGripperState
-from sara_flexbe_behaviors.action_takebag_sm import Action_TakeBagSM as sara_flexbe_behaviors__Action_TakeBagSM
+from sara_flexbe_behaviors.action_takebag_sm import Action_TakeBagSM as Action_TakeBagSM
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.TF_transform import TF_transformation
@@ -22,7 +22,7 @@ from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.GetClosestObstacle import GetClosestObstacle
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.sara_move_base import SaraMoveBase
-from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as sara_flexbe_behaviors__Action_Pass_DoorSM
+from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as Action_Pass_DoorSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -46,15 +46,15 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'second bin/Init_Sequence')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'second bin/go to drop the bag/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_TakeBagSM, 'second bin/Action_TakeBag')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'second bin/go to bin/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'First bin/Init_Sequence')
-		self.add_behavior(sara_flexbe_behaviors__Action_TakeBagSM, 'First bin/Action_TakeBag')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'First bin/go to bin/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'First bin/go to drop the bag/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Action_Pass_Door')
+		self.add_behavior(Init_SequenceSM, 'second bin/Init_Sequence')
+		self.add_behavior(Action_MoveSM, 'second bin/go to drop the bag/Action_Move')
+		self.add_behavior(Action_TakeBagSM, 'second bin/Action_TakeBag')
+		self.add_behavior(Action_MoveSM, 'second bin/go to bin/Action_Move')
+		self.add_behavior(Init_SequenceSM, 'First bin/Init_Sequence')
+		self.add_behavior(Action_TakeBagSM, 'First bin/Action_TakeBag')
+		self.add_behavior(Action_MoveSM, 'First bin/go to bin/Action_Move')
+		self.add_behavior(Action_MoveSM, 'First bin/go to drop the bag/Action_Move')
+		self.add_behavior(Action_Pass_DoorSM, 'Action_Pass_Door')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -125,7 +125,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 
 			# x:76 y:386
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'First bin/go to drop the bag/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'First bin/go to drop the bag/Action_Move'),
 										transitions={'finished': 'run depose sac', 'failed': 'say cant go to drop zone'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'dropzoneWaypoint'})
@@ -202,7 +202,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 
 			# x:254 y:199
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'First bin/go to bin/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'First bin/go to bin/Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'bin1Waypoint'})
@@ -279,7 +279,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 
 			# x:254 y:199
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'second bin/go to bin/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'second bin/go to bin/Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'bin2Waypoint'})
@@ -291,7 +291,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 		with _sm_go_to_drop_the_bag_5:
 			# x:65 y:215
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'second bin/go to drop the bag/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'second bin/go to drop the bag/Action_Move'),
 										transitions={'finished': 'run depose sac', 'failed': 'say cant go to drop zone'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'dropzoneWaypoint'})
@@ -328,13 +328,13 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 		with _sm_first_bin_6:
 			# x:57 y:26
 			OperatableStateMachine.add('Init_Sequence',
-										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'First bin/Init_Sequence'),
+										self.use_behavior(Init_SequenceSM, 'First bin/Init_Sequence'),
 										transitions={'finished': 'go to bin', 'failed': 'go to bin'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 			# x:257 y:329
 			OperatableStateMachine.add('Action_TakeBag',
-										self.use_behavior(sara_flexbe_behaviors__Action_TakeBagSM, 'First bin/Action_TakeBag'),
+										self.use_behavior(Action_TakeBagSM, 'First bin/Action_TakeBag'),
 										transitions={'finished': 'go to drop the bag', 'failed': 'Missed It once'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
@@ -378,7 +378,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 		with _sm_second_bin_7:
 			# x:57 y:26
 			OperatableStateMachine.add('Init_Sequence',
-										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'second bin/Init_Sequence'),
+										self.use_behavior(Init_SequenceSM, 'second bin/Init_Sequence'),
 										transitions={'finished': 'go to bin', 'failed': 'go to bin'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
@@ -391,7 +391,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 
 			# x:257 y:346
 			OperatableStateMachine.add('Action_TakeBag',
-										self.use_behavior(sara_flexbe_behaviors__Action_TakeBagSM, 'second bin/Action_TakeBag'),
+										self.use_behavior(Action_TakeBagSM, 'second bin/Action_TakeBag'),
 										transitions={'finished': 'go to drop the bag', 'failed': 'Missed It once'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
@@ -464,7 +464,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 
 			# x:65 y:53
 			OperatableStateMachine.add('Action_Pass_Door',
-										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Action_Pass_Door'),
+										self.use_behavior(Action_Pass_DoorSM, 'Action_Pass_Door'),
 										transitions={'Done': 'First bin', 'Fail': 'IllManageSomehow'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
 										remapping={'DoorName': 'DoorName'})

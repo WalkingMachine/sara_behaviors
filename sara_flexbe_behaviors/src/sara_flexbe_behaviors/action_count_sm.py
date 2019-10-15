@@ -16,7 +16,7 @@ from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.for_loop import ForLoop
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as sara_flexbe_behaviors__action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
 from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -41,7 +41,7 @@ class Action_countSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'action_turn')
+		self.add_behavior(action_turnSM, 'action_turn')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -223,7 +223,7 @@ class Action_countSM(Behavior):
 
 			# x:38 y:275
 			OperatableStateMachine.add('action_turn',
-										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'action_turn'),
+										self.use_behavior(action_turnSM, 'action_turn'),
 										transitions={'finished': 'Move head', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
