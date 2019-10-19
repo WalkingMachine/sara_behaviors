@@ -3,7 +3,7 @@
 <behavior name="Scenario_Receptionist">
 
 	<executable package_path="sara_flexbe_behaviors.scenario_receptionist_sm" class="Scenario_ReceptionistSM" />
-	<tagstring>2019, Party host</tagstring>
+	<tagstring>2019, Party host, scenario</tagstring>
 	<author>Quentin Gaillot</author>
 	<date>Sat Apr 27 2019</date>
 	<description>

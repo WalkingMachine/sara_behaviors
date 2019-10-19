@@ -76,7 +76,7 @@ class Scenario_ReceptionistSM(Behavior):
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
-		
+
 		# [/MANUAL_INIT]
 
 		# Behavior comments:
@@ -86,14 +86,14 @@ class Scenario_ReceptionistSM(Behavior):
 	def create(self):
 		# x:847 y:612, x:844 y:143
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
-		_state_machine.userdata.personAlreadyInLocation = "living room"
+		_state_machine.userdata.personAlreadyInLocation = "livingRoom"
 		_state_machine.userdata.personAlreadyInName = "John"
 		_state_machine.userdata.personAlreadyInDrink = "coke"
-		_state_machine.userdata.entranceLocation = "taxi"
+		_state_machine.userdata.entranceLocation = "entrance"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
-		
+
 		# [/MANUAL_CREATE]
 
 		# x:30 y:458, x:130 y:458
@@ -1187,5 +1187,5 @@ class Scenario_ReceptionistSM(Behavior):
 
 	# Private functions can be added inside the following tags
 	# [MANUAL_FUNC]
-	
+
 	# [/MANUAL_FUNC]
