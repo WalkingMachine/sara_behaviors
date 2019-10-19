@@ -21,9 +21,14 @@ from sara_flexbe_states.WonderlandGetEntityByID import WonderlandGetEntityByID
 from sara_flexbe_behaviors.wonderlandgetroom_sm import WonderlandGetRoomSM as sara_flexbe_behaviors__WonderlandGetRoomSM
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
 from sara_flexbe_states.TourGuide import TourGuide
+from flexbe_states.log_key_state import LogKeyState
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.decision_state import DecisionState
+from flexbe_states.wait_state import WaitState
+from sara_flexbe_behaviors.leftorright_sm import leftOrRightSM as sara_flexbe_behaviors__leftOrRightSM
 from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM as sara_flexbe_behaviors__Action_point_atSM
+from flexbe_states.check_condition_state import CheckConditionState
+from sara_flexbe_states.continue_button import ContinueButton
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -55,6 +60,7 @@ class ScenarioWhereIsThisSM(Behavior):
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'ExecuteTheSequence/Action_Move')
 		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'ExecuteTheSequence/Action_Pass_Door')
 		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'ExecuteTheSequence/Action_Move_toFinalWaypoint')
+		self.add_behavior(sara_flexbe_behaviors__leftOrRightSM, 'FinalPresentation/leftOrRight')
 		self.add_behavior(sara_flexbe_behaviors__Action_point_atSM, 'FinalPresentation/Action_point_at')
 
 		# Additional initialization code can be added inside the following tags
@@ -107,11 +113,11 @@ class ScenarioWhereIsThisSM(Behavior):
 			# x:208 y:55
 			OperatableStateMachine.add('GetContName',
 										CalculationState(calculation=lambda x: x.name),
-										transitions={'done': 'ItIsInThatRoomInsideThatCont'},
+										transitions={'done': 'TheRoomIsTheWaypoint'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'containerEntity', 'output_value': 'containerName'})
 
-			# x:153 y:249
+			# x:478 y:214
 			OperatableStateMachine.add('ItIsInThatRoomInsideThatCont',
 										SaraSay(sentence=lambda x: "The "+x[1]+" is in the " + x[2] +" inside the "+x[0]+".", input_keys=["roomName","targetObjectName","containerName"], emotion=0, block=True),
 										transitions={'done': 'TheRoomIsTheWaypoint'},
@@ -133,13 +139,13 @@ class ScenarioWhereIsThisSM(Behavior):
 			# x:70 y:38
 			OperatableStateMachine.add('GetRoomName',
 										CalculationState(calculation=lambda x: x.name),
-										transitions={'done': 'ItIsInThatRoom'},
+										transitions={'done': 'TheRoomIsTheWaypoint'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'roomEntity', 'output_value': 'roomName'})
 
-			# x:230 y:42
+			# x:147 y:157
 			OperatableStateMachine.add('ItIsInThatRoom',
-										SaraSay(sentence=lambda x: "The "+x[1]+" is in the " + x[0] +".", input_keys=["roomName","targetObjectName"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "The "+x[0]+" is in the " + x[1] +".", input_keys=["roomName","targetObjectName"], emotion=0, block=True),
 										transitions={'done': 'TheRoomIsTheWaypoint'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'roomName': 'roomName', 'targetObjectName': 'targetObjectName'})
@@ -152,16 +158,16 @@ class ScenarioWhereIsThisSM(Behavior):
 										remapping={'input_value': 'roomName', 'output_value': 'targetWaypoint'})
 
 
-		# x:35 y:435, x:260 y:443
+		# x:442 y:555, x:260 y:443
 		_sm_finalpresentation_2 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['targetObjectName', 'wonderlandEntity'])
 
 		with _sm_finalpresentation_2:
-			# x:75 y:48
-			OperatableStateMachine.add('ItsHere',
-										SaraSay(sentence=lambda x: x[0] + "is there.", input_keys=["targetObjectName"], emotion=0, block=True),
-										transitions={'done': 'GetEntitysPos'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'targetObjectName': 'targetObjectName'})
+			# x:593 y:212
+			OperatableStateMachine.add('leftOrRight',
+										self.use_behavior(sara_flexbe_behaviors__leftOrRightSM, 'FinalPresentation/leftOrRight'),
+										transitions={'finished': 'ItsHere', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'object': 'targetObjectName'})
 
 			# x:74 y:261
 			OperatableStateMachine.add('Action_point_at',
@@ -173,9 +179,22 @@ class ScenarioWhereIsThisSM(Behavior):
 			# x:102 y:135
 			OperatableStateMachine.add('GetEntitysPos',
 										CalculationState(calculation=lambda x: x.position),
-										transitions={'done': 'Action_point_at'},
+										transitions={'done': 'has pos'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'wonderlandEntity', 'output_value': 'entityPosition'})
+
+			# x:280 y:204
+			OperatableStateMachine.add('has pos',
+										CheckConditionState(predicate=lambda x: x.x or x.y or x.z),
+										transitions={'true': 'Action_point_at', 'false': 'failed'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'entityPosition'})
+
+			# x:530 y:377
+			OperatableStateMachine.add('ItsHere',
+										SaraSay(sentence="I'm going back to the information point", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:82 y:631, x:847 y:479
@@ -203,21 +222,21 @@ class ScenarioWhereIsThisSM(Behavior):
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'index': 'index', 'SequenceList': 'SequenceList'})
 
-			# x:441 y:295
+			# x:478 y:227
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'ExecuteTheSequence/Action_Move'),
 										transitions={'finished': 'nextIndex', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'arg'})
 
-			# x:512 y:412
+			# x:493 y:309
 			OperatableStateMachine.add('SaySomething',
 										SaraSay(sentence=lambda x: x[0], input_keys=["arg"], emotion=0, block=True),
 										transitions={'done': 'nextIndex'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'arg': 'arg'})
 
-			# x:444 y:177
+			# x:468 y:155
 			OperatableStateMachine.add('Action_Pass_Door',
 										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'ExecuteTheSequence/Action_Pass_Door'),
 										transitions={'Done': 'nextIndex', 'Fail': 'failed'},
@@ -231,7 +250,7 @@ class ScenarioWhereIsThisSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'index': 'index', 'SequenceList': 'SequenceList', 'output_value': 'arg'})
 
-			# x:207 y:323
+			# x:189 y:340
 			OperatableStateMachine.add('SetActionName',
 										FlexibleCalculationState(calculation=lambda x: x[1][x[0]][0], input_keys=["index","SequenceList"]),
 										transitions={'done': 'SelectAction'},
@@ -240,9 +259,9 @@ class ScenarioWhereIsThisSM(Behavior):
 
 			# x:342 y:351
 			OperatableStateMachine.add('SelectAction',
-										DecisionState(outcomes=["ask","passdoor","move"], conditions=lambda x: x),
-										transitions={'ask': 'SaySomething', 'passdoor': 'Action_Pass_Door', 'move': 'Action_Move'},
-										autonomy={'ask': Autonomy.Off, 'passdoor': Autonomy.Off, 'move': Autonomy.Off},
+										DecisionState(outcomes=["say","move","passdoor","wait"], conditions=lambda x: x),
+										transitions={'say': 'SaySomething', 'move': 'Action_Move', 'passdoor': 'Action_Pass_Door', 'wait': 'Wait'},
+										autonomy={'say': Autonomy.Off, 'move': Autonomy.Off, 'passdoor': Autonomy.Off, 'wait': Autonomy.Off},
 										remapping={'input_value': 'actionName'})
 
 			# x:106 y:486
@@ -251,6 +270,12 @@ class ScenarioWhereIsThisSM(Behavior):
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'targetWaypoint'})
+
+			# x:494 y:373
+			OperatableStateMachine.add('Wait',
+										WaitState(wait_time=1.0),
+										transitions={'done': 'nextIndex'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:254 y:666, x:1054 y:22
@@ -273,14 +298,14 @@ class ScenarioWhereIsThisSM(Behavior):
 			# x:393 y:82
 			OperatableStateMachine.add('GetWonderlandId',
 										CalculationState(calculation=lambda x: x.wonderlandId),
-										transitions={'done': 'WonderlandGetRoom'},
+										transitions={'done': 'log id'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'wonderlandEntity', 'output_value': 'wonderlandEntityId'})
 
 			# x:175 y:31
 			OperatableStateMachine.add('GetWonderlandEntity',
 										WonderlandGetEntityVerbal(),
-										transitions={'one': 'GetWonderlandId', 'multiple': 'GetWonderlandId', 'none': 'IFailed', 'error': 'IFailed'},
+										transitions={'one': 'GetWonderlandId', 'multiple': 'get first', 'none': 'IFailed', 'error': 'IFailed'},
 										autonomy={'one': Autonomy.Off, 'multiple': Autonomy.Off, 'none': Autonomy.Off, 'error': Autonomy.Off},
 										remapping={'name': 'targetObjectName', 'containers': 'containers', 'entities': 'entities', 'firstEntity': 'wonderlandEntity'})
 
@@ -338,7 +363,21 @@ class ScenarioWhereIsThisSM(Behavior):
 										TourGuide(),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off},
-										remapping={'object': 'targetObjectName', 'startingRoom': 'informationPointRoomName', 'endingRoom': 'roomName', 'sequence': 'sequence'})
+										remapping={'object': 'targetObjectName', 'startingRoom': 'informationPointRoomName', 'endingRoom': 'roomName', 'sequence': 'SequenceList'})
+
+			# x:536 y:16
+			OperatableStateMachine.add('get first',
+										CalculationState(calculation=lambda x: x[0]),
+										transitions={'done': 'GetWonderlandId'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'wonderlandEntity', 'output_value': 'wonderlandEntity'})
+
+			# x:681 y:47
+			OperatableStateMachine.add('log id',
+										LogKeyState(text="{}", severity=Logger.REPORT_HINT),
+										transitions={'done': 'WonderlandGetRoom'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'data': 'wonderlandEntityId'})
 
 
 		# x:97 y:633, x:567 y:94
@@ -402,12 +441,6 @@ class ScenarioWhereIsThisSM(Behavior):
 										transitions={'done': 'Action_Pass_Door'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:303 y:507
-			OperatableStateMachine.add('ImMovingToIt',
-										SaraSay(sentence="I'm moving to the Information Point", input_keys=[], emotion=1, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off})
-
 			# x:69 y:213
 			OperatableStateMachine.add('SetTheQuestion',
 										SetKey(Value="Where do you want me to go?"),
@@ -431,7 +464,7 @@ class ScenarioWhereIsThisSM(Behavior):
 			# x:136 y:384
 			OperatableStateMachine.add('NLUGetRoom',
 										SaraNLUgetRoom(),
-										transitions={'understood': 'ImMovingToIt', 'not_understood': 'OopsIMisunderstood', 'fail': 'OopsIMisunderstood'},
+										transitions={'understood': 'finished', 'not_understood': 'OopsIMisunderstood', 'fail': 'OopsIMisunderstood'},
 										autonomy={'understood': Autonomy.Off, 'not_understood': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'sentence': 'answer', 'answer': 'informationPointRoomName'})
 
@@ -445,12 +478,11 @@ class ScenarioWhereIsThisSM(Behavior):
 
 
 		with _state_machine:
-			# x:126 y:32
-			OperatableStateMachine.add('InitialEntrance',
-										_sm_initialentrance_7,
-										transitions={'finished': 'GoToInformationPoint', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'entranceDoorName': 'entranceDoorName', 'informationPointRoomName': 'informationPointRoomName'})
+			# x:5 y:55
+			OperatableStateMachine.add('continue',
+										ContinueButton(),
+										transitions={'true': 'InitialEntrance', 'false': 'InitialEntrance'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
 
 			# x:372 y:37
 			OperatableStateMachine.add('GoToInformationPoint',
@@ -486,6 +518,13 @@ class ScenarioWhereIsThisSM(Behavior):
 										transitions={'finished': 'GoToInformationPoint', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'targetObjectName': 'targetObjectName', 'wonderlandEntity': 'wonderlandEntity'})
+
+			# x:126 y:32
+			OperatableStateMachine.add('InitialEntrance',
+										_sm_initialentrance_7,
+										transitions={'finished': 'GoToInformationPoint', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'entranceDoorName': 'entranceDoorName', 'informationPointRoomName': 'informationPointRoomName'})
 
 
 		return _state_machine

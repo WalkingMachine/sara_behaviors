@@ -86,10 +86,10 @@ class Scenario_ReceptionistSM(Behavior):
 	def create(self):
 		# x:847 y:612, x:844 y:143
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
-		_state_machine.userdata.personAlreadyInLocation = "living room"
+		_state_machine.userdata.personAlreadyInLocation = "livingRoom"
 		_state_machine.userdata.personAlreadyInName = "John"
 		_state_machine.userdata.personAlreadyInDrink = "coke"
-		_state_machine.userdata.entranceLocation = "inspection"
+		_state_machine.userdata.entranceLocation = "entrance"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]

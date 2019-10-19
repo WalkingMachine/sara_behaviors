@@ -10,6 +10,7 @@
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.WonderlandGetEntityByID import WonderlandGetEntityByID
 from flexbe_states.calculation_state import CalculationState
+from flexbe_states.check_condition_state import CheckConditionState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -49,7 +50,7 @@ class WonderlandGetRoomSM(Behavior):
 	def create(self):
 		# x:42 y:502, x:623 y:168
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['EntityId'], output_keys=['ContainerId'])
-		_state_machine.userdata.EntityId = ""
+		_state_machine.userdata.EntityId = 45
 		_state_machine.userdata.ContainerId = ""
 
 		# Additional creation code can be added inside the following tags
@@ -66,7 +67,7 @@ class WonderlandGetRoomSM(Behavior):
 										autonomy={'found': Autonomy.Off, 'not_found': Autonomy.Off, 'error': Autonomy.Off},
 										remapping={'id': 'EntityId', 'entity': 'Entity', 'depth_position': 'depth_position', 'depth_waypoint': 'depth_waypoint'})
 
-			# x:121 y:326
+			# x:257 y:303
 			OperatableStateMachine.add('GetWonderlandEntity_2',
 										WonderlandGetEntityByID(),
 										transitions={'found': 'ClimbALevel', 'not_found': 'ThisIsTheContainer', 'error': 'ThisIsTheContainer'},
@@ -90,9 +91,16 @@ class WonderlandGetRoomSM(Behavior):
 			# x:29 y:172
 			OperatableStateMachine.add('GetContainer',
 										CalculationState(calculation=lambda x: x.containerId),
-										transitions={'done': 'GetWonderlandEntity_2'},
+										transitions={'done': 'if as container'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'Entity', 'output_value': 'ContainerId'})
+
+			# x:39 y:291
+			OperatableStateMachine.add('if as container',
+										CheckConditionState(predicate=lambda x: x.containerId),
+										transitions={'true': 'GetWonderlandEntity_2', 'false': 'ThisIsTheContainer'},
+										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
+										remapping={'input_value': 'Entity'})
 
 
 		return _state_machine

@@ -12,10 +12,11 @@
 
 
 	<!-- Contained Behaviors -->
-	<contains name="Action_Ask" />
-	<contains name="Action_Pass_Door" />
 	<contains name="Action_Move" />
+	<contains name="Action_Ask" />
 	<contains name="WonderlandGetRoom" />
+	<contains name="Action_Pass_Door" />
+	<contains name="leftOrRight" />
 	<contains name="Action_point_at" />
 
 	<!-- Available Parameters -->

@@ -112,7 +112,10 @@ class WonderlandGetEntityVerbal(EventState):
 
         entity.waypoint.x = data['entityWaypointX']
         entity.waypoint.y = data['entityWaypointY']
-        entity.waypoint.theta = data['entityWaypointYaw']/180*3.14159
+        if data['entityWaypointYaw']:
+            entity.waypoint.theta = data['entityWaypointYaw']/180*3.14159
+        else:
+            entity.waypoint.theta = 0
 
         entity.containerId = data['entityContainer']
 
