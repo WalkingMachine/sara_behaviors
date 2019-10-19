@@ -58,7 +58,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
-
+		
 		# [/MANUAL_INIT]
 
 		# Behavior comments:
@@ -85,7 +85,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
-
+		
 		# [/MANUAL_CREATE]
 
 		# x:600 y:617, x:666 y:442
@@ -325,11 +325,11 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 		# x:946 y:467, x:907 y:75
 		_sm_second_bin_6 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['bin2Waypoint', 'bin2Height', 'dropzoneWaypoint', 'exit_door'])
 
-		with _sm_first_bin_6:
-			# x:30 y:27
+		with _sm_second_bin_6:
+			# x:57 y:26
 			OperatableStateMachine.add('Init_Sequence',
-										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'First bin/Init_Sequence'),
-										transitions={'finished': 'say remove chairs', 'failed': 'say remove chairs'},
+										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'second bin/Init_Sequence'),
+										transitions={'finished': 'go to bin', 'failed': 'go to bin'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 			# x:267 y:432
@@ -345,7 +345,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 										transitions={'finished': 'go to drop the bag', 'failed': 'Missed It once'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
-			# x:377 y:52
+			# x:275 y:35
 			OperatableStateMachine.add('go to bin',
 										_sm_go_to_bin_1,
 										transitions={'finished': 'find the bin', 'failed': 'failed'},
@@ -369,19 +369,6 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 			OperatableStateMachine.add('Missed It once',
 										SaraSay(sentence="I will try one more time.", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'Try twice'},
-										autonomy={'done': Autonomy.Off})
-
-			# x:267 y:432
-			OperatableStateMachine.add('go to drop the bag',
-										_sm_go_to_drop_the_bag_0,
-										transitions={'finished': 'finished', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'dropzoneWaypoint': 'dropzoneWaypoint', 'exit_door': 'exit_door'})
-
-			# x:212 y:42
-			OperatableStateMachine.add('say remove chairs',
-										SaraSay(sentence="I am ready to take out the garbage. Please remove all the chairs from the kitchen table.", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'go to bin'},
 										autonomy={'done': Autonomy.Off})
 
 
@@ -463,7 +450,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'bin2Waypoint': 'bin2Waypoint', 'bin2Height': 'bin2Height', 'dropzoneWaypoint': 'dropzone2Waypoint', 'exit_door': 'exit_door'})
 
-			# x:131 y:167
+			# x:94 y:153
 			OperatableStateMachine.add('IllManageSomehow',
 										SaraSay(sentence="Hmmm. This is a hard door to pass...", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'First bin'},
@@ -488,5 +475,5 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 
 	# Private functions can be added inside the following tags
 	# [MANUAL_FUNC]
-
+	
 	# [/MANUAL_FUNC]
