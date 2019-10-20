@@ -76,7 +76,7 @@ class Scenario_ReceptionistSM(Behavior):
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
-
+		
 		# [/MANUAL_INIT]
 
 		# Behavior comments:
@@ -86,14 +86,14 @@ class Scenario_ReceptionistSM(Behavior):
 	def create(self):
 		# x:847 y:612, x:844 y:143
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
-		_state_machine.userdata.personAlreadyInLocation = "livingRoom"
+		_state_machine.userdata.personAlreadyInLocation = "living_room"
 		_state_machine.userdata.personAlreadyInName = "John"
 		_state_machine.userdata.personAlreadyInDrink = "coke"
 		_state_machine.userdata.entranceLocation = "entrance"
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
-
+		
 		# [/MANUAL_CREATE]
 
 		# x:30 y:458, x:130 y:458
@@ -878,7 +878,7 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:465 y:492
 			OperatableStateMachine.add('filter the list',
-										FilterKey(filter_function=lambda x: x[0].name == "person" && x[0].ID != x[1]  && x[0].ID != x[2], input_keys=["entity_list", "Guest1ID", "Guest2ID"]),
+										FilterKey(filter_function=lambda x: x[0].name == "person" and x[0].ID != x[1]  and x[0].ID != x[2], input_keys=["entity_list", "Guest1ID", "Guest2ID"]),
 										transitions={'not_empty': 'take first entity', 'empty': 'say not/cannot found person already in but say name/drink'},
 										autonomy={'not_empty': Autonomy.Off, 'empty': Autonomy.Off},
 										remapping={'entity_list': 'entity_list', 'Guest1ID': 'Guest1ID', 'Guest2ID': 'Guest2ID', 'output_list': 'output_list'})
@@ -1187,5 +1187,5 @@ class Scenario_ReceptionistSM(Behavior):
 
 	# Private functions can be added inside the following tags
 	# [MANUAL_FUNC]
-
+	
 	# [/MANUAL_FUNC]
