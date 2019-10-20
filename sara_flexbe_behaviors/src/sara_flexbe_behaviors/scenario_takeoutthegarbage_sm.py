@@ -74,12 +74,12 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 	def create(self):
 		# x:738 y:371, x:736 y:220
 		_state_machine = OperatableStateMachine(outcomes=['finished', 'failed'])
-		_state_machine.userdata.bin1Waypoint = "trash bin 3"
-		_state_machine.userdata.bin2Waypoint = "trash bin 3"
+		_state_machine.userdata.bin1Waypoint = "trash bin"
+		_state_machine.userdata.bin2Waypoint = "trash bin 2"
 		_state_machine.userdata.bin1Height = "1"
 		_state_machine.userdata.bin2Height = "1"
-		_state_machine.userdata.dropzone1Waypoint = "entrance"
-		_state_machine.userdata.dropzone2Waypoint = "entrance"
+		_state_machine.userdata.dropzone1Waypoint = "dropZone"
+		_state_machine.userdata.dropzone2Waypoint = "dropZone"
 		_state_machine.userdata.DoorName = "door_1_entry"
 		_state_machine.userdata.exit_door = "door_2_exit"
 
@@ -142,7 +142,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 			# x:285 y:504
 			OperatableStateMachine.add('move',
 										SaraMoveBase(reference="map"),
-										transitions={'arrived': 'redo ajustements de la position', 'failed': 'failed'},
+										transitions={'arrived': 'redo ajustements de la position', 'failed': 'finished'},
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'poseToBin'})
 
@@ -317,7 +317,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 			# x:287 y:464
 			OperatableStateMachine.add('move',
 										SaraMoveBase(reference="map"),
-										transitions={'arrived': 'redo ajustements de la position', 'failed': 'failed'},
+										transitions={'arrived': 'redo ajustements de la position', 'failed': 'finished'},
 										autonomy={'arrived': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'pose': 'poseToBin'})
 
@@ -446,7 +446,7 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 			# x:267 y:376
 			OperatableStateMachine.add('second bin',
 										_sm_second_bin_6,
-										transitions={'finished': 'finished', 'failed': 'failed'},
+										transitions={'finished': 'say end', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'bin2Waypoint': 'bin2Waypoint', 'bin2Height': 'bin2Height', 'dropzoneWaypoint': 'dropzone2Waypoint', 'exit_door': 'exit_door'})
 
@@ -468,6 +468,12 @@ class Scenario_TakeOutTheGarbageSM(Behavior):
 										ContinueButton(),
 										transitions={'true': 'Action_Pass_Door', 'false': 'Action_Pass_Door'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
+
+			# x:512 y:389
+			OperatableStateMachine.add('say end',
+										SaraSay(sentence="Yay! I have completed this task.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
 
 
 		return _state_machine
