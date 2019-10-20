@@ -70,7 +70,7 @@ Tu peux mettre le nom d'une place au lieu d'une position (Merci Phil)
 		with _sm_look_around_0:
 			# x:78 y:40
 			OperatableStateMachine.add('set pitch',
-										SetKey(Value=0),
+										SetKey(Value=0.6),
 										transitions={'done': 'get angle'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'pitch'})
