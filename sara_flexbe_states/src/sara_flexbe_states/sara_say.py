@@ -10,14 +10,14 @@ from wm_tts.msg import say
 from wm_tts.srv import say_service, say_serviceRequest
 from std_msgs.msg import UInt8
 import types
-
+import random
 
 class SaraSay(EventState):
     """
     Make sara say something
 
     -- sentence      string      What to say.
-                                 Can be a simple String or a lanmda function using input_keys.
+                                 Can be a simple String, a list of strings from which one will be randomly picked 					 or a lambda function using input_keys.
                                  (e.g., lambda x: "I found the "x[0] + " on the " + x[1] + "!").
     -- input_keys    string[]    List of available input keys.
     -- emotion       int         Set the facial expression.
@@ -95,10 +95,16 @@ class SaraSay(EventState):
             self.emotionPub.publish(self.emotion_topic, self.emotion)
 
         # Set the message according to the lambda function if needed.
+	#If there is a list of messages, one of the messages will be picked at random.
         if isinstance(self.sentence, types.LambdaType) and self.sentence.__name__ == "<lambda>":
             self.msg.sentence = self.sentence(map(lambda key: userdata[key], list(reversed(list(self._input_keys)))))
-        else:
+        elif not isinstance(self.sentence, basestring):
+		self.msg.sentence=self.sentence[random.randint(0,len(self.sentence))]
+	else:
             self.msg.sentence = self.sentence
+	
+
+
         Logger.loginfo('Sara is saying: "' + str(self.msg.sentence) + '".')
 
         # Say the thing if not blocking
