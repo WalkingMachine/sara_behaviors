@@ -8,7 +8,9 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.run_trajectory import RunTrajectory
+from sara_flexbe_states.set_gripper_state import SetGripperState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -53,11 +55,24 @@ class Init_SequenceSM(Behavior):
 
 
 		with _state_machine:
-			# x:60 y:43
-			OperatableStateMachine.add('repos',
-										RunTrajectory(file="repos"),
-										transitions={'done': 'finished'},
+			# x:42 y:72
+			OperatableStateMachine.add('INIT HEAD',
+										SaraSetHeadAngle(pitch=0.4, yaw=0),
+										transitions={'done': 'repos'},
 										autonomy={'done': Autonomy.Off})
+
+			# x:205 y:72
+			OperatableStateMachine.add('repos',
+										RunTrajectory(file="repos", duration=0),
+										transitions={'done': 'opengrip'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:506 y:86
+			OperatableStateMachine.add('opengrip',
+										SetGripperState(width=0.1, effort=0),
+										transitions={'object': 'finished', 'no_object': 'finished'},
+										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
+										remapping={'object_size': 'object_size'})
 
 
 		return _state_machine

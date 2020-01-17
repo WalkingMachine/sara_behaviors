@@ -13,7 +13,7 @@
 
 	<!-- Contained Behaviors -->
 	<contains name="Action_Move" />
-	<contains name="Action_findPerson" />
+	<contains name="action_turn" />
 	<contains name="LookAtClosest" />
 	<contains name="Init_Sequence" />
 

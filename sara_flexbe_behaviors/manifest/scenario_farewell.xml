@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Scenario_Farewell">
+
+	<executable package_path="sara_flexbe_behaviors.scenario_farewell_sm" class="Scenario_FarewellSM" />
+	<tagstring></tagstring>
+	<author>Huynh-Anh Le</author>
+	<date>Sun Jun 16 2019</date>
+	<description>
+		Scenario farewell
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Farewell" />
+	<contains name="Action_Move" />
+
+	<!-- Available Parameters -->
+
+</behavior>
