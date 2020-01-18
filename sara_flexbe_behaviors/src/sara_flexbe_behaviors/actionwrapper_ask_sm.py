@@ -12,7 +12,7 @@ from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as sara_flexbe_behaviors__Action_findPersonSM
+from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as Action_findPersonSM
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.SetRosParamKey import SetRosParamKey
 from flexbe_states.log_key_state import LogKeyState
@@ -41,7 +41,7 @@ class ActionWrapper_AskSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Action_findPerson')
+		self.add_behavior(Action_findPersonSM, 'Action_findPerson')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -121,7 +121,7 @@ class ActionWrapper_AskSM(Behavior):
 
 			# x:23 y:285
 			OperatableStateMachine.add('Action_findPerson',
-										self.use_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'Action_findPerson'),
+										self.use_behavior(Action_findPersonSM, 'Action_findPerson'),
 										transitions={'done': 'fisrtSentence', 'pas_done': 'NoPerson'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
 										remapping={'className': 'personKey', 'entity': 'entity'})

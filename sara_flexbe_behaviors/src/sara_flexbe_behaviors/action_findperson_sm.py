@@ -14,7 +14,7 @@ from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as sara_flexbe_behaviors__action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -38,7 +38,7 @@ class Action_findPersonSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'Container/Rotation/action_turn')
+		self.add_behavior(action_turnSM, 'Container/Rotation/action_turn')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -73,7 +73,7 @@ class Action_findPersonSM(Behavior):
 
 			# x:613 y:470
 			OperatableStateMachine.add('action_turn',
-										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'Container/Rotation/action_turn'),
+										self.use_behavior(action_turnSM, 'Container/Rotation/action_turn'),
 										transitions={'finished': 'Look Right', 'failed': 'Look Right'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})

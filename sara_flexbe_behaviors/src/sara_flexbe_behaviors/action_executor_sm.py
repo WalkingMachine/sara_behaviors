@@ -9,17 +9,17 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_behaviors.actionwrapper_ask_sm import ActionWrapper_AskSM as sara_flexbe_behaviors__ActionWrapper_AskSM
-from sara_flexbe_behaviors.actionwrapper_count_sm import ActionWrapper_CountSM as sara_flexbe_behaviors__ActionWrapper_CountSM
-from sara_flexbe_behaviors.actionwrapper_find_sm import ActionWrapper_FindSM as sara_flexbe_behaviors__ActionWrapper_FindSM
-from sara_flexbe_behaviors.actionwrapper_find_person_sm import ActionWrapper_Find_PersonSM as sara_flexbe_behaviors__ActionWrapper_Find_PersonSM
-from sara_flexbe_behaviors.actionwrapper_follow_sm import ActionWrapper_FollowSM as sara_flexbe_behaviors__ActionWrapper_FollowSM
-from sara_flexbe_behaviors.actionwrapper_give_sm import ActionWrapper_GiveSM as sara_flexbe_behaviors__ActionWrapper_GiveSM
-from sara_flexbe_behaviors.actionwrapper_move_sm import ActionWrapper_MoveSM as sara_flexbe_behaviors__ActionWrapper_MoveSM
-from sara_flexbe_behaviors.actionwrapper_place_sm import ActionWrapper_PlaceSM as sara_flexbe_behaviors__ActionWrapper_PlaceSM
-from sara_flexbe_behaviors.actionwrapper_say_sm import ActionWrapper_SaySM as sara_flexbe_behaviors__ActionWrapper_SaySM
-from sara_flexbe_behaviors.actionwrapper_answer_sm import ActionWrapper_AnswerSM as sara_flexbe_behaviors__ActionWrapper_AnswerSM
-from sara_flexbe_behaviors.actionwrapper_pick_sm import ActionWrapper_PickSM as sara_flexbe_behaviors__ActionWrapper_PickSM
+from sara_flexbe_behaviors.actionwrapper_ask_sm import ActionWrapper_AskSM as ActionWrapper_AskSM
+from sara_flexbe_behaviors.actionwrapper_count_sm import ActionWrapper_CountSM as ActionWrapper_CountSM
+from sara_flexbe_behaviors.actionwrapper_find_sm import ActionWrapper_FindSM as ActionWrapper_FindSM
+from sara_flexbe_behaviors.actionwrapper_find_person_sm import ActionWrapper_Find_PersonSM as ActionWrapper_Find_PersonSM
+from sara_flexbe_behaviors.actionwrapper_follow_sm import ActionWrapper_FollowSM as ActionWrapper_FollowSM
+from sara_flexbe_behaviors.actionwrapper_give_sm import ActionWrapper_GiveSM as ActionWrapper_GiveSM
+from sara_flexbe_behaviors.actionwrapper_move_sm import ActionWrapper_MoveSM as ActionWrapper_MoveSM
+from sara_flexbe_behaviors.actionwrapper_place_sm import ActionWrapper_PlaceSM as ActionWrapper_PlaceSM
+from sara_flexbe_behaviors.actionwrapper_say_sm import ActionWrapper_SaySM as ActionWrapper_SaySM
+from sara_flexbe_behaviors.actionwrapper_answer_sm import ActionWrapper_AnswerSM as ActionWrapper_AnswerSM
+from sara_flexbe_behaviors.actionwrapper_pick_sm import ActionWrapper_PickSM as ActionWrapper_PickSM
 from flexbe_states.decision_state import DecisionState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -44,17 +44,17 @@ class Action_ExecutorSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_AskSM, 'ActionWrapper_Ask')
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_CountSM, 'ActionWrapper_Count')
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_FindSM, 'ActionWrapper_Find')
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_Find_PersonSM, 'ActionWrapper_Find_Person')
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_FollowSM, 'ActionWrapper_Follow')
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_GiveSM, 'ActionWrapper_Give')
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_MoveSM, 'ActionWrapper_Move')
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_PlaceSM, 'ActionWrapper_Place')
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_SaySM, 'ActionWrapper_Say')
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_AnswerSM, 'ActionWrapper_Answer')
-		self.add_behavior(sara_flexbe_behaviors__ActionWrapper_PickSM, 'ActionWrapper_Pick')
+		self.add_behavior(ActionWrapper_AskSM, 'ActionWrapper_Ask')
+		self.add_behavior(ActionWrapper_CountSM, 'ActionWrapper_Count')
+		self.add_behavior(ActionWrapper_FindSM, 'ActionWrapper_Find')
+		self.add_behavior(ActionWrapper_Find_PersonSM, 'ActionWrapper_Find_Person')
+		self.add_behavior(ActionWrapper_FollowSM, 'ActionWrapper_Follow')
+		self.add_behavior(ActionWrapper_GiveSM, 'ActionWrapper_Give')
+		self.add_behavior(ActionWrapper_MoveSM, 'ActionWrapper_Move')
+		self.add_behavior(ActionWrapper_PlaceSM, 'ActionWrapper_Place')
+		self.add_behavior(ActionWrapper_SaySM, 'ActionWrapper_Say')
+		self.add_behavior(ActionWrapper_AnswerSM, 'ActionWrapper_Answer')
+		self.add_behavior(ActionWrapper_PickSM, 'ActionWrapper_Pick')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -86,76 +86,76 @@ class Action_ExecutorSM(Behavior):
 
 			# x:479 y:59
 			OperatableStateMachine.add('ActionWrapper_Ask',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_AskSM, 'ActionWrapper_Ask'),
+										self.use_behavior(ActionWrapper_AskSM, 'ActionWrapper_Ask'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
 
 			# x:466 y:119
 			OperatableStateMachine.add('ActionWrapper_Count',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_CountSM, 'ActionWrapper_Count'),
+										self.use_behavior(ActionWrapper_CountSM, 'ActionWrapper_Count'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
 
 			# x:475 y:236
 			OperatableStateMachine.add('ActionWrapper_Find',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_FindSM, 'ActionWrapper_Find'),
+										self.use_behavior(ActionWrapper_FindSM, 'ActionWrapper_Find'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
 
 			# x:267 y:127
 			OperatableStateMachine.add('ActionWrapper_Find_Person',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_Find_PersonSM, 'ActionWrapper_Find_Person'),
+										self.use_behavior(ActionWrapper_Find_PersonSM, 'ActionWrapper_Find_Person'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
 
 			# x:464 y:296
 			OperatableStateMachine.add('ActionWrapper_Follow',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_FollowSM, 'ActionWrapper_Follow'),
+										self.use_behavior(ActionWrapper_FollowSM, 'ActionWrapper_Follow'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
 
 			# x:471 y:364
 			OperatableStateMachine.add('ActionWrapper_Give',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_GiveSM, 'ActionWrapper_Give'),
+										self.use_behavior(ActionWrapper_GiveSM, 'ActionWrapper_Give'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
 
 			# x:467 y:432
 			OperatableStateMachine.add('ActionWrapper_Move',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_MoveSM, 'ActionWrapper_Move'),
+										self.use_behavior(ActionWrapper_MoveSM, 'ActionWrapper_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
 
 			# x:465 y:530
 			OperatableStateMachine.add('ActionWrapper_Place',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_PlaceSM, 'ActionWrapper_Place'),
+										self.use_behavior(ActionWrapper_PlaceSM, 'ActionWrapper_Place'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
 
 			# x:476 y:589
 			OperatableStateMachine.add('ActionWrapper_Say',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_SaySM, 'ActionWrapper_Say'),
+										self.use_behavior(ActionWrapper_SaySM, 'ActionWrapper_Say'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'Action'})
 
 			# x:304 y:51
 			OperatableStateMachine.add('ActionWrapper_Answer',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_AnswerSM, 'ActionWrapper_Answer'),
+										self.use_behavior(ActionWrapper_AnswerSM, 'ActionWrapper_Answer'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit})
 
 			# x:632 y:432
 			OperatableStateMachine.add('ActionWrapper_Pick',
-										self.use_behavior(sara_flexbe_behaviors__ActionWrapper_PickSM, 'ActionWrapper_Pick'),
+										self.use_behavior(ActionWrapper_PickSM, 'ActionWrapper_Pick'),
 										transitions={'finished': 'finished', 'failed': 'failed', 'critical_fail': 'critical_fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Action': 'Action'})

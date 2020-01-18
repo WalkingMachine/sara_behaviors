@@ -9,12 +9,12 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.GetRosParam import GetRosParam
-from sara_flexbe_behaviors.action_give_sm import Action_GiveSM as sara_flexbe_behaviors__Action_GiveSM
+from sara_flexbe_behaviors.action_give_sm import Action_GiveSM as Action_GiveSM
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.calculation_state import CalculationState
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.get_speech import GetSpeech
-from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as sara_flexbe_behaviors__Action_findPersonSM
+from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as Action_findPersonSM
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_states.SetKey import SetKey
 # Additional imports can be added inside the following tags
@@ -40,9 +40,9 @@ class ActionWrapper_GiveSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_GiveSM, 'Action_Give')
-		self.add_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'get_person/Action_findPerson_2')
-		self.add_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'get_person/Action_findPerson')
+		self.add_behavior(Action_GiveSM, 'Action_Give')
+		self.add_behavior(Action_findPersonSM, 'get_person/Action_findPerson_2')
+		self.add_behavior(Action_findPersonSM, 'get_person/Action_findPerson')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -96,14 +96,14 @@ class ActionWrapper_GiveSM(Behavior):
 
 			# x:338 y:105
 			OperatableStateMachine.add('Action_findPerson_2',
-										self.use_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'get_person/Action_findPerson_2'),
+										self.use_behavior(Action_findPersonSM, 'get_person/Action_findPerson_2'),
 										transitions={'done': 'done', 'pas_done': 'pas_done'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
 										remapping={'className': 'className', 'entity': 'entity'})
 
 			# x:21 y:223
 			OperatableStateMachine.add('Action_findPerson',
-										self.use_behavior(sara_flexbe_behaviors__Action_findPersonSM, 'get_person/Action_findPerson'),
+										self.use_behavior(Action_findPersonSM, 'get_person/Action_findPerson'),
 										transitions={'done': 'Is_Person', 'pas_done': 'Action_findPerson_2'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
 										remapping={'className': 'className', 'entity': 'entity'})
@@ -133,7 +133,7 @@ class ActionWrapper_GiveSM(Behavior):
 
 			# x:369 y:92
 			OperatableStateMachine.add('Action_Give',
-										self.use_behavior(sara_flexbe_behaviors__Action_GiveSM, 'Action_Give'),
+										self.use_behavior(Action_GiveSM, 'Action_Give'),
 										transitions={'Given': 'empty hand', 'Person_not_found': 'Person_Lost', 'No_object_in_hand': 'cause1', 'fail': 'cause3'},
 										autonomy={'Given': Autonomy.Inherit, 'Person_not_found': Autonomy.Inherit, 'No_object_in_hand': Autonomy.Inherit, 'fail': Autonomy.Inherit})
 

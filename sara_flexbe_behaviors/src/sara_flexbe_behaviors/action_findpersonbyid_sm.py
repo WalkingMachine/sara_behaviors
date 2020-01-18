@@ -12,7 +12,7 @@ from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as sara_flexbe_behaviors__action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
 from flexbe_states.check_condition_state import CheckConditionState
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -37,7 +37,7 @@ class Action_findPersonByIDSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'Container/Rotation/action_turn')
+		self.add_behavior(action_turnSM, 'Container/Rotation/action_turn')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -73,7 +73,7 @@ class Action_findPersonByIDSM(Behavior):
 
 			# x:613 y:470
 			OperatableStateMachine.add('action_turn',
-										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'Container/Rotation/action_turn'),
+										self.use_behavior(action_turnSM, 'Container/Rotation/action_turn'),
 										transitions={'finished': 'check is cpt is 1', 'failed': 'check is cpt is 1'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation'})
