@@ -51,7 +51,7 @@ Demande le id de la personne a suivre
 	def create(self):
 		# x:272 y:55
 		_state_machine = OperatableStateMachine(outcomes=['failed'], input_keys=['ID'])
-		_state_machine.userdata.ID = 4
+		_state_machine.userdata.ID = 1
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
@@ -117,7 +117,7 @@ Demande le id de la personne a suivre
 		with _sm_turn_head_1:
 			# x:54 y:55
 			OperatableStateMachine.add('turn r',
-										SaraSetHeadAngle(pitch=0, yaw=-1.5),
+										SaraSetHeadAngle(pitch=-0.1, yaw=-1.5),
 										transitions={'done': 'w3'},
 										autonomy={'done': Autonomy.Off})
 
@@ -129,7 +129,7 @@ Demande le id de la personne a suivre
 
 			# x:727 y:309
 			OperatableStateMachine.add('turn right',
-										SaraSetHeadAngle(pitch=0, yaw=-1.5),
+										SaraSetHeadAngle(pitch=-0.1, yaw=-1.5),
 										transitions={'done': 'wait2'},
 										autonomy={'done': Autonomy.Off})
 
@@ -147,13 +147,13 @@ Demande le id de la personne a suivre
 
 			# x:383 y:57
 			OperatableStateMachine.add('turn left',
-										SaraSetHeadAngle(pitch=0, yaw=1.5),
+										SaraSetHeadAngle(pitch=-0.1, yaw=1.5),
 										transitions={'done': 'wait3'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:728 y:69
 			OperatableStateMachine.add('center1',
-										SaraSetHeadAngle(pitch=0, yaw=0),
+										SaraSetHeadAngle(pitch=-0.1, yaw=0),
 										transitions={'done': 'wait1'},
 										autonomy={'done': Autonomy.Off})
 
@@ -165,7 +165,7 @@ Demande le id de la personne a suivre
 
 			# x:389 y:308
 			OperatableStateMachine.add('center2',
-										SaraSetHeadAngle(pitch=0, yaw=0),
+										SaraSetHeadAngle(pitch=-0.1, yaw=0),
 										transitions={'done': 'wait4'},
 										autonomy={'done': Autonomy.Off})
 
@@ -247,7 +247,7 @@ Demande le id de la personne a suivre
 		with _sm_follow_5:
 			# x:65 y:167
 			OperatableStateMachine.add('follow',
-										SaraFollow(distance=1.5, ReplanPeriod=1),
+										SaraFollow(distance=1.5, ReplanPeriod=3),
 										transitions={'failed': 'follow'},
 										autonomy={'failed': Autonomy.Off},
 										remapping={'ID': 'ID'})

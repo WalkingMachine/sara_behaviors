@@ -3,68 +3,65 @@
 
 import json
 
-import requests
+import requests,math
 from flexbe_core import EventState, Logger
 from sara_msgs.msg import Entity, Entities
 
+
 """
-Created on 15/05/2018
+Created on 05/07/2019
 
-@author: Lucas Maurice
+@author: Huynh-Anh Le
 """
 
 
-class WonderlandGetEntityVerbal(EventState):
+class ClosestObject(EventState):
     '''
     Read the position of a room in a json string
-    ># name             string         Recognition name of the object
-    ># containers       string array   Array of containers recognition name (can be empty) on single container
+    ># object             the object to be found         Recognition name of the object
 
-    #> entities         sara_msgs/Entities   list of entities
+    <= found              return when one entity exist
+    <= not_found             return when no entity exist
 
-    <= one              return when one entity exist
-    <= multiple         return when more than one entity exist
-    <= none             return when no entity exist
-    <= error            return when error reading data
     '''
 
     def __init__(self):
         # See example_state.py for basic explanations.
-        super(WonderlandGetEntityVerbal, self).__init__(outcomes=['one', 'multiple', 'none', 'error'],
-                                                        input_keys=['name', 'containers'],
-                                                        output_keys=['entities', 'firstEntity'])
+        super(ClosestObject, self).__init__(outcomes=['found', 'not_found', "non_existant"],
+                                                        input_keys=['object'],
+                                                        output_keys=['angle','closestObject'])
         self.entities = []
 
     def execute(self, userdata):
 
-        userdata.entities = self.entities
-        if len(self.entities) == 0:
-            return 'none'
-        elif len(self.entities) == 1:
-            userdata.firstEntity = self.entities[0]
-            return 'one'
-        elif len(self.entities) > 1:
-            return 'multiple'
-        else:
-            return 'none'
+        angle, closest = self.getclosest(userdata.object)
+        if angle is None or closest is None:
+            return "non_existant"
 
-    def on_enter(self, userdata):
+        userdata.closestObject = closest
+        userdata.angle = angle
+
+        if closest:
+            return "found"
+        else:
+            return "not_found"
+
+
+    def getEntities(self, name, containers):
         # Generate URL to contact
 
-        if type(userdata.name) is str:
-            url = "http://wonderland:8000/api/entity?entityClass=" + str(userdata.name)
+        if type(name) is str:
+            url = "http://wonderland:8000/api/entity?entityClass=" + str(name)
         else:
             url = "http://wonderland:8000/api/entity?none"
 
-        if type(userdata.containers) is str:
-            url += "&entityContainer=" + userdata.containers
+        if type(containers) is str:
+            url += "&entityContainer=" + containers
 
-        elif type(userdata.containers) is list:
-            for container in userdata.containers:
+        elif type(containers) is list:
+            for container in containers:
                 if type(container) is str:
                     url += "&entityContainer=" + container
-
-        Logger.logwarn(url)
 
         # try the request
         try:
@@ -76,14 +73,38 @@ class WonderlandGetEntityVerbal(EventState):
         # parse parameter json data
         data = json.loads(response.content)
 
-        Logger.loginfo(data)
-
-        self.entities = []
+        entities = []
         for entityData in data:
             if 'entityId' in entityData:
-                self.entities.append(self.generateEntity(entityData))
+                entities.append(self.generateEntity(entityData))
 
-        Logger.loginfo(self.entities)
+        return entities
+
+
+    def getclosest(self,item):
+        min = 100000
+
+        item=self.getEntities(item,"")
+        if not item:
+            Logger.logerr("Cannot get object")
+            return None, None
+        item = item[0]
+
+        for i in self.getEntities("",""):
+            if i.wonderlandId != item.wonderlandId :
+                distance = ((item.waypoint.x - i.waypoint.x) ** 2 +
+                  (item.waypoint.y - i.waypoint.y) ** 2) ** 0.5
+
+                #trouve lobjet le plus proche
+                if(distance < min):
+                    min = distance
+                    closest = i
+
+        dx = item.waypoint.x- closest.waypoint.x
+        dy = item.waypoint.y-closest.waypoint.y
+        angle = math.atan2(dy,dx)
+        return angle, closest
+
 
     def generateEntity(self, data):
         entity = Entity()
@@ -112,10 +133,7 @@ class WonderlandGetEntityVerbal(EventState):
 
         entity.waypoint.x = data['entityWaypointX']
         entity.waypoint.y = data['entityWaypointY']
-        if data['entityWaypointYaw']:
-            entity.waypoint.theta = data['entityWaypointYaw']/180*3.14159
-        else:
-            entity.waypoint.theta = 0
+        entity.waypoint.theta = data['entityWaypointYaw'] / 180 * 3.14159
 
         entity.containerId = data['entityContainer']
 

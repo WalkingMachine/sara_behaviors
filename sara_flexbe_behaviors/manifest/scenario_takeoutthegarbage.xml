@@ -13,8 +13,8 @@
 
 	<!-- Contained Behaviors -->
 	<contains name="Init_Sequence" />
-	<contains name="Action_Move" />
 	<contains name="Action_TakeBag" />
+	<contains name="Action_Move" />
 	<contains name="Action_Pass_Door" />
 
 	<!-- Available Parameters -->
