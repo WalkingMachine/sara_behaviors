@@ -11,7 +11,7 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from sara_flexbe_states.GetRosParam import GetRosParam
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_behaviors.action_pick_sm import Action_pickSM as sara_flexbe_behaviors__Action_pickSM
+from sara_flexbe_behaviors.action_pick_sm import Action_pickSM as Action_pickSM
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from flexbe_states.calculation_state import CalculationState
@@ -21,7 +21,7 @@ from sara_flexbe_states.sara_move_base import SaraMoveBase
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.SetRosParam import SetRosParam
-from sara_flexbe_behaviors.action_find_sm import Action_findSM as sara_flexbe_behaviors__Action_findSM
+from sara_flexbe_behaviors.action_find_sm import Action_findSM as Action_findSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -45,8 +45,8 @@ class ActionWrapper_PickSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_pickSM, 'Action_pick')
-		self.add_behavior(sara_flexbe_behaviors__Action_findSM, 'Action_find')
+		self.add_behavior(Action_pickSM, 'Action_pick')
+		self.add_behavior(Action_findSM, 'Action_find')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -199,7 +199,7 @@ class ActionWrapper_PickSM(Behavior):
 
 			# x:28 y:452
 			OperatableStateMachine.add('Action_pick',
-										self.use_behavior(sara_flexbe_behaviors__Action_pickSM, 'Action_pick'),
+										self.use_behavior(Action_pickSM, 'Action_pick'),
 										transitions={'success': 'Got_It', 'unreachable': 'for 1', 'not found': 'Say_lost', 'dropped': 'say missed'},
 										autonomy={'success': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not found': Autonomy.Inherit, 'dropped': Autonomy.Inherit},
 										remapping={'objectID': 'ID'})
@@ -281,7 +281,7 @@ class ActionWrapper_PickSM(Behavior):
 
 			# x:30 y:188
 			OperatableStateMachine.add('Action_find',
-										self.use_behavior(sara_flexbe_behaviors__Action_findSM, 'Action_find'),
+										self.use_behavior(Action_findSM, 'Action_find'),
 										transitions={'done': 'getID', 'failed': 'cause3'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'className': 'ObjectName', 'entity': 'Object'})

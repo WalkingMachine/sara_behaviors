@@ -12,7 +12,8 @@ from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
-from sara_flexbe_behaviors.action_findpersonbyquestion_sm import Action_FindPersonByQuestionSM as sara_flexbe_behaviors__Action_FindPersonByQuestionSM
+from sara_flexbe_behaviors.action_findpersonbyquestion_sm import Action_FindPersonByQuestionSM as Action_FindPersonByQuestionSM
+
 from sara_flexbe_states.FilterKey import FilterKey
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
@@ -21,20 +22,21 @@ from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.GetAttribute import GetAttribute
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
-from sara_flexbe_behaviors.action_ask_sm import Action_AskSM as sara_flexbe_behaviors__Action_AskSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
+from sara_flexbe_behaviors.action_ask_sm import Action_AskSM as Action_AskSM
+
 from sara_flexbe_states.KeepLookingAt import KeepLookingAt
 from sara_flexbe_states.sara_nlu_restaurant import SaraNLUrestaurant
-from sara_flexbe_behaviors.action_findpersonbyid_sm import Action_findPersonByIDSM as sara_flexbe_behaviors__Action_findPersonByIDSM
+from sara_flexbe_behaviors.action_findpersonbyid_sm import Action_findPersonByIDSM as Action_findPersonByIDSM
 from flexbe_states.check_condition_state import CheckConditionState
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
-from sara_flexbe_behaviors.action_find_sm import Action_findSM as sara_flexbe_behaviors__Action_findSM
-from sara_flexbe_behaviors.action_pick_sm import Action_pickSM as sara_flexbe_behaviors__Action_pickSM
+from sara_flexbe_behaviors.action_find_sm import Action_findSM as Action_findSM
+from sara_flexbe_behaviors.action_pick_sm import Action_pickSM as Action_pickSM
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from sara_flexbe_states.run_trajectory import RunTrajectory
 from sara_flexbe_states.GetPositionToPlaceOnTable import GetPositionToPlaceOnTable
-from sara_flexbe_behaviors.action_place_sm import Action_placeSM as sara_flexbe_behaviors__Action_placeSM
+from sara_flexbe_behaviors.action_place_sm import Action_placeSM as Action_placeSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -58,18 +60,19 @@ class Scenario_RestaurantSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_FindPersonByQuestionSM, 'save bar position and initiation/Action_FindPersonByQuestion')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'move to table and save position/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_AskSM, 'ask and save order/ask AND look person/ask/Action_Ask')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'go to the barman/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_findPersonByIDSM, 'go to the barman/Action_findPersonByID')
-		self.add_behavior(sara_flexbe_behaviors__Action_findSM, 'take objects and bring the order to customer/Action_find')
-		self.add_behavior(sara_flexbe_behaviors__Action_pickSM, 'take objects and bring the order to customer/Action_pick')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'take objects and bring the order to customer/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'take objects and bring the order to customer/Action_Move_2')
-		self.add_behavior(sara_flexbe_behaviors__Action_findSM, 'take objects and bring the order to customer/find table and place/Action_find_2')
-		self.add_behavior(sara_flexbe_behaviors__Action_placeSM, 'take objects and bring the order to customer/find table and place/Action_place')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move')
+		self.add_behavior(Action_FindPersonByQuestionSM, 'save bar position and initiation/Action_FindPersonByQuestion')
+		self.add_behavior(Action_MoveSM, 'move to table and save position/Action_Move')
+		self.add_behavior(Action_AskSM, 'ask and save order/ask AND look person/ask/Action_Ask')
+		self.add_behavior(Action_MoveSM, 'go to the barman/Action_Move')
+		self.add_behavior(Action_findPersonByIDSM, 'go to the barman/Action_findPersonByID')
+		self.add_behavior(Action_findSM, 'take objects and bring the order to customer/Action_find')
+		self.add_behavior(Action_pickSM, 'take objects and bring the order to customer/Action_pick')
+		self.add_behavior(Action_MoveSM, 'take objects and bring the order to customer/Action_Move')
+		self.add_behavior(Action_MoveSM, 'take objects and bring the order to customer/Action_Move_2')
+		self.add_behavior(Action_findSM, 'take objects and bring the order to customer/find table and place/Action_find_2')
+		self.add_behavior(Action_placeSM, 'take objects and bring the order to customer/find table and place/Action_place')
+		self.add_behavior(Action_MoveSM, 'Action_Move')
+
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -93,16 +96,15 @@ class Scenario_RestaurantSM(Behavior):
 		_sm_find_table_and_place_0 = OperatableStateMachine(outcomes=['finished', 'failed', 'no_table'])
 
 		with _sm_find_table_and_place_0:
-			# x:62 y:29
-			OperatableStateMachine.add('set distance',
-										SetKey(Value=0.3),
-										transitions={'done': 'look down'},
-										autonomy={'done': Autonomy.Off},
-										remapping={'Key': 'distanceFromEdge'})
+			# x:877 y:673
+			OperatableStateMachine.add('run traj',
+										RunTrajectory(file="receive_object", duration=0),
+										transitions={'done': 'say release'},
+										autonomy={'done': Autonomy.Off})
 
 			# x:532 y:572
 			OperatableStateMachine.add('Action_find_2',
-										self.use_behavior(sara_flexbe_behaviors__Action_findSM, 'take objects and bring the order to customer/find table and place/Action_find_2'),
+										self.use_behavior(Action_findSM, 'take objects and bring the order to customer/find table and place/Action_find_2'),
 										transitions={'done': 'get table position', 'failed': 'say do not find table'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'className': 'tableKey', 'entity': 'tableEntity'})
@@ -136,7 +138,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:291 y:805
 			OperatableStateMachine.add('Action_place',
-										self.use_behavior(sara_flexbe_behaviors__Action_placeSM, 'take objects and bring the order to customer/find table and place/Action_place'),
+										self.use_behavior(Action_placeSM, 'take objects and bring the order to customer/find table and place/Action_place'),
 										transitions={'finished': 'finished', 'failed': 'say do not find table'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pos': 'pose'})
@@ -191,24 +193,31 @@ class Scenario_RestaurantSM(Behavior):
 										transitions={'done': 'find a table and a free spot_2_2'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:877 y:673
-			OperatableStateMachine.add('run traj',
-										RunTrajectory(file="receive_object", duration=0),
-										transitions={'done': 'say release'},
-										autonomy={'done': Autonomy.Off})
-
 			# x:1000 y:670
 			OperatableStateMachine.add('say release',
-										SaraSay(sentence="I will open my gripper.", input_keys=[], emotion=0, block=True),
+										SaraSay(sentence="Here is your order. I will open my gripper in 3, 2, 1, now.", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'open gripper'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:1122 y:666
 			OperatableStateMachine.add('open gripper',
 										SetGripperState(width=0.1, effort=1),
-										transitions={'object': 'finished', 'no_object': 'finished'},
+										transitions={'object': 'say good day', 'no_object': 'say good day'},
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
+
+			# x:62 y:29
+			OperatableStateMachine.add('set distance',
+										SetKey(Value=0.3),
+										transitions={'done': 'look down'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'Key': 'distanceFromEdge'})
+
+			# x:1170 y:771
+			OperatableStateMachine.add('say good day',
+										SaraSay(sentence="Thank you. Have a good day.", input_keys=[], emotion=6, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:30 y:458, x:130 y:458
@@ -229,21 +238,40 @@ class Scenario_RestaurantSM(Behavior):
 		with _sm_ask_2:
 			# x:30 y:40
 			OperatableStateMachine.add('Action_Ask',
-										self.use_behavior(sara_flexbe_behaviors__Action_AskSM, 'ask and save order/ask AND look person/ask/Action_Ask'),
+										self.use_behavior(Action_AskSM, 'ask and save order/ask AND look person/ask/Action_Ask'),
+										transitions={'finished': 'finished', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'question': 'question', 'answer': 'answer'})
+
+
+		# x:30 y:458, x:130 y:458
+		_sm_confirm_order_3 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['orderList'])
+
+		with _sm_confirm_order_3:
+			# x:114 y:67
+			OperatableStateMachine.add('produce question',
+										CalculationState(calculation=lambda x: "Did you order :" + str(x[0])),
+										transitions={'done': 'Action_Ask'},
+										autonomy={'done': Autonomy.Off},
+										remapping={'input_value': 'orderList', 'output_value': 'question'})
+
+			# x:423 y:171
+			OperatableStateMachine.add('Action_Ask',
+										self.use_behavior(sara_flexbe_behaviors__Action_AskSM, 'ask and save order/confirm order/Action_Ask'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'question': 'question', 'answer': 'answer'})
 
 
 		# x:348 y:66, x:351 y:97, x:339 y:159, x:336 y:195, x:518 y:89, x:515 y:175
-		_sm_ask_and_look_person_3 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['personID', 'question'], output_keys=['answer'], conditions=[
+		_sm_ask_and_look_person_4 = ConcurrencyContainer(outcomes=['finished', 'failed'], input_keys=['personID', 'question'], output_keys=['answer'], conditions=[
 										('finished', [('ask', 'finished')]),
 										('failed', [('ask', 'failed')]),
 										('finished', [('keep looking', 'finished')]),
 										('failed', [('keep looking', 'failed')])
 										])
 
-		with _sm_ask_and_look_person_3:
+		with _sm_ask_and_look_person_4:
 			# x:30 y:40
 			OperatableStateMachine.add('ask',
 										_sm_ask_2,
@@ -260,9 +288,9 @@ class Scenario_RestaurantSM(Behavior):
 
 
 		# x:30 y:458
-		_sm_look_around_2_4 = OperatableStateMachine(outcomes=['finished'])
+		_sm_look_around_2_5 = OperatableStateMachine(outcomes=['finished'])
 
-		with _sm_look_around_2_4:
+		with _sm_look_around_2_5:
 			# x:215 y:156
 			OperatableStateMachine.add('center',
 										SaraSetHeadAngle(pitch=0.1, yaw=0),
@@ -313,9 +341,9 @@ class Scenario_RestaurantSM(Behavior):
 
 
 		# x:30 y:458
-		_sm_look_around_5 = OperatableStateMachine(outcomes=['finished'])
+		_sm_look_around_6 = OperatableStateMachine(outcomes=['finished'])
 
-		with _sm_look_around_5:
+		with _sm_look_around_6:
 			# x:215 y:156
 			OperatableStateMachine.add('center',
 										SaraSetHeadAngle(pitch=0.1, yaw=0),
@@ -366,12 +394,12 @@ class Scenario_RestaurantSM(Behavior):
 
 
 		# x:30 y:458, x:130 y:458
-		_sm_turn_around_6 = OperatableStateMachine(outcomes=['finished', 'failed'])
+		_sm_turn_around_7 = OperatableStateMachine(outcomes=['finished', 'failed'])
 
-		with _sm_turn_around_6:
+		with _sm_turn_around_7:
 			# x:80 y:26
 			OperatableStateMachine.add('look around',
-										_sm_look_around_5,
+										_sm_look_around_6,
 										transitions={'finished': 'pose with 180 rotation'},
 										autonomy={'finished': Autonomy.Inherit})
 
@@ -384,7 +412,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:56 y:388
 			OperatableStateMachine.add('look around_2',
-										_sm_look_around_2_4,
+										_sm_look_around_2_5,
 										transitions={'finished': 'finished'},
 										autonomy={'finished': Autonomy.Inherit})
 
@@ -397,9 +425,9 @@ class Scenario_RestaurantSM(Behavior):
 
 
 		# x:30 y:458
-		_sm_get_waving_people_7 = OperatableStateMachine(outcomes=['finished'], output_keys=['waving_person'])
+		_sm_get_waving_people_8 = OperatableStateMachine(outcomes=['finished'], output_keys=['waving_person'])
 
-		with _sm_get_waving_people_7:
+		with _sm_get_waving_people_8:
 			# x:47 y:45
 			OperatableStateMachine.add('set name',
 										SetKey(Value="person"),
@@ -430,31 +458,31 @@ class Scenario_RestaurantSM(Behavior):
 
 
 		# x:30 y:458, x:130 y:458, x:230 y:458, x:330 y:458, x:430 y:458
-		_sm_look_for_waving_people_8 = ConcurrencyContainer(outcomes=['finished', 'failed'], output_keys=['waving_person'], conditions=[
+		_sm_look_for_waving_people_9 = ConcurrencyContainer(outcomes=['finished', 'failed'], output_keys=['waving_person'], conditions=[
 										('failed', [('turn around', 'failed')]),
 										('failed', [('turn around', 'finished')]),
 										('finished', [('get waving people', 'finished')])
 										])
 
-		with _sm_look_for_waving_people_8:
+		with _sm_look_for_waving_people_9:
 			# x:268 y:118
 			OperatableStateMachine.add('get waving people',
-										_sm_get_waving_people_7,
+										_sm_get_waving_people_8,
 										transitions={'finished': 'finished'},
 										autonomy={'finished': Autonomy.Inherit},
 										remapping={'waving_person': 'waving_person'})
 
 			# x:60 y:126
 			OperatableStateMachine.add('turn around',
-										_sm_turn_around_6,
+										_sm_turn_around_7,
 										transitions={'finished': 'failed', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 
 		# x:441 y:583, x:93 y:568
-		_sm_repeate_if_first_commande_9 = OperatableStateMachine(outcomes=['finished', 'repeate'], input_keys=['commandNumber'], output_keys=['commandNumber'])
+		_sm_repeate_if_first_commande_10 = OperatableStateMachine(outcomes=['finished', 'repeate'], input_keys=['commandNumber'], output_keys=['commandNumber'])
 
-		with _sm_repeate_if_first_commande_9:
+		with _sm_repeate_if_first_commande_10:
 			# x:242 y:97
 			OperatableStateMachine.add('if first command',
 										CheckConditionState(predicate=lambda x: x == 1),
@@ -471,9 +499,9 @@ class Scenario_RestaurantSM(Behavior):
 
 
 		# x:913 y:749, x:1068 y:149
-		_sm_take_objects_and_bring_the_order_to_customer_10 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['barPosition', 'orderList', 'robotPositionToCustomer'])
+		_sm_take_objects_and_bring_the_order_to_customer_11 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['barPosition', 'orderList', 'robotPositionToCustomer'])
 
-		with _sm_take_objects_and_bring_the_order_to_customer_10:
+		with _sm_take_objects_and_bring_the_order_to_customer_11:
 			# x:73 y:26
 			OperatableStateMachine.add('set indexkey',
 										SetKey(Value=0),
@@ -497,7 +525,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:62 y:258
 			OperatableStateMachine.add('Action_find',
-										self.use_behavior(sara_flexbe_behaviors__Action_findSM, 'take objects and bring the order to customer/Action_find'),
+										self.use_behavior(Action_findSM, 'take objects and bring the order to customer/Action_find'),
 										transitions={'done': 'get entity ID', 'failed': 'say cannot find'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'className': 'item', 'entity': 'entity'})
@@ -517,14 +545,14 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:63 y:393
 			OperatableStateMachine.add('Action_pick',
-										self.use_behavior(sara_flexbe_behaviors__Action_pickSM, 'take objects and bring the order to customer/Action_pick'),
+										self.use_behavior(Action_pickSM, 'take objects and bring the order to customer/Action_pick'),
 										transitions={'success': 'say go to the customer', 'unreachable': 'say cannot pick', 'not found': 'say cannot pick', 'dropped': 'say cannot pick'},
 										autonomy={'success': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not found': Autonomy.Inherit, 'dropped': Autonomy.Inherit},
-										remapping={'objectID': 'entityID', 'Entity': 'entity'})
+										remapping={'objectID': 'entityID'})
 
 			# x:61 y:548
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'take objects and bring the order to customer/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'take objects and bring the order to customer/Action_Move'),
 										transitions={'finished': 'find table and place', 'failed': 'say cant get back to customer'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'robotPositionToCustomer'})
@@ -536,10 +564,10 @@ class Scenario_RestaurantSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'entity', 'output_value': 'entityID'})
 
-			# x:508 y:321
+			# x:568 y:407
 			OperatableStateMachine.add('say put in the gripper',
-										SaraSay(sentence=lambda x: "Please, put the "+x[0]+" in my gripper.", input_keys=["item"], emotion=0, block=True),
-										transitions={'done': 'open gripper'},
+										SaraSay(sentence=lambda x: "Please, put the "+x[0]+" in my gripper. I will close it in 3, 2, 1, now.", input_keys=["item"], emotion=0, block=True),
+										transitions={'done': 'close gripper'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'item': 'item'})
 
@@ -552,7 +580,7 @@ class Scenario_RestaurantSM(Behavior):
 			# x:388 y:502
 			OperatableStateMachine.add('say thank you',
 										SaraSay(sentence="Thank you.", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'Action_Move'},
+										transitions={'done': 'place arm 2'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:72 y:465
@@ -564,15 +592,9 @@ class Scenario_RestaurantSM(Behavior):
 			# x:522 y:505
 			OperatableStateMachine.add('close gripper',
 										SetGripperState(width=0, effort=1),
-										transitions={'object': 'say thank you', 'no_object': 'say thank you'},
+										transitions={'object': 'say thank you', 'no_object': 'open gripper'},
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
-
-			# x:536 y:444
-			OperatableStateMachine.add('wait object 10',
-										WaitState(wait_time=10),
-										transitions={'done': 'close gripper'},
-										autonomy={'done': Autonomy.Off})
 
 			# x:357 y:569
 			OperatableStateMachine.add('say cant get back to customer',
@@ -580,10 +602,10 @@ class Scenario_RestaurantSM(Behavior):
 										transitions={'done': 'check if end of the list'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:526 y:382
+			# x:541 y:317
 			OperatableStateMachine.add('open gripper',
 										SetGripperState(width=0.10, effort=1),
-										transitions={'object': 'wait object 10', 'no_object': 'wait object 10'},
+										transitions={'object': 'say put in the gripper', 'no_object': 'say put in the gripper'},
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
@@ -597,12 +619,12 @@ class Scenario_RestaurantSM(Behavior):
 			# x:376 y:324
 			OperatableStateMachine.add('place arm',
 										RunTrajectory(file="receive_object", duration=0),
-										transitions={'done': 'say put in the gripper'},
+										transitions={'done': 'open gripper'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:638 y:184
 			OperatableStateMachine.add('Action_Move_2',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'take objects and bring the order to customer/Action_Move_2'),
+										self.use_behavior(Action_MoveSM, 'take objects and bring the order to customer/Action_Move_2'),
 										transitions={'finished': 'increment indexKey', 'failed': 'say cannot go back to bar'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'barPosition'})
@@ -616,14 +638,26 @@ class Scenario_RestaurantSM(Behavior):
 			# x:85 y:740
 			OperatableStateMachine.add('find table and place',
 										_sm_find_table_and_place_0,
-										transitions={'finished': 'check if end of the list', 'failed': 'check if end of the list', 'no_table': 'check if end of the list'},
+										transitions={'finished': 'retour repos', 'failed': 'retour repos', 'no_table': 'retour repos'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'no_table': Autonomy.Inherit})
+
+			# x:248 y:505
+			OperatableStateMachine.add('place arm 2',
+										RunTrajectory(file="transport", duration=0),
+										transitions={'done': 'Action_Move'},
+										autonomy={'done': Autonomy.Off})
+
+			# x:362 y:679
+			OperatableStateMachine.add('retour repos',
+										RunTrajectory(file="repos", duration=0),
+										transitions={'done': 'check if end of the list'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:242 y:352, x:1086 y:243
-		_sm_get_the_order_11 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['orderList'])
+		_sm_get_the_order_12 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['orderList'])
 
-		with _sm_get_the_order_11:
+		with _sm_get_the_order_12:
 			# x:68 y:39
 			OperatableStateMachine.add('length 1',
 										CheckConditionState(predicate=lambda x: len(x) == 1),
@@ -667,12 +701,12 @@ class Scenario_RestaurantSM(Behavior):
 
 
 		# x:216 y:528, x:572 y:238
-		_sm_go_to_the_barman_12 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['barPosition', 'barmanID'])
+		_sm_go_to_the_barman_13 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['barPosition', 'barmanID'])
 
-		with _sm_go_to_the_barman_12:
+		with _sm_go_to_the_barman_13:
 			# x:30 y:102
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'go to the barman/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'go to the barman/Action_Move'),
 										transitions={'finished': 'if barman id is 0', 'failed': 'say cannot'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'barPosition'})
@@ -685,7 +719,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:30 y:320
 			OperatableStateMachine.add('Action_findPersonByID',
-										self.use_behavior(sara_flexbe_behaviors__Action_findPersonByIDSM, 'go to the barman/Action_findPersonByID', default_keys=['className']),
+										self.use_behavior(Action_findPersonByIDSM, 'go to the barman/Action_findPersonByID', default_keys=['className']),
 										transitions={'found': 'finished', 'not_found': 'finished'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'className': 'className', 'personID': 'barmanID', 'personEntity': 'personEntity'})
@@ -699,9 +733,9 @@ class Scenario_RestaurantSM(Behavior):
 
 
 		# x:898 y:561, x:871 y:123
-		_sm_ask_and_save_order_13 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['customerID'], output_keys=['orderList'])
+		_sm_ask_and_save_order_14 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['customerID'], output_keys=['orderList'])
 
-		with _sm_ask_and_save_order_13:
+		with _sm_ask_and_save_order_14:
 			# x:70 y:112
 			OperatableStateMachine.add('say ready',
 										SaraSay(sentence="Hello.", input_keys=[], emotion=0, block=True),
@@ -723,7 +757,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:59 y:272
 			OperatableStateMachine.add('ask AND look person',
-										_sm_ask_and_look_person_3,
+										_sm_ask_and_look_person_4,
 										transitions={'finished': 'nlu restaurant', 'failed': 'say cannot'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'personID': 'customerID', 'question': 'question', 'answer': 'answer'})
@@ -731,15 +765,22 @@ class Scenario_RestaurantSM(Behavior):
 			# x:411 y:453
 			OperatableStateMachine.add('nlu restaurant',
 										SaraNLUrestaurant(),
-										transitions={'understood': 'finished', 'fail': 'say cannot'},
+										transitions={'understood': 'confirm order', 'fail': 'say cannot'},
 										autonomy={'understood': Autonomy.Off, 'fail': Autonomy.Off},
 										remapping={'sentence': 'answer', 'orderList': 'orderList'})
 
+			# x:657 y:417
+			OperatableStateMachine.add('confirm order',
+										_sm_confirm_order_3,
+										transitions={'finished': 'finished', 'failed': 'set question'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'orderList': 'orderList'})
+
 
 		# x:677 y:318, x:735 y:160
-		_sm_move_to_table_and_save_position_14 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['customerPosition'], output_keys=['robotPositionToCustomer'])
+		_sm_move_to_table_and_save_position_15 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['customerPosition'], output_keys=['robotPositionToCustomer'])
 
-		with _sm_move_to_table_and_save_position_14:
+		with _sm_move_to_table_and_save_position_15:
 			# x:69 y:24
 			OperatableStateMachine.add('set distance to person',
 										SetKey(Value=0.7),
@@ -769,22 +810,21 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:78 y:199
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'move to table and save position/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'move to table and save position/Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'say cannot'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'robotPositionToCustomer'})
 
 
-		# x:112 y:525, x:363 y:94
-		_sm_detect_people_waving_15 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['customerPosition', 'customerID'])
+		# x:112 y:525, x:363 y:46
+		_sm_detect_people_waving_16 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['customerPosition', 'customerID'])
 
-		with _sm_detect_people_waving_15:
-			# x:76 y:40
-			OperatableStateMachine.add('Look for waving people',
-										_sm_look_for_waving_people_8,
-										transitions={'finished': 'get attributes', 'failed': 'failed'},
-										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'waving_person': 'waving_person'})
+		with _sm_detect_people_waving_16:
+			# x:84 y:25
+			OperatableStateMachine.add('say looking',
+										SaraSay(sentence="I am now looking for customers.", input_keys=[], emotion=0, block=False),
+										transitions={'done': 'Look for waving people'},
+										autonomy={'done': Autonomy.Off})
 
 			# x:73 y:375
 			OperatableStateMachine.add('reachable position_2',
@@ -793,28 +833,35 @@ class Scenario_RestaurantSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'pose_in': 'customerPosition', 'distance': 'distance', 'pose_out': 'customerPosition'})
 
-			# x:77 y:256
+			# x:71 y:291
 			OperatableStateMachine.add('set distance to customer_2',
 										SetKey(Value=1),
 										transitions={'done': 'reachable position_2'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'distance'})
 
-			# x:94 y:163
+			# x:94 y:216
 			OperatableStateMachine.add('get attributes',
 										GetAttribute(attributes=["ID", "position"]),
 										transitions={'done': 'set distance to customer_2'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'object': 'waving_person', 'ID': 'customerID', 'position': 'customerPosition'})
 
+			# x:63 y:120
+			OperatableStateMachine.add('Look for waving people',
+										_sm_look_for_waving_people_9,
+										transitions={'finished': 'get attributes', 'failed': 'failed'},
+										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'waving_person': 'waving_person'})
+
 
 		# x:874 y:499, x:747 y:100
-		_sm_save_bar_position_and_initiation_16 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['barPosition', 'commandNumber', 'barmanID'])
+		_sm_save_bar_position_and_initiation_17 = OperatableStateMachine(outcomes=['finished', 'failed'], output_keys=['barPosition', 'commandNumber', 'barmanID'])
 
-		with _sm_save_bar_position_and_initiation_16:
+		with _sm_save_bar_position_and_initiation_17:
 			# x:66 y:96
 			OperatableStateMachine.add('set question barman',
-										SetKey(Value="Are you the barman?"),
+										SetKey(Value="Are you the bartender?"),
 										transitions={'done': 'Action_FindPersonByQuestion'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'questionBarman'})
@@ -848,7 +895,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:55 y:214
 			OperatableStateMachine.add('Action_FindPersonByQuestion',
-										self.use_behavior(sara_flexbe_behaviors__Action_FindPersonByQuestionSM, 'save bar position and initiation/Action_FindPersonByQuestion'),
+										self.use_behavior(Action_FindPersonByQuestionSM, 'save bar position and initiation/Action_FindPersonByQuestion'),
 										transitions={'found': 'save barman ID', 'failed': 'say failed to find the barman', 'not_found': 'say failed to find the barman'},
 										autonomy={'found': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
 										remapping={'question': 'questionBarman', 'entityFound': 'personFound'})
@@ -871,56 +918,56 @@ class Scenario_RestaurantSM(Behavior):
 		with _state_machine:
 			# x:30 y:40
 			OperatableStateMachine.add('save bar position and initiation',
-										_sm_save_bar_position_and_initiation_16,
+										_sm_save_bar_position_and_initiation_17,
 										transitions={'finished': 'detect people waving', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'barPosition': 'barPosition', 'commandNumber': 'commandNumber', 'barmanID': 'barmanID'})
 
 			# x:131 y:141
 			OperatableStateMachine.add('detect people waving',
-										_sm_detect_people_waving_15,
+										_sm_detect_people_waving_16,
 										transitions={'finished': 'move to table and save position', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'customerPosition': 'customerPosition', 'customerID': 'customerID'})
 
 			# x:233 y:250
 			OperatableStateMachine.add('move to table and save position',
-										_sm_move_to_table_and_save_position_14,
+										_sm_move_to_table_and_save_position_15,
 										transitions={'finished': 'ask and save order', 'failed': 'detect people waving'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'customerPosition': 'customerPosition', 'robotPositionToCustomer': 'robotPositionToCustomer'})
 
 			# x:286 y:337
 			OperatableStateMachine.add('ask and save order',
-										_sm_ask_and_save_order_13,
+										_sm_ask_and_save_order_14,
 										transitions={'finished': 'go to the barman', 'failed': 'detect people waving'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'customerID': 'customerID', 'orderList': 'orderList'})
 
 			# x:264 y:434
 			OperatableStateMachine.add('go to the barman',
-										_sm_go_to_the_barman_12,
+										_sm_go_to_the_barman_13,
 										transitions={'finished': 'get the order', 'failed': 'detect people waving'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'barPosition': 'barPosition', 'barmanID': 'barmanID'})
 
 			# x:278 y:526
 			OperatableStateMachine.add('get the order',
-										_sm_get_the_order_11,
+										_sm_get_the_order_12,
 										transitions={'finished': 'take objects and bring the order to customer', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'orderList': 'orderList'})
 
 			# x:260 y:626
 			OperatableStateMachine.add('take objects and bring the order to customer',
-										_sm_take_objects_and_bring_the_order_to_customer_10,
+										_sm_take_objects_and_bring_the_order_to_customer_11,
 										transitions={'finished': 'repeate if first commande', 'failed': 'repeate if first commande'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'barPosition': 'barPosition', 'orderList': 'orderList', 'robotPositionToCustomer': 'robotPositionToCustomer'})
 
 			# x:118 y:735
 			OperatableStateMachine.add('repeate if first commande',
-										_sm_repeate_if_first_commande_9,
+										_sm_repeate_if_first_commande_10,
 										transitions={'finished': 'say finish', 'repeate': 'detect people waving'},
 										autonomy={'finished': Autonomy.Inherit, 'repeate': Autonomy.Inherit},
 										remapping={'commandNumber': 'commandNumber'})
@@ -933,7 +980,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:616 y:735
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move'),
+										self.use_behavior(Action_MoveSM, 'Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'finished'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'barPosition'})

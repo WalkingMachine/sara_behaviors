@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="GetGraspFromEntity">
+
+	<executable package_path="sara_flexbe_behaviors.getgraspfromentity_sm" class="GetGraspFromEntitySM" />
+	<tagstring>grasping</tagstring>
+	<author>Jeffrey Cousineau</author>
+	<date>Mon Jun 03 2019</date>
+	<description>
+		Find an entity Id and send it to the grasp state which return the pose to grasp it.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

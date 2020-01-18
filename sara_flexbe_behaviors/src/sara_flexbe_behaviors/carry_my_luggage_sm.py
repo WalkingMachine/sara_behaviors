@@ -8,28 +8,28 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.continue_button import ContinueButton
+from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetRosParam import SetRosParam
-from sara_flexbe_behaviors.action_follow_sm import Action_followSM as sara_flexbe_behaviors__Action_followSM
+from sara_flexbe_behaviors.action_follow_sm import Action_followSM as Action_followSM
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.regex_tester import RegexTester
-from sara_flexbe_behaviors.action_give_back_bag_sm import Action_Give_Back_BagSM as sara_flexbe_behaviors__Action_Give_Back_BagSM
-from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as sara_flexbe_behaviors__Init_SequenceSM
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
+from sara_flexbe_behaviors.action_give_back_bag_sm import Action_Give_Back_BagSM as Action_Give_Back_BagSM
+from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as Init_SequenceSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.GetPointedPositionOnPlane import GetPointedPositionOnPlane
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.sara_move_base import SaraMoveBase
-from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM as sara_flexbe_behaviors__Action_point_atSM
+from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM as Action_point_atSM
 from sara_flexbe_states.LookAtPos import LookAtPos
-from sara_flexbe_behaviors.action_receive_bag_sm import Action_Receive_BagSM as sara_flexbe_behaviors__Action_Receive_BagSM
+from sara_flexbe_behaviors.action_receive_bag_sm import Action_Receive_BagSM as Action_Receive_BagSM
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.set_gripper_state import SetGripperState
-from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM as sara_flexbe_behaviors__LookAtClosestSM
+from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM as LookAtClosestSM
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -54,13 +54,13 @@ class CarrymyluggageSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_followSM, 'Follow and listen/follow/Action_follow')
-		self.add_behavior(sara_flexbe_behaviors__Action_Give_Back_BagSM, 'Action_Give_Back_Bag')
-		self.add_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_point_atSM, 'recevoir sac/Recevoir sac/look at bag/designate bag/point at it/Action_point_at')
-		self.add_behavior(sara_flexbe_behaviors__Action_Receive_BagSM, 'recevoir sac/Recevoir sac/receive it/Action_Receive_Bag')
-		self.add_behavior(sara_flexbe_behaviors__LookAtClosestSM, 'recevoir sac/LookAtClosest')
+		self.add_behavior(Action_followSM, 'Follow and listen/follow/Action_follow')
+		self.add_behavior(Action_Give_Back_BagSM, 'Action_Give_Back_Bag')
+		self.add_behavior(Init_SequenceSM, 'Init_Sequence')
+		self.add_behavior(Action_MoveSM, 'Action_Move')
+		self.add_behavior(Action_point_atSM, 'recevoir sac/Recevoir sac/look at bag/designate bag/point at it/Action_point_at')
+		self.add_behavior(Action_Receive_BagSM, 'recevoir sac/Recevoir sac/receive it/Action_Receive_Bag')
+		self.add_behavior(LookAtClosestSM, 'recevoir sac/LookAtClosest')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -129,7 +129,7 @@ class CarrymyluggageSM(Behavior):
 		with _sm_point_at_it_2:
 			# x:112 y:202
 			OperatableStateMachine.add('Action_point_at',
-										self.use_behavior(sara_flexbe_behaviors__Action_point_atSM, 'recevoir sac/Recevoir sac/look at bag/designate bag/point at it/Action_point_at'),
+										self.use_behavior(Action_point_atSM, 'recevoir sac/Recevoir sac/look at bag/designate bag/point at it/Action_point_at'),
 										transitions={'finished': 'Action_point_at', 'failed': 'Action_point_at'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'targetPoint': 'position'})
@@ -200,7 +200,7 @@ class CarrymyluggageSM(Behavior):
 		with _sm_receive_it_5:
 			# x:30 y:149
 			OperatableStateMachine.add('Action_Receive_Bag',
-										self.use_behavior(sara_flexbe_behaviors__Action_Receive_BagSM, 'recevoir sac/Recevoir sac/receive it/Action_Receive_Bag'),
+										self.use_behavior(Action_Receive_BagSM, 'recevoir sac/Recevoir sac/receive it/Action_Receive_Bag'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Closed_Gripper_Width': 'Closed_Gripper_Width', 'Open_Gripper_Width': 'Open_Gripper_Width', 'Closed_Gripper_Width': 'Closed_Gripper_Width'})
@@ -258,7 +258,7 @@ class CarrymyluggageSM(Behavior):
 										remapping={'position': 'position'})
 
 
-		# x:30 y:365, x:130 y:365
+		# x:30 y:365, x:182 y:454
 		_sm_recevoir_sac_7 = OperatableStateMachine(outcomes=['failed', 'done'], input_keys=['Closed_Gripper_Width', 'Open_Gripper_Width'])
 
 		with _sm_recevoir_sac_7:
@@ -271,7 +271,7 @@ class CarrymyluggageSM(Behavior):
 			# x:41 y:267
 			OperatableStateMachine.add('receive it',
 										_sm_receive_it_5,
-										transitions={'finished': 'done', 'failed': 'failed'},
+										transitions={'finished': 'sayCAr', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Closed_Gripper_Width': 'Closed_Gripper_Width', 'Open_Gripper_Width': 'Open_Gripper_Width'})
 
@@ -281,6 +281,12 @@ class CarrymyluggageSM(Behavior):
 										transitions={'object': 'receive it', 'no_object': 'receive it'},
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
+
+			# x:139 y:334
+			OperatableStateMachine.add('sayCAr',
+										SaraSay(sentence="PLease tell me when we get to the car.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'done'},
+										autonomy={'done': Autonomy.Off})
 
 
 		# x:30 y:365
@@ -314,7 +320,7 @@ class CarrymyluggageSM(Behavior):
 		with _sm_follow_9:
 			# x:128 y:127
 			OperatableStateMachine.add('Action_follow',
-										self.use_behavior(sara_flexbe_behaviors__Action_followSM, 'Follow and listen/follow/Action_follow'),
+										self.use_behavior(Action_followSM, 'Follow and listen/follow/Action_follow'),
 										transitions={'failed': 'set name'},
 										autonomy={'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
@@ -358,7 +364,7 @@ class CarrymyluggageSM(Behavior):
 
 			# x:234 y:114
 			OperatableStateMachine.add('LookAtClosest',
-										self.use_behavior(sara_flexbe_behaviors__LookAtClosestSM, 'recevoir sac/LookAtClosest'),
+										self.use_behavior(LookAtClosestSM, 'recevoir sac/LookAtClosest'),
 										transitions={'failed': 'done'},
 										autonomy={'failed': Autonomy.Inherit})
 
@@ -455,25 +461,25 @@ class CarrymyluggageSM(Behavior):
 
 			# x:411 y:525
 			OperatableStateMachine.add('Action_Give_Back_Bag',
-										self.use_behavior(sara_flexbe_behaviors__Action_Give_Back_BagSM, 'Action_Give_Back_Bag'),
+										self.use_behavior(Action_Give_Back_BagSM, 'Action_Give_Back_Bag'),
 										transitions={'finished': 'GoBackHome', 'failed': 'Action_Give_Back_Bag'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 			# x:16 y:206
 			OperatableStateMachine.add('Init_Sequence',
-										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence'),
+										self.use_behavior(Init_SequenceSM, 'Init_Sequence'),
 										transitions={'finished': 'move head up', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 			# x:634 y:522
 			OperatableStateMachine.add('GoBackHome',
 										SaraSay(sentence="I will go back home now. Have a good day!", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'Action_Move'},
+										transitions={'done': 'setarm'},
 										autonomy={'done': Autonomy.Off})
 
-			# x:827 y:516
+			# x:922 y:519
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Action_Move'),
+										self.use_behavior(Action_MoveSM, 'Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'Origin'})
@@ -490,6 +496,12 @@ class CarrymyluggageSM(Behavior):
 										transitions={'failed': 'failed', 'done': 'GetIDOpe'},
 										autonomy={'failed': Autonomy.Inherit, 'done': Autonomy.Inherit},
 										remapping={'Closed_Gripper_Width': 'Closed_Gripper_Width', 'Open_Gripper_Width': 'Open_Gripper_Width'})
+
+			# x:770 y:526
+			OperatableStateMachine.add('setarm',
+										RunTrajectory(file="sac_transport", duration=0),
+										transitions={'done': 'Action_Move'},
+										autonomy={'done': Autonomy.Off})
 
 			# x:24 y:134
 			OperatableStateMachine.add('GEtPose',

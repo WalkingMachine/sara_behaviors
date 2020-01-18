@@ -8,16 +8,16 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as sara_flexbe_behaviors__Init_SequenceSM
+from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as Init_SequenceSM
 from sara_flexbe_states.for_loop_with_input import ForLoopWithInput
 from flexbe_states.wait_state import WaitState
-from sara_flexbe_behaviors.action_ask_sm import Action_AskSM as sara_flexbe_behaviors__Action_AskSM
+from sara_flexbe_behaviors.action_ask_sm import Action_AskSM as Action_AskSM
 from sara_flexbe_states.KeepLookingAt import KeepLookingAt
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.decision_state import DecisionState
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as sara_flexbe_behaviors__action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
 from sara_flexbe_states.FilterKey import FilterKey
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from sara_flexbe_states.FIFO_Add import FIFO_Add
@@ -51,9 +51,9 @@ Look 180 degres, do not rotate
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence')
-		self.add_behavior(sara_flexbe_behaviors__Action_AskSM, 'ask while looking at person/ask/Action_Ask')
-		self.add_behavior(sara_flexbe_behaviors__action_turnSM, 'tourne tete et base/action_turn')
+		self.add_behavior(Init_SequenceSM, 'Init_Sequence')
+		self.add_behavior(Action_AskSM, 'ask while looking at person/ask/Action_Ask')
+		self.add_behavior(action_turnSM, 'tourne tete et base/action_turn')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -102,7 +102,7 @@ Look 180 degres, do not rotate
 
 			# x:46 y:155
 			OperatableStateMachine.add('Action_Ask',
-										self.use_behavior(sara_flexbe_behaviors__Action_AskSM, 'ask while looking at person/ask/Action_Ask'),
+										self.use_behavior(Action_AskSM, 'ask while looking at person/ask/Action_Ask'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'question': 'question', 'answer': 'answer'})
@@ -255,7 +255,7 @@ Look 180 degres, do not rotate
 
 			# x:476 y:109
 			OperatableStateMachine.add('action_turn',
-										self.use_behavior(sara_flexbe_behaviors__action_turnSM, 'tourne tete et base/action_turn'),
+										self.use_behavior(action_turnSM, 'tourne tete et base/action_turn'),
 										transitions={'finished': 'look left_2_2', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'rotation': 'rotation180degres'})
@@ -337,7 +337,7 @@ Look 180 degres, do not rotate
 		with _state_machine:
 			# x:30 y:115
 			OperatableStateMachine.add('Init_Sequence',
-										self.use_behavior(sara_flexbe_behaviors__Init_SequenceSM, 'Init_Sequence'),
+										self.use_behavior(Init_SequenceSM, 'Init_Sequence'),
 										transitions={'finished': 'create fifo', 'failed': 'create fifo'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 

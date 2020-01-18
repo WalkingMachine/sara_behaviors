@@ -10,7 +10,7 @@
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_behaviors.action_find_sm import Action_findSM as sara_flexbe_behaviors__Action_findSM
+from sara_flexbe_behaviors.action_find_sm import Action_findSM as Action_findSM
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_states.SetKey import SetKey
@@ -37,7 +37,7 @@ class ActionWrapper_FindSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_findSM, 'Action_find')
+		self.add_behavior(Action_findSM, 'Action_find')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -78,7 +78,7 @@ class ActionWrapper_FindSM(Behavior):
 
 			# x:68 y:363
 			OperatableStateMachine.add('Action_find',
-										self.use_behavior(sara_flexbe_behaviors__Action_findSM, 'Action_find'),
+										self.use_behavior(Action_findSM, 'Action_find'),
 										transitions={'done': 'Say_FInded_Object', 'failed': 'Say_Not_Found'},
 										autonomy={'done': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'className': 'name', 'entity': 'entity'})

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="WonderlandGetRoom">
+
+	<executable package_path="sara_flexbe_behaviors.wonderlandgetroom_sm" class="WonderlandGetRoomSM" />
+	<tagstring></tagstring>
+	<author>Alexandre Mongrain</author>
+	<date>Fri Jul 05 2019</date>
+	<description>
+		Returns the top level container ID from the ID of an Entity.
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>

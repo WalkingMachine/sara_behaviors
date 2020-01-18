@@ -15,18 +15,18 @@ from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_behaviors.action_guide2_sm import Action_Guide2SM as sara_flexbe_behaviors__Action_Guide2SM
-from sara_flexbe_behaviors.action_receive_bag_sm import Action_Receive_BagSM as sara_flexbe_behaviors__Action_Receive_BagSM
-from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM as sara_flexbe_behaviors__LookAtClosestSM
+from sara_flexbe_behaviors.action_guide2_sm import Action_Guide2SM as Action_Guide2SM
+from sara_flexbe_behaviors.action_receive_bag_sm import Action_Receive_BagSM as Action_Receive_BagSM
+from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM as LookAtClosestSM
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as sara_flexbe_behaviors__Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
 from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
-from sara_flexbe_behaviors.action_follow_sm import Action_followSM as sara_flexbe_behaviors__Action_followSM
+from sara_flexbe_behaviors.action_follow_sm import Action_followSM as Action_followSM
 from sara_flexbe_states.SetRosParam import SetRosParam
-from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as sara_flexbe_behaviors__Action_Pass_DoorSM
+from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as Action_Pass_DoorSM
 from sara_flexbe_states.continue_button import ContinueButton
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -51,14 +51,14 @@ class HelpmecarrySM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_Guide2SM, 'GetNewPerson/Action_Guide2')
-		self.add_behavior(sara_flexbe_behaviors__Action_Receive_BagSM, 'Recevoir sac/Receive bag/Action_Receive_Bag')
-		self.add_behavior(sara_flexbe_behaviors__LookAtClosestSM, 'Recevoir sac/Look at/LookAtClosest')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Retour maison/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_followSM, 'Getting ID Operator and follow /Follow/Action_follow')
-		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Enter arena/Action_Pass_Door')
-		self.add_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Enter arena/Action_Move')
-		self.add_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'ExitArena/Action_Pass_Door')
+		self.add_behavior(Action_Guide2SM, 'GetNewPerson/Action_Guide2')
+		self.add_behavior(Action_Receive_BagSM, 'Recevoir sac/Receive bag/Action_Receive_Bag')
+		self.add_behavior(LookAtClosestSM, 'Recevoir sac/Look at/LookAtClosest')
+		self.add_behavior(Action_MoveSM, 'Retour maison/Action_Move')
+		self.add_behavior(Action_followSM, 'Getting ID Operator and follow /Follow/Action_follow')
+		self.add_behavior(Action_Pass_DoorSM, 'Enter arena/Action_Pass_Door')
+		self.add_behavior(Action_MoveSM, 'Enter arena/Action_Move')
+		self.add_behavior(Action_Pass_DoorSM, 'ExitArena/Action_Pass_Door')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -157,7 +157,7 @@ class HelpmecarrySM(Behavior):
 		with _sm_follow_2:
 			# x:107 y:103
 			OperatableStateMachine.add('Action_follow',
-										self.use_behavior(sara_flexbe_behaviors__Action_followSM, 'Getting ID Operator and follow /Follow/Action_follow'),
+										self.use_behavior(Action_followSM, 'Getting ID Operator and follow /Follow/Action_follow'),
 										transitions={'failed': 'not_found'},
 										autonomy={'failed': Autonomy.Inherit},
 										remapping={'ID': 'ID'})
@@ -200,7 +200,7 @@ class HelpmecarrySM(Behavior):
 		with _sm_look_at_4:
 			# x:105 y:160
 			OperatableStateMachine.add('LookAtClosest',
-										self.use_behavior(sara_flexbe_behaviors__LookAtClosestSM, 'Recevoir sac/Look at/LookAtClosest'),
+										self.use_behavior(LookAtClosestSM, 'Recevoir sac/Look at/LookAtClosest'),
 										transitions={'failed': 'failed'},
 										autonomy={'failed': Autonomy.Inherit})
 
@@ -217,7 +217,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:18 y:427
 			OperatableStateMachine.add('Action_Receive_Bag',
-										self.use_behavior(sara_flexbe_behaviors__Action_Receive_BagSM, 'Recevoir sac/Receive bag/Action_Receive_Bag'),
+										self.use_behavior(Action_Receive_BagSM, 'Recevoir sac/Receive bag/Action_Receive_Bag'),
 										transitions={'finished': 'bringit', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'Closed_Gripper_Width': 'Closed_Gripper_Width', 'Open_Gripper_Width': 'Open_Gripper_Width', 'Closed_Gripper_Width': 'Closed_Gripper_Width'})
@@ -351,7 +351,7 @@ class HelpmecarrySM(Behavior):
 		with _sm_exitarena_10:
 			# x:38 y:119
 			OperatableStateMachine.add('Action_Pass_Door',
-										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'ExitArena/Action_Pass_Door'),
+										self.use_behavior(Action_Pass_DoorSM, 'ExitArena/Action_Pass_Door'),
 										transitions={'Done': 'finished', 'Fail': 'failed'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
 										remapping={'DoorName': 'ExitDoor'})
@@ -363,7 +363,7 @@ class HelpmecarrySM(Behavior):
 		with _sm_enter_arena_11:
 			# x:132 y:147
 			OperatableStateMachine.add('Action_Pass_Door',
-										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Enter arena/Action_Pass_Door'),
+										self.use_behavior(Action_Pass_DoorSM, 'Enter arena/Action_Pass_Door'),
 										transitions={'Done': 'say start', 'Fail': 'fail'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
 										remapping={'DoorName': 'EntryDoor'})
@@ -382,7 +382,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:121 y:375
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Enter arena/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'Enter arena/Action_Move'),
 										transitions={'finished': 'say help', 'failed': 'fail'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'EntryDoor'})
@@ -498,7 +498,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:236 y:182
 			OperatableStateMachine.add('Action_Move',
-										self.use_behavior(sara_flexbe_behaviors__Action_MoveSM, 'Retour maison/Action_Move'),
+										self.use_behavior(Action_MoveSM, 'Retour maison/Action_Move'),
 										transitions={'finished': 'Arrived', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'pose_out'})
@@ -566,7 +566,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:293 y:534
 			OperatableStateMachine.add('Action_Guide2',
-										self.use_behavior(sara_flexbe_behaviors__Action_Guide2SM, 'GetNewPerson/Action_Guide2'),
+										self.use_behavior(Action_Guide2SM, 'GetNewPerson/Action_Guide2'),
 										transitions={'finished': 'done', 'failed': 'failed', 'critical_fail': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit, 'critical_fail': Autonomy.Inherit},
 										remapping={'Position': 'Position', 'ID': 'ID'})

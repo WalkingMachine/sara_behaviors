@@ -9,7 +9,7 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.GetRosParam import GetRosParam
-from sara_flexbe_behaviors.action_place_sm import Action_placeSM as sara_flexbe_behaviors__Action_placeSM
+from sara_flexbe_behaviors.action_place_sm import Action_placeSM as Action_placeSM
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from sara_flexbe_states.TF_transform import TF_transformation
 from flexbe_states.check_condition_state import CheckConditionState
@@ -43,7 +43,7 @@ class ActionWrapper_PlaceSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_placeSM, 'Action_place')
+		self.add_behavior(Action_placeSM, 'Action_place')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -83,7 +83,7 @@ class ActionWrapper_PlaceSM(Behavior):
 
 			# x:222 y:497
 			OperatableStateMachine.add('Action_place',
-										self.use_behavior(sara_flexbe_behaviors__Action_placeSM, 'Action_place'),
+										self.use_behavior(Action_placeSM, 'Action_place'),
 										transitions={'finished': 'idlearm', 'failed': 'cause3'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pos': 'MapPosition'})
