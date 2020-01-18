@@ -76,7 +76,7 @@ class Scenario_RestaurantSM(Behavior):
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
-		
+
 		# [/MANUAL_INIT]
 
 		# Behavior comments:
@@ -89,7 +89,7 @@ class Scenario_RestaurantSM(Behavior):
 
 		# Additional creation code can be added inside the following tags
 		# [MANUAL_CREATE]
-		
+
 		# [/MANUAL_CREATE]
 
 		# x:1232 y:907, x:1267 y:613, x:1271 y:566
@@ -206,18 +206,18 @@ class Scenario_RestaurantSM(Behavior):
 										autonomy={'object': Autonomy.Off, 'no_object': Autonomy.Off},
 										remapping={'object_size': 'object_size'})
 
+			# x:1170 y:771
+			OperatableStateMachine.add('say good day',
+										SaraSay(sentence="Thank you. Have a good day.", input_keys=[], emotion=6, block=True),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off})
+
 			# x:62 y:29
 			OperatableStateMachine.add('set distance',
 										SetKey(Value=0.3),
 										transitions={'done': 'look down'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'distanceFromEdge'})
-
-			# x:1170 y:771
-			OperatableStateMachine.add('say good day',
-										SaraSay(sentence="Thank you. Have a good day.", input_keys=[], emotion=6, block=True),
-										transitions={'done': 'finished'},
-										autonomy={'done': Autonomy.Off})
 
 
 		# x:30 y:458, x:130 y:458
@@ -250,7 +250,7 @@ class Scenario_RestaurantSM(Behavior):
 		with _sm_confirm_order_3:
 			# x:114 y:67
 			OperatableStateMachine.add('produce question',
-										CalculationState(calculation=lambda x: "Did you order :" + str(x[0])),
+										CalculationState(calculation=lambda x: "Did you order :" + str(x[0].data)),
 										transitions={'done': 'Action_Ask'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'orderList', 'output_value': 'question'})
@@ -498,7 +498,7 @@ class Scenario_RestaurantSM(Behavior):
 										remapping={'Key': 'commandNumber'})
 
 
-		# x:913 y:749, x:1068 y:149
+		# x:1053 y:687, x:1068 y:149
 		_sm_take_objects_and_bring_the_order_to_customer_11 = OperatableStateMachine(outcomes=['finished', 'failed'], input_keys=['barPosition', 'orderList', 'robotPositionToCustomer'])
 
 		with _sm_take_objects_and_bring_the_order_to_customer_11:
@@ -509,21 +509,21 @@ class Scenario_RestaurantSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'indexKey'})
 
-			# x:657 y:111
+			# x:591 y:684
 			OperatableStateMachine.add('increment indexKey',
 										CalculationState(calculation=lambda x: x+1),
-										transitions={'done': 'one element by one element from the list'},
+										transitions={'done': 'check if end of the list'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'input_value': 'indexKey', 'output_value': 'indexKey'})
 
-			# x:642 y:728
+			# x:796 y:679
 			OperatableStateMachine.add('check if end of the list',
 										FlexibleCheckConditionState(predicate=lambda x: len(x[0]) <= x[1], input_keys=["orderList", "indexKey"]),
 										transitions={'true': 'finished', 'false': 'Action_Move_2'},
 										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off},
 										remapping={'orderList': 'orderList', 'indexKey': 'indexKey'})
 
-			# x:62 y:258
+			# x:31 y:243
 			OperatableStateMachine.add('Action_find',
 										self.use_behavior(Action_findSM, 'take objects and bring the order to customer/Action_find'),
 										transitions={'done': 'get entity ID', 'failed': 'say cannot find'},
@@ -532,7 +532,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:76 y:183
 			OperatableStateMachine.add('say search and grip',
-										SaraSay(sentence=lambda x: "I am now searching the "+x[0]+".", input_keys=["item"], emotion=0, block=True),
+										SaraSay(sentence=lambda x: "I am now searching for the "+x[0]+".", input_keys=["item"], emotion=0, block=True),
 										transitions={'done': 'Action_find'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'item': 'item'})
@@ -599,7 +599,7 @@ class Scenario_RestaurantSM(Behavior):
 			# x:357 y:569
 			OperatableStateMachine.add('say cant get back to customer',
 										SaraSay(sentence="I am not able to go back to the customer.", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'check if end of the list'},
+										transitions={'done': 'increment indexKey'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:541 y:317
@@ -650,7 +650,7 @@ class Scenario_RestaurantSM(Behavior):
 			# x:362 y:679
 			OperatableStateMachine.add('retour repos',
 										RunTrajectory(file="repos", duration=0),
-										transitions={'done': 'check if end of the list'},
+										transitions={'done': 'increment indexKey'},
 										autonomy={'done': Autonomy.Off})
 
 
@@ -695,7 +695,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:224 y:256
 			OperatableStateMachine.add('wait 5',
-										WaitState(wait_time=5),
+										WaitState(wait_time=0),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
@@ -751,8 +751,8 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:411 y:138
 			OperatableStateMachine.add('say cannot',
-										SaraSay(sentence="I am not able to understand your order. I will take another order. If you have one, please raise your hand.", input_keys=[], emotion=0, block=True),
-										transitions={'done': 'failed'},
+										SaraSay(sentence="I am not able to understand your order. I will take another order.", input_keys=[], emotion=0, block=True),
+										transitions={'done': 'set question'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:59 y:272
@@ -772,8 +772,15 @@ class Scenario_RestaurantSM(Behavior):
 			# x:657 y:417
 			OperatableStateMachine.add('confirm order',
 										_sm_confirm_order_3,
-										transitions={'finished': 'finished', 'failed': 'set question'},
+										transitions={'finished': 'say bring', 'failed': 'set question'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
+										remapping={'orderList': 'orderList'})
+
+			# x:852 y:402
+			OperatableStateMachine.add('say bring',
+										SaraSay(sentence=lambda x: "understood. I will bring you the "+str(x[0][0].data), input_keys=["orderList"], emotion=0, block=False),
+										transitions={'done': 'finished'},
+										autonomy={'done': Autonomy.Off},
 										remapping={'orderList': 'orderList'})
 
 
@@ -822,7 +829,7 @@ class Scenario_RestaurantSM(Behavior):
 		with _sm_detect_people_waving_16:
 			# x:84 y:25
 			OperatableStateMachine.add('say looking',
-										SaraSay(sentence="I am now looking for customers.", input_keys=[], emotion=0, block=False),
+										SaraSay(sentence="I am now looking for customers. If you want to order something, please raise your hand.", input_keys=[], emotion=0, block=False),
 										transitions={'done': 'Look for waving people'},
 										autonomy={'done': Autonomy.Off})
 
@@ -835,7 +842,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:71 y:291
 			OperatableStateMachine.add('set distance to customer_2',
-										SetKey(Value=1),
+										SetKey(Value=0.5),
 										transitions={'done': 'reachable position_2'},
 										autonomy={'done': Autonomy.Off},
 										remapping={'Key': 'distance'})
@@ -909,7 +916,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:689 y:477
 			OperatableStateMachine.add('say instructions',
-										SaraSay(sentence="Please, Barman, do not use any basket. Put the objects directly on the table in front of you when I will come back with an order. I will take them one by one to the customer. Thank you!", input_keys=[], emotion=0, block=True),
+										SaraSay(sentence="Good! I wil now start to serve people.", input_keys=[], emotion=0, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
@@ -991,5 +998,5 @@ class Scenario_RestaurantSM(Behavior):
 
 	# Private functions can be added inside the following tags
 	# [MANUAL_FUNC]
-	
+
 	# [/MANUAL_FUNC]

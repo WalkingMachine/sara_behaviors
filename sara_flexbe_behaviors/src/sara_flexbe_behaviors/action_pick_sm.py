@@ -67,7 +67,7 @@ class Action_pickSM(Behavior):
 	def create(self):
 		# x:960 y:715, x:912 y:318, x:904 y:185, x:941 y:610
 		_state_machine = OperatableStateMachine(outcomes=['success', 'unreachable', 'not found', 'dropped'], input_keys=['objectID'])
-		_state_machine.userdata.objectID = 60
+		_state_machine.userdata.objectID = 539
 		_state_machine.userdata.PreGripPose = "pre_grip_pose"
 		_state_machine.userdata.entity = 0
 		_state_machine.userdata.grasp_pose = 0
@@ -189,7 +189,7 @@ class Action_pickSM(Behavior):
 
 			# x:64 y:158
 			OperatableStateMachine.add('move forward',
-										MoveitMoveCartesian(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMoveCartesian(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'done', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'targetPose': 'grasp_pose'})
@@ -219,7 +219,7 @@ class Action_pickSM(Behavior):
 		with _sm_lift_object_5:
 			# x:45 y:34
 			OperatableStateMachine.add('move up',
-										MoveitMoveCartesian(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMoveCartesian(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'genpose', 'failed': 'genpose'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'targetPose': 'up_pose'})
@@ -251,14 +251,14 @@ class Action_pickSM(Behavior):
 		with _sm_validation_and_approach_6:
 			# x:85 y:30
 			OperatableStateMachine.add('checkifposeaccess',
-										MoveitMove(move=False, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=False, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'say can reach', 'failed': 'sayapp'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'grasp_pose'})
 
 			# x:48 y:236
 			OperatableStateMachine.add('move approach',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'done', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'approach_pose'})
