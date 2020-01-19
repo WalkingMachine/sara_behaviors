@@ -8,7 +8,7 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_behaviors.get_operator_sm import Get_operatorSM as Get_operatorSM
+from sara_flexbe_behaviors.get_operator_sm import Get_operatorSM
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.GetRosParam import GetRosParam
@@ -118,13 +118,13 @@ class Action_Guiding_PersonSM(Behavior):
 
 			# x:162 y:210
 			OperatableStateMachine.add('foundyou!',
-										SaraSay(sentence="Operator, please follow me", emotion=1, block=True),
+										SaraSay(sentence="Operator, please follow me", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'deplacement et verification de presence'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:398 y:500
 			OperatableStateMachine.add('destinationreached',
-										SaraSay(sentence="We have reached our destination", emotion=1, block=True),
+										SaraSay(sentence="We have reached our destination", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'finished'},
 										autonomy={'done': Autonomy.Off})
 
@@ -137,7 +137,7 @@ class Action_Guiding_PersonSM(Behavior):
 
 			# x:599 y:180
 			OperatableStateMachine.add('lostyou',
-										SaraSay(sentence="I lost you, please stay where you are", emotion=1, block=True),
+										SaraSay(sentence="I lost you, please stay where you are", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Get_operator'},
 										autonomy={'done': Autonomy.Off})
 

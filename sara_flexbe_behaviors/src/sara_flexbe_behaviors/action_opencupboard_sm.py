@@ -8,13 +8,13 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.SetKey import SetKey
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
+from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.cupboard_door_detector import CupboardDoorDetector
+from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.calculation_state import CalculationState
 from flexbe_states.check_condition_state import CheckConditionState
-from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.run_trajectory import RunTrajectory
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -110,7 +110,7 @@ class Action_OpenCupboardSM(Behavior):
 
 			# x:247 y:175
 			OperatableStateMachine.add('movearm',
-										RunTrajectory(file="OuvrePorte3"),
+										RunTrajectory(file="OuvrePorte3", duration=0),
 										transitions={'done': 'isOpened'},
 										autonomy={'done': Autonomy.Off})
 

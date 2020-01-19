@@ -15,15 +15,15 @@ from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
 from flexbe_states.log_key_state import LogKeyState
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_behaviors.wonderlanduniqueenity_sm import WonderlandUniqueEnitySM as WonderlandUniqueEnitySM
+from sara_flexbe_behaviors.wonderlanduniqueenity_sm import WonderlandUniqueEnitySM
 from sara_flexbe_states.WonderlandGetEntityVerbal import WonderlandGetEntityVerbal
-from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM as Action_point_atSM
+from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM
 from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]

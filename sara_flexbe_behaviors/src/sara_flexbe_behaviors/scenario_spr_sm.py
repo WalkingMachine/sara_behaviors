@@ -22,9 +22,9 @@ from sara_flexbe_states.sara_nlu_spr import SaraNLUspr
 from sara_flexbe_states.set_a_step import Set_a_step
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.KeepLookingAt import KeepLookingAt
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
-from sara_flexbe_behaviors.actionwrapper_move_sm import ActionWrapper_MoveSM as ActionWrapper_MoveSM
+from sara_flexbe_behaviors.actionwrapper_move_sm import ActionWrapper_MoveSM
 from sara_flexbe_states.story import Set_Story
 from sara_flexbe_states.WonderlandClearPeoples import WonderlandClearPeoples
 from sara_flexbe_states.moveit_move import MoveitMove
@@ -273,7 +273,7 @@ class Scenario_SPRSM(Behavior):
 
 			# x:388 y:208
 			OperatableStateMachine.add('Reset Arm',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'Reset Persons', 'failed': 'error'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'target'})

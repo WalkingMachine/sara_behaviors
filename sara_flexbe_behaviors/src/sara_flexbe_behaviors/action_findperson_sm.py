@@ -14,7 +14,7 @@ from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 

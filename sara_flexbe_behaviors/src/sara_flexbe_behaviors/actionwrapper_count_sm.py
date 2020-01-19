@@ -9,7 +9,7 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_behaviors.action_count_sm import Action_countSM as Action_countSM
+from sara_flexbe_behaviors.action_count_sm import Action_countSM
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from sara_flexbe_states.SetRosParamKey import SetRosParamKey
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle

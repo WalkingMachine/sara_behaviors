@@ -8,9 +8,9 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
-from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_states.moveit_move import MoveitMove
+from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -64,7 +64,7 @@ class Sara_InitSM(Behavior):
 
 			# x:77 y:210
 			OperatableStateMachine.add('SetArm',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'finished', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'Pose_Init'})

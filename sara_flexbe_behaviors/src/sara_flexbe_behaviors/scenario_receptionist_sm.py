@@ -8,24 +8,24 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as Init_SequenceSM
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
+from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as Action_findPersonSM
+from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.GetAttribute import GetAttribute
 from sara_flexbe_states.door_detector import DoorDetector
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_nlu_receptionist import SaraNLUreceptionist
-from sara_flexbe_behaviors.action_ask_sm import Action_AskSM as Action_AskSM
+from sara_flexbe_behaviors.action_ask_sm import Action_AskSM
 from sara_flexbe_states.KeepLookingAt import KeepLookingAt
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.run_trajectory import RunTrajectory
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
-from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM as Action_point_atSM
-from sara_flexbe_states.WonderlandGetEntityByID import WonderlandGetEntityByID
-from sara_flexbe_behaviors.action_findpersonbyid_sm import Action_findPersonByIDSM as Action_findPersonByIDSM
+from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM
+from sara_flexbe_states.GetEmptyChair import GetEmptyChair
+from sara_flexbe_behaviors.action_findpersonbyid_sm import Action_findPersonByIDSM
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.FilterKey import FilterKey
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
@@ -441,10 +441,11 @@ class Scenario_ReceptionistSM(Behavior):
 		with _sm_find_person_already_in_13:
 			# x:70 y:40
 			OperatableStateMachine.add('Action_findPerson',
-										self.use_behavior(Action_findPersonSM, 'Guide G1 and introduice people/Find person already in/Action_findPerson', default_keys=['className']),
+										self.use_behavior(Action_findPersonSM, 'Guide G1 and introduice people/Find person already in/Action_findPerson',
+											default_keys=['className']),
 										transitions={'done': 'from entity to ID', 'pas_done': 'retry find person'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
-										remapping={'className': 'className', 'entity': 'foundEntity'})
+										remapping={'entity': 'foundEntity'})
 
 			# x:272 y:62
 			OperatableStateMachine.add('retry find person',
@@ -616,7 +617,7 @@ class Scenario_ReceptionistSM(Behavior):
 			# x:95 y:34
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(Action_MoveSM, 'welcome Guest1/Action_Move'),
-										transitions={'finished': 'wait 2', 'failed': 'retry moving'},
+										transitions={'finished': 'check if door is open', 'failed': 'retry moving'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'entranceLocation'})
 
@@ -688,10 +689,11 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:69 y:261
 			OperatableStateMachine.add('Action_findPerson',
-										self.use_behavior(Action_findPersonSM, 'welcome Guest1/Action_findPerson', default_keys=['className']),
+										self.use_behavior(Action_findPersonSM, 'welcome Guest1/Action_findPerson',
+											default_keys=['className']),
 										transitions={'done': 'get Guest1 ID', 'pas_done': 'say cannot do task'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
-										remapping={'className': 'className', 'entity': 'personEntity'})
+										remapping={'entity': 'personEntity'})
 
 			# x:84 y:385
 			OperatableStateMachine.add('get Guest1 ID',
@@ -702,10 +704,11 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:114 y:587
 			OperatableStateMachine.add('Action_findPerson_2',
-										self.use_behavior(Action_findPersonSM, 'welcome Guest1/Action_findPerson_2', default_keys=['className']),
+										self.use_behavior(Action_findPersonSM, 'welcome Guest1/Action_findPerson_2',
+											default_keys=['className']),
 										transitions={'done': 'get Guest1 ID_2', 'pas_done': 'put previous ID in Guest1ID'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
-										remapping={'className': 'className', 'entity': 'Guest1Entity'})
+										remapping={'entity': 'Guest1Entity'})
 
 			# x:135 y:777
 			OperatableStateMachine.add('get Guest1 ID_2',
@@ -748,10 +751,11 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:50 y:158
 			OperatableStateMachine.add('Action_findPersonByID',
-										self.use_behavior(Action_findPersonByIDSM, 'Guide G2 and introduice people/Action_findPersonByID', default_keys=['className']),
+										self.use_behavior(Action_findPersonByIDSM, 'Guide G2 and introduice people/Action_findPersonByID',
+											default_keys=['className']),
 										transitions={'found': 'Point G1', 'not_found': 'say not found G1 but say his name and drink'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'className': 'className', 'personID': 'Guest1ID', 'personEntity': 'Guest1Entity'})
+										remapping={'personID': 'Guest1ID', 'personEntity': 'Guest1Entity'})
 
 			# x:327 y:186
 			OperatableStateMachine.add('say not found G1 but say his name and drink',
@@ -790,10 +794,11 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:56 y:476
 			OperatableStateMachine.add('Action_findPersonByID_2',
-										self.use_behavior(Action_findPersonByIDSM, 'Guide G2 and introduice people/Action_findPersonByID_2', default_keys=['className']),
+										self.use_behavior(Action_findPersonByIDSM, 'Guide G2 and introduice people/Action_findPersonByID_2',
+											default_keys=['className']),
 										transitions={'found': 'Point person already in', 'not_found': 'set key for filter'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'className': 'className', 'personID': 'personAlreadyInID', 'personEntity': 'personAlreadyInEntity'})
+										remapping={'personID': 'personAlreadyInID', 'personEntity': 'personAlreadyInEntity'})
 
 			# x:85 y:798
 			OperatableStateMachine.add('say details person already in',
@@ -1039,7 +1044,7 @@ class Scenario_ReceptionistSM(Behavior):
 			# x:95 y:34
 			OperatableStateMachine.add('Action_Move',
 										self.use_behavior(Action_MoveSM, 'Welcome Guest2/Action_Move'),
-										transitions={'finished': 'say ready', 'failed': 'retry moving G2'},
+										transitions={'finished': 'check if door is open', 'failed': 'retry moving G2'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'pose': 'entranceLocation'})
 
@@ -1058,10 +1063,11 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:83 y:263
 			OperatableStateMachine.add('Action_findPerson',
-										self.use_behavior(Action_findPersonSM, 'Welcome Guest2/Action_findPerson', default_keys=['className']),
+										self.use_behavior(Action_findPersonSM, 'Welcome Guest2/Action_findPerson',
+											default_keys=['className']),
 										transitions={'done': 'get the ID for G2', 'pas_done': 'say cannot do task G2'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
-										remapping={'className': 'className', 'entity': 'person2Entity'})
+										remapping={'entity': 'person2Entity'})
 
 			# x:718 y:213
 			OperatableStateMachine.add('set G2 name to unknown',
@@ -1091,7 +1097,7 @@ class Scenario_ReceptionistSM(Behavior):
 										autonomy={'done': Autonomy.Off},
 										remapping={'object': 'person2Entity', 'ID': 'person2ID'})
 
-			# x:97 y:103
+			# x:97 y:117
 			OperatableStateMachine.add('check if door is open',
 										DoorDetector(timeout=12),
 										transitions={'done': 'Action_findPerson', 'failed': 'retry opening door'},
@@ -1125,10 +1131,11 @@ class Scenario_ReceptionistSM(Behavior):
 
 			# x:114 y:627
 			OperatableStateMachine.add('Action_findPerson_2',
-										self.use_behavior(Action_findPersonSM, 'Welcome Guest2/Action_findPerson_2', default_keys=['className']),
+										self.use_behavior(Action_findPersonSM, 'Welcome Guest2/Action_findPerson_2',
+											default_keys=['className']),
 										transitions={'done': 'get Guest1 ID_2', 'pas_done': 'put previous ID in Guest1ID'},
 										autonomy={'done': Autonomy.Inherit, 'pas_done': Autonomy.Inherit},
-										remapping={'className': 'className', 'entity': 'Guest2Entity'})
+										remapping={'entity': 'Guest2Entity'})
 
 			# x:135 y:777
 			OperatableStateMachine.add('get Guest1 ID_2',
@@ -1150,7 +1157,7 @@ class Scenario_ReceptionistSM(Behavior):
 			# x:283 y:41
 			OperatableStateMachine.add('Init_Sequence',
 										self.use_behavior(Init_SequenceSM, 'Init_Sequence'),
-										transitions={'finished': 'say ready', 'failed': 'failed'},
+										transitions={'finished': 'welcome Guest1', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit})
 
 			# x:326 y:486

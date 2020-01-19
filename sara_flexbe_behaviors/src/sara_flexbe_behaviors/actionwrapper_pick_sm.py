@@ -11,7 +11,7 @@ from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyC
 from sara_flexbe_states.GetRosParam import GetRosParam
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_behaviors.action_pick_sm import Action_pickSM as Action_pickSM
+from sara_flexbe_behaviors.action_pick_sm import Action_pickSM
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from flexbe_states.calculation_state import CalculationState
@@ -21,7 +21,7 @@ from sara_flexbe_states.sara_move_base import SaraMoveBase
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.SetRosParam import SetRosParam
-from sara_flexbe_behaviors.action_find_sm import Action_findSM as Action_findSM
+from sara_flexbe_behaviors.action_find_sm import Action_findSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -132,7 +132,7 @@ class ActionWrapper_PickSM(Behavior):
 
 			# x:201 y:156
 			OperatableStateMachine.add('move arm',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'get pos', 'failed': 'get pos'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'target'})

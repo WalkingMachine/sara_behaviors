@@ -9,7 +9,7 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.GetAttribute import GetAttribute
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
@@ -19,17 +19,17 @@ from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.Filter import Filter
 from sara_flexbe_states.KeepLookingAt import KeepLookingAt
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.get_speech import GetSpeech
-from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM as LookAtClosestSM
-from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as Init_SequenceSM
+from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM
+from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM
 from sara_flexbe_states.sara_follow import SaraFollow
-from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as sara_flexbe_behaviors__Action_Pass_DoorSM
+from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -59,6 +59,7 @@ class FarewellSM(Behavior):
 		self.add_behavior(LookAtClosestSM, 'confirm/LookAtClosest')
 		self.add_behavior(Init_SequenceSM, 'Init_Sequence')
 		self.add_behavior(Action_MoveSM, 'nevermind/Action_Move')
+		self.add_behavior(Action_Pass_DoorSM, 'Action_Pass_Door')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -805,7 +806,7 @@ class FarewellSM(Behavior):
 
 			# x:43 y:533
 			OperatableStateMachine.add('Action_Pass_Door',
-										self.use_behavior(sara_flexbe_behaviors__Action_Pass_DoorSM, 'Action_Pass_Door'),
+										self.use_behavior(Action_Pass_DoorSM, 'Action_Pass_Door'),
 										transitions={'Done': 'GetTaxi', 'Fail': 'GetTaxi'},
 										autonomy={'Done': Autonomy.Inherit, 'Fail': Autonomy.Inherit},
 										remapping={'DoorName': 'DoorName'})

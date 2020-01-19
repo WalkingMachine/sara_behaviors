@@ -109,7 +109,7 @@ class test_look_at_soundSM(Behavior):
 		with _state_machine:
 			# x:60 y:65
 			OperatableStateMachine.add('say marco!',
-										SaraSay(sentence="Marco?", emotion=1, block=True),
+										SaraSay(sentence="Marco?", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'Look and wait'},
 										autonomy={'done': Autonomy.Off})
 
@@ -122,7 +122,7 @@ class test_look_at_soundSM(Behavior):
 
 			# x:281 y:85
 			OperatableStateMachine.add('hey',
-										SaraSay(sentence="Hey! You need to say polo!", emotion=1, block=True),
+										SaraSay(sentence="Hey! You need to say polo!", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'say marco!'},
 										autonomy={'done': Autonomy.Off})
 

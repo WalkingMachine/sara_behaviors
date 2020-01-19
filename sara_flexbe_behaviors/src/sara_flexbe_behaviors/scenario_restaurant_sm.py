@@ -12,31 +12,29 @@ from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
-from sara_flexbe_behaviors.action_findpersonbyquestion_sm import Action_FindPersonByQuestionSM as Action_FindPersonByQuestionSM
-
+from sara_flexbe_behaviors.action_findpersonbyquestion_sm import Action_FindPersonByQuestionSM
+from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
+from sara_flexbe_states.GetAttribute import GetAttribute
 from sara_flexbe_states.FilterKey import FilterKey
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_move_base import SaraMoveBase
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
-from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
-from sara_flexbe_states.GetAttribute import GetAttribute
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
-from sara_flexbe_behaviors.action_ask_sm import Action_AskSM as Action_AskSM
-
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
+from sara_flexbe_behaviors.action_ask_sm import Action_AskSM
 from sara_flexbe_states.KeepLookingAt import KeepLookingAt
 from sara_flexbe_states.sara_nlu_restaurant import SaraNLUrestaurant
-from sara_flexbe_behaviors.action_findpersonbyid_sm import Action_findPersonByIDSM as Action_findPersonByIDSM
+from sara_flexbe_behaviors.action_findpersonbyid_sm import Action_findPersonByIDSM
 from flexbe_states.check_condition_state import CheckConditionState
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
-from sara_flexbe_behaviors.action_find_sm import Action_findSM as Action_findSM
-from sara_flexbe_behaviors.action_pick_sm import Action_pickSM as Action_pickSM
+from sara_flexbe_behaviors.action_find_sm import Action_findSM
+from sara_flexbe_behaviors.action_pick_sm import Action_pickSM
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from sara_flexbe_states.run_trajectory import RunTrajectory
 from sara_flexbe_states.GetPositionToPlaceOnTable import GetPositionToPlaceOnTable
-from sara_flexbe_behaviors.action_place_sm import Action_placeSM as Action_placeSM
+from sara_flexbe_behaviors.action_place_sm import Action_placeSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -63,6 +61,7 @@ class Scenario_RestaurantSM(Behavior):
 		self.add_behavior(Action_FindPersonByQuestionSM, 'save bar position and initiation/Action_FindPersonByQuestion')
 		self.add_behavior(Action_MoveSM, 'move to table and save position/Action_Move')
 		self.add_behavior(Action_AskSM, 'ask and save order/ask AND look person/ask/Action_Ask')
+		self.add_behavior(Action_AskSM, 'ask and save order/confirm order/Action_Ask')
 		self.add_behavior(Action_MoveSM, 'go to the barman/Action_Move')
 		self.add_behavior(Action_findPersonByIDSM, 'go to the barman/Action_findPersonByID')
 		self.add_behavior(Action_findSM, 'take objects and bring the order to customer/Action_find')
@@ -72,7 +71,6 @@ class Scenario_RestaurantSM(Behavior):
 		self.add_behavior(Action_findSM, 'take objects and bring the order to customer/find table and place/Action_find_2')
 		self.add_behavior(Action_placeSM, 'take objects and bring the order to customer/find table and place/Action_place')
 		self.add_behavior(Action_MoveSM, 'Action_Move')
-
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -257,7 +255,7 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:423 y:171
 			OperatableStateMachine.add('Action_Ask',
-										self.use_behavior(sara_flexbe_behaviors__Action_AskSM, 'ask and save order/confirm order/Action_Ask'),
+										self.use_behavior(Action_AskSM, 'ask and save order/confirm order/Action_Ask'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'question': 'question', 'answer': 'answer'})
@@ -719,10 +717,11 @@ class Scenario_RestaurantSM(Behavior):
 
 			# x:30 y:320
 			OperatableStateMachine.add('Action_findPersonByID',
-										self.use_behavior(Action_findPersonByIDSM, 'go to the barman/Action_findPersonByID', default_keys=['className']),
+										self.use_behavior(Action_findPersonByIDSM, 'go to the barman/Action_findPersonByID',
+											default_keys=['className']),
 										transitions={'found': 'finished', 'not_found': 'finished'},
 										autonomy={'found': Autonomy.Inherit, 'not_found': Autonomy.Inherit},
-										remapping={'className': 'className', 'personID': 'barmanID', 'personEntity': 'personEntity'})
+										remapping={'personID': 'barmanID', 'personEntity': 'personEntity'})
 
 			# x:115 y:230
 			OperatableStateMachine.add('if barman id is 0',

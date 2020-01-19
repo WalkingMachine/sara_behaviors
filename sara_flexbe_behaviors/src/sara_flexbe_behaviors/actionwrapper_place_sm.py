@@ -9,7 +9,7 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.GetRosParam import GetRosParam
-from sara_flexbe_behaviors.action_place_sm import Action_placeSM as Action_placeSM
+from sara_flexbe_behaviors.action_place_sm import Action_placeSM
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from sara_flexbe_states.TF_transform import TF_transformation
 from flexbe_states.check_condition_state import CheckConditionState
@@ -179,7 +179,7 @@ class ActionWrapper_PlaceSM(Behavior):
 
 			# x:342 y:583
 			OperatableStateMachine.add('idlearm',
-										MoveitMove(move=True, waitForExecution=False, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=False, group="RightArm", watchdog=15),
 										transitions={'done': 'empty hand', 'failed': 'empty hand'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'IdlePos'})

@@ -10,7 +10,7 @@
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_behaviors.action_find_sm import Action_findSM as Action_findSM
+from sara_flexbe_behaviors.action_find_sm import Action_findSM
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_states.SetKey import SetKey

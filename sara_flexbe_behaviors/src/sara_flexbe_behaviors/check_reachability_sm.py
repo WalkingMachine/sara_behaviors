@@ -86,7 +86,7 @@ class Check_reachabilitySM(Behavior):
 
 			# x:99 y:520
 			OperatableStateMachine.add('kinematic test',
-										MoveitMove(move=False, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=False, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'ok', 'failed': 'too_far'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'pose_out'})

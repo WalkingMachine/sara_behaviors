@@ -8,16 +8,16 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as Init_SequenceSM
+from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM
 from sara_flexbe_states.for_loop_with_input import ForLoopWithInput
 from flexbe_states.wait_state import WaitState
-from sara_flexbe_behaviors.action_ask_sm import Action_AskSM as Action_AskSM
+from sara_flexbe_behaviors.action_ask_sm import Action_AskSM
 from sara_flexbe_states.KeepLookingAt import KeepLookingAt
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.regex_tester import RegexTester
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.decision_state import DecisionState
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM
 from sara_flexbe_states.FilterKey import FilterKey
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from sara_flexbe_states.FIFO_Add import FIFO_Add

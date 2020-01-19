@@ -9,12 +9,12 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.GetRosParam import GetRosParam
-from sara_flexbe_behaviors.action_give_sm import Action_GiveSM as Action_GiveSM
+from sara_flexbe_behaviors.action_give_sm import Action_GiveSM
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.calculation_state import CalculationState
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.get_speech import GetSpeech
-from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as Action_findPersonSM
+from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_states.SetKey import SetKey
 # Additional imports can be added inside the following tags

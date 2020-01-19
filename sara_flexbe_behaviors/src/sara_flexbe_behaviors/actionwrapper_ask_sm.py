@@ -12,7 +12,7 @@ from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as Action_findPersonSM
+from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.SetRosParamKey import SetRosParamKey
 from flexbe_states.log_key_state import LogKeyState
