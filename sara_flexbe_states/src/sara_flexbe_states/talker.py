@@ -24,9 +24,10 @@ class handleBag(EventState):
 	def handle(self, userdata):
 		list=[]
 		list = list.append(userdata.PointCloud)
-
+		return list
 	def execute(self,userdata):
-		handle(userdata)
-
-		Logger.loginfo(str(userdata.PointCloud))
+		if(handle(userdata)!=0):
+			Logger.loginfo('true')
+		else:
+			Logger.loginfo('false')
 		return 'done'
