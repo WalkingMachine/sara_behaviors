@@ -17,6 +17,7 @@ class handleBag(EventState):
 
     '''
 
+
 	def __init__(self,handle):
 		'''
 	    Constructor
