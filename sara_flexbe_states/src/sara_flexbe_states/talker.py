@@ -16,6 +16,7 @@ class handleBag(EventState):
     <= done					Indicates completion of the filter.
 
     '''
+
 	def __init__(self,handle):
 		'''
 	    Constructor
