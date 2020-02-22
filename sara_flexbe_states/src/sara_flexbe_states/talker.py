@@ -28,6 +28,5 @@ class handleBag(EventState):
 	def execute(self,userdata):
 		handle(userdata)
 
-
 		Logger.loginfo(str(userdata.PointCloud))
 		return 'done'
