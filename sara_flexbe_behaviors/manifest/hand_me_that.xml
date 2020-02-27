@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Hand_me_that">
+
+	<executable package_path="sara_flexbe_behaviors.hand_me_that_sm" class="Hand_me_thatSM" />
+	<tagstring>robocup2020</tagstring>
+	<author>Huynh-Anh Le</author>
+	<date>Sat Jan 18 2020</date>
+	<description>
+		Robot identifies object pointed by an operator
+	</description>
+
+
+	<!-- Contained Behaviors -->
+	<contains name="Action_point_at" />
+
+	<!-- Available Parameters -->
+
+</behavior>

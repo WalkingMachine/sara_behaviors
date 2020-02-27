@@ -8,7 +8,6 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.continue_button import ContinueButton
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
@@ -239,12 +238,6 @@ class Hand_me_thatSM(Behavior):
 
 
 		with _state_machine:
-			# x:67 y:48
-			OperatableStateMachine.add('start',
-										ContinueButton(),
-										transitions={'true': 'ReceiveQuestion', 'false': 'failed'},
-										autonomy={'true': Autonomy.Off, 'false': Autonomy.Off})
-
 			# x:229 y:139
 			OperatableStateMachine.add('ReceiveQuestion',
 										_sm_receivequestion_6,
