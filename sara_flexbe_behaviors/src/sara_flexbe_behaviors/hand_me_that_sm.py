@@ -15,7 +15,7 @@ from sara_flexbe_states.GetPointedPositionOnPlane import GetPointedPositionOnPla
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.sara_move_base import SaraMoveBase
-from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM as sara_flexbe_behaviors__Action_point_atSM
+from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM
 from sara_flexbe_states.LookAtPos import LookAtPos
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from flexbe_states.wait_state import WaitState
@@ -43,7 +43,7 @@ class Hand_me_thatSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(sara_flexbe_behaviors__Action_point_atSM, 'ReceiveQuestion/lookObject/DesignatedObject/points at it/Action_point_at')
+		self.add_behavior(Action_point_atSM, 'ReceiveQuestion/lookObject/DesignatedObject/points at it/Action_point_at')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]
@@ -79,9 +79,9 @@ class Hand_me_thatSM(Behavior):
 		_sm_points_at_it_1 = OperatableStateMachine(outcomes=['finished'], input_keys=['position'])
 
 		with _sm_points_at_it_1:
-			# x:112 y:202
+			# x:90 y:127
 			OperatableStateMachine.add('Action_point_at',
-										self.use_behavior(sara_flexbe_behaviors__Action_point_atSM, 'ReceiveQuestion/lookObject/DesignatedObject/points at it/Action_point_at'),
+										self.use_behavior(Action_point_atSM, 'ReceiveQuestion/lookObject/DesignatedObject/points at it/Action_point_at'),
 										transitions={'finished': 'Action_point_at', 'failed': 'Action_point_at'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
 										remapping={'targetPoint': 'position'})
