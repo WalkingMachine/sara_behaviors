@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="test_handle">
+
+	<executable package_path="sara_flexbe_behaviors.test_handle_sm" class="test_handleSM" />
+	<tagstring>Test</tagstring>
+	<author>ayoub </author>
+	<date>Sat Mar 07 2020</date>
+	<description>
+		test
+	</description>
+
+
+	<!-- Contained Behaviors -->
+
+	<!-- Available Parameters -->
+
+</behavior>
