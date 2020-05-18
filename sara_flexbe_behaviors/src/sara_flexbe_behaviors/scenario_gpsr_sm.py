@@ -8,7 +8,7 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as Action_Pass_DoorSM
+from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM
 from sara_flexbe_states.story import Set_Story
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.set_a_step import Set_a_step
@@ -17,10 +17,10 @@ from sara_flexbe_states.SetKey import SetKey
 from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_behaviors.action_executor_sm import Action_ExecutorSM as Action_ExecutorSM
+from sara_flexbe_behaviors.action_executor_sm import Action_ExecutorSM
 from sara_flexbe_states.StoryboardSetStepKey import StoryboardSetStepKey
 from sara_flexbe_states.GetRosParam import GetRosParam
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.sara_nlu_gpsr import SaraNLUgpsr
 from sara_flexbe_states.get_speech import GetSpeech
@@ -346,7 +346,7 @@ class Scenario_GPSRSM(Behavior):
 
 			# x:101 y:395
 			OperatableStateMachine.add('bras en lair',
-										MoveitMove(move=True, waitForExecution=False, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=False, group="RightArm", watchdog=15),
 										transitions={'done': 'say start', 'failed': 'say start'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'PositionBras'})

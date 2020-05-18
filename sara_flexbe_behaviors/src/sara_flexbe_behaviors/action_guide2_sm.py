@@ -10,13 +10,13 @@
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
-from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as Action_findPersonSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
+from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -214,7 +214,7 @@ class Action_Guide2SM(Behavior):
 										self.use_behavior(Action_MoveSM, 'Try to reach/Container/navigate to the point/Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'pose', 'relative': 'relative'})
+										remapping={'pose': 'pose'})
 
 
 		# x:728 y:335, x:792 y:103, x:738 y:249, x:724 y:448

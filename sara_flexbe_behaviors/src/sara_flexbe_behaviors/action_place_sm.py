@@ -142,7 +142,7 @@ class Action_placeSM(Behavior):
 		with _sm_go_down_2:
 			# x:126 y:194
 			OperatableStateMachine.add('movePlace',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'done', 'failed': 'done'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'GripPose'})
@@ -154,14 +154,14 @@ class Action_placeSM(Behavior):
 		with _sm_retreate_arm_3:
 			# x:30 y:40
 			OperatableStateMachine.add('ReturnApproachPose',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'ReturnPreGrip', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'approach_pose'})
 
 			# x:202 y:41
 			OperatableStateMachine.add('ReturnPreGrip',
-										MoveitMove(move=True, waitForExecution=False, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=False, group="RightArm", watchdog=15),
 										transitions={'done': 'done', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'PreGripPose'})
@@ -217,7 +217,7 @@ class Action_placeSM(Behavior):
 
 			# x:30 y:176
 			OperatableStateMachine.add('MoveIt_isReachable',
-										MoveitMove(move=False, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=False, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'log app', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'grip_pose'})
@@ -257,7 +257,7 @@ class Action_placeSM(Behavior):
 
 			# x:32 y:106
 			OperatableStateMachine.add('gotoPreGrip',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'done', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'PreGripPose'})
@@ -348,7 +348,7 @@ class Action_placeSM(Behavior):
 
 			# x:139 y:444
 			OperatableStateMachine.add('Move_approach',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'Get_down', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'approach_pose'})

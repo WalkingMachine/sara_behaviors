@@ -64,10 +64,10 @@ class GetGraspFromEntitySM(Behavior):
 
 			# x:505 y:135
 			OperatableStateMachine.add('GetGrasp',
-										GetGraspFromEntity(),
+										GetGraspFromEntity(approachDistance=0, distanceScoringMultiplier=0.5, orientationScoringMultiplier=0.5, graspScoringMultiplier=0.5),
 										transitions={'done': 'finished', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
-										remapping={'Entity': 'Entity', 'GraspingPose': 'GraspingPose'})
+										remapping={'Entity': 'Entity', 'ApproachPose': 'ApproachPose', 'GraspingPose': 'GraspingPose'})
 
 
 		return _state_machine

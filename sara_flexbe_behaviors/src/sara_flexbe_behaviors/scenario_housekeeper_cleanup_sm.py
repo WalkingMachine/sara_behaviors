@@ -8,16 +8,16 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as Init_SequenceSM
+from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM
 from sara_flexbe_states.sara_nlu_getRoom import SaraNLUgetRoom
-from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as Action_Pass_DoorSM
+from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM
 from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.sara_say import SaraSay
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.get_speech import GetSpeech
 from flexbe_states.decision_state import DecisionState
 from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
 from sara_flexbe_states.CheckMisplacedObjects import CheckMisplacedObjects
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from flexbe_states.wait_state import WaitState
@@ -28,12 +28,12 @@ from sara_flexbe_states.for_loop_with_input import ForLoopWithInput
 from flexbe_states.flexible_check_condition_state import FlexibleCheckConditionState
 from sara_flexbe_states.SetSegmentationRosParam import SetSegmentationRosParam
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
-from sara_flexbe_behaviors.action_pick_sm import Action_pickSM as Action_pickSM
+from sara_flexbe_behaviors.action_pick_sm import Action_pickSM
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from sara_flexbe_states.torque_reader import ReadTorque
 from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.pose_gen_euler import GenPoseEuler
-from sara_flexbe_behaviors.action_place_sm import Action_placeSM as Action_placeSM
+from sara_flexbe_behaviors.action_place_sm import Action_placeSM
 from sara_flexbe_states.WonderlandGetEntityByID import WonderlandGetEntityByID
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -276,7 +276,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 			# x:51 y:261
 			OperatableStateMachine.add('Go_to_receive_bag_pose',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'Torque_Reader', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'target'})
@@ -303,7 +303,7 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 			# x:660 y:57
 			OperatableStateMachine.add('Go_to_Pose',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'success', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'target'})
@@ -364,10 +364,10 @@ class Scenario_Housekeeper_CleanUpSM(Behavior):
 
 			# x:42 y:275
 			OperatableStateMachine.add('Action_pick',
-										self.use_behavior(Action_pickSM, 'PickMisplacedObject/GrabMisplacedObject/Action_pick', default_keys=['Entity']),
+										self.use_behavior(Action_pickSM, 'PickMisplacedObject/GrabMisplacedObject/Action_pick'),
 										transitions={'success': 'done', 'unreachable': 'oops_2', 'not found': 'oops_3', 'dropped': 'oops'},
 										autonomy={'success': Autonomy.Inherit, 'unreachable': Autonomy.Inherit, 'not found': Autonomy.Inherit, 'dropped': Autonomy.Inherit},
-										remapping={'objectID': 'misplacedObjectID', 'Entity': 'Entity'})
+										remapping={'objectID': 'misplacedObjectID'})
 
 			# x:600 y:177
 			OperatableStateMachine.add('DeusExPickRecovery',

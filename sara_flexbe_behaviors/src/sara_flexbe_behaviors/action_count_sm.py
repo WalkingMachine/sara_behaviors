@@ -16,7 +16,7 @@ from flexbe_states.flexible_calculation_state import FlexibleCalculationState
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.for_loop import ForLoop
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM
 from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]

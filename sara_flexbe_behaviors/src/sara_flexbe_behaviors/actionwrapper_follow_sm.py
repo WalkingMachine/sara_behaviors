@@ -12,7 +12,7 @@ from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.GetRosParam import GetRosParam
 from sara_flexbe_states.Get_Entity_By_ID import GetEntityByID
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_behaviors.action_follow_sm import Action_followSM as Action_followSM
+from sara_flexbe_behaviors.action_follow_sm import Action_followSM
 from sara_flexbe_states.get_speech import GetSpeech
 from flexbe_states.check_condition_state import CheckConditionState
 from sara_flexbe_states.SetKey import SetKey

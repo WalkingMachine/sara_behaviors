@@ -8,11 +8,11 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_behaviors.farewell_sm import FarewellSM as FarewellSM
+from sara_flexbe_states.continue_button import ContinueButton
+from sara_flexbe_behaviors.farewell_sm import FarewellSM
 from sara_flexbe_states.sara_say import SaraSay
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
-
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -36,9 +36,9 @@ class Scenario_FarewellSM(Behavior):
 		# parameters of this behavior
 
 		# references to used behaviors
-		self.add_behavior(FarewellSM, 'Farewell')
 		self.add_behavior(FarewellSM, 'Farewell_2')
 		self.add_behavior(Action_MoveSM, 'Action_Move')
+		self.add_behavior(FarewellSM, 'Farewell')
 
 		# Additional initialization code can be added inside the following tags
 		# [MANUAL_INIT]

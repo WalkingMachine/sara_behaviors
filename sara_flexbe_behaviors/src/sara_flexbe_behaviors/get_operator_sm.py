@@ -15,7 +15,7 @@ from sara_flexbe_states.for_loop import ForLoop
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.SetRosParam import SetRosParam
 from sara_flexbe_states.get_speech import GetSpeech
@@ -82,7 +82,7 @@ class Get_operatorSM(Behavior):
 										self.use_behavior(Action_MoveSM, 'Move to person/Action_Move'),
 										transitions={'finished': 'finished', 'failed': 'failed'},
 										autonomy={'finished': Autonomy.Inherit, 'failed': Autonomy.Inherit},
-										remapping={'pose': 'Pose', 'relative': 'relative'})
+										remapping={'pose': 'Pose'})
 
 			# x:47 y:368
 			OperatableStateMachine.add('set not rel',
@@ -124,13 +124,13 @@ class Get_operatorSM(Behavior):
 
 			# x:263 y:155
 			OperatableStateMachine.add('Say lost operator',
-										SaraSay(sentence="I lost my operator", emotion=1, block=True),
+										SaraSay(sentence="I lost my operator", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'for 3'},
 										autonomy={'done': Autonomy.Off})
 
 			# x:780 y:517
 			OperatableStateMachine.add('ask if operator',
-										SaraSay(sentence="Are you my operator?", emotion=1, block=True),
+										SaraSay(sentence="Are you my operator?", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'get speech'},
 										autonomy={'done': Autonomy.Off})
 
@@ -143,7 +143,7 @@ class Get_operatorSM(Behavior):
 
 			# x:249 y:357
 			OperatableStateMachine.add('say where are you',
-										SaraSay(sentence="Operator. Where are you?", emotion=1, block=True),
+										SaraSay(sentence="Operator. Where are you?", input_keys=[], emotion=1, block=True),
 										transitions={'done': 'for 3'},
 										autonomy={'done': Autonomy.Off})
 

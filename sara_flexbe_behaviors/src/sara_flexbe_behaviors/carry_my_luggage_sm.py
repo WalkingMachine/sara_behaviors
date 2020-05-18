@@ -8,28 +8,29 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
+from sara_flexbe_states.continue_button import ContinueButton
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
 from sara_flexbe_states.SetRosParam import SetRosParam
-from sara_flexbe_behaviors.action_follow_sm import Action_followSM as Action_followSM
+from sara_flexbe_behaviors.action_follow_sm import Action_followSM
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.regex_tester import RegexTester
-from sara_flexbe_behaviors.action_give_back_bag_sm import Action_Give_Back_BagSM as Action_Give_Back_BagSM
-from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as Init_SequenceSM
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
+from sara_flexbe_behaviors.action_give_back_bag_sm import Action_Give_Back_BagSM
+from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.GetPointedPositionOnPlane import GetPointedPositionOnPlane
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
 from sara_flexbe_states.sara_move_base import SaraMoveBase
-from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM as Action_point_atSM
+from sara_flexbe_behaviors.action_point_at_sm import Action_point_atSM
 from sara_flexbe_states.LookAtPos import LookAtPos
-from sara_flexbe_behaviors.action_receive_bag_sm import Action_Receive_BagSM as Action_Receive_BagSM
+from sara_flexbe_behaviors.action_receive_bag_sm import Action_Receive_BagSM
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.set_gripper_state import SetGripperState
-from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM as LookAtClosestSM
+from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM
+from sara_flexbe_states.run_trajectory import RunTrajectory
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]

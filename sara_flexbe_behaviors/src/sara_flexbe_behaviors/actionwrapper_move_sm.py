@@ -9,7 +9,7 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
 from sara_flexbe_states.SetRosParam import SetRosParam
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]

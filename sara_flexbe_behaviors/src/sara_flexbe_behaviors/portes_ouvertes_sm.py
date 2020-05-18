@@ -8,15 +8,15 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM as Init_SequenceSM
+from sara_flexbe_behaviors.init_sequence_sm import Init_SequenceSM
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_behaviors.actionwrapper_pick_sm import ActionWrapper_PickSM as ActionWrapper_PickSM
-from sara_flexbe_behaviors.action_opencupboard_sm import Action_OpenCupboardSM as Action_OpenCupboardSM
-from sara_flexbe_behaviors.actionwrapper_move_sm import ActionWrapper_MoveSM as ActionWrapper_MoveSM
-from sara_flexbe_behaviors.actionwrapper_place_sm import ActionWrapper_PlaceSM as ActionWrapper_PlaceSM
+from sara_flexbe_behaviors.actionwrapper_pick_sm import ActionWrapper_PickSM
+from sara_flexbe_behaviors.action_opencupboard_sm import Action_OpenCupboardSM
+from sara_flexbe_behaviors.actionwrapper_move_sm import ActionWrapper_MoveSM
+from sara_flexbe_behaviors.actionwrapper_place_sm import ActionWrapper_PlaceSM
 from sara_flexbe_states.run_trajectory import RunTrajectory
 from flexbe_states.wait_state import WaitState
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 
@@ -78,7 +78,7 @@ class Portes_ouvertesSM(Behavior):
 		with _sm_salute_people_0:
 			# x:105 y:52
 			OperatableStateMachine.add('wave',
-										RunTrajectory(file="Wave"),
+										RunTrajectory(file="Wave", duration=0),
 										transitions={'done': 'hi'},
 										autonomy={'done': Autonomy.Off})
 
@@ -177,7 +177,7 @@ class Portes_ouvertesSM(Behavior):
 
 			# x:833 y:462
 			OperatableStateMachine.add('wave',
-										RunTrajectory(file="Wave"),
+										RunTrajectory(file="Wave", duration=0),
 										transitions={'done': 'action_turn'},
 										autonomy={'done': Autonomy.Off})
 

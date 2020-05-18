@@ -8,9 +8,9 @@
 ###########################################################
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
-from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 from sara_flexbe_states.sara_say import SaraSay
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
+from sara_flexbe_states.pose_gen_euler import GenPoseEuler
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 

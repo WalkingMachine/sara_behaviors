@@ -115,7 +115,7 @@ class Action_GiveSM(Behavior):
 
 			# x:57 y:175
 			OperatableStateMachine.add('moveArm',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'say pull', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'target'})
@@ -220,7 +220,7 @@ class Action_GiveSM(Behavior):
 
 			# x:751 y:108
 			OperatableStateMachine.add('moveArm2',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'set none', 'failed': 'log moveitfail'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'target'})

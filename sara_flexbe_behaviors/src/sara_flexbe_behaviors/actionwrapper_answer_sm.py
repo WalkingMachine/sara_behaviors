@@ -9,13 +9,13 @@
 
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.SetKey import SetKey
-from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM as Action_findPersonSM
+from sara_flexbe_behaviors.action_findperson_sm import Action_findPersonSM
 from sara_flexbe_states.sara_say import SaraSay
 from sara_flexbe_states.sara_nlu_spr import SaraNLUspr
 from sara_flexbe_states.get_speech import GetSpeech
 from sara_flexbe_states.for_loop import ForLoop
 from flexbe_states.check_condition_state import CheckConditionState
-from sara_flexbe_behaviors.action_turn_sm import action_turnSM as action_turnSM
+from sara_flexbe_behaviors.action_turn_sm import action_turnSM
 from sara_flexbe_states.SetRosParam import SetRosParam
 from flexbe_states.log_key_state import LogKeyState
 # Additional imports can be added inside the following tags

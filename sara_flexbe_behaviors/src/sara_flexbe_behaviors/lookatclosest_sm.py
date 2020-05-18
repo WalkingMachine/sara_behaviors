@@ -10,8 +10,8 @@
 from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_states.KeepLookingAt import KeepLookingAt
 from flexbe_states.wait_state import WaitState
+from sara_flexbe_states.KeepLookingAt import KeepLookingAt
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
 

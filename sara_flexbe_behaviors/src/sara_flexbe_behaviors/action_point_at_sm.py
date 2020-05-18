@@ -68,7 +68,7 @@ class Action_point_atSM(Behavior):
 
 			# x:503 y:276
 			OperatableStateMachine.add('move',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'finished', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'pose'})

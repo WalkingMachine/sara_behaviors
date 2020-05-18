@@ -15,18 +15,18 @@ from sara_flexbe_states.SetKey import SetKey
 from sara_flexbe_states.sara_set_head_angle import SaraSetHeadAngle
 from sara_flexbe_states.list_entities_by_name import list_entities_by_name
 from flexbe_states.calculation_state import CalculationState
-from sara_flexbe_behaviors.action_guide2_sm import Action_Guide2SM as Action_Guide2SM
-from sara_flexbe_behaviors.action_receive_bag_sm import Action_Receive_BagSM as Action_Receive_BagSM
-from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM as LookAtClosestSM
+from sara_flexbe_behaviors.action_guide2_sm import Action_Guide2SM
+from sara_flexbe_behaviors.action_receive_bag_sm import Action_Receive_BagSM
+from sara_flexbe_behaviors.lookatclosest_sm import LookAtClosestSM
 from sara_flexbe_states.get_reachable_waypoint import Get_Reacheable_Waypoint
-from sara_flexbe_behaviors.action_move_sm import Action_MoveSM as Action_MoveSM
+from sara_flexbe_behaviors.action_move_sm import Action_MoveSM
 from sara_flexbe_states.moveit_move import MoveitMove
 from sara_flexbe_states.set_gripper_state import SetGripperState
 from flexbe_states.wait_state import WaitState
 from sara_flexbe_states.get_robot_pose import Get_Robot_Pose
-from sara_flexbe_behaviors.action_follow_sm import Action_followSM as Action_followSM
+from sara_flexbe_behaviors.action_follow_sm import Action_followSM
 from sara_flexbe_states.SetRosParam import SetRosParam
-from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM as Action_Pass_DoorSM
+from sara_flexbe_behaviors.action_pass_door_sm import Action_Pass_DoorSM
 from sara_flexbe_states.continue_button import ContinueButton
 # Additional imports can be added inside the following tags
 # [MANUAL_IMPORT]
@@ -333,7 +333,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:24 y:259
 			OperatableStateMachine.add('Init Arm',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'done', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'Pose_Init'})
@@ -439,7 +439,7 @@ class HelpmecarrySM(Behavior):
 		with _sm_drop_le_sac_13:
 			# x:22 y:114
 			OperatableStateMachine.add('dropbag',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'Open', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'dropPose'})
@@ -459,7 +459,7 @@ class HelpmecarrySM(Behavior):
 
 			# x:8 y:433
 			OperatableStateMachine.add('returnIdl',
-										MoveitMove(move=True, waitForExecution=True, group="RightArm"),
+										MoveitMove(move=True, waitForExecution=True, group="RightArm", watchdog=15),
 										transitions={'done': 'done', 'failed': 'failed'},
 										autonomy={'done': Autonomy.Off, 'failed': Autonomy.Off},
 										remapping={'target': 'Idle'})
